@@ -1,0 +1,16 @@
+node_modules/
+dist/
+runtime/
+state/
+tmp/
+evidence/
+*.log
+*.gguf
+*.gguf.*
+*.jar
+.env
+.env.*
+*.sqlite
+*.sqlite3
+*.db
+STOP

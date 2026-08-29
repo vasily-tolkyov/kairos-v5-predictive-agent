@@ -1,0 +1,22 @@
+{
+  "name": "kairos-v5-predictive-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test dist/test/*.test.js",
+    "start": "node dist/src/main.js",
+    "verify": "node dist/src/verify.js"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "0.84.2",
+    "@earendil-works/pi-ai": "0.84.2",
+    "typebox": "1.3.7",
+    "mineflayer": "4.37.1",
+    "prismarine-viewer": "1.33.0",
+    "vec3": "0.1.10"
+  },
+  "devDependencies": { "typescript": "5.9.3", "@types/node": "24.12.0" }
+}
