@@ -19,6 +19,7 @@ class DigBot extends EventEmitter {
   calls: { target: unknown; forceLook: unknown }[] = [];
   implicitLooks = 0; activeStops = 0; clearCalls = 0;
   targetDigBlock: unknown = null;
+  entityAtCursor(): null { return null; }
   pending = (() => {
     let resolve!: () => void, reject!: (error: Error) => void;
     const promise = new Promise<void>((yes, no) => { resolve = yes; reject = no; });

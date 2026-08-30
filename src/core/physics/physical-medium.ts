@@ -206,6 +206,14 @@ export class PhysicalMedium3D {
     return this.#getPage(pageId).sampleBasins(query, maxCount);
   }
 
+  basinContainingTrace(pageId: string, traceId: string): BasinActivation | null {
+    return this.#getPage(pageId).basinContainingTrace(traceId);
+  }
+
+  basinContainingVisit(pageId: string, visitId: string): BasinActivation | null {
+    return this.#getPage(pageId).basinContainingVisit(visitId);
+  }
+
   traceSnapshot(pageId: string, traceId: string): R1TraceSnapshot | null {
     return this.#getPage(pageId).traceSnapshot(traceId, this.#logicalTime);
   }

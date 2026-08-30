@@ -18,9 +18,13 @@ export function syntheticEvent(index: number, mode: 'door' | 'jump' | 'none' = '
       properties: { grounded: mode !== 'jump' || i === 0 || i === 20 } },
     objects: [{ id: 'object-1', type: 'synthetic-panel', relativePosition: [1, 0, 0], properties: { open: mode === 'door' && i >= 10 } }],
     targetId: 'object-1', contextId: `synthetic-layout-${index % 8}` }));
-  return { version: 'RealEventV5', id: `synthetic-event-${index}`, cue: { kind: mode === 'jump' ? 'jump' : mode === 'door' ? 'interact' : 'wait', parameters: {}, targetRole: null },
+  const action = mode === 'jump' ? { kind: 'jump' as const, parameters: {} }
+    : mode === 'door' ? { kind: 'interact' as const, parameters: {}, targetId: 'object-1' }
+      : { kind: 'wait' as const, parameters: {} };
+  return { version: 'RealEventV5', id: `synthetic-event-${index}`,
+    cue: { kind: action.kind, parameters: {}, targetRole: mode === 'door' ? 'synthetic-panel' : null },
     frames, trackedIds: ['self', 'object-1'], provenance: 'executed-real-body', complete: true,
-    bodyResult: { action: { kind: 'wait', parameters: {} }, executed: true, status: 'completed',
+    bodyResult: { action, executed: true, status: 'completed',
       startSequence: frames[0]!.sequence, endSequence: frames.at(-1)!.sequence } };
 }
 
@@ -34,6 +38,13 @@ test('concrete public state, stationary jump and no-change window are distinct; 
   const map = DistanceEmbedding.fit([door, eventRows(jump), eventRows(syntheticEvent(2))].flatMap(x => x.rows));
   assert.notDeepEqual(map.encode(door.rows[0]!).coordinate, map.encode(door.rows.at(-1)!).coordinate);
   assert.equal(map.state.weights.length, 3);
+});
+test('current memory snapshots have an explicit scale-era version and legacy top-level states fail closed', () => {
+  const current = new PhysicalMemory().snapshot();
+  assert.equal(current.version, 'KairosV5MemoryV4');
+  const legacy = { ...structuredClone(current), version: 'KairosV5Memory' } as any;
+  assert.throws(() => PhysicalMemory.restore(legacy),
+    /V5-rejects-legacy-experience-rebuild-from-trusted-raw-events/);
 });
 test('unchanged physical engine: zero diffusion, actual exponential recovery and read-only random clone', () => {
   const medium = new PhysicalMedium3D({ ...R1_CONFIG, diffusion: 0 }); const page = medium.createPage();
@@ -70,13 +81,39 @@ test('zero-start, one new 128-event calibration, physical recall disappears with
   const before = sha(memory.snapshot());
   const recalled = memory.recall({ property: 'open', value: true }, observation) as { total: number };
   assert(recalled.total > 0);
+  const goal = { version: 'GroundedGoalV1' as const, id: 'neutral-open', expression: { kind: 'predicate' as const,
+    predicate: { version: 'GoalPredicateV1' as const, id: 'open',
+      subject: { kind: 'public-object' as const, id: 'object-1', expectedType: 'synthetic-panel' },
+      observable: 'properties.open' as const, comparator: 'equals' as const, target: true } } };
+  const evaluation = { goalId: goal.id, status: 'mismatch' as const, residual: 1, observationSequence: observation.sequence,
+    predicates: [{ predicateId: 'open', status: 'mismatch' as const, residual: 1, actual: false, baseline: false, reason: null }] };
+  const typed = memory.recallByEffect(goal, evaluation, observation);
+  assert(typed.length > 0); assert.equal(sha(memory.snapshot()), before);
   const prediction = memory.predict({ kind: 'interact', parameters: {}, targetRole: null }, observation);
   assert.equal(sha(memory.snapshot()), before);
   if (prediction.support === 0) assert.equal(prediction.samples.length, 0);
   for (const layer of ['R1', 'R2'] as const) {
     const erased = PhysicalMemory.restore(snapshot); erased.ablateForTest(layer);
     assert.equal((erased.recall({ property: 'open' }, observation) as { total: number }).total, 0);
+    assert.equal(erased.recallByEffect(goal, evaluation, observation).length, 0);
   }
   const erased = PhysicalMemory.restore(snapshot); erased.ablateForTest('R2A');
   assert.equal(erased.predict({ kind: 'interact', parameters: {}, targetRole: null }, observation).support, 0);
+});
+
+test('a genuinely new public feature after map freeze is recorded as unrepresentable without moving the map or poisoning later experience', () => {
+  const memory = new PhysicalMemory();
+  for (let i = 0; i < 128; i++) memory.observe(syntheticEvent(i, i % 3 === 0 ? 'door' : i % 3 === 1 ? 'jump' : 'none'));
+  const map = memory.mapSha256, beforeWrites = memory.writes;
+  const novel = syntheticEvent(128, 'none');
+  const novelFrames = novel.frames.map(frame => ({ ...frame, objects: frame.objects.map(object => ({ ...object,
+    type: 'previously-unobserved-public-type', properties: { ...object.properties, novelPublicProperty: true } })) }));
+  const rejection = memory.observe({ ...novel, id: 'novel-public-event', frames: novelFrames });
+  assert.equal(rejection.status, 'real-event-not-representable');
+  assert.equal(rejection.representationRejection?.reason, 'unrepresented-public-features');
+  assert((rejection.representationRejection?.unknownKeys?.length ?? 0) > 0);
+  assert.equal(memory.writes, beforeWrites); assert.equal(memory.mapSha256, map);
+  const accepted = memory.observe(syntheticEvent(129, 'none'));
+  assert.equal(accepted.status, 'real-event-deposited'); assert.equal(memory.writes, beforeWrites + 1);
+  assert.equal(memory.mapSha256, map);
 });

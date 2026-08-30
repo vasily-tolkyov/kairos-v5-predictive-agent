@@ -57,6 +57,27 @@ export interface BasinActivation {
   readonly queryContribution: number;
   readonly decayFraction: number;
   readonly kernelCount: number;
+  /** Opaque identities of active visit kernels in the full component. */
+  readonly memberVisitIds: readonly string[];
+  /**
+   * Opaque visit/road trace identities whose currently active kernels form
+   * this connected physical basin.  The array is a defensive snapshot; it
+   * carries no semantic outcome label.
+   */
+  readonly memberTraceIds: readonly string[];
+}
+
+/** Current R2 membership resolved from the real active visit kernels. */
+export interface ActiveR2BasinMembershipV1 {
+  readonly version: "ActiveR2BasinMembershipV1";
+  readonly pageId: string;
+  readonly coordinate: readonly number[];
+  readonly memberVisitIds: readonly string[];
+}
+
+/** Narrow read-only port consumed by R2A; it cannot deposit or recover R2. */
+export interface R2BasinMembershipResolverV1 {
+  resolveActiveR2Basin(r2VisitId: string): ActiveR2BasinMembershipV1 | null;
 }
 
 export interface R1TraceSnapshot {
@@ -428,6 +449,42 @@ export interface CausalFactorGraphStateV2 {
   readonly logicalTime: number;
 }
 
+/**
+ * Writable graph whose outcome identity is the current real R2 basin.
+ * V2 is intentionally audit-only because it used R1 page identity and a
+ * fixed coordinate radius to manufacture result modes outside R2.
+ */
+export type OpenFactorEventSummaryV3 = Omit<OpenFactorEventSummaryV2, "r1Trace"> & {
+  readonly r2VisitId: string;
+};
+
+export type CausalHyperedgeV3 = CausalHyperedgeV2 & {
+  /** One real visit used to resolve the edge's current physical R2 basin. */
+  readonly targetR2VisitId: string;
+};
+
+export interface CausalFactorGraphStateV3 {
+  readonly version: "CausalFactorGraphStateV3";
+  readonly outcomeIdentityVersion: "ActiveR2BasinMembershipV1";
+  readonly evidenceContextIdentityVersion: "CausalEvidenceContextIdV1" | "CausalEvidenceContextIdV2";
+  readonly legacySceneFingerprintsMigrated: false;
+  readonly legacyOutcomeModesMigrated: false;
+  readonly r2aMedium: MediumSnapshot;
+  readonly factorNodes: readonly CausalFactorNodeV2[];
+  readonly hyperedges: readonly CausalHyperedgeV3[];
+  readonly motifs: readonly FactorMotifV1[];
+  readonly provisionalCandidates: readonly ProvisionalFactorCandidateV2[];
+  readonly pendingCandidatePools: readonly FrozenFactorCandidatePoolStateV2[];
+  readonly eventSummaries: readonly OpenFactorEventSummaryV3[];
+  readonly testedSubsets: readonly string[];
+  readonly controlledExperimentPairs: readonly ControlledExperimentPairSummaryV2[];
+  readonly factorSequence: number;
+  readonly hyperedgeSequence: number;
+  readonly motifSequence: number;
+  readonly ticketSequence: number;
+  readonly logicalTime: number;
+}
+
 export interface PathProjectorStateV1 {
   readonly landmarks: readonly (readonly number[])[];
   readonly bandwidth: number;
@@ -438,6 +495,100 @@ export interface PathProjectorStateV1 {
     readonly outputDimensions: 3;
     readonly landmarkCount: number;
   };
+}
+
+/**
+ * Writable path representation whose otherwise arbitrary output unit is
+ * calibrated once against measurement-equivalent resampling and the real R2
+ * boundary.  V1 remains audit-only because it carries no such unit proof.
+ */
+export interface PathProjectorStateV2 {
+  readonly version: "PathProjectorStateV2";
+  readonly landmarks: readonly (readonly number[])[];
+  readonly bandwidth: number;
+  readonly weights: readonly (readonly number[])[];
+  readonly resolution: {
+    readonly version: "R2MeasurementResolutionCalibrationV2";
+    readonly selectionRule: "min-equivalence-and-boundary-caps";
+    readonly outputScale: number;
+    readonly unscaledCenter: readonly number[];
+    readonly equivalentVariationMaximum: number;
+    readonly equivalentVariationQuantile: 1;
+    readonly equivalenceLimitedScale: number | null;
+    readonly boundaryLimitedScale: number | null;
+    readonly boundaryLimited: boolean;
+    readonly boundaryMargin: number;
+    readonly physicalKernelWidth: number;
+    /** Diagnostic only; it never participates in choosing outputScale. */
+    readonly componentSizes: readonly number[];
+  };
+  readonly diagnostics: {
+    readonly geometryDistanceCorrelation: number;
+    readonly causalPrefixRootMeanSquaredDistance: number;
+    readonly outputDimensions: 3;
+    readonly landmarkCount: number;
+  };
+}
+
+/**
+ * Historical path representation. V2 is audit-only because its
+ * measurement-equivalent calibration could remove an observed polyline
+ * vertex while down-sampling and therefore silently cut a corner; V3 is also
+ * audit-only because it rotated every event into a private tangent frame.
+ */
+export interface PathProjectorStateV3 {
+  readonly version: "PathProjectorStateV3";
+  readonly landmarks: readonly (readonly number[])[];
+  readonly bandwidth: number;
+  readonly weights: readonly (readonly number[])[];
+  readonly resolution: {
+    readonly version: "R2MeasurementResolutionCalibrationV3";
+    readonly selectionRule: "min-equivalence-and-boundary-caps";
+    readonly equivalentGeometryMethod: "vertex-preserving-polyline-densification";
+    readonly boundaryGeometry: "max-centered-radius-within-inscribed-sphere";
+    readonly outputScale: number;
+    readonly unscaledCenter: readonly number[];
+    readonly equivalentVariationMaximum: number;
+    readonly equivalentVariationQuantile: 1;
+    readonly equivalenceLimitedScale: number | null;
+    readonly boundaryLimitedScale: number | null;
+    readonly boundaryLimited: boolean;
+    readonly boundaryMargin: number;
+    readonly physicalKernelWidth: number;
+    /** Diagnostic only; it never participates in choosing outputScale. */
+    readonly componentSizes: readonly number[];
+  };
+  readonly diagnostics: PathProjectorStateV2["diagnostics"];
+}
+
+/**
+ * Event-space projector with one frozen global coordinate frame.  V3 is
+ * audit-only for V5 because independently rotating every event's initial
+ * tangent can erase the identity of a public state transition.
+ */
+export interface PathProjectorStateV4 {
+  readonly version: "PathProjectorStateV4";
+  readonly measurementGeometry: "source-translated-global-event-frame-v1";
+  readonly landmarks: readonly (readonly number[])[];
+  readonly bandwidth: number;
+  readonly weights: readonly (readonly number[])[];
+  readonly resolution: {
+    readonly version: "R2MeasurementResolutionCalibrationV4";
+    readonly selectionRule: "min-equivalence-and-boundary-caps";
+    readonly equivalentGeometryMethod: "vertex-preserving-polyline-densification";
+    readonly boundaryGeometry: "max-centered-radius-within-inscribed-sphere";
+    readonly outputScale: number;
+    readonly unscaledCenter: readonly number[];
+    readonly equivalentVariationMaximum: number;
+    readonly equivalentVariationQuantile: 1;
+    readonly equivalenceLimitedScale: number | null;
+    readonly boundaryLimitedScale: number | null;
+    readonly boundaryLimited: boolean;
+    readonly boundaryMargin: number;
+    readonly physicalKernelWidth: number;
+    readonly componentSizes: readonly number[];
+  };
+  readonly diagnostics: PathProjectorStateV2["diagnostics"];
 }
 
 export interface PerceptionFilterStateV1 {
@@ -625,9 +776,10 @@ export interface KairosCheckpointV6 {
 }
 
 /**
- * Writable checkpoint for the active-cognitive-seconds domain. V6 and older
- * checkpoints are never promoted into this type; V7 is rebuilt from trusted
- * raw events and completed cognitive-frame evidence.
+ * Historical active-cognitive-seconds checkpoint. V7 is audit-only after the
+ * physical R2 resolution and basin-membership correction because it contains
+ * neither the calibrated PathProjector V2 unit nor R2 visit identities in its
+ * factor graph.
  */
 export interface KairosCheckpointV7 {
   readonly version: "KairosCheckpointV7";
@@ -645,7 +797,49 @@ export interface KairosCheckpointV7 {
   readonly rejections: FirewallRejections;
 }
 
-/** Ordered replay proof for a clean V7 build. Completed-frame entries advance
+/**
+ * Historical checkpoint rebuilt under PathProjector V3. It is audit-only
+ * after the global event-frame correction; no state is promoted from it.
+ */
+export interface KairosCheckpointV8 {
+  readonly version: "KairosCheckpointV8";
+  readonly timeDomain: "active-cognitive-seconds";
+  readonly mediumTimeContract: MediumTimeContractV1;
+  readonly experiencedTime: ExperiencedCognitiveTimeV1;
+  readonly physicalRuntimeInvariants: KairosPhysicalRuntimeInvariantsV1;
+  readonly randomSeedHex: string;
+  readonly trainingCursor: KairosCheckpointV2["trainingCursor"];
+  readonly representation: Omit<KairosCheckpointV6["representation"], "projector"> & {
+    readonly projector: PathProjectorStateV3;
+  };
+  readonly store: ExperienceStoreCheckpointV3;
+  readonly experienceMap: ExperienceMapStateV2;
+  readonly openCausalFactorGraph: CausalFactorGraphStateV3;
+  readonly audit: LeakageAudit;
+  readonly rejections: FirewallRejections;
+}
+
+/** Writable checkpoint rebuilt from trusted raw events under the global
+ * event measurement frame and current physical-basin result identity. */
+export interface KairosCheckpointV9 {
+  readonly version: "KairosCheckpointV9";
+  readonly timeDomain: "active-cognitive-seconds";
+  readonly mediumTimeContract: MediumTimeContractV1;
+  readonly experiencedTime: ExperiencedCognitiveTimeV1;
+  readonly physicalRuntimeInvariants: KairosPhysicalRuntimeInvariantsV1;
+  readonly randomSeedHex: string;
+  readonly trainingCursor: KairosCheckpointV2["trainingCursor"];
+  readonly representation: Omit<KairosCheckpointV6["representation"], "projector"> & {
+    readonly projector: PathProjectorStateV4;
+  };
+  readonly store: ExperienceStoreCheckpointV3;
+  readonly experienceMap: ExperienceMapStateV2;
+  readonly openCausalFactorGraph: CausalFactorGraphStateV3;
+  readonly audit: LeakageAudit;
+  readonly rejections: FirewallRejections;
+}
+
+/** Ordered replay proof for a clean writable build. Completed-frame entries advance
  * every physical clock; experience entries deposit at that exact current
  * cognitive time. */
 export type TrustedCognitiveReplayEntryV1 = Readonly<

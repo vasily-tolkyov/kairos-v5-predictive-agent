@@ -1,43 +1,91 @@
-# Kairos V5 · predictive agent development
+# Kairos V5 Joint Physical-Control Agent V2
 
-This isolated version is **not** an old Formal V3 run, Candidate, or claim of open-world general intelligence.
+This V5 line has no language-model or Pi analysis core. Its durable physical
+experience system remains R1/R2/R2A, while R3 remains a transient condition
+query. Current-goal reasoning is performed by one fast-decaying joint field
+whose competitors are complete `operation × branch` sites.
 
-> 私有研究快照（2026-08-29）：这里保存Kairos V5的源码、测试、架构说明和精简审计报告。当前已经建立感知、动作、事件记忆、物理经验核心、注意力与分析工具循环的工程骨架；128条真实事件冷启动尚未完成，因此R1/R2/R2A尚未在V5中形成可用于成熟预测的生产地图。详见[中文架构说明](docs/ARCHITECTURE_ZH.md)和[当前状态](docs/CURRENT_STATUS.md)。
+## Runtime
 
-```powershell
-npm ci
-npm run build
-# Start a new, empty, disposable run; only autonomous initialization, no door goals:
-npm start -- --bootstrap-only --evidence-dir D:\Kairos_V5_Predictive_Agent\evidence\my-new-bootstrap
-# A later, explicitly selected compatible experience source (never resumes actions):
-npm start -- --experience-pointer D:\Kairos_V5_Predictive_Agent\evidence\my-new-bootstrap\EXPERIENCE_LATEST.json --evidence-dir D:\Kairos_V5_Predictive_Agent\evidence\my-new-run
+```text
+public Minecraft observation
+        ↓
+grounded observable goal → goal difference + persistent dependency graph
+        ↓
+R1/R2/R2A effect recall ↔ condition comparison ↔ PredictionClone rollout
+        ↓
+one global operation-by-branch competition
+        ↓
+one current body action → complete real observation window → physical learning
+        ↑
+prediction violation / unknown change interrupts the transient branch competition
 ```
 
-`kairos.config.json` records the machine-specific development configuration: the designated `deepseek-v4-pro` backend at `https://api.deepseek.com/beta`, Pi 0.84.2, 65536 context, 24000 input-token limit and 32768 output-token limit, native thinking, no retries. Local Java, Minecraft, Python, tokenizer and credential-source paths must be configured on another machine before a live run. No credential, model weight, Minecraft world or runtime state is included in this repository. The configured model name is not a claim about independently verified remote weights or API pricing.
+The joint field has no Minecraft rule names. It simultaneously binds opaque
+physical evidence, condition state, rollout progress, uncertainty, attention,
+novelty and narrow nonsemantic control habits. It acts only after one complete
+site persists above both threshold and margin. No convergence means `unknown`;
+there is no argmax or staged-order fallback.
 
-Installed Java 21 and Minecraft 1.21.4 files are read only. Each start creates a **new** disposable V5 server directory. Memory is empty by default; only an explicit absolute `--experience-pointer` loads a compatible `V5PublicRelativeLayoutV1` snapshot through the existing worker restore. There is no source scan, automatic legacy migration or empty-memory fallback on failure. Sources remain read-only; all new evidence must be outside the source directory. Old actions, workspace, short aliases and attention windows never resume. The experienced clock starts at the saved activeSeconds plus actual new physics ticks; offline wall time adds no age. The server binds `127.0.0.1:25567`. All writable run outputs are under `runtime/` and a new `evidence/` directory on D:.
+`ControlWorkspaceV2` keeps a live dependency graph rather than a parent/child
+task stack. A changed observation invalidates stale conditions and predictions;
+the surviving graph then re-enters the same competition. The runtime only
+passes events, dispatches the winning port operation, and returns its result.
 
-First-person viewer: http://127.0.0.1:3000/ . Read-only goal/attention/physical-media dashboard: http://127.0.0.1:3002/ . Neither viewer is a runtime gate. Close the window freely. Ctrl+C stops the run and cleans up only its own processes. No action is resumed or replayed after a crash.
+## Current validation status
 
-## Ownership
+Publication snapshot: 2026-08-30.
 
-- `src/core`: byte-preserved physical medium, exponential recovery, stochastic clone, R2/R2A implementation extracted from V4. No old learned parameters or experiences.
-- `src/events.ts`, `distance-embedding.ts`, `memory.ts`: concrete public event features, one new distance-fitted three-dimensional R1 map, active physical history recall and local random-visit readout. World coordinates are not R1 coordinates.
-- `src/analysis.ts`: the ordinary Pi tool loop: `observe`, `recall`, `predict`, `execute_chain`, `set_intent`, `read_context`, and `finish`. Modes/tasks are model-selected. No code execution, world administration, or model writer exposed to the language model. No fixed subgoal or action-selection policy.
-- `src/body.ts`: visible ray-filtered public input and basic actions. Only the currently observed target can be operated. A real no-effect window is an experience; an unexecuted instruction or exception is not.
-- `src/attention`: original scoring controller with full real observation windows, current-focus physical forecasts and real interruption/wake delivery.
-- `src/runtime.ts`: thin sequencing and observation learning. One compute Worker owns physical state. It is not another agent.
+- Clean TypeScript build: passed.
+- Complete source test run: **127/127 passed**, 0 skipped.
+- Opaque two-step dependency tasks: **32/32** completed the required
+  `alpha -> beta -> verification-observe` chain under cue, candidate and offer-order permutations.
+- Opaque three-step dependency tasks: **64/64** completed
+  `gamma -> alpha -> beta -> verification-observe` while retaining the live dependency graph.
+- One frozen Minecraft heldout batch: **4/4 goal-verified** on unseen layouts using the same
+  128-event physical baseline and empty control-habit state per case. The observed action chains were
+  `look -> interact -> observe`, direct `interact -> observe`, and an attention-interrupted reorientation chain.
+- Invalid interactions, stale executions and script-generated subgoals in that batch: **0**.
 
-The first 128 complete **new real events** are buffered and fit the representation once, then deposited once in experienced-time order. Active attempts are model-selected; passive captured observations are counted separately. Cold-start absence of prediction is normal. Snapshots every 32 new events and normal goal completion preserve experience, not an action chain. A program error keeps the last successful save; unsaved increments may be lost and a partly failed initialization is never published as a successful map. A new unsupported feature or representational collision is exposed, never repaired with a historical answer or world-coordinate shortcut. `recall` is explicitly historical; `predict` never returns a historical path as its answer.
+The Minecraft result demonstrates control over already learned physical affordances; it does not yet
+demonstrate autonomous discovery of arbitrary new interactions, unrestricted open-world continual learning,
+or human-level general reasoning. New public R2A feature ordinals outside the frozen representation still
+require a new representation identity and clean rebuild.
 
-`--bootstrap-only` uses the same exploration goal and Pi loop but does not proceed to door/changed-condition goals. Without this flag, the existing later goals remain available; a ready restored memory is not initialized again. `--short` is a separate bounded development entry and cannot be combined with `--bootstrap-only`. Source context IDs use only visible local block layout/type/state and quarter-block relative positions. They exclude absolute regions, time, session and body dynamics; differing visible views are not proof of independent rooms or mechanisms.
+## Boundaries
 
-The static demo fixture is a real button → copper bulb latch → comparator → wire → iron-door circuit with a low obstacle. This setup is not exposed as a rule or action sequence to the model. Fixture code does not respond to bot actions. Ordinary world failure is returned to the model; model/protocol/program/service errors terminate with the original error, no retries or fallback policy.
+- Minecraft coordinates are public world facts and never become R1 coordinates.
+- A grounded goal can mention only a currently public subject and public observable.
+- Historical success is not current support.  R1, R2, and production-eligible R2A evidence must all still survive.
+- An exact action cue represented by physical evidence has no duplicate
+  exploration site that could bypass its condition or rollout gates.
+- Hypothetical states contain only changes actually read from random Clone trajectories; everything else stays unknown.
+- Only complete real body or passive-observation events write experience.
+- Control fields, attention, queries, predictions, and the dashboard are read-only with respect to physical memory.
+- Checkpoints written by the retired language-model runtime are rejected by the new runtime.
+- `ControlHabitWeightsV1` stores only operation-pair and graph-relation weights.
+  It cannot store Minecraft types, object IDs, action kinds, goals, coordinates
+  or result labels, and it cannot make a hard-ineligible site executable.
 
-Unit fixtures are synthetic, temporary and never copied into production memory. Production explanatory knowledge is empty. Raw evidence omits model chain-of-thought and full prompt history.
+## Commands
 
-## Current evidence boundary (2026-08-29)
+```powershell
+npm install --ignore-scripts
+npm run build
+npm test
+npm start -- --bootstrap-only
+```
 
-The production path has executed real Minecraft actions and preserved successful experience snapshots through 64 events. Later unsaved increments and failed attempts are retained only in the original local evidence, not in this repository. The required 128-event representation fit has not completed, so V5 still has zero production physical deposits and no fitted R1 map or naturally established R2A graph. The latest bounded local Qwen3-8B trial completed one question and failed a second tool-semantics task; it is not a full model qualification. Compact source reports are under `evidence-reports/`.
+An explicit continuation must use a `KairosV5PhysicalControlRuntimeV1` `EXPERIENCE_LATEST.json` pointer:
 
-Obstacle/button/door completion, changed-condition behavior, naturally applicable R2A and prediction-supported attention remain unverified goals. A local `STOP` file at the path printed by `V5_READY` requests cleanup; it is not exposed to the model. An interrupted console/job can lose the final summary; raw logs remain on the originating development machine.
+```powershell
+npm start -- --experience-pointer D:\path\to\EXPERIENCE_LATEST.json
+```
+
+The default run creates a new isolated Minecraft world and empty physical
+memory. It first explores until 128 complete real events have formed the
+one-time event map. The V2 heldout evaluator is separate: it restores a frozen
+128-event physical snapshot into independent case workers and starts every case
+with zero habit weights. It never retrains the frozen baseline.
+
+The first-person viewer is `http://127.0.0.1:3000/` and the read-only physical/control dashboard is `http://127.0.0.1:3002/` while a run is active.

@@ -6,10 +6,8 @@ import type {
   QueryContribution,
   QueryResult,
   R1TraceReference,
-  Vec3,
 } from "../contracts.js";
 import { PhysicalMedium3D } from "../physics/physical-medium.js";
-import { distanceSquared3 } from "../vector.js";
 import type { R3CausalEvaluation } from "./causal-contrast.js";
 import { R3CausalQuery, type CausalCandidateScore } from "./r3-causal-query.js";
 
@@ -34,24 +32,7 @@ function traceKey(trace: R1TraceReference): string {
 }
 
 function basinKey(basin: BasinActivation): string {
-  return `${basin.pageId}\u0000${[...basin.coordinate].map((value) => value.toPrecision(15)).join("\u0000")}`;
-}
-
-function nearestLocalBasin(
-  coordinate: Vec3,
-  basins: readonly BasinActivation[],
-  radius: number,
-): BasinActivation | null {
-  let best: BasinActivation | null = null;
-  let bestDistance = Number.POSITIVE_INFINITY;
-  for (const basin of basins) {
-    const distance = distanceSquared3(coordinate, basin.coordinate);
-    if (distance < bestDistance) {
-      bestDistance = distance;
-      best = basin;
-    }
-  }
-  return best !== null && bestDistance <= radius * radius ? best : null;
+  return `${basin.pageId}\u0000${[...basin.memberVisitIds].sort().join("\u0000")}`;
 }
 
 function clamp01(value: number): number {
@@ -109,15 +90,18 @@ export class ActionConditionedRuleQuery {
       };
     }
 
-    const radius = r2.config.kernelWidth * r2.config.basinRadiusScale;
     const candidates: Candidate[] = [];
     for (const trace of coactivations) {
       const eligible = eligibleByTrace.get(traceKey(trace.r1Trace));
       if (eligible === undefined || eligible.experienceAnchorId !== trace.experienceAnchorId) continue;
       if (!isR1TraceActive(trace.r1Trace) || trace.currentStrength <= 0) continue;
-      const basins = r2.sampleBasins(r2PageId, trace.r2Coordinate);
-      const basin = nearestLocalBasin(trace.r2Coordinate, basins, radius);
-      if (basin === null || basin.queryContribution <= 0 || basin.decayFraction <= 0) continue;
+      // A real R2 visit is already the opaque identity deposited into the
+      // medium. Resolve its current connected basin exactly. Nearest-centroid
+      // matching can silently choose another basin when a chained component's
+      // centroid lies farther than one radius from an endpoint.
+      const basin = r2.basinContainingVisit(r2PageId, trace.coactivationId);
+      if (basin === null || !basin.memberVisitIds.includes(trace.coactivationId)
+        || basin.queryContribution <= 0 || basin.decayFraction <= 0) continue;
       const r2Activation = basin.queryContribution * Math.log1p(basin.support);
       const causal = causalEnabled
         ? this.#r3.score(trace.r2Coordinate, causalEvaluation, trace.experienceAnchorId)

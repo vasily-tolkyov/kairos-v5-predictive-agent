@@ -1,5 +1,6 @@
 import { FORMAL_EVALUATION, R1_CONFIG, R2_CONFIG } from "../config.js";
 import type {
+  ActiveR2BasinMembershipV1,
   CoactivationTrace,
   ExperienceStoreCheckpointV3,
   ObservationReceipt,
@@ -82,6 +83,11 @@ class CoactivationStore {
 
   get sequence(): number {
     return this.#sequence;
+  }
+
+  byId(coactivationId: string): CoactivationTrace | null {
+    const trace = this.#traces.find((candidate) => candidate.coactivationId === coactivationId);
+    return trace === undefined ? null : this.#copy(trace);
   }
 
   #copy(trace: MutableCoactivation): CoactivationTrace {
@@ -227,6 +233,27 @@ export class ExperienceMediaStore {
 
   coactivations(): readonly CoactivationTrace[] {
     return this.#coactivations.snapshot();
+  }
+
+  /**
+   * Read the current R2 physical basin containing one real visit.  The
+   * returned member list is derived from active visit kernels on every call;
+   * it is not a cached result class and cannot write to either medium.
+   */
+  resolveActiveR2Basin(r2VisitId: string): ActiveR2BasinMembershipV1 | null {
+    if (r2VisitId.length === 0) throw new RangeError("R2 visit id must be non-empty");
+    const visit = this.#coactivations.byId(r2VisitId);
+    if (visit === null) return null;
+    const basin = this.r2.basinContainingVisit(this.r2PageId, r2VisitId);
+    if (basin === null || !basin.memberVisitIds.includes(r2VisitId)) return null;
+    const memberVisitIds = basin.memberVisitIds.filter((memberId) => this.#coactivations.byId(memberId) !== null);
+    if (memberVisitIds.length !== basin.memberVisitIds.length) return null;
+    return {
+      version: "ActiveR2BasinMembershipV1",
+      pageId: basin.pageId,
+      coordinate: [...basin.coordinate],
+      memberVisitIds: [...memberVisitIds].sort(),
+    };
   }
 
   exportCheckpointState(): ExperienceStoreCheckpointV3 {

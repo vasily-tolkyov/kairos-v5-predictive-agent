@@ -1,15 +1,18 @@
 import { R2A_CONFIG } from "../config.js";
 import type {
+  ActiveR2BasinMembershipV1,
   CausalFactorGraphStateV2,
+  CausalFactorGraphStateV3,
   CausalFactorNodeV2,
-  CausalHyperedgeV2,
+  CausalHyperedgeV3,
   CommonFieldToken,
   ControlledExperimentPairSummaryV2,
   FactorMotifV1,
   FrozenFactorCandidatePoolStateV2,
-  OpenFactorEventSummaryV2,
+  OpenFactorEventSummaryV3,
   PhysicalBasinReferenceV1,
   ProvisionalFactorCandidateV2,
+  R2BasinMembershipResolverV1,
   R3FactorMatch,
   ResidualFieldState,
   SparseTokenConditionV1,
@@ -18,7 +21,7 @@ import type {
 import { PhysicalMedium3D } from "../physics/physical-medium.js";
 import { potentialFromSnapshot } from "../physics/potential-page.js";
 import { fnv1a64 } from "../serialization.js";
-import { clone3, distanceSquared3, vec3 } from "../vector.js";
+import { clone3, vec3 } from "../vector.js";
 import type { R3CausalEvaluation } from "./causal-contrast.js";
 import {
   DeterministicTokenFieldEncoder,
@@ -31,7 +34,6 @@ const MIN_COHORT = 8;
 const FACTOR_SIMILARITY_MIN = 0.50;
 const PASSIVE_INPUT_SIMILARITY_MIN = 0.25;
 const QUERY_FACTOR_SIMILARITY_MIN = 0.20;
-const OUTCOME_RADIUS = 0.40;
 const STABLE_EVENT_MIN = 8;
 const STABLE_SCENE_MIN = 4;
 const STABLE_CONSISTENCY_MIN = 0.80;
@@ -80,6 +82,7 @@ export interface ControlledFactorEvidenceV1 {
   readonly pairId: string;
   readonly factorIds: readonly string[];
   readonly interventionKey: string;
+  readonly targetR2VisitId: string;
   readonly targetR2Coordinate: Vec3;
   readonly sourceContextId: string;
   readonly supported: boolean;
@@ -89,6 +92,15 @@ export interface ControlledFactorEvidenceV1 {
   readonly changedFactorId: string;
   readonly observedChangedFactorIds: readonly string[];
   readonly selectionDrop: number;
+}
+
+export interface R2AActivationAuditV1 {
+  readonly factorId: string;
+  readonly state: CausalFactorNodeV2["state"];
+  readonly fullSimilarity: number;
+  readonly sparseSimilarity: number;
+  readonly contextMatch: number;
+  readonly physicalSupport: number;
 }
 
 interface MutableNode {
@@ -111,6 +123,7 @@ interface MutableEdge {
   hyperedgeId: string;
   factorIds: string[];
   interventionKey: string;
+  targetR2VisitId: string;
   targetR2Basin: PhysicalBasinReferenceV1;
   supportStrength: number;
   contradictionStrength: number;
@@ -120,7 +133,7 @@ interface MutableEdge {
   sourceContextIds: string[];
   retainedValidationContextIds: string[];
   retainedValidationFailureCount: number;
-  state: CausalHyperedgeV2["state"];
+  state: CausalHyperedgeV3["state"];
 }
 
 function productionEligibleEdge(edge: Pick<MutableEdge, "factorIds" | "state">): boolean {
@@ -151,29 +164,14 @@ function canonicalFactors(factorIds: readonly string[]): string[] {
   return [...new Set(factorIds)].sort();
 }
 
-function coordinateKey(coordinate: readonly number[]): string {
-  return coordinate.map((value) => value.toPrecision(12)).join("/");
-}
-
-function r2OutcomeModeKey(event: OpenFactorEventSummaryV2): string {
-  return `${event.targetR2Basin.pageId}\u0000${coordinateKey(event.targetR2Basin.coordinate)}`;
-}
-
-function samePhysicalOutcome(left: OpenFactorEventSummaryV2, right: OpenFactorEventSummaryV2): boolean {
-  return left.targetR2Basin.pageId === right.targetR2Basin.pageId
-    && left.r1Trace.pageId === right.r1Trace.pageId
-    && outcomeDistance(left.targetR2Basin.coordinate, right.targetR2Basin.coordinate) <= OUTCOME_RADIUS ** 2;
-}
-
-function dominantPhysicalOutcomeFraction(events: readonly OpenFactorEventSummaryV2[]): number {
-  if (events.length === 0) return 0;
-  const modes: { representative: OpenFactorEventSummaryV2; count: number }[] = [];
-  for (const event of events) {
-    const mode = modes.find((candidate) => samePhysicalOutcome(candidate.representative, event));
-    if (mode === undefined) modes.push({ representative: event, count: 1 });
-    else mode.count += 1;
-  }
-  return Math.max(...modes.map((mode) => mode.count)) / events.length;
+function activeBasinKey(membership: ActiveR2BasinMembershipV1): string | null {
+  if (membership.version !== "ActiveR2BasinMembershipV1"
+    || membership.pageId.length === 0
+    || membership.memberVisitIds.length === 0
+    || membership.memberVisitIds.some((visitId) => visitId.length === 0)) return null;
+  const members = [...membership.memberVisitIds].sort();
+  if (new Set(members).size !== members.length) return null;
+  return `${membership.pageId}\u0000${members.join("\u0000")}`;
 }
 
 function cloneCommon(tokens: readonly CommonFieldToken[]): CommonFieldToken[] {
@@ -260,10 +258,6 @@ function strongestCoordinate(field: EncodedTokenField, residual: ResidualFieldSt
   return clone3(field.tokens[best]!.coordinate);
 }
 
-function outcomeDistance(left: ArrayLike<number>, right: ArrayLike<number>): number {
-  return distanceSquared3(new Float64Array(left), new Float64Array(right));
-}
-
 function deterministicBytes(value: unknown): number {
   return Buffer.byteLength(JSON.stringify(value));
 }
@@ -294,13 +288,14 @@ function tokenFieldPhysicalLogOverlap(
  */
 export class OpenCausalFactorR2A {
   readonly #encoder: DeterministicTokenFieldEncoder;
+  readonly #r2Basins: R2BasinMembershipResolverV1;
   readonly #workspace = new PhysicalCommonalityWorkspace();
   #medium: PhysicalMedium3D;
   readonly #nodes = new Map<string, MutableNode>();
   readonly #edges = new Map<string, MutableEdge>();
   readonly #provisional = new Map<string, ProvisionalFactorCandidateV2>();
   readonly #pending = new Map<string, FrozenFactorCandidatePoolV1>();
-  readonly #events: OpenFactorEventSummaryV2[] = [];
+  readonly #events: OpenFactorEventSummaryV3[] = [];
   readonly #motifs = new Map<string, FactorMotifV1>();
   readonly #testedSubsets = new Set<string>();
   readonly #controlledPairs = new Map<string, ControlledExperimentPairSummaryV2>();
@@ -311,15 +306,25 @@ export class OpenCausalFactorR2A {
   #logicalTime = 0;
   #evidenceContextIdentityVersion: "CausalEvidenceContextIdV1" | "CausalEvidenceContextIdV2" = "CausalEvidenceContextIdV1";
 
-  constructor(encoder: DeterministicTokenFieldEncoder, state?: CausalFactorGraphStateV2) {
+  constructor(
+    encoder: DeterministicTokenFieldEncoder,
+    r2Basins: R2BasinMembershipResolverV1,
+    state?: CausalFactorGraphStateV2 | CausalFactorGraphStateV3,
+  ) {
     this.#encoder = encoder;
+    this.#r2Basins = r2Basins;
+    if (state?.version === "CausalFactorGraphStateV2") {
+      throw new Error("CausalFactorGraphStateV2 is audit-only; rebuild writable R2A from trusted raw events");
+    }
     this.#medium = state === undefined ? new PhysicalMedium3D(R2A_CONFIG) : PhysicalMedium3D.fromSnapshot(state.r2aMedium);
     if (state === undefined) return;
-    if (state.version !== "CausalFactorGraphStateV2"
+    if (state.version !== "CausalFactorGraphStateV3"
+      || state.outcomeIdentityVersion !== "ActiveR2BasinMembershipV1"
       || (state.evidenceContextIdentityVersion !== "CausalEvidenceContextIdV1"
         && state.evidenceContextIdentityVersion !== "CausalEvidenceContextIdV2")
-      || state.legacySceneFingerprintsMigrated !== false) {
-      throw new Error("open-factor production loader rejects legacy scene fingerprints; rebuild from trusted raw events");
+      || state.legacySceneFingerprintsMigrated !== false
+      || state.legacyOutcomeModesMigrated !== false) {
+      throw new Error("open-factor production loader rejects legacy outcome identity; rebuild from trusted raw events");
     }
     this.#evidenceContextIdentityVersion = state.evidenceContextIdentityVersion;
     this.#factorSequence = state.factorSequence;
@@ -337,12 +342,88 @@ export class OpenCausalFactorR2A {
     }
     for (const item of state.provisionalCandidates) this.#provisional.set(item.candidateId, structuredClone(item));
     for (const item of state.pendingCandidatePools) this.#pending.set(item.ticketId, { version: "FrozenFactorCandidatePoolV1", ...structuredClone(item) });
-    for (const item of state.eventSummaries) this.#events.push(structuredClone(item));
+    for (const item of state.eventSummaries) {
+      if (typeof item.r2VisitId !== "string" || item.r2VisitId.length === 0 || "r1Trace" in item) {
+        throw new Error("R2A event is missing its V3 real R2 visit identity");
+      }
+      this.#events.push(structuredClone(item));
+    }
+    const eventIds = new Set(this.#events.map((event) => (
+      `event-${event.eventNumber.toString().padStart(6, "0")}`
+    )));
+    for (const edge of this.#edges.values()) {
+      if (typeof edge.targetR2VisitId !== "string" || edge.targetR2VisitId.length === 0
+        || edge.sourceEventIds.length === 0
+        || edge.sourceEventIds.some((eventId) => !eventIds.has(eventId))) {
+        throw new Error("R2A edge lacks complete trusted-event R2 visit provenance");
+      }
+    }
     for (const motif of state.motifs) this.#motifs.set(motif.motifId, structuredClone(motif));
     for (const subset of state.testedSubsets) this.#testedSubsets.add(subset);
     for (const pair of state.controlledExperimentPairs) this.#controlledPairs.set(pair.pairId, structuredClone(pair));
     this.#refreshNodeStates();
     this.#refreshEdgeStates();
+  }
+
+  #activeOutcome(r2VisitId: string): { readonly membership: ActiveR2BasinMembershipV1; readonly key: string } | null {
+    const membership = this.#r2Basins.resolveActiveR2Basin(r2VisitId);
+    if (membership === null || !membership.memberVisitIds.includes(r2VisitId)
+      || membership.coordinate.length !== 3
+      || membership.coordinate.some((value) => !Number.isFinite(value))) return null;
+    const key = activeBasinKey(membership);
+    return key === null ? null : {
+      membership: {
+        version: "ActiveR2BasinMembershipV1",
+        pageId: membership.pageId,
+        coordinate: [...membership.coordinate],
+        memberVisitIds: [...membership.memberVisitIds].sort(),
+      },
+      key,
+    };
+  }
+
+  #samePhysicalOutcome(leftVisitId: string, rightVisitId: string): boolean {
+    const left = this.#activeOutcome(leftVisitId);
+    const right = this.#activeOutcome(rightVisitId);
+    return left !== null && right !== null && left.key === right.key;
+  }
+
+  #edgeOutcome(edge: MutableEdge): { readonly membership: ActiveR2BasinMembershipV1; readonly key: string } | null {
+    if (edge.sourceEventIds.length === 0) return null;
+    const eventById = new Map(this.#events.map((event) => [
+      `event-${event.eventNumber.toString().padStart(6, "0")}`,
+      event,
+    ]));
+    let resolved: { readonly membership: ActiveR2BasinMembershipV1; readonly key: string } | null = null;
+    for (const sourceEventId of edge.sourceEventIds) {
+      const event = eventById.get(sourceEventId);
+      // Production provenance must be a normal trusted event. Controlled-pair
+      // summaries cannot manufacture a result edge by supplying a coordinate
+      // or an otherwise unowned visit identity.
+      if (event === undefined) return null;
+      const outcome = this.#activeOutcome(event.r2VisitId);
+      // A recovered individual visit does not erase repeated surviving
+      // evidence from the same basin. But no surviving visit, or surviving
+      // sources split across more than one current basin, is fail-closed.
+      if (outcome === null) continue;
+      if (resolved !== null && outcome.key !== resolved.key) return null;
+      resolved = outcome;
+    }
+    return resolved;
+  }
+
+  #dominantPhysicalOutcomeFraction(events: readonly OpenFactorEventSummaryV3[]): number {
+    if (events.length === 0) return 0;
+    const counts = new Map<string, number>();
+    for (const event of events) {
+      const outcome = this.#activeOutcome(event.r2VisitId);
+      // An inactive or internally inconsistent resolver result makes the
+      // whole evidence set unsuitable for production rather than silently
+      // falling back to coordinates or an R1 storage page.
+      if (outcome === null) return 0;
+      counts.set(outcome.key, (counts.get(outcome.key) ?? 0) + 1);
+    }
+    return Math.max(...counts.values()) / events.length;
   }
 
   freezeCandidatePool(observation: PreOutcomeFactorObservationV1): FrozenFactorCandidatePoolV1 {
@@ -428,9 +509,13 @@ export class OpenCausalFactorR2A {
     // edges may canonicalize nearby coordinates for physical lookup, but that
     // relation-local operation must never rewrite the outcome used to measure
     // whether a pre-event residual actually improves R2 selection.
-    const target: PhysicalBasinReferenceV1 = {
+    const activeOutcome = this.#activeOutcome(outcome.r2VisitId);
+    const target: PhysicalBasinReferenceV1 = activeOutcome === null ? {
       pageId: outcome.r2PageId,
       coordinate: [...outcome.r2Coordinate],
+    } : {
+      pageId: activeOutcome.membership.pageId,
+      coordinate: [...activeOutcome.membership.coordinate],
     };
     const eventId = `event-${ticket.eventNumber.toString().padStart(6, "0")}`;
     this.#events.push({
@@ -442,12 +527,13 @@ export class OpenCausalFactorR2A {
       publicR1Signature: ticket.publicR1Signature,
       encodedValues: [...ticket.encodedValues],
       assignedFactorIds: assigned,
+      r2VisitId: outcome.r2VisitId,
       targetR2Basin: cloneBasin(target),
-      r1Trace: { ...outcome.r1Trace },
     });
-    if (assigned.length > 0) {
-      const edge = this.#upsertEdge(assigned, ticket.interventionKey, target, eventId, ticket.sourceContextId, true);
-      this.#refreshEvidence(assigned, ticket.interventionKey, edge.hyperedgeId);
+    if (assigned.length > 0 && activeOutcome !== null) {
+      const edge = this.#upsertEdge(assigned, ticket.interventionKey, outcome.r2VisitId,
+        eventId, ticket.sourceContextId, true);
+      if (edge !== null) this.#refreshEvidence(assigned, ticket.interventionKey, edge.hyperedgeId);
     }
     this.#discoverPredictiveFactors(ticket.interventionKey);
     this.#refreshNodeStates();
@@ -501,6 +587,7 @@ export class OpenCausalFactorR2A {
     for (const interventionKey of [...interventions].sort()) {
       const applicable = [...this.#edges.values()].filter((edge) => edge.interventionKey === interventionKey
         && productionEligibleEdge(edge)
+        && this.#edgeOutcome(edge) !== null
         && edge.factorIds.length > 0 && edge.factorIds.every((factorId) => active.has(factorId)));
       if (applicable.length === 0) continue;
       const edgeApplicability = (edge: MutableEdge): number => Math.min(
@@ -530,23 +617,28 @@ export class OpenCausalFactorR2A {
       });
       relationIds.push(relationId);
       const allOutcomes = [...this.#edges.values()].filter((edge) => edge.interventionKey === interventionKey
-        && productionEligibleEdge(edge));
-      const selectedByCoordinate = new Map(selected.map((edge) => [coordinateKey(edge.targetR2Basin.coordinate), edge]));
+        && productionEligibleEdge(edge) && this.#edgeOutcome(edge) !== null);
+      const selectedByOutcome = new Map(selected.flatMap((edge) => {
+        const outcome = this.#edgeOutcome(edge);
+        return outcome === null ? [] : [[outcome.key, edge] as const];
+      }));
       const uniqueOutcomes = new Map<string, MutableEdge>();
       for (const edge of allOutcomes) {
-        const key = coordinateKey(edge.targetR2Basin.coordinate);
-        const current = uniqueOutcomes.get(key);
-        if (current === undefined || edge.supportStrength > current.supportStrength) uniqueOutcomes.set(key, edge);
+        const outcome = this.#edgeOutcome(edge);
+        if (outcome === null) continue;
+        const current = uniqueOutcomes.get(outcome.key);
+        if (current === undefined || edge.supportStrength > current.supportStrength) uniqueOutcomes.set(outcome.key, edge);
       }
       for (const [outcomeKey, edge] of uniqueOutcomes) {
-        const selectedEdge = selectedByCoordinate.get(outcomeKey);
+        const selectedEdge = selectedByOutcome.get(outcomeKey);
         const signed = selectedEdge === undefined
           ? -relationApplicability
           : relationApplicability * Math.log((selectedEdge.supportStrength + 0.5)
             / (selectedEdge.contradictionStrength + 0.5));
         const key = `${matchId}\u0000${edge.hyperedgeId}`;
         scoreByOutcomeMode.set(key, signed);
-        outcomeCoordinates.set(key, new Float64Array(edge.targetR2Basin.coordinate));
+        const outcome = this.#edgeOutcome(edge);
+        if (outcome !== null) outcomeCoordinates.set(key, new Float64Array(outcome.membership.coordinate));
       }
       const eligibleEvents = this.#events.filter((event) => event.interventionKey === interventionKey
         && (eligibleAnchorIds === undefined || eligibleAnchorIds.has(event.anchorId)));
@@ -627,7 +719,7 @@ export class OpenCausalFactorR2A {
   get logicalTime(): number { return this.#logicalTime; }
   get physicalMediumLogicalTime(): number { return this.#medium.logicalTime; }
 
-  explorationHypothesesForAudit(): readonly CausalHyperedgeV2[] {
+  explorationHypothesesForAudit(): readonly CausalHyperedgeV3[] {
     return Object.freeze([...this.#edges.values()]
       .filter((edge) => edge.state === "provisional" || edge.state === "unresolved-composite")
       .map((edge) => this.#cloneEdge(edge))
@@ -653,15 +745,18 @@ export class OpenCausalFactorR2A {
     }
     const previous = this.#controlledPairs.get(evidence.pairId);
     if (previous !== undefined) return previous.hyperedgeId;
-    const target = this.#targetBasin("R2-page-controlled", evidence.targetR2Coordinate, factors, evidence.interventionKey);
-    const edge = this.#upsertEdge(
-      factors,
-      evidence.interventionKey,
-      target,
-      `controlled-${evidence.pairId}`,
-      evidence.sourceContextId,
-      evidence.supported,
-    );
+    const target = this.#activeOutcome(evidence.targetR2VisitId);
+    if (target === null) throw new Error("controlled evidence target has no unambiguous active R2 basin");
+    const matching = [...this.#edges.values()].filter((candidate) => {
+      const outcome = this.#edgeOutcome(candidate);
+      return candidate.interventionKey === evidence.interventionKey
+        && JSON.stringify(candidate.factorIds) === JSON.stringify(factors)
+        && outcome !== null && outcome.key === target.key;
+    });
+    if (matching.length !== 1) {
+      throw new Error("controlled evidence must strengthen one existing event-grounded R2 relation");
+    }
+    const edge = matching[0]!;
     edge.controlledExperimentCoverage += 1;
     this.#controlledPairs.set(evidence.pairId, {
       pairId: evidence.pairId,
@@ -674,7 +769,7 @@ export class OpenCausalFactorR2A {
     });
     for (const factorId of factors) {
       const qualified = [...this.#controlledPairs.values()].filter((pair) => pair.hyperedgeId === edge.hyperedgeId
-        && pair.changedFactorId === factorId && pair.selectionDrop >= 0.25).length;
+        && pair.changedFactorId === factorId && pair.supported && pair.selectionDrop >= 0.25).length;
       if (qualified >= 4) this.#testedSubsets.add(`${edge.hyperedgeId}\u0000${factorId}`);
     }
     const selectionRate = edge.supportStrength
@@ -742,50 +837,59 @@ export class OpenCausalFactorR2A {
       .sort((left, right) => left.hyperedgeId.localeCompare(right.hyperedgeId));
   }
 
-  relationsForAudit(): readonly CausalHyperedgeV2[] {
+  relationsForAudit(): readonly CausalHyperedgeV3[] {
     return this.exportState().hyperedges;
   }
 
-  productionRelationsForAudit(): readonly CausalHyperedgeV2[] {
+  productionRelationsForAudit(): readonly CausalHyperedgeV3[] {
     return Object.freeze([...this.#edges.values()]
-      .filter((edge) => productionEligibleEdge(edge))
+      .filter((edge) => productionEligibleEdge(edge) && this.#edgeOutcome(edge) !== null)
       .map((edge) => this.#cloneEdge(edge))
       .sort((left, right) => left.hyperedgeId.localeCompare(right.hyperedgeId)));
   }
 
-  activationAudit(perception: Float64Array): readonly {
-    readonly factorId: string;
-    readonly state: CausalFactorNodeV2["state"];
-    readonly fullSimilarity: number;
-    readonly sparseSimilarity: number;
-    readonly contextMatch: number;
-    readonly physicalSupport: number;
-  }[] {
-    const field = this.#encoder.encode("activation-audit", perception);
-    return [...this.#nodes.values()].map((node) => {
-      const analysis = this.#workspace.residualAgainst(field, node.commonInput);
+  activationAudit(perception: Float64Array): readonly R2AActivationAuditV1[] {
+    return this.activationAudits([perception])[0]!;
+  }
+
+  /** Evaluate several public perceptions against one immutable instant of the
+   * physical factor graph.  Basin survival belongs to the factor node, not to
+   * an individual perception, so it is sampled once per node and reused
+   * without changing any similarity or physical-support equation. */
+  activationAudits(perceptions: readonly Float64Array[]): readonly (readonly R2AActivationAuditV1[])[] {
+    const nodes = [...this.#nodes.values()];
+    const physicalSupport = new Map(nodes.map((node) => {
       const basin = this.#medium.sampleBasins(
         node.physicalBasin.pageId,
         new Float64Array(node.physicalBasin.coordinate),
         1,
       )[0];
-      return {
+      return [node.factorId, basin === undefined ? 0 : currentR2aPhysicalSupport(basin)] as const;
+    }));
+    return perceptions.map((perception, perceptionIndex) => {
+      const field = this.#encoder.encode(`activation-audit-${perceptionIndex}`, perception);
+      return nodes.map((node) => {
+        const analysis = this.#workspace.residualAgainst(field, node.commonInput);
+        return {
         factorId: node.factorId,
         state: node.state,
         fullSimilarity: cosine(analysis.residual.values, node.residualPrototype),
         sparseSimilarity: sparseSimilarity(analysis.residual.values, node.sparseTokenConditions),
         contextMatch: node.commonInput.length === 0 ? 1 : analysis.contextMatch,
-        physicalSupport: basin === undefined ? 0 : currentR2aPhysicalSupport(basin),
-      };
-    }).sort((left, right) => Math.max(right.fullSimilarity, right.sparseSimilarity)
-      - Math.max(left.fullSimilarity, left.sparseSimilarity) || left.factorId.localeCompare(right.factorId));
+          physicalSupport: physicalSupport.get(node.factorId)!,
+        };
+      }).sort((left, right) => Math.max(right.fullSimilarity, right.sparseSimilarity)
+        - Math.max(left.fullSimilarity, left.sparseSimilarity) || left.factorId.localeCompare(right.factorId));
+    });
   }
 
-  exportState(): CausalFactorGraphStateV2 {
+  exportState(): CausalFactorGraphStateV3 {
     return {
-      version: "CausalFactorGraphStateV2",
+      version: "CausalFactorGraphStateV3",
+      outcomeIdentityVersion: "ActiveR2BasinMembershipV1",
       evidenceContextIdentityVersion: this.#evidenceContextIdentityVersion,
       legacySceneFingerprintsMigrated: false,
+      legacyOutcomeModesMigrated: false,
       r2aMedium: this.#medium.snapshot(),
       factorNodes: [...this.#nodes.values()].map((node) => this.#cloneNode(node)).sort((left, right) => left.factorId.localeCompare(right.factorId)),
       hyperedges: [...this.#edges.values()].map((edge) => this.#cloneEdge(edge)).sort((left, right) => left.hyperedgeId.localeCompare(right.hyperedgeId)),
@@ -932,10 +1036,10 @@ export class OpenCausalFactorR2A {
       const matched = passiveDiscovery
         ? clusters
           .map((cluster) => ({ cluster, similarity: cosine(row.values, cluster.prototype) }))
-          .filter((item) => outcomeDistance(
-            item.cluster.rows[0]!.event.targetR2Basin.coordinate,
-            row.event.targetR2Basin.coordinate,
-          ) <= OUTCOME_RADIUS ** 2 && item.similarity >= PASSIVE_INPUT_SIMILARITY_MIN)
+          .filter((item) => this.#samePhysicalOutcome(
+            item.cluster.rows[0]!.event.r2VisitId,
+            row.event.r2VisitId,
+          ) && item.similarity >= PASSIVE_INPUT_SIMILARITY_MIN)
           .sort((left, right) => right.similarity - left.similarity)[0]?.cluster
         : clusters
           .map((cluster) => ({ cluster, similarity: cosine(row.values, cluster.prototype) }))
@@ -956,10 +1060,10 @@ export class OpenCausalFactorR2A {
       // outcome cohort when fragmentation leaves most observations uncovered.
       const outcomeGroups: (typeof residualRows)[] = [];
       for (const row of residualRows) {
-        const group = outcomeGroups.find((candidate) => outcomeDistance(
-          candidate[0]!.event.targetR2Basin.coordinate,
-          row.event.targetR2Basin.coordinate,
-        ) <= OUTCOME_RADIUS ** 2);
+        const group = outcomeGroups.find((candidate) => this.#samePhysicalOutcome(
+          candidate[0]!.event.r2VisitId,
+          row.event.r2VisitId,
+        ));
         if (group === undefined) outcomeGroups.push([row]);
         else group.push(row);
       }
@@ -984,7 +1088,10 @@ export class OpenCausalFactorR2A {
       // enter candidate retrieval or query input.
       const outcomeGroups: (typeof residualRows)[] = [];
       for (const row of residualRows) {
-        const group = outcomeGroups.find((candidate) => samePhysicalOutcome(candidate[0]!.event, row.event));
+        const group = outcomeGroups.find((candidate) => this.#samePhysicalOutcome(
+          candidate[0]!.event.r2VisitId,
+          row.event.r2VisitId,
+        ));
         if (group === undefined) outcomeGroups.push([row]);
         else group.push(row);
       }
@@ -1047,19 +1154,17 @@ export class OpenCausalFactorR2A {
             // post-outcome learning signal that keeps distinct result modes
             // separated.  They never participate in frozen retrieval.
             if (sameInterventionEdges.length === 0) return true;
-            return sameInterventionEdges.some((edge) => edge.targetR2Basin.pageId === clusterEvents[0]!.targetR2Basin.pageId
-              && outcomeDistance(edge.targetR2Basin.coordinate,
-                clusterEvents[0]!.targetR2Basin.coordinate) <= OUTCOME_RADIUS ** 2);
+            return sameInterventionEdges.some((edge) => this.#samePhysicalOutcome(
+              edge.targetR2VisitId,
+              clusterEvents[0]!.r2VisitId,
+            ));
           }
           // The result is allowed to validate or split a pre-outcome candidate,
           // but it never participated in retrieval.  A passive factor already
           // tied to a different physical R2 basin must not be silently merged
           // into the new result-conditioned factor.
           return candidateEdges.some((edge) => edge.interventionKey === interventionKey
-            && outcomeDistance(
-              edge.targetR2Basin.coordinate,
-              clusterEvents[0]!.targetR2Basin.coordinate,
-            ) <= OUTCOME_RADIUS ** 2);
+            && this.#samePhysicalOutcome(edge.targetR2VisitId, clusterEvents[0]!.r2VisitId));
         })
         .map((candidate) => ({ candidate, similarity: cosine(residualValues, candidate.residualPrototype) }))
         .filter((item) => item.similarity >= mergeThreshold)
@@ -1118,8 +1223,9 @@ export class OpenCausalFactorR2A {
           magnitude: magnitude(eventResidualValues),
         });
         const eventId = `event-${event.eventNumber.toString().padStart(6, "0")}`;
-        const edge = this.#upsertEdge(factors, interventionKey, event.targetR2Basin, eventId, event.sourceContextId, true);
-        this.#refreshEvidence(factors, interventionKey, edge.hyperedgeId);
+        const edge = this.#upsertEdge(factors, interventionKey, event.r2VisitId,
+          eventId, event.sourceContextId, true);
+        if (edge !== null) this.#refreshEvidence(factors, interventionKey, edge.hyperedgeId);
       }
     }
   }
@@ -1150,32 +1256,42 @@ export class OpenCausalFactorR2A {
     }
   }
 
-  #targetBasin(r2PageId: string, coordinate: Vec3, factors: readonly string[], intervention: string): PhysicalBasinReferenceV1 {
-    const siblings = [...this.#edges.values()].filter((edge) => edge.interventionKey === intervention
-      && JSON.stringify(edge.factorIds) === JSON.stringify(canonicalFactors(factors)));
-    const found = siblings.find((edge) => outcomeDistance(edge.targetR2Basin.coordinate, coordinate) <= OUTCOME_RADIUS ** 2);
-    return found === undefined ? { pageId: r2PageId, coordinate: [...coordinate] } : cloneBasin(found.targetR2Basin);
-  }
-
   #upsertEdge(
-    factors: readonly string[], intervention: string, target: PhysicalBasinReferenceV1,
+    factors: readonly string[], intervention: string, targetR2VisitId: string,
     eventId: string, scene: string, supported: boolean,
-  ): MutableEdge {
+  ): MutableEdge | null {
+    const outcome = this.#activeOutcome(targetR2VisitId);
+    if (outcome === null) return null;
     const canonical = canonicalFactors(factors);
-    let edge = [...this.#edges.values()].find((candidate) => candidate.interventionKey === intervention
-      && JSON.stringify(candidate.factorIds) === JSON.stringify(canonical)
-      && outcomeDistance(candidate.targetR2Basin.coordinate, target.coordinate) <= OUTCOME_RADIUS ** 2);
+    let edge = [...this.#edges.values()].find((candidate) => {
+      const candidateOutcome = this.#edgeOutcome(candidate);
+      return candidate.interventionKey === intervention
+        && JSON.stringify(candidate.factorIds) === JSON.stringify(canonical)
+        && candidateOutcome !== null && candidateOutcome.key === outcome.key;
+    });
     if (edge === undefined) {
       this.#hyperedgeSequence += 1;
       edge = {
         hyperedgeId: `causal-hyperedge-${this.#hyperedgeSequence.toString().padStart(6, "0")}`,
-        factorIds: canonical, interventionKey: intervention, targetR2Basin: cloneBasin(target),
+        factorIds: canonical, interventionKey: intervention, targetR2VisitId,
+        targetR2Basin: {
+          pageId: outcome.membership.pageId,
+          coordinate: [...outcome.membership.coordinate],
+        },
         supportStrength: 0, contradictionStrength: 0, controlledExperimentCoverage: 0,
         relationStrength: 0, sourceEventIds: [], sourceContextIds: [],
         retainedValidationContextIds: [], retainedValidationFailureCount: 0,
         state: canonical.length > 1 ? "unresolved-composite" : "provisional",
       };
       this.#edges.set(edge.hyperedgeId, edge);
+    } else {
+      // Keep a recently observed real member as the representative; the
+      // membership itself is always re-resolved and never cached as a class.
+      edge.targetR2VisitId = targetR2VisitId;
+      edge.targetR2Basin = {
+        pageId: outcome.membership.pageId,
+        coordinate: [...outcome.membership.coordinate],
+      };
     }
     const isNewEvent = !edge.sourceEventIds.includes(eventId);
     if (isNewEvent && supported) edge.supportStrength += 1;
@@ -1202,8 +1318,16 @@ export class OpenCausalFactorR2A {
     const siblings = [...this.#edges.values()].filter((edge) => edge.interventionKey === intervention
       && JSON.stringify(edge.factorIds) === JSON.stringify(canonicalFactors(factors)));
     for (const edge of siblings) {
+      const outcome = this.#edgeOutcome(edge);
       edge.contradictionStrength = siblings
-        .filter((candidate) => candidate.hyperedgeId !== edge.hyperedgeId)
+        .filter((candidate) => {
+          if (candidate.hyperedgeId === edge.hyperedgeId) return false;
+          const candidateOutcome = this.#edgeOutcome(candidate);
+          // Physically merged edges are now one result and cannot be used as
+          // counterevidence against each other. Invalid provenance remains a
+          // fail-closed edge and is excluded from production separately.
+          return outcome !== null && candidateOutcome !== null && candidateOutcome.key !== outcome.key;
+        })
         .reduce((sum, candidate) => sum + candidate.supportStrength, 0);
       edge.relationStrength = (edge.supportStrength + 0.5)
         / (edge.supportStrength + edge.contradictionStrength + 1);
@@ -1241,7 +1365,7 @@ export class OpenCausalFactorR2A {
           ? this.#events.filter((event) => sourceEventIds.has(
             `event-${event.eventNumber.toString().padStart(6, "0")}`,
           )) : [];
-      const byIntervention = new Map<string, OpenFactorEventSummaryV2[]>();
+      const byIntervention = new Map<string, OpenFactorEventSummaryV3[]>();
       for (const event of nodeEvents) {
         const group = byIntervention.get(event.interventionKey) ?? [];
         group.push(event);
@@ -1251,34 +1375,22 @@ export class OpenCausalFactorR2A {
       // trusted outcomes exist, events outside the dominant physical result
       // basin are counterevidence.  This is computed within intervention so a
       // shared factor may still participate in different action interactions.
-      const predictiveContradictions = [...byIntervention.values()].reduce((sum, group) => {
-        const outcomes: { coordinate: Vec3; count: number }[] = [];
-        for (const event of group) {
-          const outcome = outcomes.find((candidate) => outcomeDistance(
-            candidate.coordinate,
-            event.targetR2Basin.coordinate,
-          ) <= OUTCOME_RADIUS ** 2);
-          if (outcome === undefined) outcomes.push({
-            coordinate: new Float64Array(event.targetR2Basin.coordinate),
-            count: 1,
-          });
-          else outcome.count += 1;
-        }
-        const dominant = outcomes.length === 0 ? 0 : Math.max(...outcomes.map((outcome) => outcome.count));
-        return sum + group.length - dominant;
-      }, 0);
+      const predictiveContradictions = [...byIntervention.values()].reduce((sum, group) => (
+        sum + group.length * (1 - this.#dominantPhysicalOutcomeFraction(group))
+      ), 0);
       node.contradictionStrength = Math.max(node.contradictionStrength, predictiveContradictions);
       node.activationConsistency = node.supportStrength
         / Math.max(1, node.supportStrength + node.contradictionStrength);
-      // Selection gain is evidence about repeatable physical result modes, not
-      // exact IEEE-754 equality.  Real integrations legitimately produce tiny
-      // coordinate variation inside one R2 basin.  R1 road identity remains a
-      // required part of the mode so two distinct result roads are never
-      // collapsed merely because the broad R2 kernel overlaps them.
-      const conditioned = [...byIntervention.values()].map(dominantPhysicalOutcomeFraction);
+      // Selection gain is evidence about repeatable current R2 basins. Basin
+      // membership is resolved through the physical medium on every refresh;
+      // neither cached coordinates nor an R1 storage-page identifier can
+      // manufacture a result class.
+      const conditioned = [...byIntervention.values()].map((events) => (
+        this.#dominantPhysicalOutcomeFraction(events)
+      ));
       const baseline = [...byIntervention.keys()].map((intervention) => {
         const all = this.#events.filter((event) => event.interventionKey === intervention);
-        return dominantPhysicalOutcomeFraction(all);
+        return this.#dominantPhysicalOutcomeFraction(all);
       });
       const conditionedAccuracy = conditioned.length === 0 ? 0
         : conditioned.reduce((sum, value) => sum + value, 0) / conditioned.length;
@@ -1304,7 +1416,33 @@ export class OpenCausalFactorR2A {
   }
 
   #refreshEdgeStates(): void {
+    const refreshed = new Set<string>();
     for (const edge of this.#edges.values()) {
+      const key = `${edge.interventionKey}\u0000${edge.factorIds.join("\u0000")}`;
+      if (refreshed.has(key)) continue;
+      refreshed.add(key);
+      this.#refreshEvidence(edge.factorIds, edge.interventionKey, edge.hyperedgeId);
+    }
+    for (const edge of this.#edges.values()) {
+      const outcome = this.#edgeOutcome(edge);
+      if (outcome === null) {
+        edge.state = "recovered";
+        continue;
+      }
+      const sourceIds = new Set(edge.sourceEventIds);
+      const representative = [...this.#events]
+        .filter((event) => sourceIds.has(`event-${event.eventNumber.toString().padStart(6, "0")}`)
+          && this.#activeOutcome(event.r2VisitId) !== null)
+        .sort((left, right) => left.eventNumber - right.eventNumber)[0];
+      if (representative === undefined) {
+        edge.state = "recovered";
+        continue;
+      }
+      edge.targetR2VisitId = representative.r2VisitId;
+      edge.targetR2Basin = {
+        pageId: outcome.membership.pageId,
+        coordinate: [...outcome.membership.coordinate],
+      };
       const nodes = edge.factorIds.map((factorId) => this.#nodes.get(factorId));
       if (nodes.some((node) => node === undefined || node.state === "recovered")) {
         edge.state = "recovered";
@@ -1349,7 +1487,7 @@ export class OpenCausalFactorR2A {
     };
   }
 
-  #cloneEdge(edge: MutableEdge): CausalHyperedgeV2 {
+  #cloneEdge(edge: MutableEdge): CausalHyperedgeV3 {
     return {
       ...edge, factorIds: [...edge.factorIds], targetR2Basin: cloneBasin(edge.targetR2Basin),
       sourceEventIds: [...edge.sourceEventIds].sort(), sourceContextIds: [...edge.sourceContextIds].sort(),
@@ -1366,7 +1504,7 @@ export class OpenCausalFactorR2A {
     };
   }
 
-  #mutableEdge(edge: CausalHyperedgeV2): MutableEdge {
+  #mutableEdge(edge: CausalHyperedgeV3): MutableEdge {
     return {
       ...edge, factorIds: [...edge.factorIds], targetR2Basin: cloneBasin(edge.targetR2Basin),
       sourceEventIds: [...edge.sourceEventIds], sourceContextIds: [...edge.sourceContextIds],

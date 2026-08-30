@@ -4,6 +4,8 @@ runtime/
 state/
 tmp/
 evidence/
+evidence-reports/
+.tmp-scale-compile/
 *.log
 *.gguf
 *.gguf.*

@@ -64,13 +64,16 @@ export class AttentionMonitor {
       const event: RealEvent = { version: 'RealEventV5', id: `${this.sessionId}:monitor-${frame.sequence}`, cue: { kind: 'passive', parameters: {}, targetRole: null },
         frames, trackedIds, bodyResult: null, provenance: 'observed-passive', complete: true };
       const series = eventRows(event), changes = series.changes.flat().filter(c => c.before !== c.after);
-      const oldFocus = this.controller.snapshot().focusTargetId;
+      const beforeAttention = this.controller.snapshot();
       const noticesBefore = this.notices.length;
+      const classified = new Map<string, { readonly classification: ReturnType<typeof comparePublicPrediction>;
+        readonly changes: readonly PublicChange[]; readonly forecast: Forecast | null }>();
       const candidates: AttentionCandidate[] = trackedIds.map(subjectId => {
         const role = series.roles[subjectId]; const subjectChanges = changes.filter(change => change.subject === role);
         // The baseline frame was already public; only its following changes are compared.
         const forecast = this.#forecast?.subjectId === subjectId && this.#forecast.completedSequence <= frames[0]!.sequence ? this.#forecast : null;
         const classification = comparePublicPrediction(forecast?.prediction ?? null, subjectChanges);
+        classified.set(subjectId, { classification, changes: subjectChanges, forecast });
         const magnitude = Math.min(2, subjectChanges.reduce((sum, c) => sum + (typeof c.before === 'number' && typeof c.after === 'number'
           ? Math.abs(c.after - c.before) : 1), 0));
         if (classification === 'prediction-violation') this.#notice({ kind: classification, subjectId, sequence: frame.sequence,
@@ -80,11 +83,24 @@ export class AttentionMonitor {
           goalRelevance: 0, novelty: 0, actionTargetBinding: this.controller.snapshot().boundActionTargetId === subjectId ? 1 : 0 };
       });
       const snapshot = this.controller.update(frame.sequence, candidates);
-      if (snapshot.focusTargetId && snapshot.focusTargetId !== oldFocus && snapshot.preemptionCount > 0) {
-        const role = series.roles[snapshot.focusTargetId]; const real = changes.filter(c => c.subject === role);
-        if (real.length) this.#notice({ kind: 'unknown-change', subjectId: snapshot.focusTargetId, sequence: frame.sequence,
-          forecastCompletedBeforeSequence: null, evidence: real });
-      }
+      const unknownNoticed = new Set<string>();
+      const noticeUnknown = (subjectId: string | null): void => {
+        if (!subjectId || unknownNoticed.has(subjectId)) return;
+        const value = classified.get(subjectId);
+        if (!value || value.classification !== 'unknown-change' || value.changes.length === 0) return;
+        unknownNoticed.add(subjectId);
+        this.#notice({ kind: 'unknown-change', subjectId, sequence: frame.sequence,
+          forecastCompletedBeforeSequence: value.forecast?.completedSequence ?? null,
+          evidence: value.changes });
+      };
+      // Selecting a focus and waking analysis about a change are distinct.  A
+      // real unknown change on the object already in focus must still wake the
+      // control loop even though no focus preemption occurred.
+      noticeUnknown(beforeAttention.focusTargetId);
+      const newlyFocused = snapshot.focusTargetId !== beforeAttention.focusTargetId
+        && (beforeAttention.focusTargetId === null
+          || snapshot.preemptionCount > beforeAttention.preemptionCount);
+      if (newlyFocused) noticeUnknown(snapshot.focusTargetId);
       this.record('attention', { sequence: frame.sequence, snapshot, changes });
       // Never pair a late result with changes that had already begun, or reuse it for later windows.
       if (this.#forecast) {
@@ -93,7 +109,10 @@ export class AttentionMonitor {
           windowEndSequence: frame.sequence, late: this.#forecast.completedSequence > frames[0]!.sequence });
         this.#forecast = null;
       }
-      if (this.notices.length > noticesBefore && changes.length > 0) this.capture(event);
+      if (this.notices.length > noticesBefore && changes.length > 0) {
+        const attended = [...new Set(this.notices.slice(noticesBefore).map(notice => notice.subjectId))];
+        this.capture({ ...event, trackedIds: [...new Set(['self', ...attended])] });
+      }
       // At most one current-focus prediction. Raw-frame acquisition never awaits it.
       if (!this.#busy && snapshot.focusTargetId) {
         const focus = snapshot.focusTargetId;
@@ -107,5 +126,9 @@ export class AttentionMonitor {
       }
     } catch (error) { this.#fault = error as Error; }
   }
-  #notice(notice: AttentionNotice): void { this.notices.push(notice); this.record('attention-wake', notice); this.wake(notice); }
+  #notice(notice: AttentionNotice): void {
+    if (this.notices.some(value => value.kind === notice.kind && value.subjectId === notice.subjectId
+      && value.sequence === notice.sequence)) return;
+    this.notices.push(notice); this.record('attention-wake', notice); this.wake(notice);
+  }
 }

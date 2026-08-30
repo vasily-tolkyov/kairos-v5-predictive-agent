@@ -224,6 +224,7 @@ export class PotentialPage3D {
       let originalMass = 0;
       const weighted = vec3();
       const traces = new Set<string>();
+      const visits = new Set<string>();
       for (const kernel of kernels) {
         const weight = -kernel.coefficient;
         currentMass += weight;
@@ -232,6 +233,7 @@ export class PotentialPage3D {
         weighted[1] = weighted[1]! + kernel.center[1]! * weight;
         weighted[2] = weighted[2]! + kernel.center[2]! * weight;
         if (kernel.traceId !== null) traces.add(kernel.traceId);
+        if (kernel.kind === "visit" && kernel.traceId !== null) visits.add(kernel.traceId);
       }
       const coordinate = vec3(
         weighted[0]! / currentMass,
@@ -249,13 +251,61 @@ export class PotentialPage3D {
           queryContribution,
           decayFraction: originalMass === 0 ? 0 : currentMass / originalMass,
           kernelCount: kernels.length,
+          memberVisitIds: [...visits].sort(),
+          memberTraceIds: [...traces].sort(),
         });
       }
     }
     return basins
       .sort((left, right) => right.queryContribution - left.queryContribution || right.depth - left.depth)
       .slice(0, maxCount)
-      .map((basin) => ({ ...basin, coordinate: clone3(basin.coordinate) }));
+      .map((basin) => ({
+        ...basin,
+        coordinate: clone3(basin.coordinate),
+        memberVisitIds: [...basin.memberVisitIds],
+        memberTraceIds: [...basin.memberTraceIds],
+      }));
+  }
+
+  /**
+   * Resolve an opaque visit/road trace through the current active-kernel
+   * connectivity.  A trace spanning more than one disconnected basin is
+   * ambiguous and therefore fails closed.
+   */
+  basinContainingTrace(traceId: string): BasinActivation | null {
+    if (traceId.length === 0) throw new RangeError("traceId must be non-empty");
+    const activeKernel = this.#kernels.find((kernel) => kernel.traceId === traceId
+      && -kernel.coefficient >= this.#config.minimumActiveMagnitude);
+    if (activeKernel === undefined) return null;
+    const matches = this.sampleBasins(activeKernel.center, Number.MAX_SAFE_INTEGER)
+      .filter((basin) => basin.memberTraceIds.includes(traceId));
+    if (matches.length !== 1) return null;
+    const basin = matches[0]!;
+    return {
+      ...basin,
+      coordinate: clone3(basin.coordinate),
+      memberVisitIds: [...basin.memberVisitIds],
+      memberTraceIds: [...basin.memberTraceIds],
+    };
+  }
+
+  /** Resolve only an active visit. Roads cannot masquerade as R2 evidence. */
+  basinContainingVisit(visitId: string): BasinActivation | null {
+    if (visitId.length === 0) throw new RangeError("visitId must be non-empty");
+    const activeVisit = this.#kernels.find((kernel) => kernel.kind === "visit"
+      && kernel.traceId === visitId
+      && -kernel.coefficient >= this.#config.minimumActiveMagnitude);
+    if (activeVisit === undefined) return null;
+    const matches = this.sampleBasins(activeVisit.center, Number.MAX_SAFE_INTEGER)
+      .filter((basin) => basin.memberVisitIds.includes(visitId));
+    if (matches.length !== 1) return null;
+    const basin = matches[0]!;
+    return {
+      ...basin,
+      coordinate: clone3(basin.coordinate),
+      memberVisitIds: [...basin.memberVisitIds],
+      memberTraceIds: [...basin.memberTraceIds],
+    };
   }
 
   traceSnapshot(traceId: string, capturedAt: number): R1TraceSnapshot | null {

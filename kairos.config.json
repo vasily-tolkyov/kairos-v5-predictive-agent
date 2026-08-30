@@ -1,19 +1,19 @@
 {
-  "version": "KairosV5Config",
+  "version": "KairosV5PhysicalControlConfigV2",
   "minecraft": {
     "version": "1.21.4", "host": "127.0.0.1", "port": 25567, "username": "KairosV5Bot",
     "java": "D:/Kairos-Minecraft/runtime/jdk-21/bin/java.exe",
     "serverJar": "D:/Kairos-Minecraft/server/1.21.4/server.jar"
   },
-  "analysis": {
-    "provider": "deepseek", "model": "deepseek-v4-pro", "baseUrl": "https://api.deepseek.com/beta",
-    "context": 65536, "maximumInputTokens": 24000, "maximumOutputTokens": 32768,
-    "nativeThinking": true, "reasoningEffort": "high", "timeoutMs": 120000,
-    "python": "C:/Users/86139/AppData/Local/Programs/Python/Python311/python.exe",
-    "tokenizerRoot": "runtime/deepseek-tokenizer-0813-3c6b304"
-  },
   "actionBudget": 512,
   "initializationEvents": 128,
+  "control": {
+    "version": "JointTransientControlFieldConfigV2", "seed": 20260829, "branchCapacity": 8,
+    "stepSize": 0.02, "noiseSigma": 0.01, "maximumIntegrationSteps": 500,
+    "winnerThreshold": 0.65, "winnerMargin": 0.10, "winnerPersistenceSteps": 20,
+    "inactivePruneThreshold": 0.0001, "inactivePruneSteps": 50,
+    "predictionSeeds": 24, "predictionSteps": 180, "goalVerificationTicks": 5
+  },
   "viewer": { "enabled": true, "host": "127.0.0.1", "port": 3000, "dashboardPort": 3002 },
   "stateRoot": "state", "evidenceRoot": "evidence", "runtimeRoot": "runtime"
 }

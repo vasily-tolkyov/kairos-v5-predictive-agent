@@ -1,6 +1,6 @@
 {
-  "name": "kairos-v5-predictive-agent",
-  "version": "0.1.0",
+  "name": "kairos-v5-physical-control-agent",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": { "node": ">=24" },
@@ -8,12 +8,13 @@
     "build": "tsc -p tsconfig.json",
     "test": "node --test dist/test/*.test.js",
     "start": "node dist/src/main.js",
-    "verify": "node dist/src/verify.js"
+    "evaluate:minecraft-guided-affordance": "node scripts/run-minecraft-guided-affordance-evaluation.mjs",
+    "evaluate:minecraft-joint-control-heldout-v2": "node scripts/run-minecraft-joint-control-heldout-v2.mjs",
+    "rebuild:attempt017-physical-memory-v2": "node scripts/rebuild-attempt017-physical-memory-v2.mjs",
+    "audit:attempt017-direction-conditions-v1": "node scripts/audit-attempt017-direction-conditions-v1.mjs",
+    "verify": "npm run build && npm test"
   },
   "dependencies": {
-    "@earendil-works/pi-agent-core": "0.84.2",
-    "@earendil-works/pi-ai": "0.84.2",
-    "typebox": "1.3.7",
     "mineflayer": "4.37.1",
     "prismarine-viewer": "1.33.0",
     "vec3": "0.1.10"

@@ -1,5 +1,5 @@
-import { FORMAL_EVALUATION } from "../config.js";
-import type { PathProjectorStateV1, R1RouteSignature, Vec3 } from "../contracts.js";
+import { FORMAL_EVALUATION, R2_CONFIG } from "../config.js";
+import type { PathProjectorStateV4, R1RouteSignature, Vec3 } from "../contracts.js";
 import { TrustedExperience } from "../firewall.js";
 import {
   add3,
@@ -18,6 +18,120 @@ export interface PathEncoderDiagnostics {
   readonly causalPrefixRootMeanSquaredDistance: number;
   readonly outputDimensions: 3;
   readonly landmarkCount: number;
+  readonly outputScale: number;
+  readonly equivalentVariationMaximum: number;
+  readonly equivalenceLimitedScale: number | null;
+  readonly boundaryLimitedScale: number | null;
+  readonly boundaryLimited: boolean;
+  readonly physicalComponentSizes: readonly number[];
+}
+
+export interface R2OutputResolutionCalibrationV4 {
+  readonly version: "R2MeasurementResolutionCalibrationV4";
+  readonly selectionRule: "min-equivalence-and-boundary-caps";
+  readonly equivalentGeometryMethod: "vertex-preserving-polyline-densification";
+  readonly boundaryGeometry: "max-centered-radius-within-inscribed-sphere";
+  readonly outputScale: number;
+  readonly unscaledCenter: Vec3;
+  /** Maximum, not p99: this protects deterministic polyline parameterization
+   * variants. A zero value means it does not identify an absolute scale. */
+  readonly equivalentVariationMaximum: number;
+  readonly equivalentVariationQuantile: 1;
+  /** Null denotes an exact-invariance constraint, hence no finite upper cap. */
+  readonly equivalenceLimitedScale: number | null;
+  /** Null denotes centers at the origin on every axis, hence no finite cap. */
+  readonly boundaryLimitedScale: number | null;
+  readonly boundaryLimited: boolean;
+  readonly boundaryMargin: number;
+  readonly physicalKernelWidth: number;
+  /** Read-only diagnostic.  Components never participate in scale selection. */
+  readonly componentSizes: readonly number[];
+}
+
+function connectedComponents(points: readonly Vec3[], scale: number, radius: number,
+  omitted = -1): readonly (readonly number[])[] {
+  const indices = points.map((_, index) => index).filter(index => index !== omitted);
+  const parent = new Map(indices.map(index => [index, index]));
+  const find = (value: number): number => {
+    let root = value;
+    while (parent.get(root) !== root) root = parent.get(root)!;
+    while (parent.get(value) !== value) {
+      const next = parent.get(value)!; parent.set(value, root); value = next;
+    }
+    return root;
+  };
+  const unite = (left: number, right: number): void => {
+    const a = find(left), b = find(right); if (a !== b) parent.set(b, a);
+  };
+  for (let left = 0; left < indices.length; left += 1) for (let right = left + 1; right < indices.length; right += 1) {
+    const a = indices[left]!, b = indices[right]!;
+    if (norm3(sub3(points[a]!, points[b]!)) * scale <= radius * (1 + 1e-12)) unite(a, b);
+  }
+  const groups = new Map<number, number[]>();
+  for (const index of indices) {
+    const root = find(index), group = groups.get(root) ?? []; group.push(index); groups.set(root, group);
+  }
+  return [...groups.values()].map(group => group.sort((left, right) => left - right))
+    .sort((left, right) => left[0]! - right[0]!);
+}
+
+/**
+ * Choose one frozen, label-free unit conversion for the whole R2 embedding.
+ *
+ * The maximum observed displacement caused only by deterministic temporal
+ * resampling of the *same* event is protected by one R2 kernel width.  The
+ * second cap keeps every centered training coordinate plus one connected-basin
+ * margin inside the physical boundary.  Connectivity is reported only after
+ * the scale is chosen; it can never choose or tune the unit conversion.
+ */
+export function calibrateR2OutputResolution(points: readonly Vec3[],
+  equivalentVariationDistances: readonly number[]): R2OutputResolutionCalibrationV4 {
+  if (points.length < 8 || equivalentVariationDistances.length < points.length)
+    throw new RangeError("r2-physical-resolution-not-identifiable");
+  if (points.some(point => point.length !== 3 || [...point].some(value => !Number.isFinite(value)))
+    || equivalentVariationDistances.some(value => !Number.isFinite(value) || value < 0)) {
+    throw new RangeError("r2-physical-resolution-not-identifiable");
+  }
+  const means = ([0, 1, 2].map(axis => points.reduce(
+    (sum, point) => sum + point[axis]!, 0,
+  ) / points.length)) as [number, number, number];
+  const center = vec3(means[0], means[1], means[2]);
+  const centered = points.map(point => sub3(point, center));
+  const diameter = Math.max(0, ...centered.flatMap((left, index) => centered.slice(index + 1)
+    .map(right => norm3(sub3(left, right)))));
+  const numericalZero = Math.max(1e-14, diameter * 1e-12);
+  const measuredVariationMaximum = Math.max(...equivalentVariationDistances);
+  const equivalentVariationMaximum = measuredVariationMaximum <= numericalZero ? 0 : measuredVariationMaximum;
+  const equivalenceLimitedScale = equivalentVariationMaximum === 0
+    ? null : R2_CONFIG.kernelWidth / equivalentVariationMaximum;
+  const boundaryMargin = R2_CONFIG.kernelWidth * R2_CONFIG.basinRadiusScale;
+  // MDS axes have no physical meaning.  Fit the centered cloud into the
+  // boundary's inscribed sphere so an arbitrary rigid rotation cannot change
+  // the selected unit merely by bringing one point closer to a cube face.
+  const maximumRadius = Math.max(...centered.map(point => norm3(point)));
+  const availableRadius = Math.min(...[0, 1, 2].map(axis => Math.min(
+    R2_CONFIG.boundary.max[axis]! - boundaryMargin,
+    -R2_CONFIG.boundary.min[axis]! - boundaryMargin,
+  )));
+  const boundaryLimitedScale = maximumRadius > numericalZero && availableRadius > 0
+    ? availableRadius / maximumRadius : null;
+  const finiteCaps = [equivalenceLimitedScale, boundaryLimitedScale]
+    .filter((value): value is number => value !== null && Number.isFinite(value) && value > 0);
+  if (finiteCaps.length === 0 || diameter <= numericalZero)
+    throw new RangeError("r2-physical-resolution-not-identifiable");
+  const outputScale = Math.min(...finiteCaps);
+  const boundaryLimited = boundaryLimitedScale !== null
+    && (equivalenceLimitedScale === null || boundaryLimitedScale <= equivalenceLimitedScale);
+  const components = connectedComponents(centered, outputScale,
+    R2_CONFIG.kernelWidth * R2_CONFIG.basinRadiusScale);
+  return Object.freeze({ version: "R2MeasurementResolutionCalibrationV4",
+    selectionRule: "min-equivalence-and-boundary-caps",
+    equivalentGeometryMethod: "vertex-preserving-polyline-densification", outputScale,
+    boundaryGeometry: "max-centered-radius-within-inscribed-sphere",
+    unscaledCenter: center, equivalentVariationMaximum, equivalentVariationQuantile: 1,
+    equivalenceLimitedScale, boundaryLimitedScale, boundaryLimited, boundaryMargin,
+    physicalKernelWidth: R2_CONFIG.kernelWidth,
+    componentSizes: Object.freeze(components.map(component => component.length).sort((left, right) => right - left)) });
 }
 
 function firstTangent(points: readonly Vec3[]): Vec3 | null {
@@ -96,6 +210,26 @@ function resampleByArc(points: readonly Vec3[], count: number): readonly Vec3[] 
   return result;
 }
 
+/** Add observations along every original segment without removing a measured
+ * vertex.  The resulting polyline is exactly the same geometric object; in
+ * particular no temporal down-sampling can cut across a corner. */
+export function densifyPolylineVertices(points: readonly Vec3[], subdivisions: number): readonly Vec3[] {
+  if (points.length < 2 || !Number.isInteger(subdivisions) || subdivisions < 2)
+    throw new RangeError("polyline densification requires at least two points and two subdivisions");
+  const result: Vec3[] = [clone3(points[0]!)];
+  for (let segment = 1; segment < points.length; segment += 1) {
+    const start = points[segment - 1]!, end = points[segment]!;
+    for (let division = 1; division <= subdivisions; division += 1) {
+      result.push(add3(start, scale3(sub3(end, start), division / subdivisions)));
+    }
+  }
+  return result;
+}
+
+function measurementEquivalentGeometries(points: readonly Vec3[]): readonly Float64Array[] {
+  return [2, 3, 4].map(subdivisions => eventPathGeometry(densifyPolylineVertices(points, subdivisions)));
+}
+
 export function canonicalPath(points: readonly Vec3[], sampleCount = FORMAL_EVALUATION.pathSamples): Float64Array {
   const source = points[0];
   if (source === undefined) throw new RangeError("path cannot be empty");
@@ -104,6 +238,24 @@ export function canonicalPath(points: readonly Vec3[], sampleCount = FORMAL_EVAL
   if (tangent === null) throw new RangeError("path requires an observable initial tangent");
   const rotated = relative.map((point) => rotateMinimum(point, tangent, vec3(1, 0, 0)));
   const sampled = resampleByArc(rotated, sampleCount);
+  const flattened = new Float64Array(sampleCount * 3);
+  sampled.forEach((point, index) => flattened.set(point, index * 3));
+  return flattened;
+}
+
+/**
+ * R2 event geometry keeps the frozen event map's global axes.  Unlike a
+ * spatial route, an event-axis direction identifies which public transition
+ * occurred; rotating every path to its own tangent would make distinct state
+ * transitions geometrically identical.
+ */
+export function eventPathGeometry(points: readonly Vec3[],
+  sampleCount = FORMAL_EVALUATION.pathSamples): Float64Array {
+  const source = points[0];
+  if (source === undefined) throw new RangeError("path cannot be empty");
+  const relative = points.map(point => sub3(point, source));
+  if (firstTangent(relative) === null) throw new RangeError("path requires an observable initial tangent");
+  const sampled = resampleByArc(relative, sampleCount);
   const flattened = new Float64Array(sampleCount * 3);
   sampled.forEach((point, index) => flattened.set(point, index * 3));
   return flattened;
@@ -238,11 +390,12 @@ export class PathProjector {
   #landmarks: readonly Float64Array[] = [];
   #bandwidth = 1;
   #weights: readonly Float64Array[] = [];
+  #resolution: R2OutputResolutionCalibrationV4 | null = null;
   #diagnostics: PathEncoderDiagnostics | null = null;
 
   fit(experiences: readonly TrustedExperience[]): void {
     if (experiences.length < 8) throw new RangeError("geometry encoder requires at least eight trusted paths");
-    const geometries = experiences.map((experience) => canonicalPath(experience.trajectory()));
+    const geometries = experiences.map((experience) => eventPathGeometry(experience.trajectory()));
     const distances = geometries.map((left) => new Float64Array(geometries.map((right) => rawGeometryDistance(left, right))));
     const targets = classicalMds(distances);
     const landmarkCount = Math.min(12, geometries.length);
@@ -270,7 +423,7 @@ export class PathProjector {
       for (const fraction of [0.125, 0.35, 0.60, 0.80]) {
         const count = Math.max(2, Math.ceil(path.length * fraction));
         rows.push({
-          features: this.#features(canonicalPath(path.slice(0, count))),
+          features: this.#features(eventPathGeometry(path.slice(0, count))),
           target: targets[index]!,
           weight: fraction === 0.125 ? 1 : fraction * 0.35,
         });
@@ -292,6 +445,19 @@ export class PathProjector {
     for (let diagonal = 0; diagonal < width; diagonal += 1) normal[diagonal]![diagonal] = normal[diagonal]![diagonal]! + 1e-5;
     this.#weights = targetsByAxis.map((target) => new Float64Array(solveLinear(normal, target)));
 
+    const unscaledOutputs = geometries.map(geometry => this.#encode(geometry));
+    const equivalentVariationDistances = experiences.flatMap((experience, index) =>
+      measurementEquivalentGeometries(experience.trajectory())
+        .map(variant => norm3(sub3(this.#encode(variant), unscaledOutputs[index]!))));
+    const resolution = calibrateR2OutputResolution(unscaledOutputs, equivalentVariationDistances);
+    this.#weights = this.#weights.map((row, axis) => {
+      const scaled = new Float64Array(row.length);
+      scaled[0] = (row[0]! - resolution.unscaledCenter[axis]!) * resolution.outputScale;
+      for (let index = 1; index < row.length; index += 1) scaled[index] = row[index]! * resolution.outputScale;
+      return scaled;
+    });
+    this.#resolution = resolution;
+
     const rawDistances: number[] = [];
     const embeddedDistances: number[] = [];
     for (let left = 0; left < geometries.length; left += 1) {
@@ -303,7 +469,7 @@ export class PathProjector {
     let prefixEnergy = 0;
     experiences.forEach((experience, index) => {
       const path = experience.trajectory();
-      const prefix = canonicalPath(path.slice(0, Math.max(2, Math.ceil(path.length * 0.6))));
+      const prefix = eventPathGeometry(path.slice(0, Math.max(2, Math.ceil(path.length * 0.6))));
       prefixEnergy += norm3(sub3(this.#encode(prefix), this.#encode(geometries[index]!))) ** 2;
     });
     this.#diagnostics = {
@@ -311,52 +477,105 @@ export class PathProjector {
       causalPrefixRootMeanSquaredDistance: Math.sqrt(prefixEnergy / experiences.length),
       outputDimensions: 3,
       landmarkCount,
+      outputScale: resolution.outputScale,
+      equivalentVariationMaximum: resolution.equivalentVariationMaximum,
+      equivalenceLimitedScale: resolution.equivalenceLimitedScale,
+      boundaryLimitedScale: resolution.boundaryLimitedScale,
+      boundaryLimited: resolution.boundaryLimited,
+      physicalComponentSizes: [...resolution.componentSizes],
     };
   }
 
-  static fromState(state: PathProjectorStateV1): PathProjector {
-    if (state.weights.length !== 3 || state.landmarks.length < 1 || state.bandwidth <= 0) {
+  static fromState(state: PathProjectorStateV4): PathProjector {
+    if (!state || state.version !== "PathProjectorStateV4"
+      || state.measurementGeometry !== "source-translated-global-event-frame-v1" || !state.resolution) {
+      throw new RangeError("PathProjectorStateV1/V2/V3 is audit-only; rebuild from trusted raw events");
+    }
+    const resolution = state.resolution;
+    const finiteCaps = [resolution.equivalenceLimitedScale, resolution.boundaryLimitedScale]
+      .filter((value): value is number => value !== null && Number.isFinite(value) && value > 0);
+    const expectedScale = finiteCaps.length === 0 ? Number.NaN : Math.min(...finiteCaps);
+    const approximately = (left: number, right: number): boolean =>
+      Math.abs(left - right) <= Math.max(1e-12, Math.abs(right) * 1e-10);
+    if (resolution.version !== "R2MeasurementResolutionCalibrationV4"
+      || resolution.selectionRule !== "min-equivalence-and-boundary-caps"
+      || resolution.equivalentGeometryMethod !== "vertex-preserving-polyline-densification"
+      || resolution.boundaryGeometry !== "max-centered-radius-within-inscribed-sphere"
+      || state.weights.length !== 3 || state.landmarks.length < 1 || state.bandwidth <= 0
+      || resolution.unscaledCenter.length !== 3
+      || [...resolution.unscaledCenter].some(value => !Number.isFinite(value))
+      || !Number.isFinite(resolution.outputScale) || resolution.outputScale <= 0
+      || !Number.isFinite(resolution.equivalentVariationMaximum) || resolution.equivalentVariationMaximum < 0
+      || resolution.equivalentVariationQuantile !== 1
+      || resolution.physicalKernelWidth !== R2_CONFIG.kernelWidth
+      || resolution.boundaryMargin !== R2_CONFIG.kernelWidth * R2_CONFIG.basinRadiusScale
+      || !approximately(resolution.outputScale, expectedScale)
+      || resolution.boundaryLimited !== (resolution.boundaryLimitedScale !== null
+        && (resolution.equivalenceLimitedScale === null
+          || resolution.boundaryLimitedScale <= resolution.equivalenceLimitedScale))
+      || (resolution.equivalenceLimitedScale === null) !== (resolution.equivalentVariationMaximum === 0)
+      || (resolution.equivalenceLimitedScale !== null
+        && !approximately(resolution.equivalenceLimitedScale,
+          R2_CONFIG.kernelWidth / resolution.equivalentVariationMaximum))
+      || resolution.componentSizes.length < 1
+      || resolution.componentSizes.some(value => !Number.isInteger(value) || value < 1)) {
       throw new RangeError("invalid frozen PathProjector checkpoint state");
     }
     const projector = new PathProjector();
     projector.#landmarks = state.landmarks.map((row) => new Float64Array(row));
     projector.#bandwidth = state.bandwidth;
     projector.#weights = state.weights.map((row) => new Float64Array(row));
-    projector.#diagnostics = { ...state.diagnostics };
+    projector.#resolution = { ...resolution, unscaledCenter: new Float64Array(resolution.unscaledCenter),
+      componentSizes: [...resolution.componentSizes] };
+    projector.#diagnostics = { ...state.diagnostics, outputScale: resolution.outputScale,
+      equivalentVariationMaximum: resolution.equivalentVariationMaximum,
+      equivalenceLimitedScale: resolution.equivalenceLimitedScale,
+      boundaryLimitedScale: resolution.boundaryLimitedScale,
+      boundaryLimited: resolution.boundaryLimited,
+      physicalComponentSizes: [...resolution.componentSizes] };
     return projector;
   }
 
-  exportState(): PathProjectorStateV1 {
-    if (this.#diagnostics === null || this.#weights.length !== 3) {
+  exportState(): PathProjectorStateV4 {
+    if (this.#diagnostics === null || this.#resolution === null || this.#weights.length !== 3) {
       throw new Error("PathProjector must be fit before export");
     }
     return {
+      version: "PathProjectorStateV4",
+      measurementGeometry: "source-translated-global-event-frame-v1",
       landmarks: this.#landmarks.map((row) => [...row]),
       bandwidth: this.#bandwidth,
       weights: this.#weights.map((row) => [...row]),
-      diagnostics: { ...this.#diagnostics },
+      resolution: { ...this.#resolution, unscaledCenter: [...this.#resolution.unscaledCenter],
+        componentSizes: [...this.#resolution.componentSizes] },
+      diagnostics: {
+        geometryDistanceCorrelation: this.#diagnostics.geometryDistanceCorrelation,
+        causalPrefixRootMeanSquaredDistance: this.#diagnostics.causalPrefixRootMeanSquaredDistance,
+        outputDimensions: 3,
+        landmarkCount: this.#diagnostics.landmarkCount,
+      },
     };
   }
 
   projectTrustedPath(experience: TrustedExperience): Vec3 {
-    return this.#encode(canonicalPath(experience.trajectory()));
+    return this.#encode(eventPathGeometry(experience.trajectory()));
   }
 
   projectPath(points: readonly Vec3[]): Vec3 {
-    return this.#encode(canonicalPath(points));
+    return this.#encode(eventPathGeometry(points));
   }
 
   projectCausalPrefix(prefix: readonly Vec3[]): Vec3 {
-    return this.#encode(canonicalPath(prefix));
+    return this.#encode(eventPathGeometry(prefix));
   }
 
   geometry(points: readonly Vec3[]): Float64Array {
-    return canonicalPath(points);
+    return eventPathGeometry(points);
   }
 
   diagnostics(): PathEncoderDiagnostics {
     if (this.#diagnostics === null) throw new Error("PathProjector must be fit first");
-    return { ...this.#diagnostics };
+    return { ...this.#diagnostics, physicalComponentSizes: [...this.#diagnostics.physicalComponentSizes] };
   }
 
   #features(geometry: Float64Array): Float64Array {

@@ -25,9 +25,38 @@ test('real public changes go through the production attention controller and wak
     frames.forEach(frame => monitor.accept(frame)); monitor.check();
     assert.equal(monitor.controller.snapshot().focusTargetId, 'external'); assert(wakes.length > 0); assert.equal(captured.length, 1);
     assert.equal((wakes[0] as { kind: string }).kind, 'unknown-change');
+    assert.deepEqual((captured[0] as { trackedIds: readonly string[] }).trackedIds, ['self', 'external']);
     await compute.call('status');
     await new Promise<void>(resolve => setImmediate(resolve));
     for (let sequence = 21; sequence <= 40; sequence++) monitor.accept({ ...frames[20]!, sequence, activeSeconds: sequence * .05 });
     assert(monitor.controller.snapshot().scores.every(score => score.score.predictionDeviationKnown === false));
+  } finally { await compute.close(); }
+});
+
+test('an unknown real change on the already focused subject wakes once without becoming a prediction violation', async () => {
+  const compute = new Compute(), wakes: unknown[] = [], captured: unknown[] = [];
+  try {
+    const monitor = new AttentionMonitor(compute, () => {}, notice => wakes.push(notice),
+      event => captured.push(event), 'focused-unknown-test');
+    monitor.bindActionTarget('self');
+    const frames: Observation[] = Array.from({ length: 21 }, (_, sequence) => ({
+      sequence, activeSeconds: sequence * .05,
+      self: { position: [0, 0, 0], yaw: sequence < 10 ? 0 : Math.PI / 6, pitch: 0, properties: {} },
+      targetId: null, contextId: 'focused-unknown', objects: [],
+    }));
+    frames.forEach(frame => monitor.accept(frame));
+    monitor.check();
+    assert.equal(monitor.controller.snapshot().focusTargetId, 'self');
+    assert.equal(monitor.controller.snapshot().preemptionCount, 0,
+      'remaining on the current focus is not a focus preemption');
+    assert.equal(wakes.length, 1);
+    assert.equal((wakes[0] as { kind: string }).kind, 'unknown-change');
+    assert.equal((wakes[0] as { subjectId: string }).subjectId, 'self');
+    assert((wakes[0] as { evidence: readonly PublicChange[] }).evidence
+      .some(value => value.subject === 'self' && value.property === 'yaw'));
+    assert.deepEqual((captured[0] as { trackedIds: readonly string[] }).trackedIds, ['self'],
+      'a self wake must not duplicate the tracked subject');
+    monitor.sealThrough(frames.at(-1)!);
+    assert.equal(wakes.length, 1, 'the same sealed window must not be reported twice');
   } finally { await compute.close(); }
 });

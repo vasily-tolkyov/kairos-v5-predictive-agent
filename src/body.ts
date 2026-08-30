@@ -3,16 +3,86 @@ import { randomUUID } from 'node:crypto';
 import mineflayer, { type Bot } from 'mineflayer';
 import { Vec3 } from 'vec3';
 import type { Block } from 'prismarine-block';
-import type { Action, BodyResult, Observation, PublicObject, RealEvent } from './contracts.js';
+import type { Action, ActionCue, BodyResult, Observation, PublicObject, RealEvent } from './contracts.js';
 import { cueFor } from './events.js';
 import { assert, sha } from './util.js';
-import { validateAction } from './analysis-actions.js';
+import { validateAction } from './action-contract.js';
 import { publicLayoutContextId } from './public-context.js';
+import type { ActionOfferV1, GoalPredicateV1, PublicActionRequirementKindV1,
+  PublicActionRequirementV1 } from './control/contracts.js';
 
 const tuple = (value: { x: number; y: number; z: number }): readonly [number, number, number] => [value.x, value.y, value.z];
 const direction = (yaw: number, pitch: number) => new Vec3(-Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch));
+type PublicRaycastBlock = Block & { readonly face?: number; readonly intersect?: Vec3 };
+export function exactPublicBlockHit(block: PublicRaycastBlock): { direction: Vec3; cursor: Vec3 } {
+  const directions = [new Vec3(0, -1, 0), new Vec3(0, 1, 0), new Vec3(0, 0, -1),
+    new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(1, 0, 0)];
+  assert(Number.isInteger(block.face) && block.face! >= 0 && block.face! < directions.length && block.intersect,
+    'public-block-ray-hit-missing');
+  const cursor = block.intersect.minus(block.position);
+  assert([cursor.x, cursor.y, cursor.z].every(value => Number.isFinite(value) && value >= -1e-6 && value <= 1 + 1e-6),
+    'public-block-ray-hit-outside-target');
+  return { direction: directions[block.face!]!, cursor };
+}
+export function publicBlockInteractionPacket(block: PublicRaycastBlock,
+  hit: ReturnType<typeof exactPublicBlockHit>, sequence: number) {
+  assert(Number.isInteger(sequence) && sequence >= 0, 'invalid-public-block-interaction-sequence');
+  const direction = hit.direction.y < 0 ? 0 : hit.direction.y > 0 ? 1 : hit.direction.z < 0 ? 2
+    : hit.direction.z > 0 ? 3 : hit.direction.x < 0 ? 4 : 5;
+  return { hand: 0, location: block.position, direction, cursorX: hit.cursor.x, cursorY: hit.cursor.y,
+    cursorZ: hit.cursor.z, insideBlock: false, worldBorderHit: false, sequence };
+}
 export interface BodyConfiguration { host: '127.0.0.1'; port: number; username: string; worldId: string;
   sessionId?: string; activeSecondsOffset?: number; }
+
+/**
+ * Describe only the body's current public preconditions for a primitive action.
+ *
+ * This function deliberately returns no proposed action, direction, subgoal, or
+ * method for satisfying a missing condition. Planning remains outside the body.
+ */
+export function describeActionRequirement(actionCue: ActionCue,
+  observation: Observation): PublicActionRequirementV1 {
+  const actionKind = actionCue.kind;
+  assert(actionKind !== 'passive', 'passive-cue-has-no-body-action-requirement');
+  const target = observation.targetId === null ? null
+    : observation.objects.find(object => object.id === observation.targetId) ?? null;
+  const targetKind = target?.id.startsWith('block:') ? 'block'
+    : target?.id.startsWith('entity:') ? 'entity' : null;
+  const required: PublicActionRequirementKindV1[] = [];
+  if (actionKind === 'attack') required.push('public-crosshair-entity');
+  else if (actionKind === 'interact' || actionKind === 'break' || actionKind === 'place')
+    required.push('public-crosshair-block');
+  if (actionKind === 'place') required.push('public-held-item');
+  const heldItem = observation.self.properties.heldItem;
+  const missing = required.filter(requirement => {
+    if (requirement === 'public-crosshair-block')
+      return targetKind !== 'block' || (actionCue.targetRole !== null && target?.type !== actionCue.targetRole);
+    if (requirement === 'public-crosshair-entity')
+      return targetKind !== 'entity' || (actionCue.targetRole !== null && target?.type !== actionCue.targetRole);
+    return typeof heldItem !== 'string' || heldItem.length === 0;
+  });
+  const targetBinding = target && targetKind && required.some(requirement => requirement.startsWith('public-crosshair-'))
+    ? { objectId: target.id, objectType: target.type, publicKind: targetKind,
+      observationSequence: observation.sequence } as const
+    : null;
+  const predicates: GoalPredicateV1[] = [];
+  if (required.includes('public-crosshair-block') || required.includes('public-crosshair-entity'))
+    predicates.push({ version: 'GoalPredicateV1', id: 'public-crosshair-target', subject: { kind: 'crosshair' },
+      observable: actionCue.targetRole === null ? 'visible' : 'type', comparator: 'equals',
+      target: actionCue.targetRole ?? true });
+  if (required.includes('public-held-item')) predicates.push({ version: 'GoalPredicateV1', id: 'public-held-item',
+    subject: { kind: 'self' }, observable: 'properties.heldItem', comparator: 'not-equals', target: null });
+  const goal = predicates.length === 0 ? null : {
+    version: 'GroundedGoalV1' as const,
+    id: `public-action-requirement:${sha({ actionCue, predicates })}`,
+    expression: predicates.length === 1 ? { kind: 'predicate' as const, predicate: predicates[0]! }
+      : { kind: 'all' as const, children: predicates.map(predicate => ({ kind: 'predicate' as const, predicate })) },
+  };
+  return Object.freeze({ version: 'PublicActionRequirementV1', actionCue: structuredClone(actionCue),
+    observationSequence: observation.sequence, satisfied: missing.length === 0,
+    required: Object.freeze(required), missing: Object.freeze(missing), goal, targetBinding });
+}
 /** Session-local sequence, continuous experienced time. Offline wall time is not an input. */
 export class BodySession {
   constructor(readonly activeSecondsOffset = 0, readonly id: string = randomUUID()) {
@@ -36,6 +106,7 @@ export class MinecraftBody extends EventEmitter {
   #executing = false;
   #eventNumber = 0;
   #physicalCalls = 0;
+  #blockInteractionSequence = 0;
   #objects = new Map<string, { object: PublicObject; target: unknown }>();
   constructor(configuration: BodyConfiguration, readonly record: (kind: string, value: unknown) => void) {
     super(); this.session = new BodySession(configuration.activeSecondsOffset, configuration.sessionId);
@@ -61,6 +132,25 @@ export class MinecraftBody extends EventEmitter {
   get physicalCalls(): number { return this.#physicalCalls; }
   latest(): Observation { this.check(); const frame = this.frames.at(-1); assert(frame, 'no-real-public-frame'); return frame; }
   async ready(): Promise<void> { await this.#until(() => this.frames.length >= 3, 120_000); }
+  async waitForObservationAfter(sequence: number): Promise<Observation> {
+    this.check();
+    const current = this.frames.at(-1);
+    if (current && current.sequence > sequence) return structuredClone(current);
+    return new Promise<Observation>((resolve, reject) => {
+      const cleanup = () => { this.off('frame', frame); this.off('fault', fault); };
+      const frame = (observation: Observation) => {
+        if (observation.sequence <= sequence) return;
+        cleanup(); resolve(structuredClone(observation));
+      };
+      const fault = (error: Error) => { cleanup(); reject(error); };
+      this.on('frame', frame); this.on('fault', fault);
+      try {
+        this.check();
+        const latest = this.frames.at(-1);
+        if (latest && latest.sequence > sequence) frame(latest);
+      } catch (error) { fault(error as Error); }
+    });
+  }
   async #until(predicate: () => boolean, timeout: number, signal?: AbortSignal): Promise<void> {
     if (signal?.aborted || predicate()) return;
     await new Promise<void>((resolve, reject) => {
@@ -129,9 +219,20 @@ export class MinecraftBody extends EventEmitter {
     }
     // Mineflayer's helper rejects exact zero yaw/pitch through a truthiness check; use its same physical ray directly.
     const cursor = this.bot.world.raycast(eye, direction(entity.yaw, entity.pitch), 4.5) as unknown as Block | null;
-    const targetId = cursor ? `block:${cursor.position.x},${cursor.position.y},${cursor.position.z}` : null;
-    if (cursor && targetId) objects.set(targetId, { object: { id: targetId, type: cursor.name,
-      relativePosition: tuple(cursor.position.plus(new Vec3(.5, .5, .5)).minus(position)), properties: { ...cursor.getProperties() } }, target: cursor });
+    const entityCursor = this.bot.entityAtCursor(3.5);
+    const blockDistance = cursor ? cursor.position.plus(new Vec3(.5, .5, .5)).distanceTo(eye) : Number.POSITIVE_INFINITY;
+    const entityDistance = entityCursor && entityCursor.type !== 'player' ? entityCursor.position.distanceTo(eye) : Number.POSITIVE_INFINITY;
+    const targetId = entityDistance < blockDistance ? `entity:${entityCursor!.id}`
+      : cursor ? `block:${cursor.position.x},${cursor.position.y},${cursor.position.z}` : null;
+    if (cursor) {
+      const id = `block:${cursor.position.x},${cursor.position.y},${cursor.position.z}`;
+      objects.set(id, { object: { id, type: cursor.name,
+        relativePosition: tuple(cursor.position.plus(new Vec3(.5, .5, .5)).minus(position)), properties: { ...cursor.getProperties() } }, target: cursor });
+    }
+    if (entityCursor && entityCursor.type !== 'player' && targetId === `entity:${entityCursor.id}`) {
+      objects.set(targetId, { object: { id: targetId, type: entityCursor.name ?? entityCursor.type,
+        relativePosition: tuple(entityCursor.position.minus(position)), properties: {} }, target: entityCursor });
+    }
     this.#objects = objects;
     const visible = [...objects.values()].map(value => value.object);
     return Object.freeze({ sequence: this.#sequence, activeSeconds: this.session.activeSeconds(this.#sequence),
@@ -142,15 +243,43 @@ export class MinecraftBody extends EventEmitter {
       objects: visible, targetId,
       contextId: publicLayoutContextId(this.bot.game.dimension, visible) });
   }
-  observationForAnalysis(): unknown {
-    const frame = this.latest();
-    return { sequence: frame.sequence, body: { ...frame.self.properties, yawDegrees: frame.self.yaw * 180 / Math.PI,
-      pitchDegrees: frame.self.pitch * 180 / Math.PI }, objects: frame.objects.map(object => ({ ...object,
-        relativePosition: object.relativePosition.map(value => Number(value.toFixed(3))) })), crosshair: frame.targetId,
-      primitiveActionsForExecuteChain: { observe: 'ticks 1..100 (real observation window, distinct from the snapshot tool)', wait: 'ticks 1..100', look: 'relative yawDegrees/pitchDegrees -90..90',
-        move: 'direction forward/back/left/right; ticks 1..20', jump: 'forward boolean; ticks 1..20',
-        interact: 'targetId must still be the public crosshair block', attack: 'visible non-player crosshair entity only',
-        break: 'current visible crosshair block', place: 'current visible support block and face', 'select-hotbar': 'slot 0..8' } };
+  listActionOffers(observation: Observation = this.latest()): readonly ActionOfferV1[] {
+    // Offers are the immutable action catalogue belonging to this captured
+    // public frame. Minecraft may advance while physical reasoning runs; the
+    // runtime rebinds the selected cue against the latest frame immediately
+    // before execution. Requiring the captured frame to still be globally
+    // latest here would break the observation+offers event boundary.
+    const actions: Action[] = [
+      { kind: 'observe', parameters: { ticks: 5 } }, { kind: 'observe', parameters: { ticks: 20 } },
+      { kind: 'wait', parameters: { ticks: 5 } }, { kind: 'wait', parameters: { ticks: 20 } },
+      { kind: 'look', parameters: { yawDegrees: -15, pitchDegrees: 0 } },
+      { kind: 'look', parameters: { yawDegrees: 15, pitchDegrees: 0 } },
+      { kind: 'look', parameters: { yawDegrees: 0, pitchDegrees: -15 } },
+      { kind: 'look', parameters: { yawDegrees: 0, pitchDegrees: 15 } },
+      ...['forward', 'back', 'left', 'right'].map(direction => ({ kind: 'move' as const, parameters: { direction, ticks: 4 } })),
+      { kind: 'jump', parameters: { forward: false, ticks: 4 } },
+      { kind: 'jump', parameters: { forward: true, ticks: 4 } },
+      ...Array.from({ length: 9 }, (_, slot) => ({ kind: 'select-hotbar' as const, parameters: { slot } })),
+    ];
+    const target = observation.targetId ? observation.objects.find(object => object.id === observation.targetId) : null;
+    if (target?.id.startsWith('entity:')) actions.push({ kind: 'attack', parameters: {}, targetId: target.id });
+    if (target?.id.startsWith('block:')) {
+      actions.push({ kind: 'interact', parameters: {}, targetId: target.id },
+        { kind: 'break', parameters: {}, targetId: target.id });
+      if (typeof observation.self.properties.heldItem === 'string') for (const face of ['up', 'north', 'south', 'east', 'west'])
+        actions.push({ kind: 'place', parameters: { face }, targetId: target.id });
+    }
+    return actions.map(action => { validateAction(action); return { version: 'ActionOfferV1',
+      offerId: sha({ observationSequence: observation.sequence, action }), observationSequence: observation.sequence,
+      action: structuredClone(action), cue: cueFor(action, observation) }; });
+  }
+  describeActionRequirement(actionCue: ActionCue,
+    observation: Observation = this.latest()): PublicActionRequirementV1 {
+    // Requirements belong to the same immutable observation envelope as the
+    // action offers.  They describe only what was publicly missing at that
+    // frame; execute() still rebinds the selected real target against the
+    // newest frame before touching Minecraft.
+    return describeActionRequirement(actionCue, observation);
   }
   async execute(action: Action): Promise<{ result: BodyResult; event: RealEvent | null }> {
     this.check(); validateAction(action); assert(!this.#executing, 'body-already-executing'); this.#executing = true;
@@ -184,7 +313,15 @@ export class MinecraftBody extends EventEmitter {
           if (action.parameters.forward === true) this.bot.setControlState('forward', true);
           await this.waitTicks(1); this.bot.setControlState('jump', false); await this.waitTicks(integer('ticks', 1, 20, 4)); break;
         case 'select-hotbar': this.#physicalCalls++; this.bot.setQuickBarSlot(integer('slot', 0, 8, 0)); await this.waitTicks(1); break;
-        case 'interact': this.#physicalCalls++; await this.bot.activateBlock(this.#objects.get(action.targetId!)!.target as Parameters<Bot['activateBlock']>[0]); await this.waitTicks(1); break;
+        case 'interact': {
+          this.#physicalCalls++;
+          const block = this.#objects.get(action.targetId!)!.target as PublicRaycastBlock;
+          const hit = exactPublicBlockHit(block);
+          const packet = publicBlockInteractionPacket(block, hit, this.#blockInteractionSequence++);
+          this.record('block-interaction-attempt', { targetId: action.targetId, observationSequence: start.sequence,
+            face: block.face, intersect: block.intersect, packet });
+          this.bot._client.write('block_place', packet); this.bot.swingArm('right'); await this.waitTicks(1); break;
+        }
         case 'break': {
           this.#physicalCalls++;
           this.record('dig-attempt-start', { sequence: start.sequence, targetId: action.targetId, crosshair: start.targetId });
@@ -224,7 +361,9 @@ export class MinecraftBody extends EventEmitter {
       const frames = this.frames.filter(frame => frame.sequence >= start.sequence && frame.sequence <= receipt.endSequence);
       this.#eventNumber++;
       const event: RealEvent = { version: 'RealEventV5', id: this.session.eventId(this.#eventNumber), cue: cueFor(action, start),
-        frames, trackedIds: ['self', ...new Set(frames.flatMap(frame => frame.objects.map(object => object.id)))],
+        // The action event follows the acting body and its direct public target. Other objects
+        // enter experience only when the independent attention monitor actually captures them.
+        trackedIds: ['self', ...(action.targetId ? [action.targetId] : [])], frames,
         bodyResult: receipt, provenance: 'executed-real-body', complete: true };
       if (digEnd) this.record('dig-attempt', { targetId: action.targetId, startSequence: start.sequence, startCrosshair: start.targetId,
         forceEndSequence: digEnd.sequence, forceEndCrosshair: digEnd.crosshair, forceEndReason: digEnd.reason,

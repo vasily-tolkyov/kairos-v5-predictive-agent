@@ -59,13 +59,6 @@ export interface DesiredChange {
   readonly direction?: 'increase' | 'decrease' | 'change' | 'unchanged';
   readonly value?: PublicValue;
 }
-export interface Intent {
-  readonly goal: string;
-  readonly subgoals: readonly string[];
-  readonly hypotheses: readonly string[];
-  readonly plan: readonly string[];
-  readonly verification: readonly string[];
-}
 export interface LocalReadout {
   readonly sampleStep: number;
   /** Index within the physical snapshot passed to Clone/readout. */
@@ -81,8 +74,18 @@ export interface PredictionSample {
   readonly traceId: string | null;
   readonly pageId: string | null;
   readonly positions: readonly number[][];
+  /**
+   * Control/audit snapshots may retain only the endpoints of an already
+   * completed trajectory. The live PhysicalMemory result omits this field
+   * and always contains the full trajectory.
+   */
+  readonly trajectoryRetention?: 'endpoints-only';
+  /** Number of positions produced by PredictionClone before audit compaction. */
+  readonly simulatedPositionCount?: number;
   readonly readout: readonly LocalReadout[];
   readonly reason: string | null;
+  /** Uniform numerical-unit conversion used only inside the temporary clone. */
+  readonly resolutionScale?: number;
 }
 export interface Prediction {
   readonly kind: 'factual-prediction' | 'hypothetical-prediction';
@@ -92,10 +95,4 @@ export interface Prediction {
   readonly evidence: unknown;
   readonly unknown: readonly string[];
   readonly mapSha256: string | null;
-}
-export interface HypotheticalState {
-  readonly kind: 'hypothetical-state';
-  readonly predictedChanges: readonly PublicChange[];
-  readonly explicitAssumptions: readonly string[];
-  readonly unobserved: 'unknown';
 }
