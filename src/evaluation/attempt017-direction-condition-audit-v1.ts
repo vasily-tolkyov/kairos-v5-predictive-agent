@@ -1,7 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { Observation } from '../contracts.js';
-import type { ConditionApplicabilityV1, EffectRecallCandidateV1, GroundedGoalV1 } from '../control/contracts.js';
+import type { ConditionApplicabilityV1, GroundedGoalV1 } from '../control/contracts.js';
+import type { LegacyEffectRecallCandidateV1 as EffectRecallCandidateV1 }
+  from '../legacy/audit-control-contracts.js';
 import { GroundedGoalEvaluatorV1 } from '../control/goal.js';
 import { PhysicalMemory, type MemorySnapshot } from '../memory.js';
 import { assert, saveJson, sha } from '../util.js';

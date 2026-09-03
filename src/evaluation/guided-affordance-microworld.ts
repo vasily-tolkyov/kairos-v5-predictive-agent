@@ -1,8 +1,15 @@
 import type { Action, Observation, PublicObject, RealEvent } from '../contracts.js';
-import type { ActionOfferV1, GroundedGoalV1, JointTransientControlFieldConfigV2 } from '../control/contracts.js';
+import type { ActionOfferV1, ConditionApplicabilityV1, ContinuationPredictionV2,
+  ContinuousPatternRecallV2, EffectRecallCandidateV1, GoalEvaluationV1, GroundedGoalV1,
+  HypotheticalPublicStateV1, JointTransientControlFieldConfigV2, PhysicalReasoningPortV2,
+  ProjectedParentRelationApplicabilityV1 } from '../control/contracts.js';
 import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2 } from '../control/controller.js';
 import { cueFor } from '../events.js';
 import { PhysicalMemory, type MemorySnapshot } from '../memory.js';
+import { legacyCandidateAsInactiveDistributedAuditV3,
+  legacyTransitionAsInactiveDistributedAuditV3,
+  type LegacyEffectRecallCandidateV1 }
+  from '../legacy/audit-control-contracts.js';
 import { assert, sha } from '../util.js';
 
 export type GuidedAffordanceMode = 'look-plus-acquire' | 'look-plus-away'
@@ -170,6 +177,59 @@ export interface GuidedAffordanceEvaluationResultV1 {
     readonly actions: readonly string[]; readonly finalActive: boolean; readonly timeline: readonly unknown[] }[];
 }
 
+/** Explicitly legacy evaluation adapter. It keeps the old V1 fixture buildable
+ * without presenting its one-event R2/R2A state as hierarchical evidence. */
+class LegacyGuidedReasoningAuditAdapterV2 implements PhysicalReasoningPortV2 {
+  readonly #legacyCandidates = new Map<string, LegacyEffectRecallCandidateV1>();
+  constructor(readonly memory: PhysicalMemory) {}
+  #candidates(values: readonly LegacyEffectRecallCandidateV1[]): readonly EffectRecallCandidateV1[] {
+    for (const value of values) this.#legacyCandidates.set(value.candidateId, value);
+    return values.map(legacyCandidateAsInactiveDistributedAuditV3);
+  }
+  recallByEffect(goal: GroundedGoalV1, difference: GoalEvaluationV1, observation: Observation) {
+    return this.#candidates(this.memory.recallByEffect(goal, difference, observation));
+  }
+  recallAtomicEffect(goal: GroundedGoalV1, difference: GoalEvaluationV1, observation: Observation) {
+    return this.#candidates(this.memory.recallByEffect(goal, difference, observation));
+  }
+  recallContinuousPattern(): readonly ContinuousPatternRecallV2[] { return []; }
+  compareConditions(candidate: EffectRecallCandidateV1, observation: Observation) {
+    const legacy = this.#legacyCandidates.get(candidate.candidateId);
+    assert(legacy, 'legacy-audit-candidate-not-recalled');
+    return this.memory.compareConditions(legacy, observation);
+  }
+  compareCurrentFactors(): ConditionApplicabilityV1 {
+    return { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
+      applicability: 0, productionEligible: false };
+  }
+  compareProjectedParentRelations(_relationIds: readonly string[], _observation: Observation,
+    states: readonly HypotheticalPublicStateV1[]): readonly ProjectedParentRelationApplicabilityV1[] {
+    return states.map(() => ({ version: 'ProjectedParentRelationApplicabilityV1',
+      selectedRelationId: null, relationResults: [], matchedFactorIds: [], contradictedFactorIds: [],
+      unknownFactorIds: ['legacy-audit-has-no-hierarchical-R2A-relation'], applicability: 0,
+      productionEligible: false }));
+  }
+  predictCandidate(candidate: EffectRecallCandidateV1, observation: Observation, goal: GroundedGoalV1,
+    _evaluation: GoalEvaluationV1) {
+    void observation; void goal;
+    return { prediction: { version: 'DistributedPredictionV3' as const,
+      kind: 'hypothetical-prediction' as const, support: 0, calibratedProbability: false as const,
+      samples: [], evidence: candidate.evidence,
+      unknown: ['legacy-audit-rollout-is-not-distributed-physical-evidence'], substrateSha256: null },
+    currentEvidence: candidate.evidence, validSampleCount: 0, progressSampleCount: 0,
+    progressFraction: 0, nextStates: [],
+    unknown: ['legacy-audit-rollout-is-not-distributed-physical-evidence'] };
+  }
+  predictContinuation(patternId: string): ContinuationPredictionV2 {
+    return { version: 'ContinuationPredictionV2', patternId, support: 0, samples: [],
+      evidenceGrade: 'single-observation', unknown: ['legacy-audit-has-no-continuous-R2-pattern'] };
+  }
+  recallFactorTransition(factorIds: readonly string[], observation: Observation) {
+    return this.memory.recallFactorTransition(factorIds, observation)
+      .map(legacyTransitionAsInactiveDistributedAuditV3);
+  }
+}
+
 export async function runGuidedAffordanceEvaluation(): Promise<GuidedAffordanceEvaluationResultV1> {
   const memory = new PhysicalMemory(); for (const event of guidedAffordanceCurriculum()) memory.observe(event);
   assert(memory.ready && memory.mapSha256, 'guided-curriculum-did-not-initialize-physical-memory');
@@ -179,7 +239,8 @@ export async function runGuidedAffordanceEvaluation(): Promise<GuidedAffordanceE
     const isolatedMemory = PhysicalMemory.restore(frozen);
     const environment = new GuidedAffordanceEnvironment(isolatedMemory, initialYawDegrees,
       initialYawDegrees < 0 ? 101 : 102);
-    const manager = new PhysicalControlManagerV2(isolatedMemory, environment, guidedAffordanceControlConfig);
+    const manager = new PhysicalControlManagerV2(new LegacyGuidedReasoningAuditAdapterV2(isolatedMemory),
+      environment, guidedAffordanceControlConfig);
     const result = await manager.runGoal(guidedAffordanceGoal);
     const actions = environment.timeline.filter(item => item.kind === 'physical-action')
       .map(item => ((item.value as { action: Action }).action.kind));

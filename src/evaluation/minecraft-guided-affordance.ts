@@ -1,30 +1,25 @@
 import { createWriteStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { Vec3 } from 'vec3';
-import type { Action, Observation, RealEvent } from '../contracts.js';
+import type { Action, ActionCue, Observation, RealEvent } from '../contracts.js';
 import { MinecraftBody } from '../body.js';
 import { Compute } from '../compute.js';
 import { cueFor, cueIdentity, eventRows } from '../events.js';
 import type { MemoryObservationReceipt, MemorySnapshot } from '../memory.js';
 import { Services, type Configuration } from '../services.js';
 import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2 } from '../control/controller.js';
-import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, EffectRecallCandidateV1,
+import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, ContinuationPredictionV2,
+  ContinuousPatternRecallV2, EffectRecallCandidateV1,
   GoalEvaluationV1, GroundedGoalV1, HypotheticalPublicStateV1, OpaqueFactorTransitionTraceV1,
-  PhysicalReasoningPortV1 } from '../control/contracts.js';
+  PhysicalReasoningPortV2, ProjectedParentRelationApplicabilityV1 } from '../control/contracts.js';
 import { assert, canonical, saveJson, sha } from '../util.js';
+import { prepareGuidedNoteFixtureLiveV1, type FixtureSideV1,
+  type GuidedMinecraftLayoutV1 } from './minecraft-note-fixture-v1.js';
+export { guidedFixtureGeometryV1, prepareGuidedNoteFixtureLiveV1,
+  type FixtureSideV1, type GuidedMinecraftLayoutV1 } from './minecraft-note-fixture-v1.js';
 
 export type GuidedMinecraftModeV1 = 'look-plus-acquire' | 'look-plus-away' | 'look-minus-acquire'
   | 'look-minus-away' | 'interact-on' | 'interact-off' | 'observe';
-export type FixtureSideV1 = 'north' | 'south' | 'east' | 'west';
-
-export interface GuidedMinecraftLayoutV1 {
-  readonly id: string;
-  readonly originX: number;
-  readonly originZ: number;
-  readonly side: FixtureSideV1;
-  readonly markerVariant: 0 | 1 | 2;
-}
 
 export interface GuidedMinecraftTrainingItemV1 {
   readonly index: number;
@@ -52,35 +47,6 @@ export const guidedMinecraftHeldOutLayoutsV1: readonly GuidedMinecraftLayoutV1[]
   { id: 'held-out-layout-102', originX: 92, originZ: 94, side: 'east', markerVariant: 2 },
 ];
 
-interface FixtureGeometryV1 {
-  readonly backing: readonly [number, number, number];
-  readonly control: readonly [number, number, number];
-  readonly bot: readonly [number, number, number];
-  readonly targetYaw: number;
-  readonly targetPitch: number;
-  readonly facing: FixtureSideV1;
-  readonly markerCommands: readonly string[];
-}
-
-const sideVector = (side: FixtureSideV1): readonly [number, number] => side === 'south' ? [0, 1]
-  : side === 'north' ? [0, -1] : side === 'east' ? [1, 0] : [-1, 0];
-const oppositeSide = (side: FixtureSideV1): FixtureSideV1 => side === 'south' ? 'north'
-  : side === 'north' ? 'south' : side === 'east' ? 'west' : 'east';
-
-export function guidedFixtureGeometryV1(layout: GuidedMinecraftLayoutV1): FixtureGeometryV1 {
-  const [sx, sz] = sideVector(layout.side), rx = sz, rz = -sx;
-  const backing = [layout.originX, 65, layout.originZ] as const;
-  const control = [layout.originX + sx, 65, layout.originZ + sz] as const;
-  const bot = [layout.originX + .5 + sx * 4, 64, layout.originZ + .5 + sz * 4] as const;
-  const dx = control[0] + .5 - bot[0], dy = control[1] + .5 - (bot[1] + 1.62), dz = control[2] + .5 - bot[2];
-  const horizontal = Math.hypot(dx, dz);
-  const targetYaw = Math.atan2(-dx, -dz), targetPitch = Math.atan2(dy, horizontal);
-  const distances = layout.markerVariant === 0 ? [2, -2] : layout.markerVariant === 1 ? [3, -2] : [2, -3];
-  const types = layout.markerVariant === 1 ? ['oak_planks', 'quartz_block'] : ['quartz_block', 'oak_planks'];
-  const markerCommands = distances.map((distance, index) => `setblock ${layout.originX + rx * distance} 65 ${layout.originZ + rz * distance} minecraft:${types[index]}`);
-  return { backing, control, bot, targetYaw, targetPitch, facing: oppositeSide(layout.side), markerCommands };
-}
-
 function targetOffset(mode: GuidedMinecraftModeV1): number {
   if (mode === 'look-plus-acquire') return -15;
   if (mode === 'look-plus-away') return 15;
@@ -100,37 +66,13 @@ function actionFor(mode: GuidedMinecraftModeV1, observation: Observation): Actio
 
 function publicObject(observation: Observation, type: string) {
   const objects = observation.objects.filter(object => object.type === type);
-  assert(objects.length === 1, `expected-one-public-${type}:${objects.length}`); return objects[0]!;
+  assert(objects.length === 1, `expected-one-public-${type}:${objects.length}`);
+  return objects[0]!;
 }
 
 async function configureFixture(services: Services, body: MinecraftBody, layout: GuidedMinecraftLayoutV1,
   powered: boolean, yawOffsetDegrees: number): Promise<{ observation: Observation; controlId: string }> {
-  const geometry = guidedFixtureGeometryV1(layout);
-  const clearRadius = 4, minX = layout.originX - clearRadius, maxX = layout.originX + clearRadius;
-  const minZ = layout.originZ - clearRadius, maxZ = layout.originZ + clearRadius;
-  services.command(`fill ${minX} 64 ${minZ} ${maxX} 69 ${maxZ} air`);
-  services.command(`fill ${minX} 63 ${minZ} ${maxX} 63 ${maxZ} minecraft:smooth_stone`);
-  services.command(`setblock ${geometry.backing.join(' ')} minecraft:redstone_lamp[lit=false]`);
-  services.command(`setblock ${geometry.control.join(' ')} minecraft:note_block[instrument=harp,note=${powered ? 1 : 0},powered=false]`);
-  for (const command of geometry.markerCommands) services.command(command);
-  services.command(`tp ${body.bot.username} ${geometry.bot.join(' ')} 0 0`);
-  await body.waitTicks(6);
-  // Aim at the real public collision shape used by Mineflayer's ray test.
-  let controlBlock = body.bot.blockAt(new Vec3(...geometry.control));
-  for (let ticks = 0; controlBlock?.name !== 'note_block' && ticks < 40; ticks++) {
-    await body.waitTicks(1); controlBlock = body.bot.blockAt(new Vec3(...geometry.control));
-  }
-  assert(controlBlock?.name === 'note_block' && controlBlock.shapes.length > 0, 'fixture-control-block-shape-unavailable');
-  const shape = controlBlock.shapes[0]!;
-  const target = new Vec3(geometry.control[0] + (shape[0]! + shape[3]!) / 2,
-    geometry.control[1] + (shape[1]! + shape[4]!) / 2, geometry.control[2] + (shape[2]! + shape[5]!) / 2);
-  const eye = body.bot.entity.position.offset(0, 1.62, 0), delta = target.minus(eye);
-  const shapeYaw = Math.atan2(-delta.x, -delta.z), shapePitch = Math.atan2(delta.y, Math.hypot(delta.x, delta.z));
-  await body.bot.look(shapeYaw + yawOffsetDegrees * Math.PI / 180, shapePitch, true);
-  await body.waitTicks(3);
-  const observation = body.latest(), control = publicObject(observation, 'note_block');
-  if (yawOffsetDegrees === 0) assert(observation.targetId === control.id, 'fixture-aim-did-not-bind-public-control');
-  return { observation, controlId: control.id };
+  return prepareGuidedNoteFixtureLiveV1(services, body, layout, powered ? 1 : 0, yawOffsetDegrees);
 }
 
 function assertTrainingOutcome(mode: GuidedMinecraftModeV1, event: RealEvent): void {
@@ -148,16 +90,35 @@ function assertTrainingOutcome(mode: GuidedMinecraftModeV1, event: RealEvent): v
     && change.property === 'note' && change.before === '1' && change.after === '2'), 'missing-real-control-contrast-change');
 }
 
-class WorkerPhysicalReasoningPortV1 implements PhysicalReasoningPortV1 {
+class WorkerPhysicalReasoningPortV2 implements PhysicalReasoningPortV2 {
   constructor(readonly compute: Compute) {}
   recallByEffect(goal: GroundedGoalV1, difference: GoalEvaluationV1, observation: Observation) {
     return this.compute.call<readonly EffectRecallCandidateV1[]>('recallByEffect', goal, difference, observation);
   }
+  recallAtomicEffect(goal: GroundedGoalV1, difference: GoalEvaluationV1, observation: Observation) {
+    return this.compute.call<readonly EffectRecallCandidateV1[]>('recallAtomicEffect', goal, difference, observation);
+  }
+  recallContinuousPattern(goal: GroundedGoalV1, difference: GoalEvaluationV1, observation: Observation) {
+    return this.compute.call<readonly ContinuousPatternRecallV2[]>('recallContinuousPattern', goal, difference, observation);
+  }
+  compareCurrentFactors(relationId: string, observation: Observation) {
+    return this.compute.call<ConditionApplicabilityV1>('compareCurrentFactors', relationId, observation);
+  }
+  compareProjectedParentRelations(relationIds: readonly string[], observation: Observation,
+    states: readonly HypotheticalPublicStateV1[],
+    source: { readonly r1Active: boolean; readonly r2Active: boolean }) {
+    return this.compute.call<readonly ProjectedParentRelationApplicabilityV1[]>(
+      'compareProjectedParentRelations', relationIds, observation, states, source);
+  }
+  predictContinuation(patternId: string, exactActionCue: ActionCue, observation: Observation) {
+    return this.compute.call<ContinuationPredictionV2>('predictContinuation', patternId, exactActionCue, observation);
+  }
   compareConditions(candidate: EffectRecallCandidateV1, state: Observation | HypotheticalPublicStateV1) {
     return this.compute.call<ConditionApplicabilityV1>('compareConditions', candidate, state);
   }
-  predictCandidate(candidate: EffectRecallCandidateV1, state: Observation | HypotheticalPublicStateV1, goal: GroundedGoalV1) {
-    return this.compute.call<BranchPredictionV1>('predictCandidate', candidate, state, goal);
+  predictCandidate(candidate: EffectRecallCandidateV1, state: Observation | HypotheticalPublicStateV1,
+    goal: GroundedGoalV1, evaluation: GoalEvaluationV1) {
+    return this.compute.call<BranchPredictionV1>('predictCandidate', candidate, state, goal, evaluation);
   }
   recallFactorTransition(factorIds: readonly string[], state: Observation | HypotheticalPublicStateV1) {
     return this.compute.call<readonly OpaqueFactorTransitionTraceV1[]>('recallFactorTransition', factorIds, state);
@@ -274,7 +235,7 @@ export async function runMinecraftGuidedAffordanceEvaluationV1(config: Configura
           comparator: 'equals', target: '1' } } };
       const memoryBefore = await compute.call<string>('hash');
       const environment = new ReadOnlyMinecraftEvaluationEnvironmentV1(body, compute);
-      const manager = new PhysicalControlManagerV2(new WorkerPhysicalReasoningPortV1(compute), environment, config.control);
+      const manager = new PhysicalControlManagerV2(new WorkerPhysicalReasoningPortV2(compute), environment, config.control);
       const result = await manager.runGoal(goal), final = body.latest(), memoryAfter = await compute.call<string>('hash');
       const targetReached = publicObject(final, 'note_block').properties.note === '1';
       const actions = environment.timeline.filter(item => item.kind === 'physical-action')

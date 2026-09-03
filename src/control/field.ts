@@ -9,6 +9,7 @@ interface JointSiteState {
   operation: JointControlOperationV2;
   nodeId: string;
   hardEligible: boolean;
+  productiveGrounding?: JointControlSiteInputV2['productiveGrounding'];
   drives: JointControlDrivesV2;
   activation: number;
   zeroEvidenceSteps: number;
@@ -131,13 +132,18 @@ export class JointTransientControlFieldV2 {
       if (prior) {
         Object.assign(prior, {
           operation: site.operation, nodeId: site.nodeId, hardEligible: site.hardEligible,
+          productiveGrounding: site.productiveGrounding
+            ? structuredClone(site.productiveGrounding) : undefined,
           drives, effectiveDrive,
         });
         if (site.hardEligible && hasEvidence(drives)) prior.zeroEvidenceSteps = 0;
       } else {
         this.#sites.set(site.siteId, {
           siteId: site.siteId, operation: site.operation, nodeId: site.nodeId,
-          hardEligible: site.hardEligible, drives, activation: 0,
+          hardEligible: site.hardEligible,
+          productiveGrounding: site.productiveGrounding
+            ? structuredClone(site.productiveGrounding) : undefined,
+          drives, activation: 0,
           zeroEvidenceSteps: 0, effectiveDrive,
         });
       }
@@ -250,7 +256,10 @@ export class JointTransientControlFieldV2 {
       .sort((left, right) => left.siteId.localeCompare(right.siteId))
       .map(state => ({
         siteId: state.siteId, operation: state.operation, nodeId: state.nodeId,
-        hardEligible: state.hardEligible, drives: structuredClone(state.drives),
+        hardEligible: state.hardEligible,
+        ...(state.productiveGrounding
+          ? { productiveGrounding: structuredClone(state.productiveGrounding) } : {}),
+        drives: structuredClone(state.drives),
         activation: state.activation, zeroEvidenceSteps: state.zeroEvidenceSteps,
         effectiveDrive: state.effectiveDrive,
       }));

@@ -13,9 +13,13 @@ import { R1_CONFIG } from './core/config.js';
 import { DistanceEmbedding, type EmbeddingState } from './distance-embedding.js';
 import { cueIdentity, eventRows, R2_EVENT_MEASUREMENT_ADAPTER_V2, relativePublicFeatures, validateEvent } from './events.js';
 import { assert, canonical, sha } from './util.js';
-import type { BranchPredictionV1, ConditionApplicabilityV1, EffectRecallCandidateV1, GroundedGoalV1,
-  GoalEvaluationV1, HypotheticalPublicStateV1, OpaqueFactorTransitionTraceV1,
-  PhysicalEvidenceReferenceV1 } from './control/contracts.js';
+import type { ConditionApplicabilityV1, GroundedGoalV1, GoalEvaluationV1,
+  HypotheticalPublicStateV1 } from './control/contracts.js';
+import type { LegacyBranchPredictionV1 as BranchPredictionV1,
+  LegacyEffectRecallCandidateV1 as EffectRecallCandidateV1,
+  LegacyOpaqueFactorTransitionTraceV1 as OpaqueFactorTransitionTraceV1,
+  LegacyPhysicalEvidenceReferenceV1 as PhysicalEvidenceReferenceV1 }
+  from './legacy/audit-control-contracts.js';
 import { desiredChangesForGoal } from './control/goal.js';
 
 interface TraceAnnotation {
@@ -72,7 +76,8 @@ export interface ReadoutBoundary {
 }
 export function readVisitedRegions(snapshot: R1TraceSnapshot, trajectory: readonly Vec3[],
   annotations: readonly (readonly PublicChange[])[], boundary: ReadoutBoundary = { kernelOffset: 0, observedThroughOriginalKernelIndex: null }
-): { readout: Prediction['samples'][number]['readout']; reason: string | null } {
+): { readout: Prediction['samples'][number]['readout']; visitedKernelIndices: readonly number[];
+    reason: string | null } {
   assert(Number.isInteger(boundary.kernelOffset) && boundary.kernelOffset >= 0
     && (boundary.observedThroughOriginalKernelIndex === null || Number.isInteger(boundary.observedThroughOriginalKernelIndex)
       && boundary.observedThroughOriginalKernelIndex >= 0), 'invalid-readout-boundary');
@@ -103,7 +108,7 @@ export function readVisitedRegions(snapshot: R1TraceSnapshot, trajectory: readon
     if (changes.length > 0) readout.push({ sampleStep, kernelIndex: nearest.kernelIndex, originalKernelIndex, distance: nearest.distance,
       potential: nearest.kernel.coefficient * Math.exp(-.5 * (nearest.distance / nearest.kernel.sigma) ** 2), changes });
   });
-  return { readout: collision ? [] : readout,
+  return { readout: collision ? [] : readout, visitedKernelIndices: [...visited].sort((left, right) => left - right),
     reason: collision ? 'indistinguishable-local-outcomes' : readout.length === 0 ? 'random-trajectory-did-not-reach-readout' : null };
 }
 
@@ -286,32 +291,38 @@ export class PhysicalMemory {
     const nodeById = new Map(state.factorNodes.map(node => [node.factorId, node]));
     return this.#activeFactorsFromAudit(this.#r2a.activationAudit(perception), nodeById);
   }
+  #matchedRelationApplicability(annotation: TraceAnnotation, observation: Observation): ReadonlyMap<string, number> {
+    const prepared = this.#prepared(annotation.cue, observation);
+    const contribution = prepared.query.contributions.find(value => value.r1Trace.pageId === annotation.pageId
+      && value.r1Trace.traceId === annotation.traceId);
+    const matchedRelationIds = new Set(contribution?.matchedRelationIds ?? []);
+    const applicability = new Map<string, number>();
+    for (const match of prepared.query.r3Matches) {
+      if (!matchedRelationIds.has(match.relationId)) continue;
+      applicability.set(match.relationId,
+        Math.max(applicability.get(match.relationId) ?? 0, match.relationApplicability));
+    }
+    return applicability;
+  }
   #evidence(annotation: TraceAnnotation, observation?: Observation): PhysicalEvidenceReferenceV1 {
     const coactivation = this.#store.coactivations().find(value => value.experienceAnchorId === annotation.anchorId
       && value.r1Trace.pageId === annotation.pageId && value.r1Trace.traceId === annotation.traceId);
     const r1Active = this.#store.r1.isTraceActive(annotation.pageId, annotation.traceId);
-    const r2Active = !!coactivation && coactivation.currentStrength > 0
-      && this.#store.resolveActiveR2Basin(coactivation.coactivationId) !== null;
+    const basin = coactivation ? this.#store.resolveActiveR2Basin(coactivation.coactivationId) : null;
+    const r2Active = !!coactivation && coactivation.currentStrength > 0 && basin !== null;
     const relations = this.#productionRelations(annotation);
-    let relationIds: readonly string[] = [];
-    let applicability = 0;
-    if (observation) {
-      const prepared = this.#prepared(annotation.cue, observation);
-      const contribution = prepared.query.contributions.find(value => value.r1Trace.pageId === annotation.pageId
-        && value.r1Trace.traceId === annotation.traceId);
-      relationIds = contribution?.matchedRelationIds ?? [];
-      applicability = relationIds.reduce((maximum, relationId) => Math.max(maximum,
-        ...prepared.query.r3Matches.filter(match => match.relationId === relationId)
-          .map(match => match.relationApplicability)), 0);
-    }
-    // A historical trace can still be recalled when its current condition is absent.  In that
-    // case keep the surviving physical relation references but report zero current applicability.
-    if (relationIds.length === 0) relationIds = relations.map(relation => relation.hyperedgeId);
+    // Relation identity belongs to this concrete historical R2 result.  A
+    // currently matched relation for the same action is only condition
+    // evidence and must never replace another result's provenance.
+    const relationIds = relations.map(relation => relation.hyperedgeId).sort();
+    const current = observation ? this.#matchedRelationApplicability(annotation, observation) : new Map<string, number>();
+    const applicability = relationIds.reduce((maximum, relationId) =>
+      Math.max(maximum, current.get(relationId) ?? 0), 0);
     return { eventId: annotation.eventId, anchorId: annotation.anchorId,
       r1: { pageId: annotation.pageId, traceId: annotation.traceId, active: r1Active },
-      r2: { coordinate: [...annotation.r2Coordinate], active: r2Active },
-      r2a: { relationIds: [...relationIds].sort(), applicability,
-        productionEligible: relations.some(relation => relationIds.includes(relation.hyperedgeId)) } };
+      r2: { coordinate: [...annotation.r2Coordinate], active: r2Active,
+        ...(basin ? { basin: { pageId: basin.pageId, memberVisitIds: [...basin.memberVisitIds].sort() } } : {}) },
+      r2a: { relationIds, applicability, productionEligible: relations.length > 0 } };
   }
   #annotation(candidate: EffectRecallCandidateV1): TraceAnnotation {
     const annotation = this.#annotations.find(value => value.eventId === candidate.evidence.eventId
@@ -347,23 +358,33 @@ export class PhysicalMemory {
   compareConditions(candidate: EffectRecallCandidateV1,
     state: Observation | HypotheticalPublicStateV1): ConditionApplicabilityV1 {
     const annotation = this.#annotation(candidate);
+    const candidateRelationIds = new Set(candidate.evidence.r2a.relationIds);
     const relations = this.#productionRelations(annotation)
-      .filter(relation => candidate.evidence.r2a.relationIds.length === 0
-        || candidate.evidence.r2a.relationIds.includes(relation.hyperedgeId));
+      .filter(relation => candidateRelationIds.has(relation.hyperedgeId));
     if (relations.length === 0) return { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
       applicability: 0, productionEligible: false };
     let active: ReadonlyMap<string, number>, inactive: ReadonlySet<string>;
+    let currentRelationApplicability: ReadonlyMap<string, number> | null = null;
     if ('version' in state) {
       active = new Map(state.knownActiveFactorIds.map(factorId => [factorId, 1]));
       inactive = new Set(state.knownInactiveFactorIds);
-    } else { active = this.#activeFactors(this.#perception(state)); inactive = new Set<string>(); }
+    } else {
+      active = this.#activeFactors(this.#perception(state)); inactive = new Set<string>();
+      currentRelationApplicability = this.#matchedRelationApplicability(annotation, state);
+    }
     let best: { relation: typeof relations[number]; matched: string[]; contradicted: string[]; unknown: string[]; applicability: number } | null = null;
     for (const relation of relations) {
-      const matched = relation.factorIds.filter(factorId => active.has(factorId));
-      const contradicted = relation.factorIds.filter(factorId => inactive.has(factorId));
-      const unknown = relation.factorIds.filter(factorId => !active.has(factorId) && !inactive.has(factorId));
-      const applicability = contradicted.length > 0 || unknown.length > 0 ? 0
-        : Math.min(relation.relationStrength, ...relation.factorIds.map(factorId => active.get(factorId)!));
+      const currentRelationMatched = currentRelationApplicability === null
+        || currentRelationApplicability.has(relation.hyperedgeId);
+      const matched = currentRelationMatched ? relation.factorIds.filter(factorId => active.has(factorId)) : [];
+      const contradicted = currentRelationMatched ? relation.factorIds.filter(factorId => inactive.has(factorId)) : [];
+      const unknown = currentRelationMatched
+        ? relation.factorIds.filter(factorId => !active.has(factorId) && !inactive.has(factorId))
+        : [...relation.factorIds];
+      const applicability = !currentRelationMatched || contradicted.length > 0 || unknown.length > 0 ? 0
+        : Math.min(relation.relationStrength,
+          currentRelationApplicability?.get(relation.hyperedgeId) ?? 1,
+          ...relation.factorIds.map(factorId => active.get(factorId)!));
       const item = { relation, matched, contradicted, unknown, applicability };
       if (!best || item.applicability > best.applicability || item.matched.length > best.matched.length
         || item.relation.hyperedgeId.localeCompare(best.relation.hyperedgeId) < 0) best = item;
@@ -454,6 +475,17 @@ export class PhysicalMemory {
     const nextStates: HypotheticalPublicStateV1[] = [];
     let progressSampleCount = 0;
     const transition = this.#factorTransition(annotation);
+    // An action event may keep recording unchanged tail frames after its last
+    // real public result.  Requiring a random rollout to traverse those later
+    // no-change kernels turns observation-window length into a false physical
+    // precondition.  A factor transition becomes readable only after the
+    // trajectory actually visits the final kernel carrying a recorded public
+    // outcome; events with no recorded outcome retain the conservative terminal
+    // requirement.  This is still a physical visit, never a historical template
+    // completion.
+    const lastRecordedOutcomeKernel = annotation.kernelChanges.findLastIndex(changes => changes.length > 0);
+    const factorTransitionReadoutKernel = lastRecordedOutcomeKernel >= 0
+      ? lastRecordedOutcomeKernel : snapshot.kernels.length - 1;
     // The production relation set is immutable for this read-only prediction.
     // Exporting the complete R2A graph once per random seed made one 24-sample
     // rollout repeat the same large graph traversal 24 times.
@@ -464,7 +496,8 @@ export class PhysicalMemory {
       const transported = transportTraceSnapshot(predictionSnapshot, centers[0]!, tangent)!;
       const readSnapshot = { ...predictionSnapshot, kernels: predictionSnapshot.kernels.map((kernel, index) => ({ ...kernel, center: transported[index]! })) };
       const read = readVisitedRegions(readSnapshot, predicted.positions, annotation.kernelChanges);
-      const visitedTerminal = read.readout.some(item => item.originalKernelIndex === snapshot.kernels.length - 1);
+      const visitedFactorTransitionOutcome = read.reason !== 'indistinguishable-local-outcomes'
+        && read.visitedKernelIndices.includes(factorTransitionReadoutKernel);
       const changes = read.readout.flatMap(item => item.changes);
       const progresses = expected.some(desired => changes.some(change => change.subject === desired.subject
         && change.property === desired.property && change.after === desired.after));
@@ -476,9 +509,12 @@ export class PhysicalMemory {
       const baseObservationSequence = 'version' in state ? state.baseObservationSequence : state.sequence;
       nextStates.push({ version: 'HypotheticalPublicStateV1', baseObservationSequence,
         knownChanges: structuredClone(changes),
-        knownActiveFactorIds: visitedTerminal && transition ? [...transition.activatedFactorIds, ...transition.unchangedActiveFactorIds].sort() : [],
-        knownInactiveFactorIds: visitedTerminal && transition ? [...transition.deactivatedFactorIds].sort() : [],
-        unknownFactorIds: visitedTerminal && transition ? [] : [...factorUniverse].sort(), unobserved: 'unknown' });
+        knownActiveFactorIds: visitedFactorTransitionOutcome && transition
+          ? [...transition.activatedFactorIds, ...transition.unchangedActiveFactorIds].sort() : [],
+        knownInactiveFactorIds: visitedFactorTransitionOutcome && transition
+          ? [...transition.deactivatedFactorIds].sort() : [],
+        unknownFactorIds: visitedFactorTransitionOutcome && transition ? [] : [...factorUniverse].sort(),
+        unobserved: 'unknown' });
     }
     const validSampleCount = samples.filter(sample => sample.readout.length > 0).length;
     const support = Math.min(currentEvidence.r1.active ? 1 : 0, currentEvidence.r2.active ? 1 : 0,

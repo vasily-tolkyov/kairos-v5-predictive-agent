@@ -1,6 +1,6 @@
 import type { Observation, Prediction, PublicChange, RealEvent } from '../contracts.js';
 import type { Compute } from '../compute.js';
-import { eventRows } from '../events.js';
+import { eventRows, realEventHierarchyContinuityV1 } from '../events.js';
 import { assert } from '../util.js';
 import { AttentionController } from './attention-controller.js';
 import type { AttentionCandidate } from './types.js';
@@ -61,8 +61,10 @@ export class AttentionMonitor {
     const frame = frames.at(-1)!;
     try {
       const trackedIds = ['self', ...new Set(frames.flatMap(f => f.objects.map(o => o.id)))];
-      const event: RealEvent = { version: 'RealEventV5', id: `${this.sessionId}:monitor-${frame.sequence}`, cue: { kind: 'passive', parameters: {}, targetRole: null },
+      const eventWithoutContinuity: RealEvent = { version: 'RealEventV5', id: `${this.sessionId}:monitor-${frame.sequence}`, cue: { kind: 'passive', parameters: {}, targetRole: null },
         frames, trackedIds, bodyResult: null, provenance: 'observed-passive', complete: true };
+      const event: RealEvent = { ...eventWithoutContinuity,
+        hierarchyContinuity: realEventHierarchyContinuityV1(eventWithoutContinuity, this.sessionId) };
       const series = eventRows(event), changes = series.changes.flat().filter(c => c.before !== c.after);
       const beforeAttention = this.controller.snapshot();
       const noticesBefore = this.notices.length;

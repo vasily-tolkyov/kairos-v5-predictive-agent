@@ -43,13 +43,13 @@ test('target-free primitives expose satisfied body facts without an action sugge
 
 test('target primitives report missing public crosshair facts without saying how to satisfy them', () => {
   assert.deepEqual(describeActionRequirement(cue('interact', block.type), observation(null)).missing,
-    ['public-crosshair-block']);
+    ['public-crosshair-block', 'public-unique-target-within-interaction-distance']);
   assert.deepEqual(describeActionRequirement(cue('break', block.type), observation(null)).missing,
-    ['public-crosshair-block']);
+    ['public-crosshair-block', 'public-unique-target-within-interaction-distance']);
   assert.deepEqual(describeActionRequirement(cue('attack', entity.type), observation(null)).missing,
-    ['public-crosshair-entity']);
+    ['public-crosshair-entity', 'public-unique-target-within-interaction-distance']);
   assert.deepEqual(describeActionRequirement(cue('place', block.type), observation(null)).missing,
-    ['public-crosshair-block', 'public-held-item']);
+    ['public-crosshair-block', 'public-unique-target-within-interaction-distance', 'public-held-item']);
 });
 
 test('requirements bind the exact current public target and reject the wrong public kind', () => {
@@ -69,8 +69,9 @@ test('requirements bind the exact current public target and reject the wrong pub
 
   const wrongKind = describeActionRequirement(cue('attack', entity.type), observation(block));
   assert.equal(wrongKind.satisfied, false);
-  assert.deepEqual(wrongKind.missing, ['public-crosshair-entity']);
-  assert.equal(wrongKind.targetBinding?.objectId, block.id);
+  assert.deepEqual(wrongKind.missing,
+    ['public-crosshair-entity', 'public-unique-target-within-interaction-distance']);
+  assert.equal(wrongKind.targetBinding, null);
 });
 
 test('place requires both an exact public block and a currently public held item', () => {

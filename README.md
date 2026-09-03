@@ -1,71 +1,69 @@
-# Kairos V5 Joint Physical-Control Agent V2
+# Kairos V5 Hierarchical Physical-Control Agent
 
-This V5 line has no language-model or Pi analysis core. Its durable physical
-experience system remains R1/R2/R2A, while R3 remains a transient condition
-query. Current-goal reasoning is performed by one fast-decaying joint field
-whose competitors are complete `operation × branch` sites.
-
-## Runtime
+This branch has no LLM or Pi analysis core. Its production memory path is the
+new hierarchy below; the former `PhysicalMemory`/`PathProjector` R2 and old R2A
+checkpoints remain in the repository only so historical evidence can be read.
 
 ```text
-public Minecraft observation
+complete real action/passive window
         ↓
-grounded observable goal → goal difference + persistent dependency graph
+R1 — one discrete experience atom and its internal physical trace
+        ↓ real public continuity only
+R2 — one ordered road made from two or more R1 atoms
+        ↓ repeated independent roads, prospective validation and contrasts
+R2A — stable ordered patterns, opaque factors and graded evidence
+        ↓ current public perception only
+R3 — transient applicability query
         ↓
-R1/R2/R2A effect recall ↔ condition comparison ↔ PredictionClone rollout
-        ↓
-one global operation-by-branch competition
-        ↓
-one current body action → complete real observation window → physical learning
-        ↑
-prediction violation / unknown change interrupts the transient branch competition
+joint operation × branch control field → one real body action
 ```
 
-The joint field has no Minecraft rule names. It simultaneously binds opaque
-physical evidence, condition state, rollout progress, uncertainty, attention,
-novelty and narrow nonsemantic control habits. It acts only after one complete
-site persists above both threshold and margin. No convergence means `unknown`;
-there is no argmax or staged-order fallback.
+## Memory semantics
 
-`ControlWorkspaceV2` keeps a live dependency graph rather than a parent/child
-task stack. A changed observation invalidates stale conditions and predictions;
-the surviving graph then re-enters the same competition. The runtime only
-passes events, dispatches the winning port operation, and returns its result.
+- Minecraft world coordinates, R1 coordinates, R2 coordinates and R2A
+  coordinates are distinct types and are never converted into one another.
+- R1 is written after a complete trusted real observation window. A censored
+  event remains auditable but cannot support effect recall.
+- R2 is not written per action. It is committed atomically only when a real
+  continuous process containing at least two R1 atoms closes. Reset, gap,
+  disconnect or external takeover breaks the road; an isolated atom remains
+  only in R1.
+- A first R2 road is only evidence. R2A creates a weak pattern after repeated
+  independent roads and reaches `predictive-stable` only after at least eight
+  complete events across four public contexts with prospective validation.
+- Result factors are discovered only between comparable ordered prefixes with
+  the same exact next action and registered competing suffixes. Nearby R2
+  points alone do not imply the same result or a cause.
+- `predictive-stable` supports prediction and reversible low-risk exploration.
+  Only matched, preregistered real interventions can reach
+  `intervention-supported`, the grade used for high-confidence goal action.
+- R3, PredictionClone, control fields, attention and viewers are read-only.
+  Only complete real body/passive events update long-term memory.
 
-## Current validation status
+## Control semantics
 
-Publication snapshot: 2026-08-30.
+`ControlWorkspaceV2` retains a dependency graph while
+`JointTransientControlFieldV2` lets all eligible `operation × branch` sites
+compete together. The dispatcher has no scripted sequence such as “recall,
+then compare, then predict”. A changed observation invalidates stale current
+conditions and predictions; no convergence remains `unknown`.
 
-- Clean TypeScript build: passed.
-- Complete source test run: **127/127 passed**, 0 skipped.
-- Opaque two-step dependency tasks: **32/32** completed the required
-  `alpha -> beta -> verification-observe` chain under cue, candidate and offer-order permutations.
-- Opaque three-step dependency tasks: **64/64** completed
-  `gamma -> alpha -> beta -> verification-observe` while retaining the live dependency graph.
-- One frozen Minecraft heldout batch: **4/4 goal-verified** on unseen layouts using the same
-  128-event physical baseline and empty control-habit state per case. The observed action chains were
-  `look -> interact -> observe`, direct `interact -> observe`, and an attention-interrupted reorientation chain.
-- Invalid interactions, stale executions and script-generated subgoals in that batch: **0**.
+The physical reasoning interface separates atomic effects from continuous
+patterns: `recallAtomicEffect`, `recallContinuousPattern`,
+`compareCurrentFactors`, `predictContinuation`, and
+`recallFactorTransition`.
 
-The Minecraft result demonstrates control over already learned physical affordances; it does not yet
-demonstrate autonomous discovery of arbitrary new interactions, unrestricted open-world continual learning,
-or human-level general reasoning. New public R2A feature ordinals outside the frozen representation still
-require a new representation identity and clean rebuild.
+## Checkpoints and migration
 
-## Boundaries
+New writable checkpoints are `KairosV5HierarchicalMemoryV2`. They contain the
+frozen R1 representation, R1 atoms, the real-continuity replay ledger, R2
+roads, R2A stable-pattern graph and preregistered intervention ledger. Upper
+layers are deterministically replayed and checked on restore.
 
-- Minecraft coordinates are public world facts and never become R1 coordinates.
-- A grounded goal can mention only a currently public subject and public observable.
-- Historical success is not current support.  R1, R2, and production-eligible R2A evidence must all still survive.
-- An exact action cue represented by physical evidence has no duplicate
-  exploration site that could bypass its condition or rollout gates.
-- Hypothetical states contain only changes actually read from random Clone trajectories; everything else stays unknown.
-- Only complete real body or passive-observation events write experience.
-- Control fields, attention, queries, predictions, and the dashboard are read-only with respect to physical memory.
-- Checkpoints written by the retired language-model runtime are rejected by the new runtime.
-- `ControlHabitWeightsV1` stores only operation-pair and graph-relation weights.
-  It cannot store Minecraft types, object IDs, action kinds, goals, coordinates
-  or result labels, and it cannot make a hard-ineligible site executable.
+Old `KairosV5MemoryV4`, `PathProjectorStateV4` and
+`CausalFactorGraphStateV3` are not migrated into production. Old Minecraft
+evaluation commands are deliberately named `audit:legacy:*`; they cannot be
+used as evidence for this hierarchy.
 
 ## Commands
 
@@ -76,16 +74,24 @@ npm test
 npm start -- --bootstrap-only
 ```
 
-An explicit continuation must use a `KairosV5PhysicalControlRuntimeV1` `EXPERIENCE_LATEST.json` pointer:
+An explicit continuation must use a `KairosV5HierarchicalRuntimeV1`
+pointer whose memory payload is `KairosV5HierarchicalMemoryV2`:
 
 ```powershell
 npm start -- --experience-pointer D:\path\to\EXPERIENCE_LATEST.json
 ```
 
-The default run creates a new isolated Minecraft world and empty physical
-memory. It first explores until 128 complete real events have formed the
-one-time event map. The V2 heldout evaluator is separate: it restores a frozen
-128-event physical snapshot into independent case workers and starts every case
-with zero habit weights. It never retrains the frozen baseline.
+The first-person viewer is `http://127.0.0.1:3000/` and the read-only
+physical/control dashboard is `http://127.0.0.1:3002/` while a run is active.
 
-The first-person viewer is `http://127.0.0.1:3000/` and the read-only physical/control dashboard is `http://127.0.0.1:3002/` while a run is active.
+## Current evidence boundary
+
+The hierarchy and neutral continuous-event experiments are implemented. The
+planned Minecraft `note=2` batch is intentionally not started: its read-only
+preflight shows that a categorical note transition changes at least two
+one-hot public factors, while the current intervention protocol accepts one
+factor only. In addition, eight post-registration events provide four
+non-reusable matched pairs, enough to certify at most one factor. The current
+classification is `blocked-by-r2a-factor-identification`, not a Minecraft or
+body failure. Old reset-style single-action data may populate R1 only and must
+never be concatenated into fictitious R2 roads.

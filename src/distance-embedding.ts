@@ -48,10 +48,30 @@ function mds(distances: number[][]): number[][] {
 export class DistanceEmbedding {
   constructor(readonly state: EmbeddingState) {}
   static fit(rows: readonly FeatureRow[]): DistanceEmbedding {
+    return DistanceEmbedding.fitWithMetric(rows, 'standardized-rms');
+  }
+
+  /**
+   * Fit against the literal RMS distance of the supplied feature rows.
+   *
+   * This is intentionally separate from the default feature-standardized
+   * embedding.  Callers whose public contract qualifies distances in raw
+   * feature units must not learn the map with a different, per-dimension
+   * standardized metric.
+   */
+  static fitRawRms(rows: readonly FeatureRow[]): DistanceEmbedding {
+    return DistanceEmbedding.fitWithMetric(rows, 'raw-rms');
+  }
+
+  private static fitWithMetric(rows: readonly FeatureRow[], metric: 'standardized-rms' | 'raw-rms'): DistanceEmbedding {
     assert(rows.length >= 8, 'distance-embedding-needs-observations');
     const keys = [...new Set(rows.flatMap(row => Object.keys(row)))].sort();
-    const mean = keys.map(key => rows.reduce((s, row) => s + (row[key] ?? 0), 0) / rows.length);
-    const deviation = keys.map((key, i) => Math.sqrt(rows.reduce((s, row) => s + ((row[key] ?? 0) - mean[i]!) ** 2, 0) / rows.length) || 1);
+    const mean = metric === 'raw-rms'
+      ? keys.map(() => 0)
+      : keys.map(key => rows.reduce((s, row) => s + (row[key] ?? 0), 0) / rows.length);
+    const deviation = metric === 'raw-rms'
+      ? keys.map(() => 1)
+      : keys.map((key, i) => Math.sqrt(rows.reduce((s, row) => s + ((row[key] ?? 0) - mean[i]!) ** 2, 0) / rows.length) || 1);
     const values = rows.map(row => keys.map((key, i) => ((row[key] ?? 0) - mean[i]!) / deviation[i]!));
     // Farthest-point landmarks bound fitting cost; selection uses features, never outcomes or goals.
     const selected = [0]; const nearest = values.map(v => distance(v, values[0]!));

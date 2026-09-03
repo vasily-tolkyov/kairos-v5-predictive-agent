@@ -33,7 +33,31 @@ export interface BodyResult {
   readonly status: 'completed' | 'no-target' | 'out-of-reach' | 'unavailable';
   readonly startSequence: number;
   readonly endSequence: number;
-  readonly terminationReason?: 'stable' | 'observation-limit';
+  readonly terminationReason?: 'stable' | 'no-effect-window-complete' | 'observation-limit';
+}
+export interface RealEventContinuityEvidenceV1 {
+  readonly dependencyId: string;
+  readonly basis: 'public-state-carried-forward' | 'successor-depends-on-prior-public-observation';
+  readonly subject: string;
+  readonly property: string;
+  readonly beforeObservationSequence: number;
+  readonly afterObservationSequence: number;
+  /** Hashes of public values at the two ends; no world/R1/R2 coordinate is encoded. */
+  readonly beforeValueSha256: string;
+  readonly afterValueSha256: string;
+  readonly factCategory: 'public-state-persistence' | 'public-state-transition' | 'public-successor-precondition';
+}
+/**
+ * Public, replayable continuity metadata. Legacy/reset-separated records omit
+ * this object and are therefore R1-only; omission never guesses an R2 chain.
+ */
+export interface RealEventHierarchyContinuityV1 {
+  readonly version: 'RealEventHierarchyContinuityV1';
+  readonly sessionId: string;
+  readonly continuityEpochId: string;
+  readonly boundaryBefore: 'continuous' | 'reset' | 'gap' | 'external-takeover';
+  readonly processStatusAfter: 'open' | 'publicly-resolved' | 'observation-insufficient';
+  readonly dependencies: readonly RealEventContinuityEvidenceV1[];
 }
 export interface RealEvent {
   readonly version: 'RealEventV5';
@@ -44,6 +68,7 @@ export interface RealEvent {
   readonly bodyResult: BodyResult | null;
   readonly provenance: 'executed-real-body' | 'observed-passive';
   readonly complete: boolean;
+  readonly hierarchyContinuity?: RealEventHierarchyContinuityV1;
 }
 export interface PublicChange {
   readonly subject: string;

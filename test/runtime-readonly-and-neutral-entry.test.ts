@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { PhysicalMemory } from '../src/memory.js';
+import { HierarchicalPhysicalMemoryV1 } from '../src/hierarchical-memory.js';
 import { ControlHabitWeightsV1 } from '../src/control/habit.js';
 import { dashboardPayload } from '../src/dashboard.js';
 import type { V5Runtime } from '../src/runtime.js';
 
 test('dashboard payload is a defensive projection and cannot mutate runtime-owned values', () => {
-  const snapshot = new PhysicalMemory().snapshot();
+  const snapshot = new HierarchicalPhysicalMemoryV1().snapshot();
   const runtimeState = { nested: { value: 3 } };
   const controlField = { sites: [{ activation: .7 }], dependencies: [] };
   const habits = new ControlHabitWeightsV1().exportCheckpoint();
@@ -30,7 +30,7 @@ test('dashboard payload is a defensive projection and cannot mutate runtime-owne
 
   assert.equal(runtimeState.nested.value, 3);
   assert.equal(controlField.sites[0]!.activation, .7);
-  assert.equal(snapshot.store.r1.pages.length, 0);
+  assert.equal(snapshot.r1Store.medium.pages.length, 0);
 });
 
 test('runtime display getters clone owned snapshots at the boundary', async () => {

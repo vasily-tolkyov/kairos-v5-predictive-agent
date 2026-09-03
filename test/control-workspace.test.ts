@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import type { Observation, Prediction } from '../src/contracts.js';
+import type { Observation } from '../src/contracts.js';
 import { ControlWorkspaceV2 } from '../src/control/workspace.js';
 import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, EffectRecallCandidateV1,
   GoalEvaluationV1, GroundedGoalV1, OpaqueFactorTransitionTraceV1 } from '../src/control/contracts.js';
+import { distributedEvidenceFixtureV3, distributedPredictionFixtureV3 }
+  from './distributed-control-fixtures.js';
 
 const goal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'g', expression: { kind: 'predicate', predicate: {
   version: 'GoalPredicateV1', id: 'p', subject: { kind: 'self' }, observable: 'yaw', comparator: 'equals', target: 1 } } };
@@ -15,8 +17,7 @@ const evaluation = (sequence: number): GoalEvaluationV1 => ({ goalId: 'g', statu
 const offer = (sequence: number, id = `offer-${sequence}`): ActionOfferV1 => ({ version: 'ActionOfferV1', offerId: id,
   observationSequence: sequence, action: { kind: 'look', parameters: { yawDelta: 15, pitchDelta: 0 } },
   cue: { kind: 'look', parameters: { yawDelta: 15, pitchDelta: 0 }, targetRole: null } });
-const physicalEvidence = { eventId: 'event', anchorId: 'anchor', r1: { pageId: 'r1', traceId: 'trace', active: true },
-  r2: { coordinate: [0, 0, 0], active: true }, r2a: { relationIds: ['rel'], applicability: .8, productionEligible: true } };
+const physicalEvidence = distributedEvidenceFixtureV3('workspace', { relationIds: ['rel'], applicability: .8 });
 const candidate = (id: string): EffectRecallCandidateV1 => ({ candidateId: id, goalPredicateIds: ['p'],
   actionCue: offer(1).cue, observedChanges: [], observedBefore: {}, evidence: physicalEvidence, unknown: [] });
 const transition = (id: string): OpaqueFactorTransitionTraceV1 => ({ version: 'OpaqueFactorTransitionTraceV1',
@@ -25,8 +26,7 @@ const transition = (id: string): OpaqueFactorTransitionTraceV1 => ({ version: 'O
   meaning: 'observed-factor-transition' });
 const condition: ConditionApplicabilityV1 = { matchedFactorIds: ['F'], contradictedFactorIds: [],
   unknownFactorIds: [], applicability: .9, productionEligible: true };
-const prediction: BranchPredictionV1 = { prediction: { kind: 'hypothetical-prediction', support: .8,
-  calibratedProbability: false, samples: [], evidence: null, unknown: [], mapSha256: 'map' } satisfies Prediction,
+const prediction: BranchPredictionV1 = { prediction: distributedPredictionFixtureV3(null),
   validSampleCount: 24, progressSampleCount: 20, progressFraction: 20 / 24, nextStates: [], unknown: [] };
 
 function initialized(): { workspace: ControlWorkspaceV2; root: string } {
@@ -40,7 +40,8 @@ function recallOne(workspace: ControlWorkspaceV2, root: string, id = 'candidate'
   const request = workspace.beginRequest({ requestId: `recall-${id}`, channel: 'reasoning', operation: 'recall-effect',
     nodeId: root, baseSequence: 1 });
   const result = workspace.ingest({ kind: 'operation-completed', requestId: request.requestId, epoch: request.epoch,
-    operation: 'recall-effect', nodeId: root, baseSequence: 1, result: [candidate(id)] });
+    operation: 'recall-effect', nodeId: root, baseSequence: 1,
+    result: { version: 'PhysicalRecallBundleV2', atomicCandidates: [candidate(id)], continuousPatterns: [] } });
   assert.equal(result.accepted, true); return result.registeredNodeIds[0]!;
 }
 
@@ -109,7 +110,8 @@ test('condition and prediction are fresh only for their exact epoch and observat
   const predictionRequest = workspace.beginRequest({ requestId: 'prediction', channel: 'reasoning',
     operation: 'predict-branch', nodeId, baseSequence: 1 });
   assert.equal(workspace.ingest({ kind: 'operation-completed', requestId: 'prediction', epoch: predictionRequest.epoch,
-    operation: 'predict-branch', nodeId, baseSequence: 1, result: prediction }).accepted, true);
+    operation: 'predict-branch', nodeId, baseSequence: 1,
+    result: { version: 'ControlBranchPredictionResultV2', atomic: prediction, continuations: [] } }).accepted, true);
   assert.deepEqual(workspace.currentCondition(nodeId), condition);
   assert.deepEqual(workspace.currentPrediction(nodeId), prediction);
 

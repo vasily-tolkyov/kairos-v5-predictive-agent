@@ -21,7 +21,7 @@ test('a captured observation owns an immutable offer catalogue even after the li
   assert(offers.length > 0);
   assert(offers.every(offer => offer.observationSequence === captured.sequence));
   const requirement = body.describeActionRequirement({ kind: 'interact', parameters: {}, targetRole: 'opaque-block' }, captured);
-  assert.equal(requirement.version, 'PublicActionRequirementV1');
+  assert.equal(requirement.version, 'PublicActionRequirementV2');
   assert.equal(requirement.actionCue.kind, 'interact');
   assert.equal(requirement.observationSequence, captured.sequence);
   assert.equal(requirement.satisfied, false);

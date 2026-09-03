@@ -20,6 +20,9 @@ class DigBot extends EventEmitter {
   implicitLooks = 0; activeStops = 0; clearCalls = 0;
   targetDigBlock: unknown = null;
   entityAtCursor(): null { return null; }
+  blockAt(position: Vec3): typeof this.block | null {
+    return this.visible && position.equals(this.block.position) ? this.block : null;
+  }
   pending = (() => {
     let resolve!: () => void, reject!: (error: Error) => void;
     const promise = new Promise<void>((yes, no) => { resolve = yes; reject = no; });

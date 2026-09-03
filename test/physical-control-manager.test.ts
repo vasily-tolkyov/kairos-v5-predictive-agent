@@ -1,17 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { Action, Observation, PublicChange } from '../src/contracts.js';
-import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, EffectRecallCandidateV1,
+import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, ContinuationPredictionV2,
+  ContinuousPatternRecallV2, EffectRecallCandidateV1,
   GroundedGoalV1, HypotheticalPublicStateV1, JointTransientControlFieldConfigV2,
-  OpaqueFactorTransitionTraceV1, PhysicalEvidenceReferenceV1, PhysicalReasoningPortV1 } from '../src/control/contracts.js';
+  OpaqueFactorTransitionTraceV1, PhysicalEvidenceReferenceV1, PhysicalReasoningPortV2,
+  ProjectedParentRelationApplicabilityV1 } from '../src/control/contracts.js';
 import { fairEvidenceWindowV2, fairGroundedControlWindowV2,
-  hasProductionPhysicalRepresentationV2, PhysicalControlManagerV2,
+  hasProductionPhysicalRepresentationV2, physicalEvidenceBindingV2, PhysicalControlManagerV2,
   modulateBlindExplorationInputsV2,
   productiveGoalControlSiteV2,
   dependencyDepthV2, dependencyEdgeSatisfiedV2, explicitPredictionViolationV2,
   type PhysicalControlEnvironmentV2 } from '../src/control/controller.js';
 import { cueFor, cueIdentity } from '../src/events.js';
+import type { ControlWorkspaceSnapshotV2 } from '../src/control/workspace.js';
 import { sha } from '../src/util.js';
+import { distributedEvidenceFixtureV3, distributedPredictionFixtureV3 }
+  from './distributed-control-fixtures.js';
 
 const config = (seed = 20260829): JointTransientControlFieldConfigV2 => ({
   version: 'JointTransientControlFieldConfigV2', seed, branchCapacity: 8, stepSize: .02, noiseSigma: .01,
@@ -19,34 +24,54 @@ const config = (seed = 20260829): JointTransientControlFieldConfigV2 => ({
   inactivePruneThreshold: .0001, inactivePruneSteps: 50,
   predictionSeeds: 24, predictionSteps: 180, goalVerificationTicks: 5,
 });
-const physical = (id: string, applicability = .9): PhysicalEvidenceReferenceV1 => ({ eventId: id,
-  anchorId: `anchor:${id}`, r1: { pageId: 'r1', traceId: id, active: true },
-  r2: { coordinate: [0, 0, 0], active: true },
-  r2a: { relationIds: [`r2a:${id}`], applicability, productionEligible: true } });
+const physical = (id: string, applicability = .9): PhysicalEvidenceReferenceV1 =>
+  distributedEvidenceFixtureV3(id, { applicability, relationIds: [`r2a:${id}`] });
 const targetChange: PublicChange = { subject: 'opaque-object#0', property: 'R', before: false, after: true,
   observationIndex: 1, meaning: 'observed-co-occurrence' };
 const goal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'neutral-R', expression: { kind: 'predicate',
   predicate: { version: 'GoalPredicateV1', id: 'R', subject: { kind: 'public-object', id: 'o', expectedType: 'opaque-object' },
     observable: 'properties.R', comparator: 'equals', target: true } } };
 
-type SymbolicAction = 'alpha' | 'beta' | 'gamma' | 'delta' | 'observe';
+type SymbolicAction = 'alpha' | 'beta' | 'gamma' | 'delta' | 'epsilon' | 'observe';
 const symbolicActions: Record<SymbolicAction, Action> = {
   alpha: { kind: 'move', parameters: { direction: 'left', ticks: 4 } },
   beta: { kind: 'interact', parameters: {}, targetId: 'o' },
   gamma: { kind: 'jump', parameters: { forward: false, ticks: 4 } },
   delta: { kind: 'move', parameters: { direction: 'right', ticks: 4 } },
+  epsilon: { kind: 'select-hotbar', parameters: { slot: 1 } },
   observe: { kind: 'observe', parameters: { ticks: 5 } },
 };
 
+function symbolicActionForNode(snapshot: ControlWorkspaceSnapshotV2, nodeId: string): SymbolicAction | null {
+  const observation = snapshot.observation;
+  const state = snapshot.nodes.find(value => value.node.nodeId === nodeId);
+  if (!observation || !state) return null;
+  const cue = state.node.kind === 'experienced' ? state.node.candidate.actionCue
+    : state.node.kind === 'factor-transition' ? state.node.transition.actionCue
+    : state.node.kind === 'exploration' ? state.node.offer.cue
+    : null;
+  if (!cue) return null;
+  return (Object.entries(symbolicActions).find(([, action]) =>
+    cueIdentity(cueFor(action, observation)) === cueIdentity(cue))?.[0] ?? null) as SymbolicAction | null;
+}
+
+function hasSymbolicDependency(snapshot: ControlWorkspaceSnapshotV2,
+  dependent: SymbolicAction, required: SymbolicAction): boolean {
+  return snapshot.dependencies.some(edge =>
+    symbolicActionForNode(snapshot, edge.dependentNodeId) === dependent
+    && symbolicActionForNode(snapshot, edge.requiredNodeId) === required);
+}
+
 class NeutralEnvironment implements PhysicalControlEnvironmentV2 {
   actionCount = 0; readonly actionBudget = 12; sequence = 1;
-  F = false; F1 = false; F2 = false; R = false;
+  F = false; F1 = false; F2 = false; F3 = false; F4 = false; R = false;
   readonly timeline: SymbolicAction[] = []; readonly records: Array<{ kind: string; value: unknown }> = [];
   constructor(readonly order: readonly SymbolicAction[] = ['alpha', 'beta', 'gamma', 'delta', 'observe']) {}
   frame(): Observation { return { sequence: this.sequence, activeSeconds: this.sequence * .05,
     self: { position: [0, 0, 0], yaw: 0, pitch: 0, properties: {} },
     objects: [{ id: 'o', type: 'opaque-object', relativePosition: [1, 0, 0],
-      properties: { F: this.F, F1: this.F1, F2: this.F2, R: this.R } }], targetId: 'o', contextId: 'neutral' }; }
+      properties: { F: this.F, F1: this.F1, F2: this.F2, F3: this.F3, F4: this.F4,
+        R: this.R } }], targetId: 'o', contextId: 'neutral' }; }
   async observe(): Promise<Observation> { return this.frame(); }
   async waitForObservationAfter(afterSequence: number): Promise<Observation> {
     if (this.sequence <= afterSequence) this.sequence = afterSequence + 1;
@@ -69,7 +94,9 @@ class NeutralEnvironment implements PhysicalControlEnvironmentV2 {
     this.actionCount++; this.sequence += symbol === 'observe' ? 5 : 6;
     if (symbol === 'alpha') { this.F = true; this.F2 = this.F1; }
     if (symbol === 'gamma') this.F1 = true;
-    if (symbol === 'beta' && (this.F || this.F2)) this.R = true;
+    if (symbol === 'delta' && this.F2) this.F3 = true;
+    if (symbol === 'epsilon' && this.F3) this.F4 = true;
+    if (symbol === 'beta' && (this.F || this.F2 || this.F4)) this.R = true;
     this.timeline.push(symbol);
     return { executed: true, observation: this.frame(), eventId: `real-${this.actionCount}` };
   }
@@ -77,24 +104,67 @@ class NeutralEnvironment implements PhysicalControlEnvironmentV2 {
   record(kind: string, value: unknown): void { this.records.push({ kind, value }); }
 }
 
-class NeutralReasoning implements PhysicalReasoningPortV1 {
-  constructor(readonly environment: NeutralEnvironment, readonly depth: 2 | 3 = 2) {}
+class NeutralReasoning implements PhysicalReasoningPortV2 {
+  constructor(readonly environment: NeutralEnvironment, readonly depth: 2 | 3 | 4 = 2) {}
   async recallByEffect(): Promise<readonly EffectRecallCandidateV1[]> {
-    return [this.candidate('beta', targetChange, this.depth === 2 ? ['F'] : ['F2'])];
+    return [this.candidate('beta', targetChange, this.depth === 2 ? ['F']
+      : this.depth === 3 ? ['F2'] : ['F4'])];
+  }
+  async recallAtomicEffect(): Promise<readonly EffectRecallCandidateV1[]> { return this.recallByEffect(); }
+  async recallContinuousPattern(): Promise<readonly ContinuousPatternRecallV2[]> { return []; }
+  async compareCurrentFactors(relationId: string, observation: Observation): Promise<ConditionApplicabilityV1> {
+    const id = relationId.startsWith('r2a:') ? relationId.slice('r2a:'.length) : '';
+    if (!['alpha', 'beta', 'gamma', 'delta', 'epsilon'].includes(id)) return { matchedFactorIds: [],
+      contradictedFactorIds: [], unknownFactorIds: [], applicability: 0, productionEligible: false };
+    return this.compareConditions(this.candidate(id as SymbolicAction, targetChange, []), observation);
+  }
+  async compareProjectedParentRelations(relationIds: readonly string[], _observation: Observation,
+    states: readonly HypotheticalPublicStateV1[],
+    source: { readonly r1Active: boolean; readonly r2Active: boolean }):
+    Promise<readonly ProjectedParentRelationApplicabilityV1[]> {
+    return Promise.all(states.map(async state => {
+      const relationResults = await Promise.all(relationIds.map(async relationId => {
+        const id = relationId.startsWith('r2a:') ? relationId.slice('r2a:'.length) : '';
+        if (!['alpha', 'beta', 'gamma', 'delta', 'epsilon'].includes(id))
+          return { relationId, matchedFactorIds: [], contradictedFactorIds: [],
+            unknownFactorIds: [`unknown-relation:${relationId}`], applicability: 0, productionEligible: false };
+        const value = await this.compareConditions(this.candidate(id as SymbolicAction, targetChange, []), state);
+        return { relationId, ...value,
+          productionEligible: value.productionEligible && source.r1Active && source.r2Active };
+      }));
+      const selected = [...relationResults].sort((left, right) => Number(right.productionEligible)
+        - Number(left.productionEligible) || right.applicability - left.applicability
+        || left.relationId.localeCompare(right.relationId))[0] ?? null;
+      return { version: 'ProjectedParentRelationApplicabilityV1',
+        selectedRelationId: selected?.relationId ?? null, relationResults,
+        matchedFactorIds: selected?.matchedFactorIds ?? [],
+        contradictedFactorIds: selected?.contradictedFactorIds ?? [],
+        unknownFactorIds: selected?.unknownFactorIds ?? [], applicability: selected?.applicability ?? 0,
+        productionEligible: selected?.productionEligible ?? false };
+    }));
+  }
+  async predictContinuation(patternId: string): Promise<ContinuationPredictionV2> {
+    return { version: 'ContinuationPredictionV2', patternId, support: 0, samples: [],
+      evidenceGrade: 'single-observation', unknown: ['test-has-no-continuous-pattern'] };
   }
   async compareConditions(candidate: EffectRecallCandidateV1,
     state: Observation | HypotheticalPublicStateV1): Promise<ConditionApplicabilityV1> {
     const active = (factor: string): boolean => 'sequence' in state
       ? state.objects[0]!.properties[factor] === true : state.knownActiveFactorIds.includes(factor);
-    const need = candidate.candidateId === 'beta' ? (this.depth === 2 ? 'F' : 'F2')
-      : candidate.candidateId === 'alpha' && this.depth === 3 ? 'F1' : null;
+    const need = candidate.candidateId === 'beta' ? (this.depth === 2 ? 'F'
+      : this.depth === 3 ? 'F2' : 'F4')
+      : candidate.candidateId === 'epsilon' && this.depth === 4 ? 'F3'
+        : candidate.candidateId === 'delta' && this.depth === 4 ? 'F2'
+          : candidate.candidateId === 'alpha' && this.depth >= 3 ? 'F1' : null;
     if (!need || active(need)) return { matchedFactorIds: need ? [need] : [], contradictedFactorIds: [],
       unknownFactorIds: [], applicability: .9, productionEligible: true };
     return { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [need],
       applicability: 0, productionEligible: true };
   }
   async recallFactorTransition(factors: readonly string[]): Promise<readonly OpaqueFactorTransitionTraceV1[]> {
-    const factor = factors[0]!; const symbol: SymbolicAction = factor === 'F1' ? 'gamma' : 'alpha';
+    const factor = factors[0]!; const symbol: SymbolicAction = factor === 'F1' ? 'gamma'
+      : factor === 'F2' ? 'alpha' : factor === 'F3' ? 'delta'
+        : factor === 'F4' ? 'epsilon' : 'alpha';
     return [{ version: 'OpaqueFactorTransitionTraceV1', transitionId: symbol, eventId: `event:${symbol}`,
       actionCue: cueFor(symbolicActions[symbol], this.environment.frame()), activatedFactorIds: [factor],
       deactivatedFactorIds: [], unchangedActiveFactorIds: [], evidence: physical(symbol),
@@ -103,14 +173,14 @@ class NeutralReasoning implements PhysicalReasoningPortV1 {
   async predictCandidate(candidate: EffectRecallCandidateV1,
     state: Observation | HypotheticalPublicStateV1): Promise<BranchPredictionV1> {
     const activated = candidate.candidateId === 'gamma' ? ['F1'] : candidate.candidateId === 'alpha'
-      ? [this.depth === 2 ? 'F' : 'F2'] : [];
+      ? [this.depth === 2 ? 'F' : 'F2'] : candidate.candidateId === 'delta' ? ['F3']
+        : candidate.candidateId === 'epsilon' ? ['F4'] : [];
     const next: HypotheticalPublicStateV1 = { version: 'HypotheticalPublicStateV1',
       baseObservationSequence: 'sequence' in state ? state.sequence : state.baseObservationSequence,
       knownChanges: candidate.candidateId === 'beta' ? [targetChange] : [], knownActiveFactorIds: activated,
       knownInactiveFactorIds: [], unknownFactorIds: [], unobserved: 'unknown' };
     const progress = candidate.candidateId === 'beta' ? 1 : 0;
-    return { prediction: { kind: 'hypothetical-prediction', support: .9, calibratedProbability: false,
-      samples: [], evidence: candidate.evidence, unknown: [], mapSha256: 'neutral' }, validSampleCount: 24,
+    return { prediction: distributedPredictionFixtureV3(candidate.evidence), validSampleCount: 24,
       progressSampleCount: progress ? 24 : 0, progressFraction: progress,
       nextStates: Array.from({ length: 24 }, () => next), unknown: [] };
   }
@@ -128,8 +198,7 @@ test('joint dependency graph solves the neutral two-step task without a parent s
     snapshot: manager.snapshot }));
   assert.deepEqual(environment.timeline, ['alpha', 'beta', 'observe']);
   const snapshot = manager.snapshot!;
-  assert(snapshot.workspace.dependencies.some(edge => edge.dependentNodeId.includes('beta')
-    && edge.requiredNodeId.includes('alpha')));
+  assert(hasSymbolicDependency(snapshot.workspace, 'beta', 'alpha'));
   assert.equal(environment.records.some(value => value.kind.includes('parent') && value.kind.includes('resum')), false);
   assert.equal(snapshot.field.lastGoalEvaluation?.status, 'satisfied');
   assert(environment.records.some(record => {
@@ -147,10 +216,28 @@ test('three physical condition links remain simultaneously represented while act
   assert.equal(result.status, 'goal-verified', JSON.stringify({ result, timeline: environment.timeline,
     snapshot: manager.snapshot }));
   assert.deepEqual(environment.timeline, ['gamma', 'alpha', 'beta', 'observe']);
-  const dependencies = manager.snapshot!.workspace.dependencies;
+  const workspace = manager.snapshot!.workspace;
+  const dependencies = workspace.dependencies;
   assert.equal(dependencies.length >= 2, true);
-  assert(dependencies.some(edge => edge.dependentNodeId.includes('beta') && edge.requiredNodeId.includes('alpha')));
-  assert(dependencies.some(edge => edge.dependentNodeId.includes('alpha') && edge.requiredNodeId.includes('gamma')));
+  assert(hasSymbolicDependency(workspace, 'beta', 'alpha'));
+  assert(hasSymbolicDependency(workspace, 'alpha', 'gamma'));
+});
+
+test('four opaque dependencies are expanded and resolved without semantic node ordering', async () => {
+  const environment = new NeutralEnvironment(['observe', 'epsilon', 'beta', 'delta', 'alpha', 'gamma']);
+  const manager = new PhysicalControlManagerV2(new NeutralReasoning(environment, 4), environment, config(29));
+  const result = await manager.runGoal(goal);
+  assert.equal(result.status, 'goal-verified', JSON.stringify({ result, timeline: environment.timeline,
+    snapshot: manager.snapshot }));
+  assert.deepEqual(environment.timeline, ['gamma', 'alpha', 'delta', 'epsilon', 'beta', 'observe']);
+  const workspace = manager.snapshot!.workspace;
+  assert.equal(workspace.dependencies.length >= 4, true);
+  assert(hasSymbolicDependency(workspace, 'beta', 'epsilon'));
+  assert(hasSymbolicDependency(workspace, 'epsilon', 'delta'));
+  assert(hasSymbolicDependency(workspace, 'delta', 'alpha'));
+  assert(hasSymbolicDependency(workspace, 'alpha', 'gamma'));
+  assert.equal(Math.max(...workspace.nodes.map(node => node.node.nodeId === workspace.rootNodeId ? 0
+    : dependencyDepthV2(node.node.nodeId, workspace.dependencies))), 4);
 });
 
 test('finite admission gives distinct cues room and rotates without choosing a winner', () => {
@@ -219,16 +306,41 @@ test('blind exploration keeps its field sites but loses only unknown and novelty
 test('only a real query or production-bound goal site suppresses blind exploration', () => {
   const drives = { goal: 1, evidence: 1, condition: 0, rollout: 0,
     unknown: 1, attention: 0, novelty: 0, habit: 0 };
+  const productionEvidence = physical('production');
   assert.equal(productiveGoalControlSiteV2({ siteId: 'predict:p', operation: 'predict-branch', nodeId: 'p',
-    hardEligible: true, drives }), true);
+    hardEligible: true, productiveGrounding: { kind: 'physical-branch', evidence: [productionEvidence] },
+    drives }), true);
   assert.equal(productiveGoalControlSiteV2({ siteId: 'recall:r', operation: 'recall-effect', nodeId: 'r',
-    hardEligible: true, drives: { ...drives, evidence: .2 } }), true);
+    hardEligible: true, productiveGrounding: { kind: 'outstanding-effect-query', goalNodeId: 'r' },
+    drives: { ...drives, evidence: .2 } }), true);
+  const provisionalEvidence: PhysicalEvidenceReferenceV1 = { ...productionEvidence,
+    r2a: { ...productionEvidence.r2a, productionEligible: false } };
   assert.equal(productiveGoalControlSiteV2({ siteId: 'predict:provisional', operation: 'predict-branch',
-    nodeId: 'provisional', hardEligible: true, drives: { ...drives, evidence: .35 } }), false);
+    nodeId: 'provisional', hardEligible: true,
+    productiveGrounding: { kind: 'physical-branch', evidence: [provisionalEvidence] },
+    drives: { ...drives, evidence: .35, habit: 1 } }), false);
   assert.equal(productiveGoalControlSiteV2({ siteId: 'execute:no-goal', operation: 'execute',
-    nodeId: 'no-goal', hardEligible: true, drives: { ...drives, goal: 0 } }), false);
+    nodeId: 'no-goal', hardEligible: true,
+    productiveGrounding: { kind: 'physical-branch', evidence: [productionEvidence] },
+    drives: { ...drives, goal: 0 } }), false);
   assert.equal(productiveGoalControlSiteV2({ siteId: 'predict:inactive', operation: 'predict-branch',
-    nodeId: 'inactive', hardEligible: false, drives }), false);
+    nodeId: 'inactive', hardEligible: false,
+    productiveGrounding: { kind: 'physical-branch', evidence: [productionEvidence] }, drives }), false);
+
+  const nativeEvidence = (cleared: 'r1' | 'r2' | 'r2a'): PhysicalEvidenceReferenceV1 => ({
+    ...productionEvidence,
+    r1: { ...productionEvidence.r1, active: cleared !== 'r1',
+      supportStrength: cleared === 'r1' ? 0 : productionEvidence.r1.supportStrength },
+    r2: { ...productionEvidence.r2, active: cleared !== 'r2',
+      supportStrength: cleared === 'r2' ? 0 : productionEvidence.r2.supportStrength },
+    r2a: { ...productionEvidence.r2a, active: cleared !== 'r2a',
+      supportStrength: cleared === 'r2a' ? 0 : productionEvidence.r2a.supportStrength },
+  });
+  for (const layer of ['r1', 'r2', 'r2a'] as const) assert.equal(productiveGoalControlSiteV2({
+    siteId: `predict:cleared-${layer}`, operation: 'predict-branch', nodeId: `cleared-${layer}`,
+    hardEligible: true, productiveGrounding: { kind: 'physical-branch', evidence: [nativeEvidence(layer)] },
+    drives: { ...drives, evidence: .9, habit: 1 },
+  }), false, `${layer} clear was bypassed by residual strength or habit`);
 });
 
 test('an unconverged field cycle waits for another control event instead of ending the goal', async () => {
@@ -292,7 +404,8 @@ test('provisional R2A history cannot erase the same exact legal exploration cue'
       unknown: readonly string[]): EffectRecallCandidateV1 {
       const candidate = super.candidate(symbol, change, unknown);
       return { ...candidate, evidence: { ...candidate.evidence,
-        r2a: { relationIds: ['provisional-r2a'], applicability: 0, productionEligible: false } } };
+        r2a: { ...candidate.evidence.r2a, relationIds: ['provisional-r2a'], applicability: 0,
+          productionEligible: false, predictionEligible: false, evidenceGrade: 'single-observation' } } };
     }
     override async compareConditions(): Promise<ConditionApplicabilityV1> {
       return { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
@@ -360,6 +473,18 @@ test('only an active R1/R2 branch with production R2A suppresses its exploration
     r2: { ...base.r2, active: false } }), false);
 });
 
+test('a live R2A footprint with zero current applicability still admits condition comparison', () => {
+  const historical = physical('missing-condition', 0);
+  const currentMismatch: PhysicalEvidenceReferenceV1 = { ...historical,
+    r2a: { ...historical.r2a, active: false, supportStrength: 0, applicability: 0,
+      branchSelectionStrength: 0, productionEligible: false, predictionEligible: false,
+      evidenceGrade: 'predictive-stable' } };
+  // `active` and `supportStrength` on R2A are current-condition readouts.  The
+  // retained footprint and relation are the physical substrate that makes a
+  // compare/expand query meaningful; they are not an execution qualification.
+  assert.equal(physicalEvidenceBindingV2(currentMismatch), .85);
+});
+
 test('multi-parent dependency depth is insertion-order independent', () => {
   const edges = [
     { edgeId: 'z', dependentNodeId: 'top-b', requiredNodeId: 'leaf', factorIds: ['B'],
@@ -376,8 +501,7 @@ test('multi-parent dependency depth is insertion-order independent', () => {
 test('habit violation requires an explicitly comparable opposite readout', () => {
   const environment = new NeutralEnvironment(), reasoning = new NeutralReasoning(environment, 2);
   const candidate = reasoning.candidate('beta', targetChange, []);
-  const prediction: BranchPredictionV1 = { prediction: { kind: 'hypothetical-prediction', support: .9,
-    calibratedProbability: false, samples: [], evidence: candidate.evidence, unknown: [], mapSha256: 'm' },
+  const prediction: BranchPredictionV1 = { prediction: distributedPredictionFixtureV3(candidate.evidence),
     validSampleCount: 24, progressSampleCount: 24, progressFraction: 1,
     nextStates: [{ version: 'HypotheticalPublicStateV1', baseObservationSequence: 1,
       knownChanges: [targetChange], knownActiveFactorIds: [], knownInactiveFactorIds: [],

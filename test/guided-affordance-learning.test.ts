@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { PhysicalMemory } from '../src/memory.js';
 import { GroundedGoalEvaluatorV1 } from '../src/control/goal.js';
 import type { GroundedGoalV1 } from '../src/control/contracts.js';
-import { guidedAffordanceCurriculum, guidedAffordanceObservation,
-  runGuidedAffordanceEvaluation } from '../src/evaluation/guided-affordance-microworld.js';
+import { guidedAffordanceCurriculum,
+  guidedAffordanceObservation } from '../src/evaluation/guided-affordance-microworld.js';
 import { sha } from '../src/util.js';
 import { DeterministicTokenFieldEncoder } from '../src/core/learning/token-field.js';
 import { OpenCausalFactorR2A } from '../src/core/learning/open-causal-factor-r2a.js';
@@ -18,7 +18,7 @@ const crosshairGoal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'aim-cont
   kind: 'predicate', predicate: { version: 'GoalPredicateV1', id: 'target-type', subject: { kind: 'crosshair' },
     observable: 'type', comparator: 'equals', target: 'opaque-control' } } };
 
-test('guided real events form physical effect, condition and target-acquisition evidence', () => {
+test('legacy guided fixture remains readable for audit but is not the production hierarchy', () => {
   const memory = new PhysicalMemory();
   for (const event of guidedAffordanceCurriculum()) memory.observe(event);
   assert.equal(memory.ready, true); assert.equal(memory.writes, 128);
@@ -92,27 +92,4 @@ test('guided real events form physical effect, condition and target-acquisition 
     'a hypothetical state without current public perception inherited historical applicability');
   assert.equal(hypotheticalFollowup.currentEvidence?.r2a.productionEligible, false,
     'hypothetical evidence was exposed as current production evidence');
-});
-
-test('after guided learning, a fresh transient field turns, targets and interacts in unseen layouts', async () => {
-  const result = await runGuidedAffordanceEvaluation();
-  assert.equal(result.cases.length, 2);
-  for (const item of result.cases) {
-    assert.equal(item.status, 'goal-verified', JSON.stringify({ status: item.status,
-      actions: item.actions, finalActive: item.finalActive, timelineLength: item.timeline.length }));
-    assert.equal(item.finalActive, true);
-    const interaction = item.actions.indexOf('interact');
-    assert(interaction > 0, `no physically learned target-acquisition action preceded interaction: ${item.actions}`);
-    assert(item.actions.slice(0, interaction).includes('look'), `interaction was not preceded by a real look: ${item.actions}`);
-    assert(item.actions.slice(interaction + 1).includes('observe'), `goal was not verified by a later observation: ${item.actions}`);
-    assert.equal(item.actions.filter(action => action === 'interact').length, 1,
-      `guided field performed redundant interactions: ${item.actions}`);
-    const operations = (item.timeline as Array<{ kind?: string; value?: {
-      event?: { operation?: string }; accepted?: { accepted?: boolean } } }>).
-      filter(entry => entry.kind === 'control-operation-result');
-    assert(operations.some(entry => entry.value?.event?.operation === 'recall-effect'
-      && entry.value.accepted?.accepted === true), 'joint field did not accept a physical effect recall');
-    assert(operations.some(entry => entry.value?.event?.operation === 'predict-branch'
-      && entry.value.accepted?.accepted === true), 'joint field did not accept a physical branch prediction');
-  }
 });

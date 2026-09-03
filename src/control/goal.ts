@@ -5,13 +5,15 @@ import { assert } from '../util.js';
 
 type Baseline = Map<string, PublicValue | number | null>;
 
-function observable(predicate: GoalPredicateV1, observation: Observation): PublicValue | number | null | undefined {
+export function groundedPublicObservableV1(predicate: GoalPredicateV1,
+  observation: Observation): PublicValue | number | null | undefined {
   const grounded = predicate.subject;
   const key = predicate.observable;
   if (grounded.kind === 'crosshair') {
     const target = observation.objects.find(object => object.id === observation.targetId);
     if (key === 'type') return target?.type ?? null;
     if (key === 'visible') return target !== undefined;
+    if (key === 'relativeDistance') return target ? Math.hypot(...target.relativePosition) : undefined;
     if (key.startsWith('relativePosition.')) return target?.relativePosition[Number(key.at(-1))];
     return undefined;
   }
@@ -22,6 +24,10 @@ function observable(predicate: GoalPredicateV1, observation: Observation): Publi
   if (!subject) return undefined;
   if (key === 'type') return subject.type;
   if (key === 'visible') return true;
+  if (key === 'relativeDistance') {
+    if (!('relativePosition' in subject) || !subject.relativePosition) return undefined;
+    return Math.hypot(...subject.relativePosition);
+  }
   if (key === 'yaw') return 'yaw' in subject ? subject.yaw : undefined;
   if (key === 'pitch') return 'pitch' in subject ? subject.pitch : undefined;
   if (key.startsWith('position.')) {
@@ -44,7 +50,8 @@ function predicateList(expression: GoalExpressionV1): GoalPredicateV1[] {
 function finiteNumber(value: unknown): value is number { return typeof value === 'number' && Number.isFinite(value); }
 function clamp01(value: number): number { return Math.max(0, Math.min(1, value)); }
 
-function evaluatePredicate(predicate: GoalPredicateV1, actual: PublicValue | number | null | undefined,
+export function evaluateGroundedPredicateValueV1(predicate: GoalPredicateV1,
+  actual: PublicValue | number | null | undefined,
   baseline: PublicValue | number | null): PredicateEvaluationV1 {
   if (actual === undefined) return { predicateId: predicate.id, status: 'unknown', residual: 1,
     actual: null, baseline, reason: 'public-observable-unavailable' };
@@ -115,13 +122,14 @@ export class GroundedGoalEvaluatorV1 {
     assert(predicates.length > 0 && new Set(predicates.map(predicate => predicate.id)).size === predicates.length,
       'invalid-or-duplicate-goal-predicate');
     this.#goal = structuredClone(goal); this.#baseline.clear();
-    for (const predicate of predicates) this.#baseline.set(predicate.id, observable(predicate, observation) ?? null);
+    for (const predicate of predicates) this.#baseline.set(predicate.id,
+      groundedPublicObservableV1(predicate, observation) ?? null);
   }
   get goal(): GroundedGoalV1 | null { return this.#goal ? structuredClone(this.#goal) : null; }
   evaluate(observation: Observation): GoalEvaluationV1 {
     assert(this.#goal, 'goal-not-set');
-    const predicates = predicateList(this.#goal.expression).map(predicate => evaluatePredicate(predicate,
-      observable(predicate, observation), this.#baseline.get(predicate.id) ?? null));
+    const predicates = predicateList(this.#goal.expression).map(predicate => evaluateGroundedPredicateValueV1(predicate,
+      groundedPublicObservableV1(predicate, observation), this.#baseline.get(predicate.id) ?? null));
     const combined = combine(this.#goal.expression, new Map(predicates.map(predicate => [predicate.predicateId, predicate])));
     return { goalId: this.#goal.id, status: combined.status, residual: combined.residual,
       observationSequence: observation.sequence, predicates };

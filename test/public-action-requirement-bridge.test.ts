@@ -2,13 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { Action, ActionCue, Observation, PublicChange } from '../src/contracts.js';
 import { describeActionRequirement } from '../src/body.js';
-import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1,
-  EffectRecallCandidateV1, GroundedGoalV1, HypotheticalPublicStateV1,
+import type { ActionObservationScopeV1, ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1,
+  ContinuationPredictionV2, ContinuousPatternRecallV2, EffectRecallCandidateV1, GroundedGoalV1, HypotheticalPublicStateV1,
   JointTransientControlFieldConfigV2, OpaqueFactorTransitionTraceV1,
-  PhysicalEvidenceReferenceV1, PhysicalReasoningPortV1 } from '../src/control/contracts.js';
+  PhysicalEvidenceReferenceV1, PhysicalReasoningPortV2,
+  ProjectedParentRelationApplicabilityV1 } from '../src/control/contracts.js';
 import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2 } from '../src/control/controller.js';
 import { cueFor, cueIdentity } from '../src/events.js';
 import { sha } from '../src/util.js';
+import { distributedEvidenceFixtureV3, distributedPredictionFixtureV3 }
+  from './distributed-control-fixtures.js';
 
 const config: JointTransientControlFieldConfigV2 = {
   version: 'JointTransientControlFieldConfigV2', seed: 20260830, branchCapacity: 8, stepSize: .02,
@@ -27,11 +30,8 @@ const goal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'opaque-result', e
     subject: { kind: 'public-object', id: targetId, expectedType: targetType },
     observable: 'properties.result', comparator: 'equals', target: true },
 } };
-const physical = (id: string): PhysicalEvidenceReferenceV1 => ({
-  eventId: `event:${id}`, anchorId: `anchor:${id}`,
-  r1: { pageId: 'r1', traceId: id, active: true }, r2: { coordinate: [0, 0, 0], active: true },
-  r2a: { relationIds: [`relation:${id}`], applicability: .9, productionEligible: true },
-});
+const physical = (id: string): PhysicalEvidenceReferenceV1 =>
+  distributedEvidenceFixtureV3(id, { relationIds: [`relation:${id}`], applicability: .9 });
 
 class RequirementEnvironment implements PhysicalControlEnvironmentV2 {
   actionCount = 0;
@@ -40,6 +40,7 @@ class RequirementEnvironment implements PhysicalControlEnvironmentV2 {
   aimed = false;
   result = false;
   readonly timeline: string[] = [];
+  readonly observationScopes: ActionObservationScopeV1[] = [];
   readonly records: Array<{ readonly kind: string; readonly value: unknown }> = [];
 
   frame(): Observation {
@@ -61,7 +62,8 @@ class RequirementEnvironment implements PhysicalControlEnvironmentV2 {
     return actions.map(action => ({ version: 'ActionOfferV1', offerId: sha({ action, sequence: observation.sequence }),
       observationSequence: observation.sequence, action, cue: cueFor(action, observation) }));
   }
-  async executeOffer(offer: ActionOfferV1) {
+  async executeOffer(offer: ActionOfferV1, observationScope: ActionObservationScopeV1) {
+    this.observationScopes.push(structuredClone(observationScope));
     this.actionCount++; this.sequence += offer.action.kind === 'observe' ? 5 : 2;
     if (offer.action.kind === 'look') this.aimed = true;
     if (offer.action.kind === 'interact') this.result = true;
@@ -72,8 +74,9 @@ class RequirementEnvironment implements PhysicalControlEnvironmentV2 {
   record(kind: string, value: unknown): void { this.records.push({ kind, value }); }
 }
 
-class RequirementReasoning implements PhysicalReasoningPortV1 {
+class RequirementReasoning implements PhysicalReasoningPortV2 {
   readonly recallGoals: string[] = [];
+  readonly predictionCalls: Array<{ readonly candidateId: string; readonly aimed: boolean }> = [];
   constructor(readonly environment: RequirementEnvironment, readonly acquisitionExperience = true) {}
   recallByEffect(queryGoal: GroundedGoalV1): readonly EffectRecallCandidateV1[] {
     this.recallGoals.push(queryGoal.id);
@@ -85,12 +88,46 @@ class RequirementReasoning implements PhysicalReasoningPortV1 {
     return [this.candidate('effect', interactCue, [{ subject: `${targetType}#0`, property: 'result',
       before: false, after: true, observationIndex: 1, meaning: 'observed-co-occurrence' }])];
   }
+  recallAtomicEffect(queryGoal: GroundedGoalV1): readonly EffectRecallCandidateV1[] {
+    return this.recallByEffect(queryGoal);
+  }
+  recallContinuousPattern(): readonly ContinuousPatternRecallV2[] { return []; }
+  compareCurrentFactors(relationId: string): ConditionApplicabilityV1 {
+    return relationId.startsWith('relation:') ? this.compareConditions()
+      : { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
+        applicability: 0, productionEligible: false };
+  }
+  compareProjectedParentRelations(relationIds: readonly string[], _observation: Observation,
+    states: readonly HypotheticalPublicStateV1[],
+    source: { readonly r1Active: boolean; readonly r2Active: boolean }):
+    readonly ProjectedParentRelationApplicabilityV1[] {
+    return states.map(() => {
+      const relationResults = relationIds.map(relationId => {
+        const valid = relationId.startsWith('relation:') && source.r1Active && source.r2Active;
+        return { relationId, matchedFactorIds: valid ? ['opaque-current-condition'] : [],
+          contradictedFactorIds: [], unknownFactorIds: valid ? [] : [`unsupported-relation:${relationId}`],
+          applicability: valid ? .9 : 0, productionEligible: valid };
+      });
+      const selected = relationResults.find(result => result.productionEligible) ?? relationResults[0] ?? null;
+      return { version: 'ProjectedParentRelationApplicabilityV1',
+        selectedRelationId: selected?.relationId ?? null, relationResults,
+        matchedFactorIds: selected?.matchedFactorIds ?? [],
+        contradictedFactorIds: selected?.contradictedFactorIds ?? [],
+        unknownFactorIds: selected?.unknownFactorIds ?? [], applicability: selected?.applicability ?? 0,
+        productionEligible: selected?.productionEligible ?? false };
+    });
+  }
+  predictContinuation(patternId: string): ContinuationPredictionV2 {
+    return { version: 'ContinuationPredictionV2', patternId, support: 0, samples: [],
+      evidenceGrade: 'single-observation', unknown: ['test-has-no-continuous-pattern'] };
+  }
   compareConditions(): ConditionApplicabilityV1 {
     return { matchedFactorIds: ['opaque-current-condition'], contradictedFactorIds: [], unknownFactorIds: [],
       applicability: .9, productionEligible: true };
   }
   predictCandidate(candidate: EffectRecallCandidateV1, state: Observation | HypotheticalPublicStateV1,
     queryGoal: GroundedGoalV1): BranchPredictionV1 {
+    this.predictionCalls.push({ candidateId: candidate.candidateId, aimed: this.environment.aimed });
     const acquisition = candidate.candidateId === 'acquire';
     const change: PublicChange = acquisition
       ? { subject: 'crosshair', property: 'type', before: null, after: targetType,
@@ -104,8 +141,7 @@ class RequirementReasoning implements PhysicalReasoningPortV1 {
     const expectedGoal = acquisition ? queryGoal.id.startsWith('public-action-requirement:')
       : queryGoal.id === goal.id;
     const progress = expectedGoal ? 24 : 0;
-    return { prediction: { kind: 'hypothetical-prediction', support: .9, calibratedProbability: false,
-      samples: [], evidence: candidate.evidence, unknown: [], mapSha256: 'opaque-map' },
+    return { prediction: distributedPredictionFixtureV3(candidate.evidence),
       validSampleCount: 24, progressSampleCount: progress, progressFraction: progress / 24,
       nextStates: Array.from({ length: 24 }, () => next), unknown: [] };
   }
@@ -140,6 +176,10 @@ test('a missing public body precondition becomes a physical effect query and ret
   assert.notEqual(acquisition.node.nodeId, `experienced:acquire`,
     'a requirement-scoped candidate must not alias a root-goal branch');
   assert(environment.records.some(record => record.kind === 'control-public-requirement-goal'));
+  assert.equal(reasoning.predictionCalls.some(call => call.candidateId === 'acquire' && call.aimed), false,
+    'a fulfilled public-requirement branch kept consuming prediction work');
+  assert(environment.observationScopes.some(scope => scope.referencedPublicObjectIds.includes(targetId)),
+    'the thin controller did not retain the grounded goal object in the real action observation scope');
 });
 
 test('without recalled acquisition experience the controller does not forge an experienced method', async () => {

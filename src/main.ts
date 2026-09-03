@@ -78,7 +78,6 @@ async function main(): Promise<void> {
     status.physical = await runtime.status();
     status.conclusion = !physical.ready ? 'real-initialization-incomplete'
       : options.bootstrapOnly ? 'real-initialization-ready' : 'structured-goal-required';
-    await runtime.save();
   } catch (error) {
     const failure = error as Error; status.conclusion = stopping ? 'operator-stopped' : 'run-failed';
     status.error = { message: failure.message, stack: failure.stack };

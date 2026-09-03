@@ -4,8 +4,11 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { Observation, PublicObject } from '../src/contracts.js';
 import { GroundedGoalEvaluatorV1 } from '../src/control/goal.js';
+import { groupEffectCandidatesForControlV1 } from '../src/control/workspace.js';
 import { PhysicalMemory } from '../src/memory.js';
 import { sha } from '../src/util.js';
+import { legacyCandidateAsInactiveDistributedAuditV3 }
+  from '../src/legacy/audit-control-contracts.js';
 import { MINECRAFT_JOINT_CONTROL_HELDOUT_BASELINE_V2, SingleVisibleNoteReadinessGateV2,
   heldoutCaseActionChainMatchesV2, heldoutInvalidInteractionCountV2, heldoutStaleRefusalCountV2,
   heldoutDeviationAttentionNoticeCountV2,
@@ -140,7 +143,11 @@ test('an aligned sealed real frame has production interaction conditions and ran
   const candidates = memory.recallByEffect(goal, evaluator.evaluate(frame), frame)
     .filter(candidate => candidate.actionCue.kind === 'interact'
       && candidate.actionCue.targetRole === 'note_block');
-  assert.equal(candidates.length, 16);
+  assert.equal(candidates.length, 16, 'raw physical provenance remains event-level');
+  const groups = groupEffectCandidatesForControlV1(`root:${goal.id}`,
+    candidates.map(legacyCandidateAsInactiveDistributedAuditV3));
+  assert.equal(groups.length, 1, 'sixteen equivalent events must occupy one control branch');
+  assert.equal(groups[0]!.members.length, 16, 'grouping must retain every physical event');
   const candidate = candidates[0]!;
   const condition = memory.compareConditions(candidate, frame);
   assert.equal(condition.productionEligible, true);
@@ -149,6 +156,76 @@ test('an aligned sealed real frame has production interaction conditions and ran
   assert(prediction.validSampleCount >= 8);
   assert(prediction.progressSampleCount / prediction.validSampleCount >= 0.6);
   assert.equal(sha(memory.snapshot()), before, 'preflight recall, condition and prediction must be read-only');
+});
+
+test('a recalled concrete R2 result keeps its own relation when another result currently matches', async () => {
+  const baseline = await readFrozenPhysicalBaselineV2(resolve(MINECRAFT_JOINT_CONTROL_HELDOUT_BASELINE_V2.relativePath));
+  const records = (await readFile(resolve('evidence',
+    'minecraft-guided-affordance-v1-attempt-017-heldout-public-visibility-setup', 'frames.jsonl'), 'utf8'))
+    .split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line) as { kind: string; value: Observation });
+  const frame = records.find(record => record.kind === 'frame' && record.value.sequence === 70)?.value;
+  assert(frame, 'sealed real frame 70 must remain available');
+  const control = frame.objects.find(object => object.type === 'note_block');
+  assert(control, 'sealed real frame must expose the note block');
+  assert.equal(control.properties.note, '0');
+  const goal = { version: 'GroundedGoalV1' as const, id: 'note-two-relation-provenance', expression: {
+    kind: 'predicate' as const, predicate: { version: 'GoalPredicateV1' as const, id: 'note-state-two',
+      subject: { kind: 'public-object' as const, id: control.id, expectedType: 'note_block' },
+      observable: 'properties.note' as const, comparator: 'equals' as const, target: '2' } } };
+  const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(goal, frame);
+  const memory = PhysicalMemory.restore(baseline.snapshot);
+  const candidate = memory.recallByEffect(goal, evaluator.evaluate(frame), frame)
+    .find(item => item.actionCue.kind === 'interact'
+      && item.observedChanges.some(change => change.property === 'note' && change.after === '2'));
+  assert(candidate, 'note=2 history was not recalled');
+
+  assert.deepEqual(candidate.evidence.r2a.relationIds, ['causal-hyperedge-000023']);
+  assert.equal(candidate.evidence.r2a.applicability, 0);
+  assert.equal(candidate.evidence.r2a.productionEligible, true);
+  assert.deepEqual(memory.compareConditions(candidate, frame), {
+    matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: ['causal-factor-000009'],
+    applicability: 0, productionEligible: true,
+  });
+});
+
+test('a random rollout that reaches the last recorded public outcome can carry its observed opaque factor transition', async () => {
+  const baseline = await readFrozenPhysicalBaselineV2(resolve(MINECRAFT_JOINT_CONTROL_HELDOUT_BASELINE_V2.relativePath));
+  const records = (await readFile(resolve('evidence',
+    'minecraft-guided-affordance-v1-attempt-017-heldout-public-visibility-setup', 'frames.jsonl'), 'utf8'))
+    .split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line) as { kind: string; value: Observation });
+  const frame = records.find(record => record.kind === 'frame' && record.value.sequence === 70)?.value;
+  assert(frame, 'sealed real frame 70 must remain available');
+  const control = frame.objects.find(object => object.type === 'note_block');
+  assert(control, 'sealed real frame must expose the note block');
+  const goal = { version: 'GroundedGoalV1' as const, id: 'note-two-factor-rollout', expression: {
+    kind: 'predicate' as const, predicate: { version: 'GoalPredicateV1' as const, id: 'note-state-two',
+      subject: { kind: 'public-object' as const, id: control.id, expectedType: 'note_block' },
+      observable: 'properties.note' as const, comparator: 'equals' as const, target: '2' } } };
+  const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(goal, frame);
+  const memory = PhysicalMemory.restore(baseline.snapshot), before = sha(memory.snapshot());
+  const candidate = memory.recallByEffect(goal, evaluator.evaluate(frame), frame)
+    .find(item => item.actionCue.kind === 'interact'
+      && item.observedChanges.some(change => change.property === 'note' && change.after === '2'));
+  assert(candidate, 'note=2 history was not recalled');
+  const missing = memory.compareConditions(candidate, frame);
+  assert.deepEqual(missing.unknownFactorIds, ['causal-factor-000009']);
+  const transition = memory.recallFactorTransition(missing.unknownFactorIds, frame)
+    .find(value => value.actionCue.kind === 'interact'
+      && value.activatedFactorIds.includes('causal-factor-000009'));
+  assert(transition, 'the real interaction transition that establishes the missing factor must remain recallable');
+  const transitionCandidate = { candidateId: transition.transitionId, goalPredicateIds: [],
+    actionCue: transition.actionCue, observedChanges: [], observedBefore: {}, evidence: transition.evidence,
+    unknown: ['opaque-factor-transition:observed-co-occurrence-not-causal-proof'] };
+  const condition = memory.compareConditions(transitionCandidate, frame);
+  assert.equal(condition.productionEligible, true);
+  assert(condition.applicability >= .5);
+  const prediction = memory.predictCandidate(transitionCandidate, frame, goal);
+  const established = prediction.nextStates.filter(state =>
+    state.knownActiveFactorIds.includes('causal-factor-000009')).length;
+  assert(prediction.validSampleCount >= 8);
+  assert(established / prediction.nextStates.length >= .75,
+    'physically visiting the final recorded public outcome must not require traversing later no-change tail kernels');
+  assert.equal(sha(memory.snapshot()), before, 'factor-transition prediction must remain read-only');
 });
 
 test('heldout accounting includes pre-body reality refusals and failed interaction results', () => {

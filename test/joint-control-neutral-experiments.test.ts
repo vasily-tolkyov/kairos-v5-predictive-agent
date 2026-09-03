@@ -3,12 +3,16 @@ import assert from 'node:assert/strict';
 import type { Action, Observation, PublicChange } from '../src/contracts.js';
 import { ControlHabitWeightsV1 } from '../src/control/habit.js';
 import { JointTransientControlFieldV2 } from '../src/control/field.js';
-import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, EffectRecallCandidateV1,
+import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, ContinuationPredictionV2,
+  ContinuousPatternRecallV2, EffectRecallCandidateV1,
   GroundedGoalV1, HypotheticalPublicStateV1, JointControlDrivesV2, JointTransientControlFieldConfigV2,
-  OpaqueFactorTransitionTraceV1, PhysicalEvidenceReferenceV1, PhysicalReasoningPortV1 } from '../src/control/contracts.js';
-import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2 } from '../src/control/controller.js';
+  OpaqueFactorTransitionTraceV1, PhysicalEvidenceReferenceV1, PhysicalReasoningPortV2,
+  ProjectedParentRelationApplicabilityV1 } from '../src/control/contracts.js';
+import { PhysicalControlManagerV2, selectExecutablePhysicalMemberV1,
+  selectQualifiedPredictionMemberV1, type PhysicalControlEnvironmentV2 } from '../src/control/controller.js';
 import { cueFor, cueIdentity } from '../src/events.js';
 import { sha } from '../src/util.js';
+import { distributedEvidenceFixtureV3 } from './distributed-control-fixtures.js';
 
 type Role = 'alpha' | 'beta' | 'gamma' | 'delta' | 'observe';
 type Depth = 2 | 3;
@@ -71,13 +75,8 @@ const GOAL: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'opaque-result',
     subject: { kind: 'public-object', id: 'opaque', expectedType: 'opaque' },
     observable: 'properties.R', comparator: 'equals', target: true } } };
 
-const evidence = (id: string, active = true): PhysicalEvidenceReferenceV1 => ({
-  eventId: `event:${id}`, anchorId: `anchor:${id}`,
-  r1: { pageId: 'r1', traceId: id, active },
-  r2: { coordinate: [0, 0, 0], active },
-  r2a: { relationIds: [`relation:${id}`], applicability: active ? .9 : 0,
-    productionEligible: active },
-});
+const evidence = (id: string, active = true): PhysicalEvidenceReferenceV1 =>
+  distributedEvidenceFixtureV3(id, { active, relationIds: [`relation:${id}`], applicability: active ? .9 : 0 });
 
 class OpaqueEnvironment implements PhysicalControlEnvironmentV2 {
   actionCount = 0;
@@ -140,7 +139,7 @@ class OpaqueEnvironment implements PhysicalControlEnvironmentV2 {
   record(kind: string, value: unknown): void { this.records.push({ kind, value }); }
 }
 
-class OpaqueReasoning implements PhysicalReasoningPortV1 {
+class OpaqueReasoning implements PhysicalReasoningPortV2 {
   readonly roleByCandidateId: ReadonlyMap<string, Exclude<Role, 'observe'>>;
 
   constructor(readonly environment: OpaqueEnvironment, readonly depth: Depth,
@@ -153,6 +152,47 @@ class OpaqueReasoning implements PhysicalReasoningPortV1 {
   async recallByEffect(): Promise<readonly EffectRecallCandidateV1[]> {
     return this.environment.variant.recallOrder.map(role => this.candidate(role,
       role === 'beta' ? TARGET_CHANGE : { ...TARGET_CHANGE, property: 'irrelevant', after: 1 }));
+  }
+  async recallAtomicEffect(): Promise<readonly EffectRecallCandidateV1[]> { return this.recallByEffect(); }
+  async recallContinuousPattern(): Promise<readonly ContinuousPatternRecallV2[]> { return []; }
+  async compareCurrentFactors(relationId: string, observation: Observation): Promise<ConditionApplicabilityV1> {
+    const id = relationId.startsWith('relation:') ? relationId.slice('relation:'.length) : '';
+    const role = ['alpha', 'beta', 'gamma', 'delta'].includes(id) ? id as Exclude<Role, 'observe'> : null;
+    if (role === null) return { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
+      applicability: 0, productionEligible: false };
+    return this.compareConditions(this.candidate(role, role === 'beta' ? TARGET_CHANGE
+      : { ...TARGET_CHANGE, property: 'irrelevant', after: 1 }), observation);
+  }
+  async compareProjectedParentRelations(relationIds: readonly string[], _observation: Observation,
+    states: readonly HypotheticalPublicStateV1[],
+    source: { readonly r1Active: boolean; readonly r2Active: boolean }):
+    Promise<readonly ProjectedParentRelationApplicabilityV1[]> {
+    return Promise.all(states.map(async state => {
+      const relationResults = await Promise.all(relationIds.map(async relationId => {
+        const id = relationId.startsWith('relation:') ? relationId.slice('relation:'.length) : '';
+        const role = ['alpha', 'beta', 'gamma', 'delta'].includes(id)
+          ? id as Exclude<Role, 'observe'> : null;
+        if (role === null) return { relationId, matchedFactorIds: [], contradictedFactorIds: [],
+          unknownFactorIds: [`unknown-relation:${relationId}`], applicability: 0, productionEligible: false };
+        const value = await this.compareConditions(this.candidate(role, role === 'beta' ? TARGET_CHANGE
+          : { ...TARGET_CHANGE, property: 'irrelevant', after: 1 }), state);
+        return { relationId, ...value,
+          productionEligible: value.productionEligible && source.r1Active && source.r2Active };
+      }));
+      const selected = [...relationResults].sort((left, right) => Number(right.productionEligible)
+        - Number(left.productionEligible) || right.applicability - left.applicability
+        || left.relationId.localeCompare(right.relationId))[0] ?? null;
+      return { version: 'ProjectedParentRelationApplicabilityV1',
+        selectedRelationId: selected?.relationId ?? null, relationResults,
+        matchedFactorIds: selected?.matchedFactorIds ?? [],
+        contradictedFactorIds: selected?.contradictedFactorIds ?? [],
+        unknownFactorIds: selected?.unknownFactorIds ?? [], applicability: selected?.applicability ?? 0,
+        productionEligible: selected?.productionEligible ?? false };
+    }));
+  }
+  async predictContinuation(patternId: string): Promise<ContinuationPredictionV2> {
+    return { version: 'ContinuationPredictionV2', patternId, support: 0, samples: [],
+      evidenceGrade: 'single-observation', unknown: ['test-has-no-continuous-pattern'] };
   }
 
   async compareConditions(candidate: EffectRecallCandidateV1,
@@ -185,9 +225,10 @@ class OpaqueReasoning implements PhysicalReasoningPortV1 {
       baseObservationSequence: 'sequence' in state ? state.sequence : state.baseObservationSequence,
       knownChanges: role === 'beta' ? [TARGET_CHANGE] : [], knownActiveFactorIds: activated,
       knownInactiveFactorIds: [], unknownFactorIds: [], unobserved: 'unknown' };
-    const progress = this.ablation !== 'rollout' && role === 'beta' ? (this.habitProfile ? .625 : 1) : 0;
-    return { prediction: { kind: 'hypothetical-prediction', support: .9, calibratedProbability: false,
-      samples: [], evidence: candidate.evidence, unknown: [], mapSha256: 'opaque-map' },
+    const progress = this.ablation !== 'rollout' && role === 'beta' ? (this.habitProfile ? .75 : 1) : 0;
+    return { prediction: { version: 'DistributedPredictionV3', kind: 'hypothetical-prediction', support: .9,
+      calibratedProbability: false, samples: [], evidence: candidate.evidence, unknown: [],
+      substrateSha256: 'opaque-map' },
       validSampleCount: 24, progressSampleCount: progress * 24, progressFraction: progress,
       nextStates: Array.from({ length: 24 }, () => nextState), unknown: [] };
   }
@@ -215,10 +256,16 @@ class OpaqueReasoning implements PhysicalReasoningPortV1 {
   layeredEvidence(role: Exclude<Role, 'observe'>): PhysicalEvidenceReferenceV1 {
     const base = evidence(role);
     return { ...base,
-      r1: { ...base.r1, active: this.physicalLayers.r1 },
-      r2: { ...base.r2, active: this.physicalLayers.r2 },
-      r2a: { ...base.r2a, productionEligible: this.physicalLayers.r2a,
-        applicability: this.physicalLayers.r2a ? .9 : 0 } };
+      r1: { ...base.r1, active: this.physicalLayers.r1,
+        supportStrength: this.physicalLayers.r1 ? 1 : 0 },
+      r2: { ...base.r2, active: this.physicalLayers.r2,
+        supportStrength: this.physicalLayers.r2 ? 1 : 0 },
+      r2a: { ...base.r2a, active: this.physicalLayers.r2a,
+        supportStrength: this.physicalLayers.r2a ? 1 : 0,
+        productionEligible: this.physicalLayers.r2a,
+        predictionEligible: this.physicalLayers.r2a,
+        applicability: this.physicalLayers.r2a ? .9 : 0,
+        branchSelectionStrength: this.physicalLayers.r2a ? .9 : 0 } };
   }
 }
 
@@ -230,6 +277,45 @@ const nonzeroOperationClasses = (environment: OpaqueEnvironment): number => Math
       return new Set((snapshot.field?.sites ?? []).filter(site => site.effectiveDrive > 0)
         .map(site => site.operation)).size;
     }));
+
+const transitionNodeFor = (manager: PhysicalControlManagerV2, transitionId: string): string | null =>
+  manager.snapshot?.workspace.nodes.find(value => value.node.kind === 'factor-transition'
+    && (value.node.transitionMembers ?? [value.node.transition])
+      .some(member => member.transitionId === transitionId))?.node.nodeId ?? null;
+
+test('G5 distributed execution and aggregate winner use the same 8-sample 0.75 progress gate', () => {
+  const environment = new OpaqueEnvironment(variants[0]!);
+  const reasoning = new OpaqueReasoning(environment, 2);
+  const underSupported = reasoning.candidate('alpha', TARGET_CHANGE);
+  const qualified = reasoning.candidate('beta', TARGET_CHANGE);
+  const condition: ConditionApplicabilityV1 = { matchedFactorIds: ['factor'], contradictedFactorIds: [],
+    unknownFactorIds: [], applicability: 1, productionEligible: true };
+  const prediction = (candidate: EffectRecallCandidateV1, validSampleCount: number,
+    progressSampleCount: number): BranchPredictionV1 => ({
+      prediction: { version: 'DistributedPredictionV3', kind: 'hypothetical-prediction', support: 1,
+        calibratedProbability: false, samples: [], evidence: candidate.evidence, unknown: [],
+        substrateSha256: 'distributed-test-map' },
+      currentEvidence: candidate.evidence, validSampleCount, progressSampleCount,
+      progressFraction: progressSampleCount / Math.max(1, validSampleCount), nextStates: [], unknown: [],
+    });
+
+  assert.equal(selectExecutablePhysicalMemberV1([qualified], condition, prediction(qualified, 7, 7), []), null);
+  assert.equal(selectExecutablePhysicalMemberV1([qualified], condition, prediction(qualified, 8, 5), []), null);
+  assert.equal(selectExecutablePhysicalMemberV1([qualified], condition, prediction(qualified, 8, 6), [])
+    ?.candidate.candidateId, qualified.candidateId);
+  assert.equal(selectExecutablePhysicalMemberV1([qualified], condition, prediction(qualified, 7, 0), [], false), null,
+    'disabling progress did not preserve the minimum physical sample floor');
+
+  const members = [
+    { candidateId: underSupported.candidateId, value: prediction(underSupported, 7, 7) },
+    { candidateId: qualified.candidateId, value: prediction(qualified, 8, 6) },
+  ];
+  assert.equal(selectQualifiedPredictionMemberV1([underSupported, qualified], members)?.candidateId,
+    qualified.candidateId);
+  assert.equal(selectQualifiedPredictionMemberV1([underSupported, qualified], [
+    members[0]!, { candidateId: qualified.candidateId, value: prediction(qualified, 8, 5) },
+  ]), null);
+});
 
 test('32/32 two-step isomorphisms form alpha -> beta -> verification-observe without list-order help', async () => {
   const failures: unknown[] = [];
@@ -244,7 +330,7 @@ test('32/32 two-step isomorphisms form alpha -> beta -> verification-observe wit
         maxNonzeroOperationClasses: nonzeroOperationClasses(environment), snapshot: manager.snapshot });
     const dependencies = manager.snapshot?.workspace.dependencies ?? [];
     const beta = `experienced:${variant.candidateIds.beta}`;
-    const alpha = `factor-transition:${variant.candidateIds.alpha}`;
+    const alpha = transitionNodeFor(manager, variant.candidateIds.alpha);
     if (!dependencies.some(edge => edge.dependentNodeId === beta && edge.requiredNodeId === alpha))
       failures.push({ variant: variant.id, seedIndex, missingDependency: `${beta}<-${alpha}`, dependencies });
   }
@@ -260,8 +346,8 @@ test('64/64 three-step isomorphisms retain the complete dependency graph without
     const result = await manager.runGoal(GOAL);
     const dependencies = manager.snapshot?.workspace.dependencies ?? [];
     const beta = `experienced:${variant.candidateIds.beta}`;
-    const alpha = `factor-transition:${variant.candidateIds.alpha}`;
-    const gamma = `factor-transition:${variant.candidateIds.gamma}`;
+    const alpha = transitionNodeFor(manager, variant.candidateIds.alpha);
+    const gamma = transitionNodeFor(manager, variant.candidateIds.gamma);
     const complete = dependencies.some(edge => edge.dependentNodeId === beta && edge.requiredNodeId === alpha)
       && dependencies.some(edge => edge.dependentNodeId === alpha && edge.requiredNodeId === gamma);
     if (result.status !== 'goal-verified' || environment.timeline.join(',') !== 'gamma,alpha,beta,observe'
@@ -285,7 +371,7 @@ test('condition, rollout, factor-transition recall and joint-competition ablatio
       if (exact) outcomes[ablation]++;
       const dependencies = manager.snapshot?.workspace.dependencies ?? [];
       const beta = `experienced:${variant.candidateIds.beta}`;
-      const alpha = `factor-transition:${variant.candidateIds.alpha}`;
+      const alpha = transitionNodeFor(manager, variant.candidateIds.alpha);
       const executionNodeIds = environment.records.filter(record => record.kind === 'joint-control-decision')
         .map(record => (record.value as { field?: { lastDecision?: {
           operation?: string; nodeId?: string | null } } }).field?.lastDecision)
