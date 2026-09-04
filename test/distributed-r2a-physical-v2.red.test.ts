@@ -523,3 +523,75 @@ test('intervention identity, relation, factor and branch conclusions are derived
   }), /not-a-physical-matched-contrast/,
   'two events from one terminal branch were accepted as a matched intervention');
 });
+
+test('a physically flipped terminal outcome is counted without metadata', () => {
+  const Ctor = learnerConstructor();
+  const learner = Ctor.restore(trainedPredictiveState(), () => true);
+  const before = targetRelation(learner);
+  assert.equal(before.contradictionCount, 0);
+  const flipped = structuredClone(event('target', 8)) as unknown as {
+    eventId: string; contextIds: string[]; physicalPulseSiteIds: number[][];
+    physicalFootprint: NonNullable<DistributedR2ContinuousEventV1['physicalFootprint']>;
+  } & DistributedR2ContinuousEventV1;
+  // Keep the target condition/action and even the public annotation unchanged;
+  // only the measured terminal physical population is switched to the other
+  // anonymous basin.  The production learner must use the physical readout,
+  // never this fixture's branch label, to classify it.
+  flipped.eventId = 'target-flipped-0';
+  flipped.contextIds = ['context-flipped'];
+  flipped.physicalPulseSiteIds = [[10, 11, 12, 13], [20, 21, 22, 23], [60, 61, 62, 63]];
+  flipped.physicalFootprint = {
+    ...flipped.physicalFootprint!, traceId: 'r2-target-flipped-0',
+    footprintId: 'r2-target-flipped-0',
+    siteIds: [10, 11, 12, 13, 20, 21, 22, 23, 60, 61, 62, 63],
+    pulseSiteIds: flipped.physicalPulseSiteIds,
+    bondReferences: [
+      { fromSiteId: 10, toSiteId: 20, kind: 'plastic-directed' },
+      { fromSiteId: 20, toSiteId: 60, kind: 'plastic-directed' },
+    ],
+    directedBondIds: ['10->20', '20->60'],
+  };
+  learner.observe(flipped);
+  const after = learner.relations().find(value => value.relationId === before.relationId);
+  assert(after, 'the original physically matched relation disappeared after one flipped event');
+  assert(after.contradictionCount > 0,
+    'a different measured terminal attractor was not counted as a contradiction');
+  // One contradiction out of the nine observed events is below the existing
+  // 0.20 contradiction-rate cap.  The grade therefore remains predictive-
+  // stable while the physical contradiction count is exposed for later decay
+  // or additional counterexamples; a single event must not force a downgrade
+  // by fiat.
+  assert.equal(after.grade, 'predictive-stable');
+});
+
+test('repeated physically flipped outcomes downgrade the relation grade', () => {
+  const Ctor = learnerConstructor();
+  const learner = Ctor.restore(trainedPredictiveState(), () => true);
+  const before = targetRelation(learner);
+  for (let repetition = 8; repetition < 11; repetition++) {
+    const flipped = structuredClone(event('target', repetition)) as unknown as {
+      eventId: string; contextIds: string[]; physicalPulseSiteIds: number[][];
+      physicalFootprint: NonNullable<DistributedR2ContinuousEventV1['physicalFootprint']>;
+    } & DistributedR2ContinuousEventV1;
+    flipped.eventId = `target-flipped-${repetition}`;
+    flipped.contextIds = [`context-flipped-${repetition}`];
+    flipped.physicalPulseSiteIds = [[10, 11, 12, 13], [20, 21, 22, 23], [60, 61, 62, 63]];
+    flipped.physicalFootprint = {
+      ...flipped.physicalFootprint!, traceId: `r2-target-flipped-${repetition}`,
+      footprintId: `r2-target-flipped-${repetition}`,
+      siteIds: [10, 11, 12, 13, 20, 21, 22, 23, 60, 61, 62, 63],
+      pulseSiteIds: flipped.physicalPulseSiteIds,
+      bondReferences: [
+        { fromSiteId: 10, toSiteId: 20, kind: 'plastic-directed' },
+        { fromSiteId: 20, toSiteId: 60, kind: 'plastic-directed' },
+      ],
+      directedBondIds: ['10->20', '20->60'],
+    };
+    learner.observe(flipped);
+  }
+  const after = learner.relations().find(value => value.relationId === before.relationId);
+  assert(after, 'the target relation disappeared after repeated physical counterexamples');
+  assert(after.contradictionCount > 0, 'repeated physical counterexamples were not counted');
+  assert.equal(after.grade, 'repeated-correlation',
+    'a contradiction rate above the physical 0.20 cap did not downgrade the relation');
+});

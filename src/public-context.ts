@@ -1,8 +1,9 @@
 import type { PublicObject } from './contracts.js';
 import { assert, canonical, sha } from './util.js';
+import { KAIROS_V5_CONTEXT_VERSION } from './core/compatibility.js';
 
 /** Evidence provenance only; never a feature, a rule label, or a model input. */
-export const PUBLIC_LAYOUT_SEMANTICS = 'V5PublicRelativeLayoutV1' as const;
+export const PUBLIC_LAYOUT_SEMANTICS = KAIROS_V5_CONTEXT_VERSION;
 
 export function publicLayoutContextId(dimension: string, visibleObjects: readonly PublicObject[]): string {
   const quantize = (value: number): number => {

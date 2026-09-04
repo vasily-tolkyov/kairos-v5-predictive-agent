@@ -34,11 +34,20 @@ export class AttentionMonitor {
   #lastSequence = 0;
   #fault: Error | null = null;
   readonly notices: AttentionNotice[] = [];
+  #pendingNoveltySubjects = new Set<string>();
   constructor(readonly compute: Compute, readonly record: (kind: string, value: unknown) => void,
     readonly wake: (notice: AttentionNotice) => void, readonly capture: (event: RealEvent) => void = () => {},
     readonly sessionId: string = randomUUID()) {}
   check(): void { if (this.#fault) throw this.#fault; }
   bindActionTarget(subject: string): void { this.controller.bindActionTarget(subject); }
+  /**
+   * Surface a first-seen afferent allocation to the next real attention
+   * window.  The allocation itself is committed by physical memory; this
+   * method only carries its transient salience and never writes memory.
+   */
+  noteNovelty(subjectIds: readonly string[]): void {
+    for (const subjectId of subjectIds) this.#pendingNoveltySubjects.add(subjectId);
+  }
   accept(frame: Observation): void {
     this.#lastSequence = frame.sequence; this.#window.push(frame);
     if (this.#window.length < 21) return;
@@ -80,10 +89,18 @@ export class AttentionMonitor {
           ? Math.abs(c.after - c.before) : 1), 0));
         if (classification === 'prediction-violation') this.#notice({ kind: classification, subjectId, sequence: frame.sequence,
           forecastCompletedBeforeSequence: forecast!.completedSequence, evidence: { changes: subjectChanges, prediction: forecast!.prediction } });
+        const novelty = this.#pendingNoveltySubjects.has(subjectId) ? 1 : 0;
         return { targetId: subjectId, safe: true, changeMagnitude: magnitude, changeDerivative: 0,
           predictionDeviation: classification === 'prediction-violation' ? 2 : classification === 'within-envelope' ? 0 : null,
-          goalRelevance: 0, novelty: 0, actionTargetBinding: this.controller.snapshot().boundActionTargetId === subjectId ? 1 : 0 };
+          goalRelevance: 0, novelty, actionTargetBinding: this.controller.snapshot().boundActionTargetId === subjectId ? 1 : 0 };
       });
+      // A novelty pulse is transient just like the attention-window inputs.
+      // If no matching subject was present, leave it pending for the next
+      // complete public window instead of silently dropping the signal.
+      const representedNovelty = trackedIds.some(subjectId => this.#pendingNoveltySubjects.has(subjectId));
+      if (representedNovelty) {
+        for (const subjectId of trackedIds) this.#pendingNoveltySubjects.delete(subjectId);
+      }
       const snapshot = this.controller.update(frame.sequence, candidates);
       const unknownNoticed = new Set<string>();
       const noticeUnknown = (subjectId: string | null): void => {

@@ -210,22 +210,19 @@ const effectSignature = (changes: readonly EffectRecallCandidateV1['observedChan
     before: change.before, after: change.after, meaning: change.meaning }))
     .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right), 'en'));
 
-function physicalEvidenceGroupingIdentity(evidence: EffectRecallCandidateV1['evidence'], fallbackId: string) {
+function physicalEvidenceGroupingIdentity(evidence: EffectRecallCandidateV1['evidence']) {
   return { version: 'distributed-physical-control-group-v3',
     r1AttractorId: evidence.r1.attractorId,
     r2CorridorId: evidence.r2.corridorId,
     r2aPatternIds: [...evidence.r2a.patternIds].sort(),
-    r2aRelationIds: [...evidence.r2a.relationIds].sort(),
-    ...(evidence.r1.attractorId === null && evidence.r2.corridorId === null
-      && evidence.r2a.patternIds.length === 0
-      ? { ungroupedPhysicalMemberId: fallbackId } : {}) };
+    r2aRelationIds: [...evidence.r2a.relationIds].sort() };
 }
 
 /** Exact, non-semantic identity allowed to reduce finite control-field load. */
 export function effectCandidatePhysicalGroupKeyV1(objectiveNodeId: string,
   candidate: EffectRecallCandidateV1): string {
   return sha({ objectiveNodeId, exactCue: cueIdentity(candidate.actionCue),
-    r2Basin: physicalEvidenceGroupingIdentity(candidate.evidence, candidate.candidateId),
+    r2Basin: physicalEvidenceGroupingIdentity(candidate.evidence),
     relationIds: [...candidate.evidence.r2a.relationIds].sort(),
     effectSignature: effectSignature(candidate.observedChanges) });
 }
@@ -239,7 +236,7 @@ export function effectCandidatePhysicalGroupKeyV1(objectiveNodeId: string,
 export function factorTransitionPhysicalGroupKeyV2(
   transition: OpaqueFactorTransitionTraceV1): string {
   return sha({ version: 'factor-transition-physical-group-v2', exactCue: cueIdentity(transition.actionCue),
-    r2Basin: physicalEvidenceGroupingIdentity(transition.evidence, transition.transitionId),
+    r2Basin: physicalEvidenceGroupingIdentity(transition.evidence),
     relationIds: [...transition.evidence.r2a.relationIds].sort(),
     evidenceGrade: transition.evidence.r2a.evidenceGrade ?? null,
     predictionEligible: transition.evidence.r2a.predictionEligible ?? false,

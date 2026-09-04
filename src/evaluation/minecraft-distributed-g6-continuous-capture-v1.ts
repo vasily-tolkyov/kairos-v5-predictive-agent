@@ -551,8 +551,8 @@ Promise<MinecraftDistributedG6ContinuousCaptureResultV1> {
       for (const event of tagged) {
         record('real-event', event);
         const receipt = await compute.call<DistributedMemoryObservationReceiptV1>('observe', event);
-        assert(receipt.representationRejection === null,
-          `distributed-g6-capture-event-unrepresented:${event.id}`);
+        assert(receipt.novelty.version === 'DistributedNoveltyRecordV1',
+          `distributed-g6-capture-event-novelty-missing:${event.id}`);
       }
       const after = await compute.call<KairosV5DistributedPhysicalMemoryV3>('snapshot');
       const eventIds = tagged.map(value => value.id) as [string, string, string, string];

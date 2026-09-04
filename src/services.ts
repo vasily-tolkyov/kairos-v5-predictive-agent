@@ -6,9 +6,10 @@ import { resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileSha, assert, saveJson } from './util.js';
 import type { JointTransientControlFieldConfigV2 } from './control/contracts.js';
+import { KAIROS_V5_CONFIG_VERSION } from './core/compatibility.js';
 
 export interface Configuration {
-  readonly version: 'KairosV5PhysicalControlConfigV2';
+  readonly version: typeof KAIROS_V5_CONFIG_VERSION;
   readonly minecraft: { readonly version: '1.21.4'; readonly host: '127.0.0.1'; readonly port: number;
     readonly username: string; readonly java: string; readonly serverJar: string };
   readonly control: JointTransientControlFieldConfigV2;
@@ -22,7 +23,7 @@ export type MinecraftFixtureModeV1 = 'legacy-door' | 'empty';
 
 export async function loadConfiguration(): Promise<Configuration> {
   const config = JSON.parse(await readFile(resolve('kairos.config.json'), 'utf8')) as Configuration;
-  assert(config.version === 'KairosV5PhysicalControlConfigV2' && config.minecraft.version === '1.21.4'
+  assert(config.version === KAIROS_V5_CONFIG_VERSION && config.minecraft.version === '1.21.4'
     && config.minecraft.host === '127.0.0.1' && config.initializationEvents === 128
     && Number.isInteger(config.actionBudget) && config.actionBudget > 0
     && config.control.version === 'JointTransientControlFieldConfigV2', 'invalid-V5-physical-control-configuration');

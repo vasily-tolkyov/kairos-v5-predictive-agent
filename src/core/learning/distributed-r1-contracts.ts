@@ -147,6 +147,21 @@ export interface SelfOrganizingProjectionResultV1 {
   readonly version: 'SelfOrganizingProjectionResultV1';
   readonly episode: R1DistributedEpisodeV1;
   readonly newlyAllocatedSignalCount: number;
+  /** Opaque afferent identities allocated by this trusted real observation. */
+  readonly newlyAllocatedSignalIds: readonly string[];
+  readonly reusedSignalCount: number;
+}
+
+/**
+ * First-seen input allocation is a normal learning signal, not a
+ * representation rejection.  The record is deliberately limited to opaque
+ * afferent identities and counts; it carries no semantic result or coordinate.
+ */
+export interface DistributedNoveltyRecordV1 {
+  readonly version: 'DistributedNoveltyRecordV1';
+  readonly source: 'trusted-real-event';
+  readonly newlyAllocatedSignalCount: number;
+  readonly newlyAllocatedSignalIds: readonly string[];
   readonly reusedSignalCount: number;
 }
 
@@ -193,6 +208,7 @@ export interface DistributedR1ObservationReceiptV1 {
   readonly version: 'DistributedR1ObservationReceiptV1';
   readonly status: 'deposited' | 'already-observed';
   readonly record: DistributedR1ExperienceRecordV1;
+  readonly novelty: DistributedNoveltyRecordV1;
 }
 
 export interface DistributedR1EventSourceV1 {

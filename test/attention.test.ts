@@ -60,3 +60,22 @@ test('an unknown real change on the already focused subject wakes once without b
     assert.equal(wakes.length, 1, 'the same sealed window must not be reported twice');
   } finally { await compute.close(); }
 });
+
+test('a first-seen afferent allocation reaches the next attention novelty input', async () => {
+  const compute = new Compute();
+  try {
+    const monitor = new AttentionMonitor(compute, () => {}, () => {}, () => {},
+      'novelty-attention-test');
+    monitor.noteNovelty(['external']);
+    const frames: Observation[] = Array.from({ length: 21 }, (_, sequence) => ({
+      sequence, activeSeconds: sequence * .05,
+      self: { position: [0, 0, 0], yaw: 0, pitch: 0, properties: {} },
+      targetId: null, contextId: 'novelty-attention', objects: [{ id: 'external',
+        type: 'opaque-object', relativePosition: [1, 0, 0], properties: {} }],
+    }));
+    frames.forEach(frame => monitor.accept(frame));
+    const external = monitor.controller.snapshot().scores.find(value => value.targetId === 'external');
+    assert(external, 'novelty subject was absent from the attention candidate set');
+    assert.equal(external.score.novelty, .65);
+  } finally { await compute.close(); }
+});

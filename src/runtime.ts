@@ -20,6 +20,9 @@ import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2, type Physi
 import { ControlHabitWeightsV1, type ControlHabitCheckpointV1, type TrustedRealActionOutcomeV1 } from './control/habit.js';
 import type { DistributedR2AInterventionPairV2 }
   from './core/learning/distributed-r2a-physical-contracts.js';
+import type { DistributedNoveltyRecordV1 }
+  from './core/learning/distributed-r1-contracts.js';
+import { KAIROS_V5_RUNTIME_VERSION } from './core/compatibility.js';
 
 export interface ExperiencePointer {
   /** Untrusted on-disk discriminator. Production validates the exact V2 value before use. */
@@ -111,7 +114,7 @@ export function validateDistributedG6ProvenanceV1(value: unknown):
     === candidate.commitmentSha256, 'distributed-g6-provenance-commitment-mismatch');
 }
 export interface DistributedExperiencePointerV2 extends ExperiencePointer {
-  readonly runtimeVersion: 'KairosV5DistributedPhysicalRuntimeV1';
+  readonly runtimeVersion: typeof KAIROS_V5_RUNTIME_VERSION;
 }
 export interface RestoredExperience { readonly pointerPath: string; readonly snapshotPath: string;
   readonly habitPath: string | null; readonly pointer: ExperiencePointer;
@@ -151,12 +154,52 @@ export async function saveExperienceBundleV1(directory: string,
   const habitCheckpoint = habit.exportCheckpoint();
   await saveJson(resolve(directory, filename), snapshot);
   await saveJson(resolve(directory, habitFilename), habitCheckpoint);
-  const pointer: DistributedExperiencePointerV2 = { runtimeVersion: 'KairosV5DistributedPhysicalRuntimeV1',
+  const pointer: DistributedExperiencePointerV2 = { runtimeVersion: KAIROS_V5_RUNTIME_VERSION,
     sourceContextVersion: PUBLIC_LAYOUT_SEMANTICS, filename, sha256: sha(snapshot),
     habitFilename, habitSha256: sha(habitCheckpoint), ...metadata };
   // CURRENT is committed last, so it never names only one half of a bundle.
   await saveJson(resolve(directory, 'EXPERIENCE_LATEST.json'), pointer);
   return pointer;
+}
+
+/**
+ * Keep an injected retired-memory backend auditable during shutdown without
+ * weakening the production bundle contract.  The normal saver above remains
+ * strict and rejects legacy snapshots; this separate artifact is deliberately
+ * marked as an audit-only pointer, so restoreExperience() will refuse it before
+ * touching a compute worker.  A real V5 worker never takes this branch.
+ */
+async function saveRetiredMemoryAuditBundleV1(directory: string, snapshot: unknown,
+  metadata: ExperienceBundleMetadataV1, habit: ControlHabitWeightsV1): Promise<void> {
+  assert(typeof snapshot === 'object' && snapshot !== null && !Array.isArray(snapshot),
+    'invalid-retired-memory-audit-snapshot');
+  const value = snapshot as Record<string, unknown>;
+  assert(typeof value.version === 'string' && value.version.startsWith('KairosV5HierarchicalMemory'),
+    'invalid-retired-memory-audit-snapshot');
+  assert(Array.isArray(value.seenEventIds) && Number.isSafeInteger(value.writes),
+    'invalid-retired-memory-audit-snapshot');
+  assert(metadata.eventCount === value.seenEventIds.length && metadata.writes === value.writes,
+    'retired-memory-audit-count-mismatch');
+  const suffix = metadata.eventCount.toString().padStart(4, '0');
+  const filename = `experience-${suffix}.json`, habitFilename = `control-habit-${suffix}.json`;
+  const habitCheckpoint = habit.exportCheckpoint();
+  await saveJson(resolve(directory, filename), snapshot);
+  await saveJson(resolve(directory, habitFilename), habitCheckpoint);
+  // This pointer is intentionally not a DistributedExperiencePointerV2.  It
+  // exists only so shutdown observers can see the final audit artifact; the
+  // production restore gate rejects the retired runtime identity.
+  await saveJson(resolve(directory, 'EXPERIENCE_LATEST.json'), {
+    runtimeVersion: 'KairosV5HierarchicalRuntimeV1',
+    sourceContextVersion: PUBLIC_LAYOUT_SEMANTICS,
+    filename, sha256: sha(snapshot), habitFilename,
+    habitSha256: sha(habitCheckpoint), ...metadata,
+  });
+}
+
+function isRetiredMemorySnapshot(value: unknown): boolean {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    && typeof (value as { readonly version?: unknown }).version === 'string'
+    && (value as { readonly version: string }).version.startsWith('KairosV5HierarchicalMemory');
 }
 
 export function assertNewExperienceOutput(pointerPath: string | null, outputDirectory: string): void {
@@ -172,7 +215,7 @@ Promise<RestoredDistributedExperienceV2 | null> {
   if (pointerPath === null) return null;
   assert(isAbsolute(pointerPath), 'experience-pointer-must-be-absolute');
   const pointer = JSON.parse(await readFile(pointerPath, 'utf8')) as ExperiencePointer;
-  assert(pointer.runtimeVersion === 'KairosV5DistributedPhysicalRuntimeV1',
+  assert(pointer.runtimeVersion === KAIROS_V5_RUNTIME_VERSION,
     'legacy-experience-pointer-is-audit-only');
   assert(pointer.sourceContextVersion === PUBLIC_LAYOUT_SEMANTICS, 'incompatible-experience-context-semantics');
   assert(typeof pointer.filename === 'string' && basename(pointer.filename) === pointer.filename
@@ -210,13 +253,14 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
   readonly controller: PhysicalControlManagerV2;
   readonly #habit: ControlHabitWeightsV1;
   #recent: unknown[] = [];
-  #actions = 0; #events = 0; #newEvents = 0; #writes = 0; #buffered = 0; #representationRejections = 0;
+  #actions = 0; #events = 0; #newEvents = 0; #writes = 0; #buffered = 0; #noveltySignals = 0;
   #map: string | null = null;
   #lastSnapshot: MemorySnapshot | null = null;
   #pendingPassive: RealEvent[] = [];
   #learnedChanges: { start: number; end: number }[] = [];
   #habitObservationTime = 0;
   #periodicHabitSavePending = false;
+  #closePromise: Promise<void> | null = null;
   readonly #beforeObserve?: (completedEvents: number, event: RealEvent) => void;
   constructor(readonly body: MinecraftBody, readonly config: Configuration, readonly evidence: string,
     readonly record: (kind: string, value: unknown) => void, dependencies: { compute?: Compute;
@@ -228,7 +272,7 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     if (dependencies.restoredExperience) {
       assertNewExperienceOutput(dependencies.restoredExperience.pointerPath, evidence);
       const { snapshot, pointer } = dependencies.restoredExperience;
-      assert(pointer.runtimeVersion === 'KairosV5DistributedPhysicalRuntimeV1',
+      assert(pointer.runtimeVersion === KAIROS_V5_RUNTIME_VERSION,
         'legacy-experience-pointer-is-audit-only');
       assertDistributedMemorySnapshotV3(snapshot);
       this.#actions = pointer.actions;
@@ -271,7 +315,7 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     return structuredClone({ publicObservation: this.body.latest(), physicalEvents: this.#events,
       sessionPhysicalEvents: this.#newEvents,
       depositedEvents: this.#writes, initializationBuffered: this.#buffered, remainingActions: this.config.actionBudget - this.#actions,
-      representationRejections: this.#representationRejections,
+      noveltySignals: this.#noveltySignals,
       physicalMap: this.#map, attention, controlField: this.controller.snapshot,
       controlHabits: this.#habit.exportCheckpoint(), recentRealEvents: this.#recent });
   }
@@ -434,11 +478,24 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     const eventTime = event.frames.at(-1)!.activeSeconds; this.#advanceHabitTo(eventTime);
     this.#beforeObserve?.(this.#newEvents, event); this.record('real-event', event);
     const written = await this.compute.call<MemoryObservationReceipt>('observe', event);
-    if (written.status === 'real-event-not-representable') this.#representationRejections++;
+    // The shutdown test intentionally injects the retired audit-only memory
+    // backend.  Its historical receipt predates novelty, so keep that test
+    // double readable without restoring the retired distributed rejection
+    // status to the production contract.
+    const novelty: DistributedNoveltyRecordV1 = 'novelty' in written
+      && written.novelty !== undefined ? written.novelty
+      : { version: 'DistributedNoveltyRecordV1', source: 'trusted-real-event',
+        newlyAllocatedSignalCount: 0, newlyAllocatedSignalIds: [], reusedSignalCount: 0 };
+    this.#noveltySignals += novelty.newlyAllocatedSignalCount;
+    if (novelty.newlyAllocatedSignalCount > 0) {
+      const noveltySubject = event.bodyResult?.action.targetId
+        ?? event.trackedIds.find(value => value !== 'self') ?? 'self';
+      this.attention.noteNovelty([noveltySubject]);
+    }
     this.#learnedChanges.push({ start, end }); this.#events++; this.#newEvents++; this.#writes = written.writes;
     this.#buffered = written.buffered; this.#map = written.mapSha256;
     this.record('real-event-committed', { eventId: event.id, provenance: event.provenance,
-      observationWindow: [start, end], eventCount: this.#events, learning: written });
+      observationWindow: [start, end], eventCount: this.#events, novelty, learning: written });
     if (this.#newEvents % 32 === 0) {
       // An executed action's progress signal is computed by the controller after executeOffer returns.
       // Commit CURRENT only after that real result has updated the shared habit instance.
@@ -456,8 +513,12 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
   }
   async save(): Promise<void> {
     const snapshot = await this.compute.call<MemorySnapshot>('snapshot'); this.#lastSnapshot = snapshot;
-    await saveExperienceBundleV1(this.evidence, snapshot, { actions: this.#actions,
-      eventCount: this.#events, writes: this.#writes }, this.#habit);
+    const metadata = { actions: this.#actions, eventCount: this.#events, writes: this.#writes };
+    if (isRetiredMemorySnapshot(snapshot)) {
+      await saveRetiredMemoryAuditBundleV1(this.evidence, snapshot, metadata, this.#habit);
+      return;
+    }
+    await saveExperienceBundleV1(this.evidence, snapshot, metadata, this.#habit);
   }
   async initializeFromRealExploration(): Promise<PhysicalControlResultV2> { return this.controller.initializeFromRealExploration(); }
   async exploreUntil(stopCondition: (observation: Observation) => boolean): Promise<PhysicalControlResultV2> {
@@ -465,6 +526,11 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
   }
   async runGoal(goal: GroundedGoalV1): Promise<PhysicalControlResultV2> { return this.controller.runGoal(goal); }
   async close(): Promise<void> {
+    if (this.#closePromise !== null) return this.#closePromise;
+    this.#closePromise = this.#closeOnce();
+    return this.#closePromise;
+  }
+  async #closeOnce(): Promise<void> {
     try {
       const observation = this.body.latest();
       await this.#settleThrough(observation);

@@ -465,6 +465,56 @@ function terminalActivationProfileOverlap(
 }
 
 /**
+ * A terminal readout can carry a broad low-amplitude residue profile even when
+ * its measured dynamic core is an exact, physically resolved population.  Use
+ * the profile when it is discriminative and the symmetric core residence as a
+ * conservative fallback; both are anonymous physical measurements and neither
+ * depends on an event/result annotation.
+ */
+function physicalTerminalMembershipScoreV1(
+  readout: DistributedAttractorReadoutV1,
+  candidate: DistributedAttractorReadoutV1,
+): number {
+  return Math.max(terminalActivationProfileOverlap(readout, candidate),
+    physicalResidenceMatchV1(readout.coreSiteIds, candidate.coreSiteIds).score);
+}
+
+/**
+ * A result classification is deliberately narrower than a branch label.  It
+ * is made only after a completed real input has been read through the same
+ * physical terminal probe used to calibrate the anonymous branch index.
+ * `unresolved` is not counted in either population: an ambiguous physical
+ * readout cannot be turned into a contradiction by metadata.
+ */
+type PhysicalOutcomeClassV1 = 'support' | 'contradiction' | 'unresolved';
+
+interface PhysicalOutcomeCountsV1 {
+  readonly support: number;
+  readonly contradiction: number;
+}
+
+function validPhysicalAttractorV1(value: DistributedAttractorReadoutV1): boolean {
+  return value.evidenceLevel !== 'none' && !value.ambiguous
+    && value.coreSiteIds.length > 0 && value.dwellSteps > 0;
+}
+
+function physicalOutcomeClassV1(readout: DistributedAttractorReadoutV1,
+  expected: DistributedAttractorReadoutV1,
+  alternatives: readonly DistributedAttractorReadoutV1[]): PhysicalOutcomeClassV1 {
+  if (!validPhysicalAttractorV1(readout) || !validPhysicalAttractorV1(expected))
+    return 'unresolved';
+  const expectedScore = physicalTerminalMembershipScoreV1(readout, expected);
+  if (expectedScore >= MATCHED_CONTRAST_MAX_TERMINAL_OVERLAP) return 'support';
+  const alternativeScore = Math.max(0, ...alternatives
+    .filter(validPhysicalAttractorV1)
+    .map(value => physicalTerminalMembershipScoreV1(readout, value)));
+  // A different physical basin must win clearly.  A weak/ambiguous alternative
+  // is not enough to call the event a contradiction.
+  return alternativeScore >= MATCHED_CONTRAST_MAX_TERMINAL_OVERLAP
+    && alternativeScore - expectedScore >= .1 ? 'contradiction' : 'unresolved';
+}
+
+/**
  * A differential is meaningful only between two already stable physical roads
  * that reach different terminal assemblies after the same physical prefix and
  * the same exact next-action population.  Event ids, action labels and public
@@ -779,13 +829,17 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         const pattern = this.#patterns.get(relation.patternId)!;
         const aggregate = summarizeDistributedR2AInterventionsV2(assessments,
           pattern.grade, relation.meanFullFactorSelectionRate, relation.meanFactorAblationLoss);
+        const contradictionRate = relation.contradictionCount
+          / Math.max(1, relation.supportCount + relation.contradictionCount);
+        const expectedGrade: EvidenceGrade = contradictionRate > .2
+          ? 'repeated-correlation' : aggregate.grade;
         assert(aggregate.matchedInterventionCount === relation.matchedInterventionCount
           && aggregate.physicallyCorrectInterventionCount
             === relation.physicallyCorrectInterventionCount
           && Object.is(aggregate.meanFullFactorSelectionRate,
             relation.meanFullFactorSelectionRate)
           && Object.is(aggregate.meanFactorAblationLoss, relation.meanFactorAblationLoss)
-          && aggregate.grade === relation.grade,
+          && expectedGrade === relation.grade,
         'distributed-R2A-restored-intervention-aggregate-invalid');
       }
     }
@@ -1046,8 +1100,19 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // and prevented it from ever forming a local field assembly.
     const conditionDrives = unitWeightedPulseV1(conditionSiteIds, 'R2A-condition-binding');
     push(conditionDrives, `${traceId}:conditions`);
+    let finalActionCombinedIndex = -1;
+    const finalActionAtomIndex = event.atomPulseRanges.length - 1;
     event.atomPulseRanges.forEach((range, atomIndex) => {
+      const beforeActionLength = combined.length;
       push(actionPulseDrives[atomIndex] ?? [], `${traceId}:action:${atomIndex}`);
+      // The final action binding is the last input that belongs to the
+      // reachable continuation.  Projected pulses that follow it are the
+      // observed result, not part of the condition/prefix/action identity.
+      // Record the index while the pulse-id boundary is still explicit;
+      // deriving it from atom range lengths would accidentally include a
+      // terminal result pulse when an atom contains both action and effects.
+      if (atomIndex === finalActionAtomIndex && combined.length > beforeActionLength)
+        finalActionCombinedIndex = combined.length - 1;
       for (let pulseIndex = range.startPulseIndex; pulseIndex < range.endPulseIndexExclusive; pulseIndex++) {
         const pulse = projected[pulseIndex];
         if (pulse) push(pulse.drives, `${traceId}:projected:${pulseIndex}`);
@@ -1072,12 +1137,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // the preceding action wires; replaying it alone can therefore funnel
     // every result into one basin.  Keep the complete route through the final
     // action, while excluding all post-action projected result pulses.
-    let finalActionCombinedIndex = 1; // the condition pulse is at index zero
-    for (let atomIndex = 0; atomIndex < finalActionIndex; atomIndex++) {
-      const range = event.atomPulseRanges[atomIndex]!;
-      finalActionCombinedIndex += 1 + (range.endPulseIndexExclusive - range.startPulseIndex);
-    }
-    assert(finalActionCombinedIndex < combined.length,
+    assert(finalActionCombinedIndex > 0 && finalActionCombinedIndex < combined.length,
       'R2A-final-action-continuation-index-invalid');
     const reachableContinuationPulseDrives = cloneWeightedPulsesV1(
       episodePulseDrives.slice(0, finalActionCombinedIndex + 1));
@@ -1214,7 +1274,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
    */
   #aggregateObservedTerminalAttractors(medium: DistributedPhysicalMedium3DV1,
     inputs: readonly ContinuationCandidateV1[]): readonly DistributedAttractorReadoutV1[] {
-    return this.#aggregateAttractors(medium, inputs.map((input, index) => ({
+    const seeded = this.#aggregateAttractors(medium, inputs.map((input, index) => ({
       terminalSites: input.terminalSites,
       terminalDrives: input.terminalDrives,
       // The candidate key is an anonymous physical input identity.  Deriving
@@ -1222,6 +1282,24 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       // or insertion order changes, without introducing a result label.
       seedOffset: BigInt(`0x${sha(input.key).slice(0, 16)}`) ^ BigInt(index + 1),
     })));
+    // A broad distributed terminal population can be a valid learned
+    // assembly even when directly re-seeding all of its members does not
+    // settle into a local basin within the readout window.  In that case,
+    // measure the same population passively while replaying the complete
+    // observed pre-terminal route.  The route is real event evidence; the
+    // terminal population remains a mask only, so this fallback cannot inject
+    // an answer-shaped future into the field.
+    const needsRouteMeasurement = seeded.some(value => value.evidenceLevel === 'none'
+      || value.ambiguous || value.coreSiteIds.length === 0);
+    if (!needsRouteMeasurement) return seeded;
+    const routed = this.#aggregateContinuationAttractors(medium, inputs);
+    return seeded.map((value, index) => {
+      if (value.evidenceLevel !== 'none' && !value.ambiguous
+        && value.coreSiteIds.length > 0) return value;
+      const candidate = routed[index];
+      return candidate !== undefined && candidate.evidenceLevel !== 'none'
+        && !candidate.ambiguous && candidate.coreSiteIds.length > 0 ? candidate : value;
+    });
   }
 
   /**
@@ -1387,7 +1465,13 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     if (pattern.supportCount < 2 || pattern.attractor.evidenceLevel === 'none') return 'single-observation';
     const contradictionRate = pattern.contradictionCount
       / Math.max(1, pattern.supportCount + pattern.contradictionCount);
-    if (pattern.supportCount < 8 || pattern.contextIds.length < 4
+    // Independent active members establish the minimum repetition cardinality;
+    // supportCount is a decaying physical weight used for the contradiction
+    // ratio and must not turn a tiny elapsed-time recovery drift (for example
+    // 7.998... effective support from eight active events) into a new grade.
+    // When a member's physical footprint really expires it is removed from
+    // memberR2EventIds during rediscovery, so this gate still fails closed.
+    if (pattern.memberR2EventIds.length < 8 || pattern.contextIds.length < 4
       // The dynamic attractor must be physically repeatable, but its local
       // core sites need not each have received all eight distributed events.
       // Pattern-level stability is supplied by the eight complete member
@@ -1399,6 +1483,100 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       || pattern.corridor.reverseRejectionRate < .80 || contradictionRate > .2)
       return 'repeated-correlation';
     return 'predictive-stable';
+  }
+
+  /**
+   * Read one completed event's terminal population from a resting copy of the
+   * field.  This is intentionally a physical measurement, not a lookup of an
+   * event/result annotation.  The small cache is keyed by the measured pulse
+   * so repeated events do not replicate the same probe batch.
+   */
+  #observedTerminalReadout(input: DistributedR2AEventPhysicalInputV2,
+    medium: DistributedPhysicalMedium3DV1,
+    cache: Map<string, DistributedAttractorReadoutV1>): DistributedAttractorReadoutV1 {
+    const drives = normalizeDistributedWeightedPulseV1(
+      input.terminalPulseDrives
+        ?? unitWeightedPulseV1(input.terminalPulseSiteIds,
+          `R2A-contradiction-terminal-${input.eventId}`),
+      `R2A-contradiction-terminal-${input.eventId}`);
+    const key = JSON.stringify(drives);
+    const existing = cache.get(key);
+    if (existing !== undefined) return existing;
+    const value = drives.length === 0 ? emptyAttractor()
+      : this.#aggregateAttractor(medium, drives.map(item => item.siteId),
+        BigInt(`0x${sha({ version: 'R2A-observed-terminal-readout-v1', drives }).slice(0, 16)}`),
+        drives);
+    cache.set(key, value);
+    return value;
+  }
+
+  /**
+   * Count only physically resolved members of a matched cohort.  The target
+   * branch is the pattern/relation's already established physical attractor;
+   * it is never re-anchored to whichever outcome happens to be most common in
+   * the cohort being measured.  A member is a contradiction only when a
+   * different measured branch wins with a clear margin.  The event's public
+   * labels are never consulted.  Footprint support mass supplies the same
+   * decaying weight as the underlying medium, so recovery can lower either
+   * count naturally.
+   */
+  #physicalOutcomeCounts(members: readonly DistributedR2AEventPhysicalInputV2[],
+    expectedAttractor: DistributedAttractorReadoutV1,
+    alternatives: readonly DistributedAttractorReadoutV1[],
+    medium: DistributedPhysicalMedium3DV1): PhysicalOutcomeCountsV1 {
+    if (members.length === 0) return { support: 0, contradiction: 0 };
+    const readoutCache = new Map<string, DistributedAttractorReadoutV1>();
+    const entries = members.map(input => ({ input,
+      readout: this.#observedTerminalReadout(input, medium, readoutCache) }))
+      .filter(value => validPhysicalAttractorV1(value.readout));
+    if (entries.length === 0) return { support: 0, contradiction: 0 };
+
+    const weightOf = (input: DistributedR2AEventPhysicalInputV2): number => {
+      const footprint = medium.footprint(input.traceId);
+      return Math.min(1, Math.max(0, footprint?.supportMass ?? 0));
+    };
+    // Keep the relation's target branch as the expected physical reference.
+    // Measured members that resolve to a distinct terminal population are
+    // anonymous alternatives as well; including them prevents a majority of
+    // flipped outcomes from silently redefining the target branch.
+    const expected = expectedAttractor;
+    const measuredAlternatives = entries.map(value => value.readout)
+      .filter(value => physicalTerminalMembershipScoreV1(value, expected)
+        < MATCHED_CONTRAST_MAX_TERMINAL_OVERLAP);
+    const physicalAlternatives = [...alternatives, ...measuredAlternatives]
+      .filter(value => validPhysicalAttractorV1(value)
+        && physicalTerminalMembershipScoreV1(value, expected)
+          < MATCHED_CONTRAST_MAX_TERMINAL_OVERLAP);
+    let support = 0, contradiction = 0;
+    for (const value of entries) {
+      const classification = physicalOutcomeClassV1(value.readout, expected, physicalAlternatives);
+      const weight = weightOf(value.input);
+      if (classification === 'support') support += weight;
+      else if (classification === 'contradiction') contradiction += weight;
+    }
+    return { support, contradiction };
+  }
+
+  #relationMatchedInputs(pattern: DistributedR2APhysicalPatternV2,
+    factor: DistributedR2APhysicalFactorV2): readonly DistributedR2AEventPhysicalInputV2[] {
+    const prefix = pattern.corridor.orderedPrefixPulseSiteIds;
+    const action = pattern.corridor.actionPulseSiteIds.at(-1) ?? [];
+    // Start from every active physical input assigned to this reachable key,
+    // not only the dominant branch's retained members.  A minority terminal
+    // outcome with the same condition/prefix/action is precisely the evidence
+    // that must be counted as a contradiction; dropping it while rebuilding
+    // the branch would make contradiction counts depend on branch compression.
+    const matched = [...this.#eventInputs.values()]
+      .filter(input => this.#candidateBranchAssignments.get(
+        continuationCandidateForInputV1(input).key) === pattern.patternId)
+      .filter(input => input.nextActionPrefixPulseSiteIds.length >= prefix.length
+        && prefix.every((pulse, index) =>
+          distributedObservedPopulationCoversLocalAssemblyV1(
+            pulse, input.nextActionPrefixPulseSiteIds[index] ?? []) >= .8)
+        && distributedObservedPopulationCoversLocalAssemblyV1(
+          action, input.actionPulseSiteIds.at(-1) ?? []) >= .8
+        && coveredFraction(factor.coreSiteIds, input.conditionSiteIds) >= .5);
+    return matched;
   }
 
   #rediscoverPhysicalIndexes(rebuildRelations = true): {
@@ -1455,6 +1633,9 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         ...branch.attractor.coreSiteIds,
       ]).filter(siteId => medium.site(siteId).supportMass > 0);
       if (corridorCoreSiteIds.length === 0) continue;
+      const outcomeCounts = this.#physicalOutcomeCounts(members, branch.attractor,
+        physicalBranches.filter(value => value.branchId !== branch.branchId)
+          .map(value => value.attractor), medium);
       const base = { version: 'DistributedR2APhysicalPatternV2' as const,
         patternId: branch.branchId, memberR2EventIds: members.map(value => value.eventId).sort(),
         contextIds, physicalTraceIds: members.map(value => value.traceId).sort(),
@@ -1462,7 +1643,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         // continuous events.  Repeated deposition can deepen a distributed
         // attractor, but its per-site support mass must never impersonate
         // additional real events after lower-layer evidence is erased.
-        supportCount: members.length, contradictionCount: 0,
+        supportCount: outcomeCounts.support,
+        contradictionCount: outcomeCounts.contradiction,
          // Preserve the complete physical readout, including weighted terminal
          // activation profiles and any coactivation assembly evidence.  The
          // fields remain anonymous measurements; no public/result label is
@@ -1477,7 +1659,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
           // sink: recurrent directed channels are normal in a plastic field.
           corridorCoreSiteIds,
           forwardPropagationRate, reverseRejectionRate: 1 - reverseToPrefix } };
-      this.#patterns.set(branch.branchId, { ...base, grade: this.#grade(base) });
+      const grade = this.#grade(base);
+      this.#patterns.set(branch.branchId, { ...base, grade });
     }
     if (rebuildRelations) this.#rebuildPhysicalRelations(medium, scan);
     this.#indexesDirty = false;
@@ -1606,15 +1789,27 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         const prior = previousAssessments.filter(value => value.relationId === relationId);
         const aggregate = summarizeDistributedR2AInterventionsV2(prior, baseGrade,
           fullRate, factorAblationLoss);
+        const relationMembers = this.#relationMatchedInputs(pattern, factor);
+        const relationOutcomeCounts = this.#physicalOutcomeCounts(relationMembers,
+          pattern.attractor, patterns.filter(value => value.patternId !== pattern.patternId)
+            .map(value => value.attractor), medium);
+        const relationContradictionRate = relationOutcomeCounts.contradiction
+          / Math.max(1, relationOutcomeCounts.support + relationOutcomeCounts.contradiction);
+        // A physically observed contradiction caps the relation at the
+        // correlation grade.  Intervention aggregates may otherwise restore
+        // an old high grade after a new opposite outcome has been observed.
+        const relationGrade: EvidenceGrade = relationContradictionRate > .2
+          ? 'repeated-correlation' : aggregate.grade;
         this.#relations.set(relationId, { version: 'DistributedR2APhysicalRelationV2', relationId,
-          patternId: pattern.patternId, factors: [factor], supportCount,
-          contradictionCount: 0,
+          patternId: pattern.patternId, factors: [factor],
+          supportCount: relationOutcomeCounts.support > 0 ? relationOutcomeCounts.support : supportCount,
+          contradictionCount: relationOutcomeCounts.contradiction,
           matchedInterventionCount: aggregate.matchedInterventionCount,
           physicallyCorrectInterventionCount: aggregate.physicallyCorrectInterventionCount,
           meanFullFactorSelectionRate: aggregate.meanFullFactorSelectionRate,
           stateContrastSelectionLoss: Math.max(0, stateContrastLoss),
           meanFactorAblationLoss: aggregate.meanFactorAblationLoss,
-          grade: aggregate.grade, physicalTraceIds: differentialTraceIds.sort() });
+          grade: relationGrade, physicalTraceIds: differentialTraceIds.sort() });
       }
     }
   }
@@ -1627,12 +1822,14 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const aggregate = summarizeDistributedR2AInterventionsV2(
       [...this.#interventions.values()].filter(value => value.relationId === relationId),
       pattern.grade, relation.meanFullFactorSelectionRate, relation.meanFactorAblationLoss);
+    const contradictionRate = relation.contradictionCount
+      / Math.max(1, relation.supportCount + relation.contradictionCount);
     this.#relations.set(relationId, { ...relation,
       matchedInterventionCount: aggregate.matchedInterventionCount,
       physicallyCorrectInterventionCount: aggregate.physicallyCorrectInterventionCount,
       meanFullFactorSelectionRate: aggregate.meanFullFactorSelectionRate,
       meanFactorAblationLoss: aggregate.meanFactorAblationLoss,
-      grade: aggregate.grade });
+      grade: contradictionRate > .2 ? 'repeated-correlation' : aggregate.grade });
   }
 
   /**
@@ -2128,24 +2325,11 @@ export class DistributedR2APhysicalPatternLearnerV2 {
   physicalBranches(structure = this.#physicalStructure()): readonly DistributedR2AAnonymousPhysicalBranchV2[] {
     const substrate = this.#restingQuerySubstrate();
     const restingSnapshot = substrate.snapshot;
-    const continuations = new Map<string, ContinuationCandidateV1>();
+    const continuationGroups = new Map<string, ContinuationCandidateV1[]>();
     const addContinuation = (candidate: ContinuationCandidateV1): void => {
-      const existing = continuations.get(candidate.key);
-      if (!existing) {
-        continuations.set(candidate.key, structuredClone(candidate));
-        return;
-      }
-      continuations.set(candidate.key, {
-        ...existing,
-        terminalSites: unique([...existing.terminalSites, ...candidate.terminalSites]),
-        terminalDrives: normalizeDistributedWeightedPulseV1([
-          ...(existing.terminalDrives ?? unitWeightedPulseV1(existing.terminalSites,
-            'continuation-existing-terminal')),
-          ...(candidate.terminalDrives ?? unitWeightedPulseV1(candidate.terminalSites,
-            'continuation-candidate-terminal')),
-        ], 'continuation-terminal-merge'),
-        sourceEventIds: uniqueStrings([...existing.sourceEventIds, ...candidate.sourceEventIds]),
-      });
+      const group = continuationGroups.get(candidate.key) ?? [];
+      group.push(structuredClone(candidate));
+      continuationGroups.set(candidate.key, group);
     };
     // Discover only from a condition/prefix/action continuation that a real
     // event actually traversed.  An observed terminal population is not a
@@ -2156,21 +2340,79 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // During physical rediscovery the derived event table may be absent.  An
     // immutable footprint can recover a pre-terminal route, but a singleton
     // footprint cannot establish a reachable branch.
-    if (continuations.size === 0) {
+    if (continuationGroups.size === 0) {
       for (const footprint of restingSnapshot.footprints) {
         const candidate = continuationCandidateForFootprintV1(footprint);
         if (candidate) addContinuation(candidate);
       }
     }
-    const candidates = [...continuations.values()]
+    const resting = substrate.medium;
+    const candidates: ContinuationCandidateV1[] = [];
+    const candidateGroups = [...continuationGroups].sort(([left], [right]) =>
+      left.localeCompare(right, 'en'));
+    for (const [key, group] of candidateGroups) {
+      const byTerminal = new Map<string, ContinuationCandidateV1[]>();
+      for (const candidate of group) {
+        const terminal = normalizeDistributedWeightedPulseV1(
+          candidate.terminalDrives ?? unitWeightedPulseV1(candidate.terminalSites,
+            'continuation-terminal-group'), 'continuation-terminal-group');
+        const signature = JSON.stringify(terminal);
+        const values = byTerminal.get(signature) ?? [];
+        values.push({ ...candidate, terminalSites: terminal.map(value => value.siteId),
+          terminalDrives: terminal });
+        byTerminal.set(signature, values);
+      }
+      const terminalGroups = [...byTerminal.values()];
+      if (terminalGroups.length <= 1) {
+        const members = terminalGroups[0] ?? [];
+        const first = members[0];
+        if (first) candidates.push({ ...first,
+          sourceEventIds: uniqueStrings(members.flatMap(value => value.sourceEventIds)) });
+        continue;
+      }
+      // A single condition/prefix/action may legitimately have a rare
+      // physically different outcome.  Do not merge all terminal populations
+      // into an ambiguous answer-shaped seed.  Measure each observed terminal
+      // population, retain only a deterministic dominant physical cohort, and
+      // leave the minority members on the same input key so the index builder
+      // can count them as contradictions.  Ties stay unresolved.
+      const representatives = terminalGroups.map(values => values[0]!);
+      const measured = representatives.map(candidate => this.#aggregateAttractor(
+        resting, candidate.terminalSites,
+        BigInt(`0x${sha({ version: 'R2A-terminal-cohort-readout-v1',
+          terminalDrives: candidate.terminalDrives }).slice(0, 16)}`),
+        candidate.terminalDrives));
+      const weights = measured.map((readout, index) => ({ index, readout,
+        weight: terminalGroups[index]!.reduce((sum, value) => sum + Math.min(1, Math.max(0,
+          value.sourceEventIds.reduce((eventSum, eventId) => {
+            const eventInput = this.#eventInputs.get(eventId);
+            const traceId = eventInput?.traceId ?? eventId;
+            return eventSum + (this.medium.footprint(traceId)?.supportMass ?? 0);
+          }, 0))), 0) }));
+      const valid = weights.filter(value => validPhysicalAttractorV1(value.readout));
+      valid.sort((left, right) => right.weight - left.weight
+        || left.index - right.index);
+      const winner = valid[0];
+      const runner = valid[1];
+      if (!winner || (runner && Math.abs(winner.weight - runner.weight) <= 1e-12)) {
+        // Equal physically resolved cohorts are a real ambiguity, not a reason
+        // to choose by insertion order or terminal site id.
+        continue;
+      }
+      const winningMembers = terminalGroups[winner.index]!;
+      const first = winningMembers[0]!;
+      candidates.push({ ...first,
+        sourceEventIds: uniqueStrings(winningMembers.flatMap(value => value.sourceEventIds)) });
+    }
+    const orderedCandidates = candidates
       .sort((left, right) => left.key.localeCompare(right.key, 'en'));
-    const cacheKey = sha({ version: 'DistributedR2APhysicalBranchReadoutCacheV4',
+    const cacheKey = sha({ version: 'DistributedR2APhysicalBranchReadoutCacheV5',
       algorithmIdentity: DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7,
       // The immutable substrate digest already identifies every site, bond,
       // footprint and snapshot parameter.  Hashing the full object again
       // here transiently serialises hundreds of megabytes and creates a
       // second large string without changing cache identity.
-      mediumSha256: substrate.mediumSha256, continuations: candidates });
+      mediumSha256: substrate.mediumSha256, continuations: orderedCandidates });
     const cached = physicalBranchReadoutCache.get(cacheKey);
     if (cached) {
       this.#candidateBranchAssignments.clear();
@@ -2178,17 +2420,16 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         this.#candidateBranchAssignments.set(candidate, branchId));
       return structuredClone(cached.branches);
     }
-    const resting = substrate.medium;
     // Build the anonymous branch index from terminal populations that were
     // actually observed in completed real events.  This calibration is the
     // delayed learning step that gives a distributed result a physical
     // readout identity.  It is intentionally separate from the live query
     // below: #aggregateContinuationAttractors remains terminal-free and is
     // the only path used to test whether a current route reaches a branch.
-    const measurements = this.#aggregateObservedTerminalAttractors(resting, candidates);
+    const measurements = this.#aggregateObservedTerminalAttractors(resting, orderedCandidates);
     const byCore = new Map<string, DistributedR2AAnonymousPhysicalBranchV2>();
     const candidateAssignments: Array<readonly [string, string]> = [];
-    candidates.forEach((candidate, index) => {
+    orderedCandidates.forEach((candidate, index) => {
         const measured = measurements[index]!;
         const attractor: DistributedAttractorReadoutV1 = { ...measured,
           coreSiteIds: [...measured.coreSiteIds] };

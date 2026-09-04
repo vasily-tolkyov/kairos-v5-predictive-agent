@@ -216,6 +216,27 @@ function eventSignalPulses(event: RealEvent): readonly SignalPulseV1[] {
     pulses.push({ signals: mergeSignalDrives(stateSignals(state)),
       dwellSeconds: Number(Math.max(physicalStep, nextAt - observedAt).toFixed(9)) });
   });
+  // A scoped property is still a real observation when its value does not
+  // change during the action window.  Keep the direct action target's
+  // terminal state in the final population so a stable false (or true)
+  // result remains physically decodable alongside any other changed field.
+  const targetId = event.bodyResult?.action.targetId;
+  if (targetId !== undefined && targetId !== null) {
+    const terminal = rows.measurementStates.at(-1);
+    const targetRole = rows.roles[targetId];
+    if (terminal !== undefined && targetRole !== undefined) {
+      for (const [property, value] of Object.entries(terminal[targetRole] ?? {})) {
+        const key = channelKey({ subject: targetRole, property });
+        if (!state.has(key)) state.set(key, { subject: targetRole, property,
+          value: value as PublicValue });
+      }
+      const finalSignals = mergeSignalDrives(stateSignals(state));
+      const last = pulses.at(-1);
+      if (last !== undefined) {
+        pulses[pulses.length - 1] = { signals: finalSignals, dwellSeconds: last.dwellSeconds };
+      }
+    }
+  }
   return pulses;
 }
 
@@ -524,12 +545,16 @@ export class SelfOrganizingAfferentProjectionV1 {
       if (previous === undefined) uniqueSignals.set(signal.signalId, { signal, pulseOrdinal });
     }
     let newlyAllocatedSignalCount = 0;
+    const newlyAllocatedSignalIds: string[] = [];
     for (const { signal } of [...uniqueSignals.values()].sort((left, right) =>
       left.pulseOrdinal - right.pulseOrdinal
       || left.signal.channelOrdinal - right.signal.channelOrdinal
       || left.signal.receptorOrdinal - right.signal.receptorOrdinal)) {
       const ensured = this.#ensureBinding(signal, medium);
-      if (ensured.allocated) newlyAllocatedSignalCount += 1;
+      if (ensured.allocated) {
+        newlyAllocatedSignalCount += 1;
+        newlyAllocatedSignalIds.push(signal.signalId);
+      }
       const next = { ...ensured.binding, observationCount: ensured.binding.observationCount + 1 };
       this.#bindings.set(signal.signalId, next);
     }
@@ -555,7 +580,8 @@ export class SelfOrganizingAfferentProjectionV1 {
       if (!Object.is(change.before, change.after)) this.#terminalOutcomeChannels.add(channelKey(change));
     }
     return { version: 'SelfOrganizingProjectionResultV1', episode,
-      newlyAllocatedSignalCount, reusedSignalCount: uniqueSignals.size - newlyAllocatedSignalCount };
+      newlyAllocatedSignalCount, newlyAllocatedSignalIds,
+      reusedSignalCount: uniqueSignals.size - newlyAllocatedSignalCount };
   }
 
   snapshot(): SelfOrganizingAfferentStateV1 {

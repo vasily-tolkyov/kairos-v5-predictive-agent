@@ -12,6 +12,7 @@ import type {
   DistributedR1ExperienceRecordV1,
   DistributedR1ObservationReceiptV1,
   DistributedR1StateV1,
+  DistributedNoveltyRecordV1,
   DistributedSiteDriveV1,
   R1DistributedEpisodeV1,
   ReadOnlyAfferentLookupV1,
@@ -31,6 +32,11 @@ function topology(episode: R1DistributedEpisodeV1): DistributedEpisodeTopologyV1
 
 function driveMap(drives: readonly DistributedSiteDriveV1[]): ReadonlyMap<number, number> {
   return new Map(drives.map(drive => [drive.siteId, drive.intensity]));
+}
+
+function noNovelty(): DistributedNoveltyRecordV1 {
+  return { version: 'DistributedNoveltyRecordV1', source: 'trusted-real-event',
+    newlyAllocatedSignalCount: 0, newlyAllocatedSignalIds: [], reusedSignalCount: 0 };
 }
 
 function weightedJaccard(left: ReadonlyMap<string | number, number>,
@@ -112,7 +118,7 @@ export class DistributedR1ExperienceStoreV1 {
     if (existing) {
       assert(existing.eventSha256 === eventSha256, 'distributed-R1-event-id-reused-with-different-content');
       return { version: 'DistributedR1ObservationReceiptV1', status: 'already-observed',
-        record: structuredClone(existing) };
+        record: structuredClone(existing), novelty: noNovelty() };
     }
     const projection = this.#projection.projectEvent(event, this.#medium);
     assert(projection.episode.eventSha256 === eventSha256, 'distributed-R1-projection-event-mismatch');
@@ -126,7 +132,12 @@ export class DistributedR1ExperienceStoreV1 {
     this.#records.set(event.id, record);
     this.#qualificationCache = null;
     return { version: 'DistributedR1ObservationReceiptV1', status: 'deposited',
-      record: structuredClone(record) };
+      record: structuredClone(record), novelty: {
+        version: 'DistributedNoveltyRecordV1', source: 'trusted-real-event',
+        newlyAllocatedSignalCount: projection.newlyAllocatedSignalCount,
+        newlyAllocatedSignalIds: [...projection.newlyAllocatedSignalIds],
+        reusedSignalCount: projection.reusedSignalCount,
+      } };
   }
 
   record(eventId: string): DistributedR1ExperienceRecordV1 | null {

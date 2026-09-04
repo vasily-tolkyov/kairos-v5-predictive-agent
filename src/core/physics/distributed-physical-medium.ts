@@ -142,12 +142,14 @@ interface PassiveAssemblyMeasurementV1 {
    * genuinely competing reached populations as ambiguous without treating
    * diffuse low-level residue as a unique result. */
   coverageResidenceSteps: number;
+  terminalCoverageResidenceSteps: number;
   coveragePreviousResident: boolean;
   jointSamples: number;
   dwellSteps: number;
   returns: number;
   exits: number;
   previousResident: boolean;
+  terminalResidenceSteps: number;
   arrivalObserved: boolean;
 }
 
@@ -1069,7 +1071,8 @@ export class DistributedPhysicalMedium3DV1 {
         .filter(([, activation]) => activation >= this.#config.minimumActiveMagnitude)
         .map(([siteId, activation]) => ({ siteId,
           meanActivation: activation / terminalField.sampleCount }));
-    const passiveAssembly = this.#passiveAssemblyReadout(terminalField);
+    let passiveAssembly = this.#passiveAssemblyReadout(terminalField);
+    const passiveWasAmbiguous = passiveAssembly.kind === 'ambiguous';
     // A continuation can reach a distributed terminal population without a
     // single local basin winning the ordinary lattice readout.  If passive
     // measurements satisfy the same physical quorum/dwell/escape gates, use
@@ -1119,16 +1122,39 @@ export class DistributedPhysicalMedium3DV1 {
     persistenceWindow.forEach(frame => frame.forEach(basinIndex => {
       persistentCounts[basinIndex] = persistentCounts[basinIndex]! + 1;
     }));
+    // A basin that was strong earlier in the rollout is not a terminal
+    // result merely because its integrated dwell remains large.  Measure the
+    // contiguous residence at the end of the actual field run as well.  This
+    // keeps an upstream/intermediate visit out of the readout while retaining
+    // genuinely co-dominant terminal populations (which share the same tail).
+    const terminalResidence = new Int32Array(terminalField.topology.basinSiteIds.length);
+    for (let basinIndex = 0; basinIndex < terminalResidence.length; basinIndex += 1) {
+      for (let index = terminalField.coDominantHistory.length - 1; index >= 0; index -= 1) {
+        if (!terminalField.coDominantHistory[index]!.includes(basinIndex)) break;
+        terminalResidence[basinIndex] = terminalResidence[basinIndex]! + 1;
+      }
+    }
     const rankedBasins = terminalField.topology.basinSiteIds
       .map((siteIds, basinIndex) => ({ basinIndex, siteIds,
         dwell: terminalField.coDominantCounts[basinIndex]!,
         mass: terminalField.integratedBasinMass[basinIndex]!,
-        persistent: persistentCounts[basinIndex]! }))
+        persistent: persistentCounts[basinIndex]!,
+        terminalResidence: terminalResidence[basinIndex]! }))
       .filter(value => value.dwell > 0)
       .sort((left, right) => right.persistent - left.persistent
         || right.dwell - left.dwell || right.mass - left.mass
         || left.siteIds[0]! - right.siteIds[0]!);
-    const primary = rankedBasins[0];
+    // Only a meaningful contiguous terminal tail can override the ordinary
+    // accumulated ranking.  A one- or two-sample tail is often a residual
+    // fluctuation; it must not displace a well-supported downstream basin.
+    const terminalMinimumResidence = Math.max(2,
+      Math.ceil(terminalField.sampleCount * .1));
+    const terminalBasins = rankedBasins.filter(value =>
+      value.terminalResidence >= terminalMinimumResidence)
+      .sort((left, right) => right.terminalResidence - left.terminalResidence
+        || right.persistent - left.persistent || right.dwell - left.dwell
+        || left.siteIds[0]! - right.siteIds[0]!);
+    const primary = terminalBasins[0] ?? rankedBasins[0];
     if (primary === undefined) {
       return {
         version: "DistributedAttractorReadoutV1",
@@ -1137,23 +1163,62 @@ export class DistributedPhysicalMedium3DV1 {
         terminalActivations,
       };
     }
-    const selectedBasins = [primary, ...rankedBasins.slice(1).filter(value =>
-      primary.persistent > 0
-      && value.persistent >= primary.persistent * .75
-      && value.dwell >= maximumDwell * .25)];
+    // If the passive decoder saw more than one learned population, retain the
+    // ordinary accumulated ranking for the independent tie-break below.  A
+    // terminal-tail ranking can otherwise select whichever passive population
+    // happens to receive the last residual pulse and turn a genuinely diffuse
+    // rollout into a false unique result.
+    const secondaryPool = passiveWasAmbiguous ? [] : terminalBasins;
+    const ordinaryPrimary = rankedBasins[0];
+    // A passive terminal mask may contain a downstream population together
+    // with an upstream residue.  When the ordinary field ranking points at
+    // that residue but the contiguous terminal tail has exactly one different
+    // basin, the tail is the physical evidence that identifies the terminal
+    // winner.  If the ordinary and tail rankings agree, retain ambiguity: the
+    // passive mask has supplied no independent way to choose between its
+    // reached populations (the diffuse-competition case).
+    const passiveResolvedByTerminalTail = passiveWasAmbiguous
+      && terminalBasins.length === 1
+      && ordinaryPrimary !== undefined
+      && terminalBasins[0]!.basinIndex !== ordinaryPrimary.basinIndex;
+    const selectedPrimary = passiveWasAmbiguous
+      ? (passiveResolvedByTerminalTail ? terminalBasins[0] : ordinaryPrimary)
+      : primary;
+    if (selectedPrimary === undefined) {
+      return {
+        version: "DistributedAttractorReadoutV1",
+        coreSiteIds: [], dwellSteps: 0, returnRate: 0, escapeRate: 1,
+        evidenceLevel: "none", ambiguous: true, run, terminalActivations,
+      };
+    }
+    const effectivePrimary = selectedPrimary;
+    const seededBasins = new Set<number>();
+    for (const siteId of terminalField.coactivationSeedSiteIds) {
+      const basinIndex = terminalField.topology.basinIndexBySite[siteId]!;
+      if (basinIndex >= 0 && !terminalField.excludedReadoutBasins.has(basinIndex))
+        seededBasins.add(basinIndex);
+    }
+    // Initial populations are not themselves an ambiguity: a current frame
+    // commonly seeds several learned fibres before one terminal basin wins.
+    // Retain ambiguity only when two independently seeded basins remain
+    // materially present in the terminal field.  This preserves the genuine
+    // independent-population case without making an upstream transient visit
+    // veto a downstream terminal winner.
+    const materiallySeededBasins = rankedBasins.filter(value =>
+      seededBasins.has(value.basinIndex)
+      && value.dwell >= maximumDwell * .25);
+    const selectedBasins = [effectivePrimary, ...secondaryPool.filter(value =>
+      value.basinIndex !== effectivePrimary.basinIndex
+      && effectivePrimary.persistent > 0
+      && value.persistent >= effectivePrimary.persistent * .75
+      && value.dwell >= maximumDwell * .25
+      && value.terminalResidence >= effectivePrimary.terminalResidence * .75)];
     let coreSiteIds = selectedBasins.flatMap(({ siteIds }) => {
       const maximumSiteMass = siteIds.reduce((maximum, siteId) =>
         Math.max(maximum, terminalField.integratedSiteActivation[siteId]!), 0);
       return siteIds.filter(siteId => terminalField.integratedSiteActivation[siteId]!
         >= Math.max(this.#config.minimumActiveMagnitude, maximumSiteMass * .25));
     }).sort((left, right) => left - right);
-    const seedBasins = new Set<number>();
-    for (const siteId of terminalField.coactivationSeedSiteIds) {
-      const basinIndex = terminalField.topology.basinIndexBySite[siteId]!;
-      if (basinIndex >= 0 && !terminalField.excludedReadoutBasins.has(basinIndex)) {
-        seedBasins.add(basinIndex);
-      }
-    }
     // A same-time population is a higher-order assembly only when that exact
     // population has been observed in at least two trusted episodes and every
     // basin selected by the terminal field is seeded by it.  This preserves
@@ -1162,13 +1227,16 @@ export class DistributedPhysicalMedium3DV1 {
     // label, distance, or threshold change is involved.
     const coactivationResonance = terminalField.coactivationSamples === 0 ? 0
       : terminalField.coactivationJointSamples / terminalField.coactivationSamples;
-    const coactivationAssembly = terminalField.coactivationAssembly !== null
-      && selectedBasins.every((basin) => seedBasins.has(basin.basinIndex))
-      // Metadata alone cannot clear ambiguity.  At least one measured sample
-      // must contain the complete queried population after transient field
-      // evolution.
+    // A repeated terminal population is allowed to span several disconnected
+    // local lattice basins.  Requiring the ordinary winner to be one of the
+    // seeded basins would make the unrelated background basin veto a valid
+    // higher-order assembly.  The assembly still needs live repeated physical
+    // evidence and a measured terminal quorum below; no metadata alone can
+    // clear ambiguity.
+    const coactivationCandidate = terminalField.coactivationAssembly !== null
       && coactivationResonance > 0;
-    if (coactivationAssembly) {
+    let coactivationAssembly = false;
+    if (coactivationCandidate) {
       // The terminal population itself is the readout object when its
       // repeated members have real measured activation.  Do not infer this
       // from the audit index: require a three-quarter quorum in the terminal
@@ -1179,6 +1247,7 @@ export class DistributedPhysicalMedium3DV1 {
           / Math.max(1, terminalField.sampleCount)
           >= this.#config.minimumActiveMagnitude);
       if (measuredAssemblySites.length / assemblySites.length >= .75) {
+        coactivationAssembly = true;
         coreSiteIds = [...new Set([...coreSiteIds, ...measuredAssemblySites])]
           .sort((left, right) => left - right);
       }
@@ -1191,13 +1260,69 @@ export class DistributedPhysicalMedium3DV1 {
         terminalActivations,
       };
     }
+    // A passive mask can legitimately see more than one learned population
+    // during a rollout.  When the ordinary terminal field has nevertheless
+    // converged to one physical basin, use that independently measured basin
+    // to identify the one reached population.  This resolves an upstream
+    // visit without allowing a semantic assembly id or a historical template
+    // to choose the result; diffuse populations with no matching terminal
+    // core remain ambiguous.
+    if (passiveWasAmbiguous && !passiveResolvedByTerminalTail
+      && selectedBasins.length === 1) {
+      const core = new Set(coreSiteIds);
+      const matches = terminalField.passiveAssemblyMeasurements.filter(measurement => {
+        const memberCount = measurement.memberSiteIds.length;
+        const reachedFraction = measurement.lateReachedSiteIds.size / memberCount;
+        const overlap = measurement.memberSiteIds.filter(siteId => core.has(siteId)).length;
+        return measurement.arrivalObserved && reachedFraction >= .75
+          && overlap / memberCount >= .75
+          && overlap / Math.max(1, core.size) >= .75;
+      });
+      const reachedCompetitors = terminalField.passiveAssemblyMeasurements.filter(measurement => {
+        if (matches.length === 1 && measurement === matches[0]) return false;
+        const sampleCount = Math.max(1, measurement.sampleCount);
+        const coverage = measurement.coverageSum / sampleCount;
+        const measuredFraction = measurement.lateReachedSiteIds.size
+          / measurement.memberSiteIds.length;
+        if (!measurement.arrivalObserved || coverage < .75
+          || measurement.coverageResidenceSteps / sampleCount < .75
+          || measuredFraction < .75) return false;
+        const overlap = measurement.memberSiteIds.filter(siteId => core.has(siteId)).length;
+        const smaller = Math.min(measurement.memberSiteIds.length, core.size);
+        return overlap / Math.max(1, smaller) < .75;
+      });
+      if (matches.length === 1 && reachedCompetitors.length === 0) {
+        const measurement = matches[0]!;
+        const sampleCount = Math.max(1, measurement.sampleCount);
+        const coverage = measurement.coverageSum / sampleCount;
+        const purity = measurement.puritySum / sampleCount;
+        const dwellFraction = measurement.dwellSteps / sampleCount;
+        const meanSupport = measurement.memberSiteIds.reduce(
+          (sum, siteId) => sum + this.#supportMass[siteId]!, 0)
+          / measurement.memberSiteIds.length;
+        const measuredSiteIds = [...measurement.lateReachedSiteIds]
+          .sort((left, right) => left - right);
+        passiveAssembly = { kind: 'unique', measurement, coverage,
+          resonance: dwellFraction,
+          escapeRate: 1 - dwellFraction,
+          returnRate: measurement.returns + measurement.exits === 0
+            ? (measurement.dwellSteps > 0 ? 1 : 0)
+            : measurement.returns / (measurement.returns + measurement.exits),
+          measuredSiteIds,
+          terminalActivations: measuredSiteIds.map(siteId => ({ siteId,
+            meanActivation: (measurement.integratedMemberActivation.get(siteId) ?? 0)
+              / sampleCount })),
+          evidenceLevel: this.#evidenceLevel(meanSupport) };
+        coreSiteIds = measuredSiteIds;
+      }
+    }
     // A distributed coactivation assembly is one physical terminal event even
     // when its members occupy several disconnected local basins.  Measure its
     // residence over the union of the selected basins; counting only the
     // primary basin would turn ordinary switching between co-active members
     // into a false escape signal.  Non-assembly readouts retain the historical
     // primary-basin metric exactly.
-    let dwellSteps = primary.dwell;
+    let dwellSteps = effectivePrimary.dwell;
     let returns = 0;
     let exits = 0;
     if (coactivationAssembly) {
@@ -1210,8 +1335,8 @@ export class DistributedPhysicalMedium3DV1 {
       exits = terminalField.coactivationResidenceExits;
     } else {
       for (let index = 1; index < terminalField.coDominantHistory.length; index += 1) {
-        const wasCore = terminalField.coDominantHistory[index - 1]!.includes(primary.basinIndex);
-        const isCore = terminalField.coDominantHistory[index]!.includes(primary.basinIndex);
+        const wasCore = terminalField.coDominantHistory[index - 1]!.includes(effectivePrimary.basinIndex);
+        const isCore = terminalField.coDominantHistory[index]!.includes(effectivePrimary.basinIndex);
         if (!wasCore && isCore) returns += 1;
         if (wasCore && !isCore) exits += 1;
       }
@@ -1225,7 +1350,8 @@ export class DistributedPhysicalMedium3DV1 {
       escapeRate: 1 - dwellSteps / terminalField.sampleCount,
       evidenceLevel: this.#evidenceLevel(meanSupport),
       ambiguous: (selectedBasins.length > 1 && !coactivationAssembly)
-        || passiveAssembly.kind === "ambiguous",
+        || (passiveAssembly.kind === "ambiguous" && !passiveResolvedByTerminalTail)
+        || (materiallySeededBasins.length > 1 && !coactivationAssembly),
       terminalActivations,
       ...(coactivationAssembly ? {
         coactivationAssemblyId: terminalField.coactivationAssembly!.assemblyId,
@@ -2115,12 +2241,14 @@ export class DistributedPhysicalMedium3DV1 {
             coverageSum: 0,
             puritySum: 0,
             coverageResidenceSteps: 0,
+            terminalCoverageResidenceSteps: 0,
             coveragePreviousResident: false,
             jointSamples: 0,
             dwellSteps: 0,
             returns: 0,
             exits: 0,
             previousResident: false,
+            terminalResidenceSteps: 0,
             arrivalObserved: false,
           } satisfies PassiveAssemblyMeasurementV1;
         })
@@ -2473,9 +2601,13 @@ export class DistributedPhysicalMedium3DV1 {
       measurement.coverageSum += coverage;
       measurement.puritySum += purity;
       if (coverageResident) measurement.coverageResidenceSteps += 1;
+      measurement.terminalCoverageResidenceSteps = coverageResident
+        ? measurement.terminalCoverageResidenceSteps + 1 : 0;
       measurement.coveragePreviousResident = coverageResident;
       if (allMembersActive) measurement.jointSamples += 1;
       if (resident) measurement.dwellSteps += 1;
+      measurement.terminalResidenceSteps = resident
+        ? measurement.terminalResidenceSteps + 1 : 0;
       if (!measurement.previousResident && resident && measurement.sampleCount > 1) {
         measurement.returns += 1;
       }
@@ -2495,6 +2627,7 @@ export class DistributedPhysicalMedium3DV1 {
       const purity = measurement.puritySum / sampleCount;
       const dwellFraction = measurement.dwellSteps / sampleCount;
       const coverageDwellFraction = measurement.coverageResidenceSteps / sampleCount;
+      const terminalCoverageDwellFraction = measurement.terminalCoverageResidenceSteps / sampleCount;
       const escapeRate = 1 - dwellFraction;
       const returnRate = measurement.returns + measurement.exits === 0
         ? (measurement.dwellSteps > 0 ? 1 : 0)
@@ -2510,10 +2643,12 @@ export class DistributedPhysicalMedium3DV1 {
         && coverage >= .75
         && purity >= .75
         && dwellFraction >= .75
+        && measurement.terminalResidenceSteps >= Math.ceil(sampleCount * .5)
         && escapeRate <= .25
         && evidenceLevel !== "none"
         && measuredSiteIds.length / measurement.memberSiteIds.length >= .75;
       return { measurement, coverage, purity, dwellFraction, coverageDwellFraction,
+        terminalCoverageDwellFraction,
         escapeRate, returnRate,
         evidenceLevel, measuredSiteIds, qualifies };
     }).filter((candidate) => candidate.qualifies)
@@ -2540,6 +2675,7 @@ export class DistributedPhysicalMedium3DV1 {
         const measuredCount = measurement.lateReachedSiteIds.size;
         return { measurement, coverage, purity,
           coverageDwellFraction: measurement.coverageResidenceSteps / sampleCount,
+          terminalCoverageDwellFraction: measurement.terminalCoverageResidenceSteps / sampleCount,
           measuredFraction: measuredCount / measurement.memberSiteIds.length };
       }).filter(value => value.measurement.arrivalObserved
         && value.coverage >= .75
@@ -2549,7 +2685,6 @@ export class DistributedPhysicalMedium3DV1 {
       const top = reached[0];
       const independentCompeting = top === undefined ? [] : reached.filter(candidate => {
         if (candidate === top) return false;
-        if (candidate.purity < top.purity * .5) return false;
         const left = new Set(top.measurement.memberSiteIds);
         const overlap = candidate.measurement.memberSiteIds
           .filter(siteId => left.has(siteId)).length;

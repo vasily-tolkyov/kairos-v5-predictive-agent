@@ -6,11 +6,25 @@ Status labels:
 - Coupled fields replacing a language-model analysis core: `hypothesis` until the neutral two-step experiment passes.
 - Minecraft button-door behavior: not validated until a real run produces the full evidence chain.
 
-Each branch owns six transient state values: goal difference, condition, binding, rollout, unknown, and competition.  Each operation is another competing state.  They follow the configured leaky coupled dynamics with a fixed seeded noise source, `dt=0.02`, at most 500 integration steps, and no winner unless one activation stays above `0.65`, leads by `0.10`, for 20 steps.
+Each joint site represents one `(operation × branch)` pair.  The eight
+operations are `recall-effect`, `compare-condition`, `predict-branch`,
+`expand-condition`, `execute`, `observe-public`, `finish-verified`, and
+`finish-unknown`.  Every site carries the six transient branch signals (goal
+difference, condition, binding, rollout, unknown, and attention/competition)
+and competes in one leaky coupled field.  The configured seeded noise source,
+`dt=0.02`, maximum 500 integration steps, threshold `0.65`, margin `0.10`,
+and 20-step persistence are unchanged; no winner is returned unless those
+physical convergence conditions hold.
 
 Branch competition uses `W+ = 0.70` recurrent self-excitation and `W- = 2.00` summed lateral inhibition. `W+` remains weaker than the unit leak, so a weak isolated input cannot self-amplify into a decision. Summed inhibition makes an exactly symmetric multi-candidate state unstable; the configured physical noise only breaks that symmetry. `W- = 2.00` is the smallest tested value for which a read-only replay of all 269 branch-input cycles from the first two real runs converged (`1.80`: 2 failures; `2.00`: 0); it does not depend on either action's identity.
 
-Control-operation competition uses the same differential equation with `W+ = 0.20` and `W- = 0.80`. The weaker coupling lets a completed operation decay and yield when a newly stronger operation input arrives. It is shared by all seven operations and encodes no operation order, action identity, or Minecraft answer.
+The implemented control-operation competition is the same joint field with
+`W+ = 0.70` and `W- = 2.00`; it is not a second operation-only integrator.
+The coupling is shared by all eight operations and encodes no operation order,
+action identity, or Minecraft answer.  A two-level design (a separate branch
+field followed by a separate operation field, with `0.70/2.00` and
+`0.20/0.80` couplings) was considered but remains unimplemented; it must not
+be inferred from this document or from a runtime snapshot.
 
 The controller supplies only normalized facts:
 

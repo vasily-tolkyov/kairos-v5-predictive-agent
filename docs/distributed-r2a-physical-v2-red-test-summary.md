@@ -77,3 +77,28 @@ or the complete physical-training fixture:
    ablation loss must all be field-derived.  Current failure: production still
    reads caller `pairId`, `relationId` and `changedFactorId`, so the same real
    pair can be relabelled and counted again.
+
+## Current repair status (PLAN-001)
+
+The historical red-phase record above is intentionally preserved.  The
+following status reflects the focused repairs made in the isolated Kimi clone
+after that run:
+
+- T1–T5: implemented and covered by their original failing tests.  The fixes
+  keep the checkpoint-close ordering, terminal-only readout, physical branch
+  grouping, unchanged scoped values, and tamper-error identity explicit.
+- T6: implemented.  Runtime, memory, context, and configuration versions now
+  come from `src/core/compatibility.ts`; the README and physical-control-field
+  documentation use those registry values.
+- T7: implemented as a physical outcome count.  A contradiction is counted
+  only when the matched condition/action reaches a different measured terminal
+  attractor; ambiguous or unsupported readouts remain unresolved.  Counts are
+  weighted by live footprint support, so recovery can reduce them.
+- T8: implemented as novelty surfacing.  First-seen afferent allocations are
+  returned in `DistributedNoveltyRecordV1` and included in the runtime event
+  record.  The distributed receipt no longer exposes the retired
+  representation-rejection status; bounded substrate allocation still throws
+  `MediumCapacityExhaustedError`.
+
+The focused T7/T8 tests are the required implementation checks.  No Minecraft,
+model, Formal, or historical evidence run is part of this repair plan.

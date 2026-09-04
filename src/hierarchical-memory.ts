@@ -1225,13 +1225,29 @@ export class HierarchicalPhysicalMemoryV1 {
   }
 
   static restore(snapshot: HierarchicalMemorySnapshotV1): HierarchicalPhysicalMemoryV1 {
-    assert(snapshot.version === HIERARCHICAL_MEMORY_VERSION_V1
-      && snapshot.hierarchy === HIERARCHICAL_MEMORY_SEMANTICS_V1,
-    'legacy-hierarchy-checkpoint-is-audit-only');
     const rawAnnotations = (snapshot as unknown as { readonly annotations?: readonly unknown[] }).annotations;
+    // A sealed pre-provenance snapshot is a genuine retired document, not a
+    // current snapshot with one field tampered.  Preserve its audit-only
+    // identity before attempting to interpret fields that did not exist in
+    // that protocol.  A document carrying newer atom records (for example a
+    // current snapshot relabelled as V9) still goes through the integrity
+    // check first, so missing role provenance is reported as tampering.
+    const isPreProvenanceLegacy = snapshot.version !== HIERARCHICAL_MEMORY_VERSION_V1
+      && (!Array.isArray(rawAnnotations) || rawAnnotations.length === 0
+        || rawAnnotations.every(annotation => typeof annotation === 'object'
+          && annotation !== null
+          && (annotation as { readonly version?: unknown }).version === 'R1ExperienceAtomV2'));
+    if (isPreProvenanceLegacy) {
+      assert(snapshot.version === HIERARCHICAL_MEMORY_VERSION_V1
+        && snapshot.hierarchy === HIERARCHICAL_MEMORY_SEMANTICS_V1,
+      'legacy-hierarchy-checkpoint-is-audit-only');
+    }
     assert(!Array.isArray(rawAnnotations) || rawAnnotations.length === 0
       || rawAnnotations.every(annotationHasRoleBindingProvenanceV1),
     'R1-role-binding-provenance-missing');
+    assert(snapshot.version === HIERARCHICAL_MEMORY_VERSION_V1
+      && snapshot.hierarchy === HIERARCHICAL_MEMORY_SEMANTICS_V1,
+    'legacy-hierarchy-checkpoint-is-audit-only');
     assert(Number.isFinite(snapshot.activeSeconds) && snapshot.activeSeconds >= 0,
       'invalid-hierarchical-active-time');
     assert(Array.isArray(snapshot.hierarchyInterventionLedger),

@@ -55,15 +55,44 @@ patterns: `recallAtomicEffect`, `recallContinuousPattern`,
 
 ## Checkpoints and migration
 
-New writable checkpoints are `KairosV5HierarchicalMemoryV2`. They contain the
-frozen R1 representation, R1 atoms, the real-continuity replay ledger, R2
-roads, R2A stable-pattern graph and preregistered intervention ledger. Upper
-layers are deterministically replayed and checked on restore.
+The current protocol identities are kept in one source registry and are
+intentionally exact:
+
+| Component | Canonical version |
+| --- | --- |
+| Runtime pointer | `KairosV5DistributedPhysicalRuntimeV1` |
+| Memory snapshot | `KairosV5DistributedPhysicalMemoryV3` |
+| Memory semantics | `distributed-R1-attractor_R2-site-fibre-continuity_R2A-physical-branch-field_R3-transient-current-input` |
+| Public context | `V5PublicRelativeLayoutV1` |
+| Configuration | `KairosV5PhysicalControlConfigV2` |
+
+New writable checkpoints are `KairosV5DistributedPhysicalMemoryV3`. They
+contain the frozen R1 representation, R1 atoms, the real-continuity replay
+ledger, R2 roads, R2A stable-pattern graph and preregistered intervention
+ledger. Upper layers are deterministically replayed and checked on restore.
 
 Old `KairosV5MemoryV4`, `PathProjectorStateV4` and
 `CausalFactorGraphStateV3` are not migrated into production. Old Minecraft
 evaluation commands are deliberately named `audit:legacy:*`; they cannot be
 used as evidence for this hierarchy.
+
+## Engineering update (2026-09)
+
+The PLAN-001 repair set is present in this checkout and has been reviewed as a
+single source change set; its final full-suite result remains recorded in the
+project log rather than being rerun during the current upgrade. PLAN-002 now
+adds revision-scoped read-only substrate reuse and explicit, exact seed-batch
+interfaces for measured worker parallelism. The default reasoning path is
+unchanged and remains serial (`parallelism=1`). DESIGN-006 temporal-fidelity
+and DESIGN-003a capacity probes are additive evaluation tools only; neither
+has been run or allowed to write production memory in this upgrade.
+
+The distributed medium's engineering readout is an implementation-level
+attractor measurement (terminal residence, return and escape), not by itself
+a proof of a REACT mathematical fixed-point anchor. Likewise, control-field
+weights are fixed field laws in this protocol; learned meta-representation,
+multi-timescale recovery and capacity mechanisms remain later, separately
+gated designs.
 
 ## Commands
 
@@ -74,8 +103,8 @@ npm test
 npm start -- --bootstrap-only
 ```
 
-An explicit continuation must use a `KairosV5HierarchicalRuntimeV1`
-pointer whose memory payload is `KairosV5HierarchicalMemoryV2`:
+An explicit continuation must use a `KairosV5DistributedPhysicalRuntimeV1`
+pointer whose memory payload is `KairosV5DistributedPhysicalMemoryV3`:
 
 ```powershell
 npm start -- --experience-pointer D:\path\to\EXPERIENCE_LATEST.json

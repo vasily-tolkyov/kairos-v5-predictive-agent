@@ -15,7 +15,7 @@ import { assert, canonical, sha } from './util.js';
 import { DistributedR1ExperienceStoreV1 }
   from './core/learning/distributed-r1.js';
 import type { AfferentPublicStateReadoutV1, DistributedR1ExperienceRecordV1, DistributedR1StateV1,
-  DistributedSiteDriveV1 }
+  DistributedNoveltyRecordV1, DistributedSiteDriveV1 }
   from './core/learning/distributed-r1-contracts.js';
 import { DistributedR2ContinuityStoreV1, distributedPublicSignalIdsV1,
   distributedPublicSignalOccurrencesV1 }
@@ -40,13 +40,20 @@ import type { DistributedMediumSnapshotV1, DistributedTraceFootprintV1 }
   from './core/physics/distributed-physical-contracts.js';
 import { DistributedPredictionCloneV2 }
   from './core/prediction/distributed-prediction-clone.js';
+import { runDistributedPredictionCloneBatchParallelV1 }
+  from './core/prediction/distributed-prediction-clone-parallel.js';
+import { runDistributedMediumProbeBatchSyncV1, type DistributedMediumProbeJobV1 }
+  from './core/physics/distributed-medium-probe-parallel.js';
+import type { DistributedPredictionCloneRequestV2, DistributedPredictionCloneResultV2 }
+  from './core/prediction/distributed-prediction-clone.js';
 import { distributedEvidenceReferenceV1, distributedPredictionSampleV1,
   emptyDistributedPredictionV1 } from './core/prediction/distributed-reasoning-adapter.js';
+import { KAIROS_V5_MEMORY_SEMANTICS, KAIROS_V5_MEMORY_VERSION } from './core/compatibility.js';
 
 export const DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3 =
-  'KairosV5DistributedPhysicalMemoryV3' as const;
+  KAIROS_V5_MEMORY_VERSION;
 export const DISTRIBUTED_HIERARCHY_SEMANTICS_V2 =
-  'distributed-R1-attractor_R2-site-fibre-continuity_R2A-physical-branch-field_R3-transient-current-input' as const;
+  KAIROS_V5_MEMORY_SEMANTICS;
 
 type EvidenceGrade = NonNullable<PhysicalEvidenceReferenceV1['r2a']['evidenceGrade']>;
 
@@ -84,14 +91,23 @@ export interface KairosV5DistributedPhysicalMemoryV3 {
 }
 
 export interface DistributedMemoryObservationReceiptV1 {
-  readonly status: 'initialization-buffer' | 'real-event-deposited' | 'real-event-not-representable';
+  readonly status: 'initialization-buffer' | 'real-event-deposited';
   readonly writes: number;
   readonly buffered: number;
   readonly mapSha256: string | null;
   readonly r1Atoms: number;
   readonly r2ContinuousEvents: number;
   readonly r2aStablePatterns: number;
-  readonly representationRejection: { readonly reason: string } | null;
+  /** New afferent identities allocated by this trusted real observation. */
+  readonly novelty: DistributedNoveltyRecordV1;
+}
+
+/** Explicit, read-only seed batch used by measured performance tooling. */
+export interface DistributedPredictionSeedBatchRequestV1 {
+  readonly medium: 'r1' | 'r2';
+  readonly request: Omit<DistributedPredictionCloneRequestV2, 'seed'>;
+  readonly seeds: readonly bigint[];
+  readonly parallelism?: number;
 }
 
 interface StableR1PhysicalAssemblyV2 {
@@ -224,10 +240,12 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   readonly #seen = new Set<string>();
   #activeSeconds = 0;
   #writes = 0;
+  #r1Revision = 0;
+  #r2Revision = 0;
   #r1PredictionCache: { readonly snapshot: DistributedMediumSnapshotV1;
-    readonly clone: DistributedPredictionCloneV2 } | null = null;
+    readonly clone: DistributedPredictionCloneV2; readonly revision: number } | null = null;
   #r2PredictionCache: { readonly snapshot: DistributedMediumSnapshotV1;
-    readonly clone: DistributedPredictionCloneV2 } | null = null;
+    readonly clone: DistributedPredictionCloneV2; readonly revision: number } | null = null;
 
   constructor() {
     this.#r1Medium = new DistributedPhysicalMedium3DV1({ name: 'R1', seedHex: '5231' });
@@ -251,6 +269,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     if (elapsed > 0) {
       this.#r1Medium.recover(elapsed); this.#r2.recover(elapsed); this.#r2a.recover(elapsed);
       this.#r1.invalidatePhysicalQualification();
+      this.#r1Revision++; this.#r2Revision++;
       this.#invalidatePredictionCaches();
       this.#activeSeconds = activeSeconds;
     }
@@ -265,7 +284,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     readonly clone: DistributedPredictionCloneV2 } {
     if (this.#r1PredictionCache === null) {
       const snapshot = this.#r1Medium.snapshot();
-      this.#r1PredictionCache = { snapshot, clone: new DistributedPredictionCloneV2(snapshot) };
+      this.#r1PredictionCache = { snapshot, clone: new DistributedPredictionCloneV2(snapshot),
+        revision: this.#r1Revision };
     }
     return this.#r1PredictionCache;
   }
@@ -274,7 +294,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     readonly clone: DistributedPredictionCloneV2 } {
     if (this.#r2PredictionCache === null) {
       const snapshot = this.#r2.medium.snapshot();
-      this.#r2PredictionCache = { snapshot, clone: new DistributedPredictionCloneV2(snapshot) };
+      this.#r2PredictionCache = { snapshot, clone: new DistributedPredictionCloneV2(snapshot),
+        revision: this.#r2Revision };
     }
     return this.#r2PredictionCache;
   }
@@ -289,6 +310,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     // Never let a pre-deposit read-only clone survive that write boundary.
     this.#invalidatePredictionCaches();
     const receipt = this.#r1.observe(event);
+    this.#r1Revision++;
     const rows = eventRows(event);
     const before = relativePublicFeatures(event.frames[0]!);
     const after = relativePublicFeatures(event.frames.at(-1)!);
@@ -310,7 +332,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     const continuity = event.hierarchyContinuity;
     if (!continuity) {
       this.#consumeR2Receipt(this.#r2.interrupt('continuity-reset'));
-      return this.#receipt();
+      return this.#receipt(receipt.novelty);
     }
     const atom: DistributedR2AtomV1 = { version: 'DistributedR2AtomV1', atomId: `r1:${event.id}`,
       sourceEventId: event.id, exactExperienceIdentity: cueIdentity(event.cue),
@@ -331,19 +353,19 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       this.#consumeR2Receipt(this.#r2.close('public-process-resolved'));
     else if (continuity.processStatusAfter === 'observation-insufficient')
       this.#consumeR2Receipt(this.#r2.interrupt('observation-ended'));
-    return this.#receipt();
+    return this.#receipt(receipt.novelty);
   }
 
-  #receipt(): DistributedMemoryObservationReceiptV1 {
+  #receipt(novelty: DistributedNoveltyRecordV1): DistributedMemoryObservationReceiptV1 {
     return { status: this.ready ? 'real-event-deposited' : 'initialization-buffer',
       writes: this.#writes, buffered: this.bufferedEvents, mapSha256: this.mapSha256,
       r1Atoms: this.#annotations.size, r2ContinuousEvents: this.#r2.committedEventCount,
-      r2aStablePatterns: this.#r2a.indexedStablePatternCount(),
-      representationRejection: null };
+      r2aStablePatterns: this.#r2a.indexedStablePatternCount(), novelty: structuredClone(novelty) };
   }
 
   #consumeR2Receipt(receipt: DistributedR2CloseReceiptV1): void {
     if (receipt.status !== 'committed') return;
+    this.#r2Revision++;
     this.#r2PredictionCache = null;
     for (const sourceEventId of receipt.event.sourceEventIds) {
       const annotation = this.#annotations.get(sourceEventId);
@@ -612,6 +634,43 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     const unique = (values: string[]) => [...new Set(values)].sort();
     return { activated: unique(activated), deactivated: unique(deactivated),
       unchanged: unique(unchanged), universe: unique(universe) };
+  }
+
+  /**
+   * Measured-performance escape hatch.  This is deliberately separate from
+   * the synchronous reasoning API: callers provide the complete read-only
+   * clone request and an explicit worker count.  The production decision path
+   * remains unchanged, while benchmark/evaluation code can use the existing
+   * exact seed workers without inventing a second predictor.
+   */
+  async predictPhysicalSeedsParallelV1(
+    request: DistributedPredictionSeedBatchRequestV1,
+  ): Promise<readonly DistributedPredictionCloneResultV2[]> {
+    const substrate = request.medium === 'r1'
+      ? this.#r1PredictionSubstrate() : this.#r2PredictionSubstrate();
+    return runDistributedPredictionCloneBatchParallelV1(substrate.snapshot,
+      { ...request.request, seeds: request.seeds }, request.parallelism ?? 1);
+  }
+
+  /** Exact seed-level medium probes for capacity/temporal measurements. */
+  probePhysicalSeedsSyncV1(
+    medium: 'r1' | 'r2', jobs: readonly DistributedMediumProbeJobV1[],
+    parallelism = 1,
+    options: { readonly compactReadout?: boolean; readonly compactSiteIds?: readonly number[] } = {},
+  ) {
+    const snapshot = medium === 'r1' ? this.#r1PredictionSubstrate().snapshot
+      : this.#r2PredictionSubstrate().snapshot;
+    return runDistributedMediumProbeBatchSyncV1(snapshot, jobs, parallelism, options);
+  }
+
+  /** Read-only diagnostics for PLAN-002; revisions never enter persisted state. */
+  performanceCacheAuditV1(): {
+    readonly r1Revision: number; readonly r2Revision: number;
+    readonly r1CachedRevision: number | null; readonly r2CachedRevision: number | null;
+  } {
+    return { r1Revision: this.#r1Revision, r2Revision: this.#r2Revision,
+      r1CachedRevision: this.#r1PredictionCache?.revision ?? null,
+      r2CachedRevision: this.#r2PredictionCache?.revision ?? null };
   }
 
   predictCandidate(candidate: EffectRecallCandidateV1, state: Observation | HypotheticalPublicStateV1,
