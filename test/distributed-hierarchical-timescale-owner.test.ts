@@ -54,3 +54,18 @@ test('measurement validation is atomic across layers', () => {
       structureId: 'not-a-structure', observedAt: 0.5, surpriseMagnitude: 0.8, goalRelevance: 0.4, supportMass: 1 }], r2a: [] }));
   assert.deepEqual(owner.snapshot(), before);
 });
+
+test('mid-interval measurement only affects recovery after observation time', () => {
+  const makeOwner = () => new DistributedHierarchicalTimescaleOwnerV1(
+    new DistributedPhysicalMedium3DV1({ name: 'R1', seedHex: '5231' }),
+    new DistributedPhysicalMedium3DV1({ name: 'R2', seedHex: '5232' }),
+    new DistributedPhysicalMedium3DV1({ name: 'R2A', seedHex: '5233' }));
+  const measurement = { version: 'RuntimeMeasuredSalienceV2' as const, source: 'trusted-runtime-observation' as const,
+    structureId: 'site:0', observedAt: 0.5, surpriseMagnitude: 0.8, goalRelevance: 0.4, supportMass: 1 };
+  const oneCall = makeOwner();
+  oneCall.advanceTo(1, { r1: [measurement], r2: [], r2a: [] });
+  const splitCall = makeOwner();
+  splitCall.advanceTo(0.5);
+  splitCall.advanceTo(1, { r1: [measurement], r2: [], r2a: [] });
+  assert.deepEqual(oneCall.snapshot(), splitCall.snapshot());
+});

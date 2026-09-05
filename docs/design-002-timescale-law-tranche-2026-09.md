@@ -81,7 +81,9 @@ execution scope.
   this owner and restore its time state onto the existing layer references;
   the default V3 snapshot and recovery path remain unchanged.  Same-time
   measurements are processed, and all layer measurements are validated before
-  any layer mutates (cross-layer validation is atomic).
+  any layer mutates (cross-layer validation is atomic).  Mid-interval
+  measurements affect only the recovery segment after their actual observation
+  time; the earlier segment retains the base rate.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production

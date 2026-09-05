@@ -44,7 +44,8 @@ research designs are implemented.
   uses its V1 checkpoint and recovery path.  An additive V4 checkpoint seam
   can opt into the owner and restore time state in place without changing V3;
   zero-elapsed measured observations are accepted, and all layer measurements
-  are prevalidated before mutation to prevent partial cross-layer recovery.
+  are prevalidated before mutation to prevent partial cross-layer recovery;
+  mid-interval measurements only affect recovery after their observed time.
 - DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
   Channels are frozen before an action, carried with the trusted event as
   `verified-internal` metadata, and deliberately kept out of public

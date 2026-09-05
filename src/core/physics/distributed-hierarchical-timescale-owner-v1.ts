@@ -82,14 +82,31 @@ export class DistributedHierarchicalTimescaleOwnerV1 {
     const elapsed = logicalTime - start;
     if (elapsed === 0 && Object.values(measurements).every(value => value.length === 0)) return;
     for (const layer of ['r1', 'r2', 'r2a'] as const) {
-      const layerMeasurements = measurements[layer] ?? [];
-      for (const measurement of layerMeasurements) {
-        this.#states[layer].rememberMeasuredObservation({ structureId: measurement.structureId,
-          observedAt: measurement.observedAt, surpriseMagnitude: measurement.surpriseMagnitude,
-          goalRelevance: measurement.goalRelevance, supportMass: measurement.supportMass });
-        this.#states[layer].depositSurpriseFlux(measurement.observedAt, measurement.surpriseMagnitude);
+      const layerMeasurements = [...(measurements[layer] ?? [])].sort((left, right) => left.observedAt - right.observedAt);
+      // A measurement becomes causal only at its observation time. Recovering
+      // the whole interval with its rate would incorrectly apply a later
+      // surprise to the past half of the interval.
+      let cursor = start;
+      let activeRates = new Map<string, number>();
+      let index = 0;
+      while (index < layerMeasurements.length) {
+        const observedAt = layerMeasurements[index]!.observedAt;
+        if (observedAt > cursor) {
+          this.#mediums[layer].recoverWithStructureRates(observedAt - cursor, activeRates);
+          this.#states[layer].advanceTo(observedAt);
+          cursor = observedAt;
+        }
+        while (index < layerMeasurements.length && layerMeasurements[index]!.observedAt === observedAt) {
+          const measurement = layerMeasurements[index]!;
+          this.#states[layer].rememberMeasuredObservation({ structureId: measurement.structureId,
+            observedAt: measurement.observedAt, surpriseMagnitude: measurement.surpriseMagnitude,
+            goalRelevance: measurement.goalRelevance, supportMass: measurement.supportMass });
+          this.#states[layer].depositSurpriseFlux(measurement.observedAt, measurement.surpriseMagnitude);
+          activeRates.set(measurement.structureId, validatedRates[layer].get(measurement.structureId)!);
+          index += 1;
+        }
       }
-      this.#mediums[layer].recoverWithStructureRates(elapsed, validatedRates[layer]);
+      if (logicalTime > cursor) this.#mediums[layer].recoverWithStructureRates(logicalTime - cursor, activeRates);
       this.#states[layer].advanceTo(logicalTime);
     }
   }
