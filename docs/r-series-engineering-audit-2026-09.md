@@ -19,6 +19,8 @@ research designs are implemented.
   autonomous arousal evolution, bounded encoding gain, homeostatic scaling and
   rehearsal counts. Attention now has an isolated, bounded deviation
   measurement derived from supported predictions and observed changes. The
+  staged V1/V2 logical-clock adapter keeps both snapshots aligned while still
+  delegating recovery to V1. The
   distributed medium remains on its V1 protocol until the envelope, private
   measurement path and an approved replay writer are implemented together;
   these additions are not wired as a hidden V1 compatibility patch.

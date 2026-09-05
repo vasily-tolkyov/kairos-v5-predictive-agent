@@ -14,7 +14,7 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
   arousal, bounded encoding gain, homeostatic scaling and strict V2 time-state
   restore primitives, an isolated idle replay whitelist planner, a strict V2
   protocol envelope with ordered measurement validation, and an isolated
-  attention deviation measurement.
+  attention deviation measurement plus a staged V1/V2 logical-clock adapter.
 
 ## Reproducible checks
 
@@ -61,7 +61,7 @@ the V1 recovery path.
   production medium snapshot, private measurement capability, approved writer
   and replay/homeostasis wiring remain gated on the next separately approved
   tranche. The attention deviation value is currently read-only and has no
-  medium-writing authority.
+  medium-writing authority; the clock adapter still delegates recovery to V1.
 - Full regression, capacity sweep and temporal experiment remain deferred to
   the next review round by request.
 

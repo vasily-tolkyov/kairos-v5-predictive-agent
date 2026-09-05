@@ -24,6 +24,9 @@ Implemented in `src/core/learning/memory-timescales.ts`:
 - a read-only attention comparison that emits a bounded deviation magnitude
   from supported predicted changes versus observed public changes; unsupported
   predictions remain unmeasured.
+- a staged clock adapter that keeps a V1 medium instance and V2 time state at
+  one logical observation time, while explicitly delegating recovery to V1
+  until the production protocol revision is approved.
 
 The state and replay planner are intentionally not wired into production medium
 writes yet. They do not accept a caller-provided final salience or recovery
@@ -50,6 +53,8 @@ execution scope.
   isolation**.
 - Attention deviation measurement: **implemented in isolation**; medium
   arousal injection is **deferred**.
+- V1/V2 logical-clock adapter: **implemented in isolation**; production medium
+  replacement and per-structure recovery are **deferred**.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production
