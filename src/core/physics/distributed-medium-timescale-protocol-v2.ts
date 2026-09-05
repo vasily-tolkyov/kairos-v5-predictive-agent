@@ -137,6 +137,10 @@ export function measuredStructureExistsV2(medium: DistributedMediumSnapshotV1,
     const siteId = Number(measurement.structureId.slice('site:'.length));
     return Number.isSafeInteger(siteId) && medium.sites.some((site: DistributedSiteStateV1) => site.siteId === siteId);
   }
+  if (measurement.structureId.startsWith('assembly:')) {
+    const assemblyId = measurement.structureId.slice('assembly:'.length);
+    return medium.coactivationAssemblies?.some(assembly => assembly.assemblyId === assemblyId) ?? false;
+  }
   return medium.footprints.some(footprint => `trace:${footprint.traceId}` === measurement.structureId)
     || medium.learnedBonds.some(bond => `bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}` === measurement.structureId);
 }

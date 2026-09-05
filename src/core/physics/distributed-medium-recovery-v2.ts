@@ -41,12 +41,25 @@ export function recoverDistributedMediumProtocolSnapshotV2(
     measuredIds.add(measurement.structureId);
   }
   const timescale = DistributedMediumTimescaleStateV2.restore(restored.timescale, law);
-  for (const measurement of measurements) timescale.depositSurpriseFlux(measurement.observedAt,
-    measurement.surpriseMagnitude);
+  for (const measurement of measurements) {
+    timescale.rememberMeasuredObservation({ structureId: measurement.structureId,
+      observedAt: measurement.observedAt, surpriseMagnitude: measurement.surpriseMagnitude,
+      goalRelevance: measurement.goalRelevance, supportMass: measurement.supportMass });
+    timescale.depositSurpriseFlux(measurement.observedAt, measurement.surpriseMagnitude);
+  }
   timescale.advanceTo(end);
   const byStructure = new Map(measurements.map(measurement => [measurement.structureId, measurement]));
   const decay = (structureId: string, supportMass: number): number => {
-    const measurement = byStructure.get(structureId);
+    const measurement = byStructure.get(structureId) ?? (() => {
+      const stored = timescale.measuredObservation(structureId);
+      return stored === null ? undefined : {
+        version: 'RuntimeMeasuredSalienceV2' as const,
+        source: 'trusted-runtime-observation' as const,
+        structureId: stored.structureId, observedAt: stored.observedAt,
+        surpriseMagnitude: stored.surpriseMagnitude, goalRelevance: stored.goalRelevance,
+        supportMass: stored.supportMass,
+      };
+    })();
     if (!measurement) return Math.exp(-law.baseRecoveryRate * elapsed);
     return Math.exp(-effectiveRecoveryRateV1({ version: 'MeasuredSalienceV1',
       surpriseMagnitude: measurement.surpriseMagnitude,

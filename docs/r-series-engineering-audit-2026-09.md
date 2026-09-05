@@ -27,6 +27,10 @@ research designs are implemented.
   distributed medium remains on its V1 protocol until the envelope, private
   measurement path and an approved replay writer are implemented together;
   these additions are not wired as a hidden V1 compatibility patch.
+  The latest isolated follow-up persists the last measured structure
+  observations in V2 time state and applies them across later unmeasured
+  intervals; this remains staged-only and does not alter the V1 production
+  hierarchy.
 - DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
   Channels are frozen before an action, carried with the trusted event as
   `verified-internal` metadata, and deliberately kept out of public

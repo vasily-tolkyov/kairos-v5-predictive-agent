@@ -82,3 +82,16 @@ rate behavior unchanged. Build plus the affected medium/recovery/adapter set
 passed 15/15. This is a preparation seam only: production hierarchy recovery
 still uses the V1 path until the versioned V2 owner and trusted measurement
 bridge are implemented together.
+
+## Follow-up: measured-state persistence across empty intervals
+
+Measured observations are now retained in the V2 time-state snapshot and are
+reused by later recovery intervals that contain no new measurement. The staged
+adapter therefore does not silently fall back to the legacy base rate after a
+single measured observation. Assembly identities are also recognized by the
+read-only structure validator. Empty-rate recovery avoids rebuilding the full
+known-structure set, preserving the existing base-rate path's cost profile.
+
+Focused verification after this follow-up: build exit 0 and 21/21 state,
+recovery, adapter and medium tests passed. Production R1/R2/R2A ownership,
+checkpoints and runtime measurement authority remain unchanged and deferred.

@@ -1371,18 +1371,20 @@ export class DistributedPhysicalMedium3DV1 {
   recoverWithStructureRates(elapsed: number,
     rates: ReadonlyMap<string, number>): void {
     requireNonnegative(elapsed, "elapsed");
-    const known = new Set<string>();
-    for (let siteId = 0; siteId < this.siteCount; siteId += 1) known.add(`site:${siteId}`);
-    for (const footprint of this.#footprints.values()) known.add(`trace:${footprint.traceId}`);
-    for (const bond of this.#localEnhancements.values())
-      known.add(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
-    for (const bond of this.#directedBonds.values())
-      known.add(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
-    for (const assembly of this.#coactivationAssemblies.values())
-      known.add(`assembly:${assembly.assemblyId}`);
-    for (const [structureId, rate] of rates) {
-      if (!known.has(structureId)) throw new Error(`unknown recovery structure: ${structureId}`);
-      requireNonnegative(rate, `recovery rate for ${structureId}`);
+    if (rates.size > 0) {
+      const known = new Set<string>();
+      for (let siteId = 0; siteId < this.siteCount; siteId += 1) known.add(`site:${siteId}`);
+      for (const footprint of this.#footprints.values()) known.add(`trace:${footprint.traceId}`);
+      for (const bond of this.#localEnhancements.values())
+        known.add(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
+      for (const bond of this.#directedBonds.values())
+        known.add(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
+      for (const assembly of this.#coactivationAssemblies.values())
+        known.add(`assembly:${assembly.assemblyId}`);
+      for (const [structureId, rate] of rates) {
+        if (!known.has(structureId)) throw new Error(`unknown recovery structure: ${structureId}`);
+        requireNonnegative(rate, `recovery rate for ${structureId}`);
+      }
     }
     const decay = (structureId: string): number =>
       Math.exp(-(rates.get(structureId) ?? this.#config.recoveryRate) * elapsed);

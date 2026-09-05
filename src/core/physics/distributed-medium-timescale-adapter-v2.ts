@@ -50,7 +50,7 @@ export class DistributedMediumTimescaleAdapterV2 {
       throw new Error('timescale-adapter-time-reversed');
     const elapsed = logicalTime - this.logicalTime;
     if (elapsed === 0 && measurements.length === 0) return;
-    if (measurements.length === 0) {
+    if (measurements.length === 0 && !this.#timescale.hasMeasuredObservations) {
       this.#medium.recover(elapsed);
       this.#timescale.advanceTo(logicalTime);
       return;

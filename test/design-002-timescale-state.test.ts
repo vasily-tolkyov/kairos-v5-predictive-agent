@@ -7,6 +7,8 @@ test('V2 timescale state is independent, ordered and byte-stable on restore', ()
   state.depositSurpriseFlux(2, 0.8);
   state.recordRehearsal('site-b');
   state.recordRehearsal('site-a');
+  state.rememberMeasuredObservation({ structureId: 'site:0', observedAt: 2,
+    surpriseMagnitude: .8, goalRelevance: .4, supportMass: 1 });
   const snapshot = state.snapshot();
   assert.equal(snapshot.version, 'DistributedMediumTimescaleSnapshotV2');
   assert.deepEqual(snapshot.rehearsalCounts.map(item => item.structureId), ['site-a', 'site-b']);
@@ -15,6 +17,16 @@ test('V2 timescale state is independent, ordered and byte-stable on restore', ()
   assert.throws(() => DistributedMediumTimescaleStateV2.restore({
     ...snapshot, version: 'DistributedMediumSnapshotV1',
   } as unknown as typeof snapshot), /unsupported-timescale-v2-snapshot/);
+});
+
+test('V2 measured observations persist and reject per-structure time reversal', () => {
+  const state = new DistributedMediumTimescaleStateV2();
+  state.rememberMeasuredObservation({ structureId: 'site:0', observedAt: 4,
+    surpriseMagnitude: .3, goalRelevance: .2, supportMass: .5 });
+  const restored = DistributedMediumTimescaleStateV2.restore(state.snapshot());
+  assert.deepEqual(restored.measuredObservation('site:0'), state.measuredObservation('site:0'));
+  assert.throws(() => state.rememberMeasuredObservation({ structureId: 'site:0', observedAt: 3,
+    surpriseMagnitude: .3, goalRelevance: .2, supportMass: .5 }), /time reversed/);
 });
 
 test('V2 state rejects time reversal and caller-provided invalid measurements', () => {

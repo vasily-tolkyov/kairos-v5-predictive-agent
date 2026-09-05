@@ -43,3 +43,16 @@ test('measured observations use the V2 recovery law on the staged live substrate
   assert(salient.arousal > 0);
   assert.equal(salient.logicalTime, salient.mediumSnapshot().logicalTime);
 });
+
+test('the adapter carries measured recovery into a later empty interval', () => {
+  const neutral = adapter();
+  neutral.advanceTo(12);
+  const measured = adapter();
+  measured.advanceTo(2, [{ version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
+    structureId: 'site:0', observedAt: 2, surpriseMagnitude: .9, goalRelevance: .8, supportMass: 1 }]);
+  measured.advanceTo(12);
+  const neutralSite = neutral.mediumSnapshot().sites.find(site => site.siteId === 0)!;
+  const measuredSite = measured.mediumSnapshot().sites.find(site => site.siteId === 0)!;
+  assert(measuredSite.potentialDepth > neutralSite.potentialDepth);
+  assert.equal(measured.logicalTime, 12);
+});

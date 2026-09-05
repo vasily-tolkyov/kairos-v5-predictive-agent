@@ -49,3 +49,15 @@ test('recovery rejects measurements for structures absent from the captured medi
     goalRelevance: .2, supportMass: 1,
   }]), /structure is not present/);
 });
+
+test('a measured structure remains effective across a later unmeasured interval', () => {
+  const before = source();
+  const first = recoverDistributedMediumProtocolSnapshotV2(before, 0, [{
+    version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
+    structureId: 'site:0', observedAt: 0, surpriseMagnitude: 4, goalRelevance: 2, supportMass: 1,
+  }]);
+  const continued = recoverDistributedMediumProtocolSnapshotV2(first, 10);
+  const neutral = recoverDistributedMediumProtocolSnapshotV2(before, 10);
+  assert.ok(continued.medium.sites[0]!.potentialDepth > neutral.medium.sites[0]!.potentialDepth);
+  assert.ok(continued.timescale.measuredStructures.some(item => item.structureId === 'site:0'));
+});
