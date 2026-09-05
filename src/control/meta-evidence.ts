@@ -100,7 +100,6 @@ export function deriveMetaEvidenceEpisodesV1(
     endOrdinal: number; memberEventIds: string[]; externalContextIds: Set<string>;
   }>();
   const episodes: MetaEvidenceEpisodeV1[] = [];
-  let previousOrdinal: number | null = null;
   const close = (key: string): void => {
     const current = open.get(key); if (!current) return;
     const contexts = [...current.externalContextIds].sort((left, right) => left.localeCompare(right, 'en'));
@@ -122,7 +121,6 @@ export function deriveMetaEvidenceEpisodesV1(
     seenEventIds.add(observation.eventId);
     // Missing ordinals are an observation gap, not evidence that an internal
     // condition left its band.  The next explicit observation decides this.
-    previousOrdinal = observation.depositionOrdinal;
     seenOrdinals.add(observation.depositionOrdinal);
     const present = new Set(observation.bands.map(band => conditionKey(band.channel, band.bandId)));
     const observed = observation.observedChannels === undefined ? null
