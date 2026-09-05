@@ -15,6 +15,8 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
   restore primitives, an isolated idle replay whitelist planner, a strict V2
   protocol envelope with ordered measurement validation, and an isolated
   attention deviation measurement plus a staged V1/V2 logical-clock adapter.
+  A snapshot-only recovery transform applies the frozen law to measured
+  structure inputs without touching live production state.
 
 ## Reproducible checks
 
@@ -62,6 +64,8 @@ the V1 recovery path.
   and replay/homeostasis wiring remain gated on the next separately approved
   tranche. The attention deviation value is currently read-only and has no
   medium-writing authority; the clock adapter still delegates recovery to V1.
+  The recovery transform is likewise isolated and does not mutate live medium
+  instances.
 - Full regression, capacity sweep and temporal experiment remain deferred to
   the next review round by request.
 

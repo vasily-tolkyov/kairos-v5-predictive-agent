@@ -20,7 +20,9 @@ research designs are implemented.
   rehearsal counts. Attention now has an isolated, bounded deviation
   measurement derived from supported predictions and observed changes. The
   staged V1/V2 logical-clock adapter keeps both snapshots aligned while still
-  delegating recovery to V1. The
+  delegating recovery to V1. A snapshot-only V2 recovery transform now applies
+  the frozen law to measured structure inputs without mutating live production.
+  The
   distributed medium remains on its V1 protocol until the envelope, private
   measurement path and an approved replay writer are implemented together;
   these additions are not wired as a hidden V1 compatibility patch.

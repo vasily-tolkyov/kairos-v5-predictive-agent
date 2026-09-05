@@ -27,6 +27,10 @@ Implemented in `src/core/learning/memory-timescales.ts`:
 - a staged clock adapter that keeps a V1 medium instance and V2 time state at
   one logical observation time, while explicitly delegating recovery to V1
   until the production protocol revision is approved.
+- a snapshot-only V2 recovery transform that applies the frozen law to
+  measured per-structure inputs and preserves all evidence fields; duplicate
+  structure measurements in one interval are rejected rather than silently
+  overwritten.
 
 The state and replay planner are intentionally not wired into production medium
 writes yet. They do not accept a caller-provided final salience or recovery
@@ -55,6 +59,8 @@ execution scope.
   arousal injection is **deferred**.
 - V1/V2 logical-clock adapter: **implemented in isolation**; production medium
   replacement and per-structure recovery are **deferred**.
+- V2 snapshot recovery transform: **implemented in isolation**; live medium
+  mutation and full E1–E7 validation are **deferred**.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production
