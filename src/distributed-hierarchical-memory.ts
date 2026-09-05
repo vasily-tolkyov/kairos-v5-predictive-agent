@@ -54,6 +54,11 @@ import { runDistributedMediumProbeBatchSyncV1, type DistributedMediumProbeJobV1 
   from './core/physics/distributed-medium-probe-parallel.js';
 import type { DistributedPredictionCloneRequestV2, DistributedPredictionCloneResultV2 }
   from './core/prediction/distributed-prediction-clone.js';
+import { buildConsolidationReplayPlanV1, executeConsolidationReplayV1,
+  idleForConsolidationReplayV1, validateConsolidationReplayPlanV1,
+  DistributedMediumReplayWriterV1,
+  type ConsolidationReplayPlanV1, type ConsolidationReplayReceiptV1,
+  type ReplayIdleSignalsV1 } from './core/learning/consolidation-replay.js';
 import { distributedEvidenceReferenceV1, distributedPredictionSampleV1,
   emptyDistributedPredictionV1 } from './core/prediction/distributed-reasoning-adapter.js';
 import { KAIROS_V5_MEMORY_SEMANTICS, KAIROS_V5_MEMORY_VERSION } from './core/compatibility.js';
@@ -110,6 +115,12 @@ export interface KairosV5DistributedPhysicalMemoryV4
   extends Omit<KairosV5DistributedPhysicalMemoryV3, 'version'> {
   readonly version: 'KairosV5DistributedPhysicalMemoryV4';
   readonly timescales: DistributedHierarchicalTimescaleSnapshotV1;
+}
+
+export interface DistributedHierarchicalConsolidationReplayReceiptV1 {
+  readonly version: 'DistributedHierarchicalConsolidationReplayReceiptV1';
+  readonly provenance: 'replay';
+  readonly layers: Readonly<Partial<Record<'r1' | 'r2' | 'r2a', ConsolidationReplayReceiptV1>>>;
 }
 
 export interface DistributedMemoryObservationReceiptV1 {
@@ -358,6 +369,47 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       this.#r1.invalidatePhysicalQualification();
       this.#r1Revision++; this.#r2Revision++; this.#invalidatePredictionCaches();
     }
+  }
+
+  /**
+   * Run the DESIGN-002 whitelist only when the controller has measured a
+   * genuinely idle state.  Replay is opt-in V4 behaviour; ordinary V3 memory
+   * never receives this path.  All plans are checked before any layer changes
+   * so an invalid reference cannot leave a partially refreshed hierarchy.
+   */
+  replayIfIdleV1(signals: ReplayIdleSignalsV1, seed: bigint,
+    maxTraces = 8): DistributedHierarchicalConsolidationReplayReceiptV1 | null {
+    assert(this.#timescaleEnabled, 'consolidation replay requires V4 timescale owner');
+    if (!idleForConsolidationReplayV1(signals)) return null;
+    const layerSeeds = { r1: seed ^ 0x9e3779b97f4a7c15n,
+      r2: seed ^ 0xbf58476d1ce4e5b9n, r2a: seed ^ 0x94d049bb133111ebn } as const;
+    const plans: Partial<Record<'r1' | 'r2' | 'r2a', ConsolidationReplayPlanV1>> = {};
+    const writers = {
+      r1: new DistributedMediumReplayWriterV1(this.#r1Medium,
+        traceId => this.#timescaleOwner!.recordRehearsal('r1', `trace:${traceId}`)),
+      r2: new DistributedMediumReplayWriterV1(this.#r2.medium,
+        traceId => this.#timescaleOwner!.recordRehearsal('r2', `trace:${traceId}`)),
+      r2a: new DistributedMediumReplayWriterV1(this.#r2a.medium,
+        traceId => this.#timescaleOwner!.recordRehearsal('r2a', `trace:${traceId}`)),
+    } as const;
+    const snapshots = { r1: this.#r1Medium.snapshot(), r2: this.#r2.medium.snapshot(),
+      r2a: this.#r2a.medium.snapshot() } as const;
+    for (const layer of ['r1', 'r2', 'r2a'] as const) {
+      const plan = buildConsolidationReplayPlanV1(snapshots[layer], layerSeeds[layer], maxTraces);
+      if (plan.selected.length > 0) {
+        validateConsolidationReplayPlanV1(plan, writers[layer]);
+        plans[layer] = plan;
+      }
+    }
+    if (Object.keys(plans).length === 0) return null;
+    const layers: Partial<Record<'r1' | 'r2' | 'r2a', ConsolidationReplayReceiptV1>> = {};
+    for (const layer of ['r1', 'r2', 'r2a'] as const) {
+      const plan = plans[layer];
+      if (plan === undefined) continue;
+      layers[layer] = executeConsolidationReplayV1(plan, writers[layer]);
+    }
+    this.#r1Revision++; this.#r2Revision++; this.#invalidatePredictionCaches();
+    return { version: 'DistributedHierarchicalConsolidationReplayReceiptV1', provenance: 'replay', layers };
   }
 
   #invalidatePredictionCaches(): void {

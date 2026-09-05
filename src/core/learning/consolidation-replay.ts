@@ -1,4 +1,5 @@
 import type { DistributedBondReferenceV1, DistributedMediumSnapshotV1 } from '../physics/distributed-physical-contracts.js';
+import type { DistributedPhysicalMedium3DV1 } from '../physics/distributed-physical-medium.js';
 import { SplitMix64 } from '../random.js';
 import { memoryTimescaleLawConfigV1 } from './memory-timescales.js';
 
@@ -30,6 +31,31 @@ export interface ReplayWritePortV1 {
   strengthenExistingBond(reference: DistributedBondReferenceV1, amount: number): void;
   recordRehearsal(traceId: string): void;
   homeostaticDownscale(factor: number): void;
+}
+
+/** Adapter that exposes only the approved replay whitelist of a live medium. */
+export class DistributedMediumReplayWriterV1 implements ReplayWritePortV1 {
+  readonly #medium: DistributedPhysicalMedium3DV1;
+  readonly #onRehearsal: (traceId: string) => void;
+
+  constructor(medium: DistributedPhysicalMedium3DV1, onRehearsal: (traceId: string) => void) {
+    this.#medium = medium;
+    this.#onRehearsal = onRehearsal;
+  }
+
+  hasSite(siteId: number): boolean { return this.#medium.replayHasSite(siteId); }
+  hasBond(reference: DistributedBondReferenceV1): boolean { return this.#medium.replayHasBond(reference); }
+  refreshPotentialDepth(siteId: number, amount: number): void {
+    this.#medium.replayRefreshPotentialDepth(siteId, amount);
+  }
+  strengthenExistingBond(reference: DistributedBondReferenceV1, amount: number): void {
+    this.#medium.replayStrengthenExistingBond(reference, amount);
+  }
+  recordRehearsal(traceId: string): void {
+    if (!this.#medium.replayHasTrace(traceId)) throw new Error('replay trace is not present');
+    this.#onRehearsal(traceId);
+  }
+  homeostaticDownscale(factor: number): void { this.#medium.replayHomeostaticDownscale(factor); }
 }
 
 export interface ConsolidationReplayReceiptV1 {
@@ -72,7 +98,11 @@ export function buildConsolidationReplayPlanV1(snapshot: DistributedMediumSnapsh
   const eligible = snapshot.footprints.filter(footprint => footprint.supportMass > 0
     && footprint.siteIds.length > 0
     && footprint.siteIds.every(siteId => snapshot.sites[siteId]?.potentialDepth !== undefined
-      && snapshot.sites[siteId]!.potentialDepth > 0))
+      && snapshot.sites[siteId]!.potentialDepth > 0)
+    && footprint.bondReferences.every(reference => snapshot.learnedBonds.some(bond =>
+      bond.kind === reference.kind && bond.fromSiteId === reference.fromSiteId
+      && bond.toSiteId === reference.toSiteId && bond.supportMass > 0
+      && (reference.kind === 'local' ? bond.symmetricCoupling : bond.directedConductance) > 0)))
     .map(footprint => ({ traceId: footprint.traceId, siteIds: [...footprint.siteIds],
       bondReferences: footprint.bondReferences.map(reference => ({ ...reference })) }));
   const random = new SplitMix64(seedToBigInt(seed));
@@ -87,22 +117,32 @@ export function buildConsolidationReplayPlanV1(snapshot: DistributedMediumSnapsh
     seed: `0x${seedToBigInt(seed).toString(16)}` };
 }
 
+/** Validate all replay writes before mutating a live medium. */
+export function validateConsolidationReplayPlanV1(plan: ConsolidationReplayPlanV1,
+  writer: ReplayWritePortV1): void {
+  if (plan.version !== 'ConsolidationReplayPlanV1' || plan.provenance !== 'replay')
+    throw new Error('invalid consolidation replay plan');
+  for (const entry of plan.selected) {
+    for (const siteId of entry.siteIds)
+      if (!writer.hasSite(siteId)) throw new Error(`replay site is not present: ${siteId}`);
+    for (const reference of entry.bondReferences)
+      if (!writer.hasBond(reference)) throw new Error('replay bond is not present');
+  }
+}
+
 /** Execute only the replay whitelist; no trusted-real-event writer is called. */
 export function executeConsolidationReplayV1(plan: ConsolidationReplayPlanV1,
   writer: ReplayWritePortV1): ConsolidationReplayReceiptV1 {
-  if (plan.version !== 'ConsolidationReplayPlanV1' || plan.provenance !== 'replay')
-    throw new Error('invalid consolidation replay plan');
+  validateConsolidationReplayPlanV1(plan, writer);
   const law = memoryTimescaleLawConfigV1();
   const potentialRefresh = 0.01;
   const bondRefresh = 0.01;
   const homeostaticFactor = law.homeostaticDownscaleFactor;
   for (const entry of plan.selected) {
     for (const siteId of entry.siteIds) {
-      if (!writer.hasSite(siteId)) throw new Error(`replay site is not present: ${siteId}`);
       writer.refreshPotentialDepth(siteId, potentialRefresh);
     }
     for (const reference of entry.bondReferences) {
-      if (!writer.hasBond(reference)) throw new Error('replay bond is not present');
       writer.strengthenExistingBond(reference, bondRefresh);
     }
     writer.recordRehearsal(entry.traceId);

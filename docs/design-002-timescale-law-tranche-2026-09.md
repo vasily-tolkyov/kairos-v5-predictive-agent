@@ -40,16 +40,14 @@ Implemented in `src/core/learning/memory-timescales.ts`:
   existing physical structure; it accepts no caller-supplied recovery rate or
   support mass.
 
-The state and replay planner are intentionally not wired into production replay
-writes yet. They do not accept a caller-provided final salience or recovery
-rate, do not touch support mass/evidence, and do not introduce replay into the
-V1 medium. The V2 envelope remains a versioned contract boundary. A
+The V2 envelope remains a versioned contract boundary. A
 runtime-private, V4-opt-in measurement path now routes bounded action outcomes
 through the trusted owner, and that owner's arousal-derived encoding gain is
 applied to R1/R2/R2A plastic deposition without inflating evidence support;
-the ordinary V3 runtime remains unchanged. Replay writer/homeostasis wiring,
-full passive-event qualification and the full E1–E7 gates are still deferred, so these
-primitives are not evidence that D002 is complete.
+the ordinary V3 runtime remains unchanged. The V4 owner now also exposes the
+idle-gated replay writer/homeostasis path; broad passive-event qualification and
+the full E1–E7 gates are still deferred, so these primitives are not evidence
+that D002 is complete.
 
 ## Focused checks
 
@@ -94,6 +92,6 @@ execution scope.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into V4 action/passive-event plastic deposition: **implemented
   in the opt-in owner seam**; default V3 remains unchanged.
-- Idle replay planner and whitelist: **implemented in isolation**; production
-  writer/homeostasis wiring: **deferred**.
+- Idle replay planner, whitelist and V4 production writer/homeostasis wiring:
+  **implemented behind explicit opt-in**; default V3 remains unchanged.
 - E1–E7 experimental validation: **not run**.

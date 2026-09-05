@@ -1487,6 +1487,55 @@ export class DistributedPhysicalMedium3DV1 {
   }
 
   /**
+   * Narrow writer surface used by DESIGN-002 consolidation replay.  These
+   * operations deliberately address only structures already present in this
+   * medium and never alter support mass or create a new footprint.
+   */
+  replayHasSite(siteId: number): boolean {
+    return Number.isInteger(siteId) && siteId >= 0 && siteId < this.siteCount;
+  }
+
+  replayHasBond(reference: DistributedBondReferenceV1): boolean {
+    return this.#bondReferenceActive(reference);
+  }
+
+  replayHasTrace(traceId: string): boolean {
+    return this.#footprints.has(traceId);
+  }
+
+  replayRefreshPotentialDepth(siteId: number, amount: number): void {
+    this.#assertSiteId(siteId);
+    if (amount !== 0.01) throw new Error('replay potential refresh is fixed by the memory law');
+    this.#potentialDepth[siteId] = this.#potentialDepth[siteId]! + amount;
+    this.#lastUpdatedAt[siteId] = this.#logicalTime;
+  }
+
+  replayStrengthenExistingBond(reference: DistributedBondReferenceV1, amount: number): void {
+    if (amount !== 0.01) throw new Error('replay bond refresh is fixed by the memory law');
+    const bond = reference.kind === 'local'
+      ? this.#localEnhancements.get(localBondKey(reference.fromSiteId, reference.toSiteId))
+      : this.#directedBonds.get(bondKey(reference.fromSiteId, reference.toSiteId));
+    if (bond === undefined || !this.#bondReferenceActive(reference))
+      throw new Error('replay bond is not present');
+    if (reference.kind === 'local') bond.symmetricCoupling += this.#config.symmetricLearningRate * amount;
+    else {
+      const increase = this.#config.directedLearningRate * amount;
+      bond.directedConductance += increase;
+      this.#directedOutgoingConductance[bond.fromSiteId]
+        = this.#directedOutgoingConductance[bond.fromSiteId]! + increase;
+    }
+    bond.lastUpdatedAt = this.#logicalTime;
+    this.#invalidateAttractorTopology();
+  }
+
+  replayHomeostaticDownscale(factor: number): void {
+    if (factor !== 0.995) throw new Error('replay homeostatic factor is fixed by the memory law');
+    for (let siteId = 0; siteId < this.siteCount; siteId += 1)
+      this.#potentialDepth[siteId] = this.#potentialDepth[siteId]! * factor;
+    this.#invalidateAttractorTopology();
+  }
+
+  /**
    * Return the derived index of repeated same-time terminal populations.
    * This is read-only evidence over real footprints; it is not a rule table
    * and cannot be used to create or strengthen a field.

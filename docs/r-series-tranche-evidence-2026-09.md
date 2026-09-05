@@ -69,6 +69,13 @@ the V1 recovery path.
 - Full regression, capacity sweep and temporal experiment remain deferred to
   the next review round by request.
 
+## Subsequent opt-in update
+
+The later V4 replay wiring is recorded in
+`docs/design-002-production-replay-wiring-2026-09.md`.  It does not revise the
+historical scope above: the default V1/V3 path and this tranche's evidence stay
+unchanged, while the explicit V4 owner can now invoke the idle-only whitelist.
+
 ## Repositories
 
 The source checkout is `D:\kimi_kairos\kairos-v5-predictive-agent`; the original

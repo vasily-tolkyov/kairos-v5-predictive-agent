@@ -40,7 +40,10 @@ research designs are implemented.
   runtime/worker path; default V3 checkpoints and passive-event ingress remain
   unchanged and deferred.
   The replay whitelist also checks that each referenced site and bond exists
-  before any refresh call.
+  before any refresh call.  The V4 opt-in memory now connects this writer to
+  all three live layers behind the measured idle gate; V3 remains unreachable,
+  and replay preserves support mass/evidence while updating only allowed
+  potentials, existing bonds and rehearsal counts.
   A staged three-layer timescale owner now keeps R1/R2/R2A medium references
   and V2 clocks aligned with byte-stable restore; the legacy hierarchy still
   uses its V1 checkpoint and recovery path.  An additive V4 checkpoint seam
@@ -81,8 +84,8 @@ escape-action quantity. Those measurements belong to a later theory/experiment
 decision and were not smuggled into this implementation.
 
 The control field's recurrent and inhibitory coefficients are fixed protocol
-laws. Learned meta-representation, salience-conditioned recovery, homeostasis,
-and control-learning arbitration remain separate gated designs. No caller may
+laws. Learned meta-representation, salience-conditioned recovery and
+control-learning arbitration remain separate gated designs. No caller may
 inject an internal meta-channel or use a metadata grade to raise a world
 evidence grade.
 
@@ -101,7 +104,8 @@ implemented; a structurally valid forged V6 payload remains a known boundary.
 
 ## Deferred work
 
-DESIGN-002 (the sole protocol revision), DESIGN-004, DESIGN-005, DESIGN-003b,
+DESIGN-002 (the sole protocol revision) is partially wired for its V4 opt-in
+replay path; DESIGN-004, DESIGN-005, DESIGN-003b,
 PLAN-003 and PLAN-004 are not implemented here. DESIGN-001 authority mapping,
 intervention oscillator and production meta-R2A wiring remain deferred. G3/G4 and the
 note=2 intervention design remain unresolved project-level gates. Full suite,
