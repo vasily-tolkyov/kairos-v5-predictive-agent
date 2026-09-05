@@ -13,13 +13,14 @@ research designs are implemented.
 - DESIGN-006 and DESIGN-003a are evaluation-only runners. They create fresh
   memory instances from caller fixtures and do not write project evidence or
   production snapshots unless an explicit output path is supplied.
-- DESIGN-002 now has an isolated law kernel, strict V2 time-state, and an
-  idle-only replay whitelist planner for continuous measured salience,
+- DESIGN-002 now has an isolated law kernel, strict V2 time-state, an
+  idle-only replay whitelist planner, and a strict V2 protocol envelope with
+  ordered measured-observation validation for continuous measured salience,
   autonomous arousal evolution, bounded encoding gain, homeostatic scaling and
   rehearsal counts. The distributed medium remains on its V1 protocol until
-  the versioned medium snapshot, private measurement path and an approved
-  replay writer are implemented together; these additions are not wired as a
-  hidden V1 compatibility patch.
+  the envelope, private measurement path and an approved replay writer are
+  implemented together; these additions are not wired as a hidden V1
+  compatibility patch.
 - DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
   Channels are frozen before an action, carried with the trusted event as
   `verified-internal` metadata, and deliberately kept out of public

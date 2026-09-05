@@ -12,7 +12,8 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
   meta-evidence episode index.
 - DESIGN-002 isolated tranche: continuous measured salience, autonomous
   arousal, bounded encoding gain, homeostatic scaling and strict V2 time-state
-  restore primitives, plus an isolated idle replay whitelist planner.
+  restore primitives, an isolated idle replay whitelist planner, and a strict
+  V2 protocol envelope with ordered measurement validation.
 
 ## Reproducible checks
 
@@ -43,7 +44,7 @@ filtering), exact worker ordering, and read-only temporal/capacity probes.
 fresh controller state, not causal evidence or controller authority.
 
 The additional DESIGN-002 direct checks are recorded separately in
-`docs/design-002-timescale-law-tranche-2026-09.md` (9/9); they do not exercise
+`docs/design-002-timescale-law-tranche-2026-09.md` (12/12); they do not exercise
 the V1 recovery path.
 
 ## Known open classifications
@@ -54,10 +55,11 @@ the V1 recovery path.
 - `DESIGN-001-production-wiring`: snapshot persistence is wired, but meta
   episodes are not passed through R2/R2A event state and cannot raise any world
   evidence grade.
-- `DESIGN-002-protocol-deferred`: the law, isolated V2 state and idle replay
-  whitelist planner are present, but the versioned medium snapshot, private
-  measurement path, approved production writer and replay/homeostasis wiring
-  remain gated on the next separately approved tranche.
+- `DESIGN-002-protocol-deferred`: the law, isolated V2 state, idle replay
+  whitelist planner and protocol envelope are present, but the versioned
+  production medium snapshot, private measurement capability, approved writer
+  and replay/homeostasis wiring remain gated on the next separately approved
+  tranche.
 - Full regression, capacity sweep and temporal experiment remain deferred to
   the next review round by request.
 

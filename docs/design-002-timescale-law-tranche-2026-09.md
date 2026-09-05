@@ -18,19 +18,23 @@ Implemented in `src/core/learning/memory-timescales.ts`:
 - a deterministic idle-only consolidation replay planner with a narrow writer
   port that can refresh existing potential/bonds and rehearsal counts, but
   cannot create support mass, evidence, or new physical structures.
+- a strict V2 protocol envelope that composes the existing V1 medium snapshot
+  with the medium-owned timescale snapshot and law identity, plus ordered
+  measured-observation validation.
 
 The state and replay planner are intentionally not wired into production medium
 writes yet. They do not accept a caller-provided final salience or recovery
 rate, do not touch support mass/evidence, and do not introduce replay into the
-V1 medium. The next D002 tranche must bind this state to a new
-physical-medium protocol, provide a runtime-private measurement path, connect
-the replay whitelist to an approved writer, and run the full E1–E7 gates;
-these primitives are not evidence that D002 is complete.
+V1 medium. The V2 envelope is a versioned contract and validation boundary, not
+yet the production medium implementation. The next D002 tranche must provide a
+runtime-private measurement capability, connect the replay whitelist to an
+approved writer and the V2 medium, and run the full E1–E7 gates; these
+primitives are not evidence that D002 is complete.
 
 ## Focused checks
 
 `npm run build --silent` and
-`node --test dist/test/design-002-timescale-law.test.js dist/test/design-002-timescale-state.test.js dist/test/design-002-consolidation-replay.test.js` pass (9/9). Full regression
+`node --test dist/test/design-002-timescale-law.test.js dist/test/design-002-timescale-state.test.js dist/test/design-002-consolidation-replay.test.js dist/test/design-002-timescale-protocol.test.js` pass (12/12). Full regression
 and the required G0/G1/G2/G5 re-qualification remain deferred by the current
 execution scope.
 
@@ -38,6 +42,8 @@ execution scope.
 
 - Law primitives: **implemented**.
 - Isolated V2 arousal/rehearsal state and strict restore: **implemented**.
+- V2 protocol envelope and ordered measurement boundary: **implemented in
+  isolation**.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production
