@@ -73,6 +73,15 @@ function saturating(value: number): number {
 
 function validateLaw(config: MemoryTimescaleLawConfigV1): void {
   if (config.version !== 'MemoryTimescaleLawConfigV1') throw new Error('unsupported memory timescale law');
+  const canonicalLaw = memoryTimescaleLawConfigV1();
+  const frozenKeys: readonly (keyof MemoryTimescaleLawConfigV1)[] = [
+    'baseRecoveryRate', 'minimumRecoveryFactor', 'surpriseWeight',
+    'goalRelevanceWeight', 'repetitionWeight', 'rehearsalWeight',
+    'arousalDecayRate', 'arousalGain', 'encodingGainMinimum',
+    'encodingGainMaximum', 'homeostaticDownscaleFactor',
+  ];
+  if (frozenKeys.some(key => config[key] !== canonicalLaw[key]))
+    throw new Error('memory timescale law identity is frozen');
   if (config.baseRecoveryRate !== 0.002) throw new Error('base recovery rate is frozen at 0.002');
   if (!(config.minimumRecoveryFactor > 0 && config.minimumRecoveryFactor <= 1))
     throw new RangeError('minimum recovery factor must be in (0,1]');
@@ -87,6 +96,11 @@ function validateLaw(config: MemoryTimescaleLawConfigV1): void {
     throw new RangeError('encoding gain bounds are invalid');
   if (!(config.homeostaticDownscaleFactor > 0 && config.homeostaticDownscaleFactor < 1))
     throw new RangeError('homeostatic factor must be in (0,1)');
+}
+
+/** Validate the canonical law identity without exposing mutable law state. */
+export function assertMemoryTimescaleLawV1(config: MemoryTimescaleLawConfigV1): void {
+  validateLaw(config);
 }
 
 /** Derive a continuous salience from measured components only. */
@@ -115,6 +129,10 @@ export function effectiveRecoveryRateV1(measurement: MeasuredSalienceV1,
 export function advanceArousalV1(state: MediumArousalStateV1, surpriseFlux: number,
   elapsed: number, config: MemoryTimescaleLawConfigV1 = memoryTimescaleLawConfigV1()): MediumArousalStateV1 {
   validateLaw(config);
+  if (state.version !== 'MediumArousalStateV1') throw new Error('unsupported arousal state');
+  finiteNonnegative(state.arousal, 'arousal state');
+  if (state.arousal > 1) throw new RangeError('arousal state must be bounded');
+  finiteNonnegative(state.logicalTime, 'arousal logicalTime');
   finiteNonnegative(surpriseFlux, 'surprise flux');
   finiteNonnegative(elapsed, 'elapsed');
   const decayed = state.arousal * Math.exp(-config.arousalDecayRate * elapsed);

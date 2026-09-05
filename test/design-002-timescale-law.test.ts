@@ -48,7 +48,12 @@ test('the law rejects caller attempts to alter frozen constants or weights', () 
   const config = memoryTimescaleLawConfigV1();
   assert.throws(() => effectiveRecoveryRateV1(neutral,
     { ...config, baseRecoveryRate: 0.1 } as unknown as typeof config),
-    /base recovery rate/);
+    /identity is frozen/);
   assert.throws(() => measuredSalienceV1(neutral, { ...config, surpriseWeight: 0.5 }),
-    /weights/);
+    /identity is frozen/);
+  assert.throws(() => measuredSalienceV1(neutral,
+    { ...config, minimumRecoveryFactor: 0.9 } as typeof config), /identity is frozen/);
+  assert.throws(() => advanceArousalV1(
+    { version: 'MediumArousalStateV1', arousal: Number.NaN, logicalTime: 0 }, 0, 0, config),
+  /arousal state/);
 });

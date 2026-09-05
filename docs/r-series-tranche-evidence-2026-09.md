@@ -10,8 +10,9 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
 - DESIGN-006 temporal-fidelity probe and DESIGN-003a capacity probe.
 - DESIGN-001 L1 runtime-owned interoceptive provenance and isolated L2
   meta-evidence episode index.
-- DESIGN-002 law-only tranche: continuous measured salience, autonomous
-  arousal, bounded encoding gain and homeostatic scaling primitives.
+- DESIGN-002 isolated tranche: continuous measured salience, autonomous
+  arousal, bounded encoding gain, homeostatic scaling and strict V2 time-state
+  restore primitives.
 
 ## Reproducible checks
 
@@ -33,12 +34,17 @@ filtering), exact worker ordering, and read-only temporal/capacity probes.
   was written by the probes; the runtime snapshot path persists the index only
   after an enriched trusted event supplies a band.
 - The L2 index is not connected to world R2A grading or controller authority.
-- The DESIGN-002 primitives are not connected to the V1 medium recovery path;
-  no V1 snapshot was modified and no replay write occurred.
+- The DESIGN-002 primitives and V2 time-state are not connected to the V1
+  medium recovery path; no V1 snapshot was modified and no replay write
+  occurred.
 - The internal channel metadata is not yet consumed by `eventRows` or the
   world afferent projection; it is provenance transport only. The additional
   prediction, applicability and attention fields are bounded summaries of
-  fresh controller state, not causal evidence or controller authority.
+fresh controller state, not causal evidence or controller authority.
+
+The additional DESIGN-002 direct checks are recorded separately in
+`docs/design-002-timescale-law-tranche-2026-09.md` (7/7); they do not exercise
+the V1 recovery path.
 
 ## Known open classifications
 
@@ -48,8 +54,8 @@ filtering), exact worker ordering, and read-only temporal/capacity probes.
 - `DESIGN-001-production-wiring`: snapshot persistence is wired, but meta
   episodes are not passed through R2/R2A event state and cannot raise any world
   evidence grade.
-- `DESIGN-002-protocol-deferred`: the law primitives are present, but the
-  versioned medium snapshot, private measurement path and replay whitelist
+- `DESIGN-002-protocol-deferred`: the law and isolated V2 state primitives are
+  present, but the versioned medium snapshot, private measurement path and replay whitelist
   remain gated on the next separately approved tranche.
 - Full regression, capacity sweep and temporal experiment remain deferred to
   the next review round by request.
