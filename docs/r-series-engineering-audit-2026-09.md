@@ -20,6 +20,10 @@ research designs are implemented.
   mapping and external oscillator remain deferred. These channels are currently
   provenance transport only: `eventRows` and the afferent projection do not
   consume them, so they do not yet alter R1/R2/R2A evidence.
+- DESIGN-001 L2 now has an isolated meta-evidence index with fixed eight-band
+  quantization, deposition-ordinal episode reconstruction, and external ×
+  internal joint-context qualification. It is not connected to world R2A
+  grading or controller authority yet.
 
 ## Theory boundary
 
@@ -44,8 +48,8 @@ provided measurements; it never fabricates a score from event counts.
 ## Deferred work
 
 DESIGN-002 (the sole protocol revision), DESIGN-004, DESIGN-005, DESIGN-003b,
-PLAN-003 and PLAN-004 are not implemented here. DESIGN-001 L2 remains
-deferred. G3/G4 and the
+PLAN-003 and PLAN-004 are not implemented here. DESIGN-001 authority mapping,
+intervention oscillator and production meta-R2A wiring remain deferred. G3/G4 and the
 note=2 intervention design remain unresolved project-level gates. Full suite,
 capacity sweep and temporal experiment execution are intentionally deferred to
 the next review round as requested.
