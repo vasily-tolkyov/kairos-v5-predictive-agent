@@ -21,15 +21,19 @@ Implemented in `src/core/learning/memory-timescales.ts`:
 - a strict V2 protocol envelope that composes the existing V1 medium snapshot
   with the medium-owned timescale snapshot and law identity, plus ordered
   measured-observation validation.
+- a read-only attention comparison that emits a bounded deviation magnitude
+  from supported predicted changes versus observed public changes; unsupported
+  predictions remain unmeasured.
 
 The state and replay planner are intentionally not wired into production medium
 writes yet. They do not accept a caller-provided final salience or recovery
 rate, do not touch support mass/evidence, and do not introduce replay into the
 V1 medium. The V2 envelope is a versioned contract and validation boundary, not
 yet the production medium implementation. The next D002 tranche must provide a
-runtime-private measurement capability, connect the replay whitelist to an
-approved writer and the V2 medium, and run the full E1–E7 gates; these
-primitives are not evidence that D002 is complete.
+runtime-private measurement capability, route this bounded measurement through
+the trusted runtime, connect the replay whitelist to an approved writer and the
+V2 medium, and run the full E1–E7 gates; these primitives are not evidence that
+D002 is complete.
 
 ## Focused checks
 
@@ -44,6 +48,8 @@ execution scope.
 - Isolated V2 arousal/rehearsal state and strict restore: **implemented**.
 - V2 protocol envelope and ordered measurement boundary: **implemented in
   isolation**.
+- Attention deviation measurement: **implemented in isolation**; medium
+  arousal injection is **deferred**.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production
