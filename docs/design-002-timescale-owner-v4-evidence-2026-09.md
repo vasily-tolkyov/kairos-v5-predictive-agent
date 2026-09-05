@@ -24,6 +24,8 @@ node --test dist/test/compute-timescale-v4-bridge.test.js dist/test/distributed-
 ```
 
 Result: build exit `0`; `9/9` focused tests passed, `0` failed, `0` skipped.
+The focused test process took approximately `9.06 s`; the worker round trip
+used one short-lived Node worker and no external service.
 The worker test performed a real V4 snapshot → restore → snapshot round trip.
 
 ## Boundary and failure classification
