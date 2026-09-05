@@ -30,3 +30,27 @@ test('hierarchical owner rejects a layer clock divergence and unknown measured s
   assert.throws(() => owner.advanceTo(1, { r1: [{ version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
     structureId: 'site:999999', observedAt: 1, surpriseMagnitude: .1, goalRelevance: 0, supportMass: 0 }], r2: [], r2a: [] }), /not present/);
 });
+
+test('same-time trusted measurement is processed instead of being dropped', () => {
+  const owner = new DistributedHierarchicalTimescaleOwnerV1(
+    new DistributedPhysicalMedium3DV1({ name: 'R1', seedHex: '5231' }),
+    new DistributedPhysicalMedium3DV1({ name: 'R2', seedHex: '5232' }),
+    new DistributedPhysicalMedium3DV1({ name: 'R2A', seedHex: '5233' }));
+  const before = owner.snapshot();
+  owner.advanceTo(0, { r1: [{ version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
+    structureId: 'site:0', observedAt: 0, surpriseMagnitude: 0.8, goalRelevance: 0.4, supportMass: 1 }], r2: [], r2a: [] });
+  assert.notDeepEqual(owner.snapshot(), before);
+});
+
+test('measurement validation is atomic across layers', () => {
+  const owner = new DistributedHierarchicalTimescaleOwnerV1(
+    new DistributedPhysicalMedium3DV1({ name: 'R1', seedHex: '5231' }),
+    new DistributedPhysicalMedium3DV1({ name: 'R2', seedHex: '5232' }),
+    new DistributedPhysicalMedium3DV1({ name: 'R2A', seedHex: '5233' }));
+  const before = owner.snapshot();
+  assert.throws(() => owner.advanceTo(1, { r1: [{ version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
+    structureId: 'site:0', observedAt: 0.5, surpriseMagnitude: 0.8, goalRelevance: 0.4, supportMass: 1 }],
+    r2: [{ version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
+      structureId: 'not-a-structure', observedAt: 0.5, surpriseMagnitude: 0.8, goalRelevance: 0.4, supportMass: 1 }], r2a: [] }));
+  assert.deepEqual(owner.snapshot(), before);
+});

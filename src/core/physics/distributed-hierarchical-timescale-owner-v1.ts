@@ -51,18 +51,16 @@ export class DistributedHierarchicalTimescaleOwnerV1 {
   advanceTo(logicalTime: number, measurements: LayerMeasurements = emptyMeasurements()): void {
     if (!Number.isFinite(logicalTime) || logicalTime < this.logicalTime)
       throw new Error('hierarchical timescale logical-time-reversed');
+    const start = this.logicalTime;
+    // Validate every layer before mutating any state. A bad R2/R2A sample must
+    // not leave R1 partially recovered or partially remembered.
+    const validatedRates: Record<LayerName, Map<string, number>> = { r1: new Map(), r2: new Map(), r2a: new Map() };
     for (const layer of ['r1', 'r2', 'r2a'] as const) {
       if (this.#states[layer].logicalTime !== this.logicalTime
         || this.#mediums[layer].snapshot().logicalTime !== this.logicalTime)
         throw new Error(`hierarchical timescale ${layer} clock diverged`);
-    }
-    const start = this.logicalTime;
-    const elapsed = logicalTime - start;
-    if (elapsed === 0 && Object.values(measurements).every(value => value.length === 0)) return;
-    for (const layer of ['r1', 'r2', 'r2a'] as const) {
       const mediumSnapshot = this.#mediums[layer].snapshot();
       const layerMeasurements = measurements[layer] ?? [];
-      const rates = new Map<string, number>();
       const seen = new Set<string>();
       for (const measurement of layerMeasurements) {
         if (measurement.observedAt < start || measurement.observedAt > logicalTime)
@@ -71,15 +69,27 @@ export class DistributedHierarchicalTimescaleOwnerV1 {
         if (!measuredStructureExistsV2(mediumSnapshot, measurement))
           throw new Error(`hierarchical ${layer} structure is not present: ${measurement.structureId}`);
         seen.add(measurement.structureId);
+        if (!Number.isFinite(measurement.surpriseMagnitude) || measurement.surpriseMagnitude < 0
+          || !Number.isFinite(measurement.goalRelevance) || measurement.goalRelevance < 0
+          || !Number.isFinite(measurement.supportMass) || measurement.supportMass < 0)
+          throw new Error(`hierarchical ${layer} measured salience invalid`);
+        validatedRates[layer].set(measurement.structureId, this.#states[layer].effectiveRecoveryRate(
+          measurement.structureId, { version: 'MeasuredSalienceV1',
+            surpriseMagnitude: measurement.surpriseMagnitude,
+            goalRelevance: measurement.goalRelevance, supportMass: measurement.supportMass }));
+      }
+    }
+    const elapsed = logicalTime - start;
+    if (elapsed === 0 && Object.values(measurements).every(value => value.length === 0)) return;
+    for (const layer of ['r1', 'r2', 'r2a'] as const) {
+      const layerMeasurements = measurements[layer] ?? [];
+      for (const measurement of layerMeasurements) {
         this.#states[layer].rememberMeasuredObservation({ structureId: measurement.structureId,
           observedAt: measurement.observedAt, surpriseMagnitude: measurement.surpriseMagnitude,
           goalRelevance: measurement.goalRelevance, supportMass: measurement.supportMass });
         this.#states[layer].depositSurpriseFlux(measurement.observedAt, measurement.surpriseMagnitude);
-        rates.set(measurement.structureId, this.#states[layer].effectiveRecoveryRate(measurement.structureId, {
-          version: 'MeasuredSalienceV1', surpriseMagnitude: measurement.surpriseMagnitude,
-          goalRelevance: measurement.goalRelevance, supportMass: measurement.supportMass }));
       }
-      this.#mediums[layer].recoverWithStructureRates(elapsed, rates);
+      this.#mediums[layer].recoverWithStructureRates(elapsed, validatedRates[layer]);
       this.#states[layer].advanceTo(logicalTime);
     }
   }
@@ -105,6 +115,37 @@ export class DistributedHierarchicalTimescaleOwnerV1 {
       { r1: DistributedMediumTimescaleStateV2.restore(r1.timescale, law),
         r2: DistributedMediumTimescaleStateV2.restore(r2.timescale, law),
         r2a: DistributedMediumTimescaleStateV2.restore(r2a.timescale, law) }, law);
+  }
+
+  /** Build an owner around already-existing layer references at a known time. */
+  static fromExisting(r1: DistributedPhysicalMedium3DV1, r2: DistributedPhysicalMedium3DV1,
+    r2a: DistributedPhysicalMedium3DV1, logicalTime: number,
+    law: MemoryTimescaleLawConfigV1 = memoryTimescaleLawConfigV1()): DistributedHierarchicalTimescaleOwnerV1 {
+    const states = { r1: new DistributedMediumTimescaleStateV2(law),
+      r2: new DistributedMediumTimescaleStateV2(law), r2a: new DistributedMediumTimescaleStateV2(law) };
+    states.r1.advanceTo(logicalTime); states.r2.advanceTo(logicalTime); states.r2a.advanceTo(logicalTime);
+    return new DistributedHierarchicalTimescaleOwnerV1(r1, r2, r2a, states, law);
+  }
+
+  /** Restore time state onto references owned by an existing hierarchy. */
+  static restoreInto(r1: DistributedPhysicalMedium3DV1, r2: DistributedPhysicalMedium3DV1,
+    r2a: DistributedPhysicalMedium3DV1, snapshot: DistributedHierarchicalTimescaleSnapshotV1,
+    law: MemoryTimescaleLawConfigV1 = memoryTimescaleLawConfigV1()): DistributedHierarchicalTimescaleOwnerV1 {
+    if (snapshot.version !== 'DistributedHierarchicalTimescaleSnapshotV1')
+      throw new Error('unsupported hierarchical timescale snapshot');
+    const layers: readonly [LayerName, DistributedPhysicalMedium3DV1, DistributedMediumProtocolSnapshotV2][] = [
+      ['r1', r1, snapshot.r1], ['r2', r2, snapshot.r2], ['r2a', r2a, snapshot.r2a],
+    ];
+    const states: Partial<Record<LayerName, DistributedMediumTimescaleStateV2>> = {};
+    for (const [layer, medium, envelope] of layers) {
+      const restored = restoreDistributedMediumProtocolSnapshotV2(envelope, law);
+      if (restored.medium.logicalTime !== medium.snapshot().logicalTime)
+        throw new Error(`hierarchical ${layer} medium time mismatch`);
+      if (JSON.stringify(restored.medium) !== JSON.stringify(medium.snapshot()))
+        throw new Error(`hierarchical ${layer} medium identity mismatch`);
+      states[layer] = DistributedMediumTimescaleStateV2.restore(restored.timescale, law);
+    }
+    return new DistributedHierarchicalTimescaleOwnerV1(r1, r2, r2a, states, law);
   }
 
   mediumSnapshot(layer: LayerName): DistributedMediumSnapshotV1 {

@@ -36,6 +36,12 @@ import type { DistributedR2AConsolidationBatchReceiptV1,
   from './core/learning/distributed-r2a-physical-contracts.js';
 import { DistributedPhysicalMedium3DV1 }
   from './core/physics/distributed-physical-medium.js';
+import { DistributedHierarchicalTimescaleOwnerV1 }
+  from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
+import type { DistributedHierarchicalTimescaleSnapshotV1 }
+  from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
+import type { RuntimeMeasuredSalienceV2 }
+  from './core/physics/distributed-medium-timescale-protocol-v2.js';
 import type { DistributedMediumSnapshotV1, DistributedTraceFootprintV1 }
   from './core/physics/distributed-physical-contracts.js';
 import { DistributedPredictionCloneV2 }
@@ -95,6 +101,13 @@ export interface KairosV5DistributedPhysicalMemoryV3 {
    * not consumed by world R2A grading or by action selection.
    */
   readonly metaEvidence?: MetaEvidenceStateV1;
+}
+
+/** Additive opt-in checkpoint carrying the aligned three-layer time owners. */
+export interface KairosV5DistributedPhysicalMemoryV4
+  extends Omit<KairosV5DistributedPhysicalMemoryV3, 'version'> {
+  readonly version: 'KairosV5DistributedPhysicalMemoryV4';
+  readonly timescales: DistributedHierarchicalTimescaleSnapshotV1;
 }
 
 export interface DistributedMemoryObservationReceiptV1 {
@@ -255,6 +268,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     readonly clone: DistributedPredictionCloneV2; readonly revision: number } | null = null;
   #r2PredictionCache: { readonly snapshot: DistributedMediumSnapshotV1;
     readonly clone: DistributedPredictionCloneV2; readonly revision: number } | null = null;
+  #timescaleOwner: DistributedHierarchicalTimescaleOwnerV1 | null = null;
+  #timescaleEnabled = false;
 
   constructor() {
     this.#r1Medium = new DistributedPhysicalMedium3DV1({ name: 'R1', seedHex: '5231' });
@@ -262,6 +277,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     this.#r2 = new DistributedR2ContinuityStoreV1(undefined, undefined, undefined,
       footprint => this.#r1Medium.isFootprintActive(footprint));
     this.#r2a = new DistributedR2APhysicalPatternLearnerV2(id => this.#r2.isEventActive(id));
+    this.#timescaleOwner = DistributedHierarchicalTimescaleOwnerV1.fromExisting(
+      this.#r1Medium, this.#r2.medium, this.#r2a.medium, 0);
   }
 
   get ready(): boolean { return this.#seen.size >= 128; }
@@ -271,12 +288,20 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     return this.ready ? sha(this.#r1.snapshot().projection) : null;
   }
 
-  advanceTo(activeSeconds: number): void {
+  advanceTo(activeSeconds: number, measurements?: Readonly<Record<'r1' | 'r2' | 'r2a', readonly RuntimeMeasuredSalienceV2[]>>): void {
     assert(Number.isFinite(activeSeconds) && activeSeconds >= this.#activeSeconds,
       'active-observation-time-reversed');
     const elapsed = activeSeconds - this.#activeSeconds;
-    if (elapsed > 0) {
-      this.#r1Medium.recover(elapsed); this.#r2.recover(elapsed); this.#r2a.recover(elapsed);
+    const hasMeasurements = measurements !== undefined
+      && Object.values(measurements).some(value => value.length > 0);
+    if (!this.#timescaleEnabled && hasMeasurements)
+      throw new Error('timescale measurements require opt-in owner');
+    if (elapsed > 0 || hasMeasurements) {
+      if (this.#timescaleEnabled) {
+        this.#timescaleOwner!.advanceTo(activeSeconds, measurements ?? { r1: [], r2: [], r2a: [] });
+      } else {
+        this.#r1Medium.recover(elapsed); this.#r2.recover(elapsed); this.#r2a.recover(elapsed);
+      }
       this.#r1.invalidatePhysicalQualification();
       this.#r1Revision++; this.#r2Revision++;
       this.#invalidatePredictionCaches();
@@ -1016,6 +1041,33 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
         'distributed-R2A-checkpoint-restore-not-byte-equivalent');
     else assert(memory.#r2a.restoreIndexModeForAudit() === 'physical-rediscovery',
       'distributed-R2A-checkpoint-restore-mode-invalid');
+    return memory;
+  }
+
+  enableTimescaleV2(): void {
+    if (this.#timescaleEnabled) return;
+    this.#timescaleOwner = DistributedHierarchicalTimescaleOwnerV1.fromExisting(
+      this.#r1Medium, this.#r2.medium, this.#r2a.medium, this.#activeSeconds);
+    this.#timescaleEnabled = true;
+  }
+
+  snapshotV4(): KairosV5DistributedPhysicalMemoryV4 {
+    this.enableTimescaleV2();
+    return { ...this.snapshot(), version: 'KairosV5DistributedPhysicalMemoryV4',
+      timescales: this.#timescaleOwner!.snapshot() };
+  }
+
+  static restoreV4(snapshot: KairosV5DistributedPhysicalMemoryV4): DistributedHierarchicalPhysicalMemoryV1 {
+    assert(snapshot.version === 'KairosV5DistributedPhysicalMemoryV4',
+      'unsupported-distributed-timescale-checkpoint');
+    const legacy = { ...snapshot,
+      version: DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3 } as KairosV5DistributedPhysicalMemoryV3;
+    const memory = DistributedHierarchicalPhysicalMemoryV1.restore(legacy);
+    memory.#timescaleOwner = DistributedHierarchicalTimescaleOwnerV1.restoreInto(
+      memory.#r1Medium, memory.#r2.medium, memory.#r2a.medium, snapshot.timescales);
+    memory.#timescaleEnabled = true;
+    assert(memory.#timescaleOwner.logicalTime === memory.#activeSeconds,
+      'distributed-timescale-checkpoint-time-mismatch');
     return memory;
   }
 }

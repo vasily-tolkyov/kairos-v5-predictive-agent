@@ -76,7 +76,12 @@ execution scope.
 - A staged `DistributedHierarchicalTimescaleOwnerV1` now owns one V2 time
   state beside each R1/R2/R2A medium reference, advances all three on one
   logical clock, applies measured rates in place, and restores byte-stably.
-  It is a versioned owner seam, not yet the V1 hierarchy checkpoint.
+  It is a versioned owner seam, not yet the V1 hierarchy checkpoint.  The
+  additive `KairosV5DistributedPhysicalMemoryV4` checkpoint can opt in to
+  this owner and restore its time state onto the existing layer references;
+  the default V3 snapshot and recovery path remain unchanged.  Same-time
+  measurements are processed, and all layer measurements are validated before
+  any layer mutates (cross-layer validation is atomic).
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production
