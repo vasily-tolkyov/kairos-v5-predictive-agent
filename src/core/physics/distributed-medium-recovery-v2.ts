@@ -6,6 +6,7 @@ import {
 import { DistributedMediumTimescaleStateV2 } from './distributed-medium-timescale-state-v2.js';
 import {
   composeDistributedMediumProtocolSnapshotV2,
+  measuredStructureExistsV2,
   restoreDistributedMediumProtocolSnapshotV2,
   validateTimescaleMeasurementBatchV2,
   type DistributedMediumProtocolSnapshotV2,
@@ -35,6 +36,8 @@ export function recoverDistributedMediumProtocolSnapshotV2(
       throw new Error('timescale measurement outside recovery interval');
     if (measuredIds.has(measurement.structureId))
       throw new Error('duplicate structure measurement in recovery interval');
+    if (!measuredStructureExistsV2(restored.medium, measurement))
+      throw new Error(`timescale measurement structure is not present: ${measurement.structureId}`);
     measuredIds.add(measurement.structureId);
   }
   const timescale = DistributedMediumTimescaleStateV2.restore(restored.timescale, law);

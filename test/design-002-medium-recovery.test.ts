@@ -40,3 +40,12 @@ test('recovery output is byte-stable and rejects measurements outside the interv
   assert.throws(() => recoverDistributedMediumProtocolSnapshotV2(before, 4,
     [measurement, { ...measurement, observedAt: 3 }]), /duplicate structure/);
 });
+
+test('recovery rejects measurements for structures absent from the captured medium', () => {
+  const before = source();
+  assert.throws(() => recoverDistributedMediumProtocolSnapshotV2(before, 4, [{
+    version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
+    structureId: 'site:999999', observedAt: 0, surpriseMagnitude: .4,
+    goalRelevance: .2, supportMass: 1,
+  }]), /structure is not present/);
+});

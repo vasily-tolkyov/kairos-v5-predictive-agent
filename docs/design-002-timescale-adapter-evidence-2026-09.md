@@ -58,3 +58,15 @@ This remains deliberately outside the production hierarchy. The production
 owner still lacks a versioned V2 checkpoint, runtime-private measurement
 capability (including post-event goal residual), and an approved replay writer.
 Those are required before changing production recovery semantics.
+
+The same follow-up also closed two measurement-boundary defects in the
+snapshot transform: a structure-level measurement must name an actually
+present `site:`, `trace:`, or `bond:` structure, and duplicate measurements for
+one structure within a recovery interval are rejected locally. The generic
+ordered batch validator intentionally continues to allow repeated structures
+at different observation times; only the single-interval recovery transform
+has the stricter one-value-per-structure contract.
+
+Focused verification after this boundary fix: build exit 0 and 9/9
+timescale/recovery/adapter tests passed. No production hierarchy, model,
+Minecraft, or Formal V3 state was changed.
