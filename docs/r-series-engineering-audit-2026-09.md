@@ -34,9 +34,11 @@ research designs are implemented.
   A subsequent boundary hardening limits a stored measurement to the next
   recovery interval, requires equal medium/time clocks, and binds replay
   parameters to the canonical law; no production owner consumes these APIs.
-  A staged runtime measurement bridge now derives protocol measurements from
-  attention deviation, goal-residual change and existing physical support;
-  it is not yet connected to Runtime or production checkpoints.
+  A runtime measurement bridge now derives protocol measurements from
+  attention deviation, goal-residual change and existing physical support.
+  Executed-action outcomes can reach the explicit V4 owner through the
+  runtime/worker path; default V3 checkpoints and passive-event ingress remain
+  unchanged and deferred.
   The replay whitelist also checks that each referenced site and bond exists
   before any refresh call.
   A staged three-layer timescale owner now keeps R1/R2/R2A medium references
