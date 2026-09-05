@@ -55,4 +55,8 @@ test('the adapter carries measured recovery into a later empty interval', () => 
   const measuredSite = measured.mediumSnapshot().sites.find(site => site.siteId === 0)!;
   assert(measuredSite.potentialDepth > neutralSite.potentialDepth);
   assert.equal(measured.logicalTime, 12);
+  const measuredAt12 = measured.mediumSnapshot().sites.find(site => site.siteId === 0)!.potentialDepth;
+  measured.advanceTo(22);
+  const measuredDecay = measured.mediumSnapshot().sites.find(site => site.siteId === 0)!.potentialDepth / measuredAt12;
+  assert.ok(measuredDecay > 0 && measuredDecay < 1);
 });

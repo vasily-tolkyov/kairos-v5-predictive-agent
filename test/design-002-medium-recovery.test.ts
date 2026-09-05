@@ -50,7 +50,7 @@ test('recovery rejects measurements for structures absent from the captured medi
   }]), /structure is not present/);
 });
 
-test('a measured structure remains effective across a later unmeasured interval', () => {
+test('a measured structure is reused only for the immediately following interval', () => {
   const before = source();
   const first = recoverDistributedMediumProtocolSnapshotV2(before, 0, [{
     version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
@@ -60,4 +60,6 @@ test('a measured structure remains effective across a later unmeasured interval'
   const neutral = recoverDistributedMediumProtocolSnapshotV2(before, 10);
   assert.ok(continued.medium.sites[0]!.potentialDepth > neutral.medium.sites[0]!.potentialDepth);
   assert.ok(continued.timescale.measuredStructures.some(item => item.structureId === 'site:0'));
+  const aged = recoverDistributedMediumProtocolSnapshotV2(continued, 10);
+  assert.ok(aged.medium.sites[0]!.potentialDepth < continued.medium.sites[0]!.potentialDepth);
 });

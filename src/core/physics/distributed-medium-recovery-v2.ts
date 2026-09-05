@@ -52,7 +52,10 @@ export function recoverDistributedMediumProtocolSnapshotV2(
   const decay = (structureId: string, supportMass: number): number => {
     const measurement = byStructure.get(structureId) ?? (() => {
       const stored = timescale.measuredObservation(structureId);
-      return stored === null ? undefined : {
+      // A measurement is valid for the recovery interval immediately
+      // following its observation.  Once a later interval begins, a stale
+      // measurement is not silently treated as ongoing current salience.
+      return stored === null || stored.observedAt < start ? undefined : {
         version: 'RuntimeMeasuredSalienceV2' as const,
         source: 'trusted-runtime-observation' as const,
         structureId: stored.structureId, observedAt: stored.observedAt,

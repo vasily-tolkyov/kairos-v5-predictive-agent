@@ -150,6 +150,8 @@ export class DistributedMediumTimescaleStateV2 {
       requireStructureId(item.structureId);
       if (item.structureId <= previousMeasured)
         throw new Error('timescale measured structure ids must be sorted and unique');
+      if (item.observedAt > snapshot.logicalTime)
+        throw new Error('measured structure observation is ahead of timescale state');
       state.rememberMeasuredObservation(item);
       previousMeasured = item.structureId;
     }

@@ -55,5 +55,5 @@ test('law identity and time ordering are strict snapshot boundaries', () => {
   assert.throws(() => restoreDistributedMediumProtocolSnapshotV2({ ...snapshot, lawIdentitySha256: 'bad' }), /law identity/);
   const ahead = new DistributedMediumTimescaleStateV2();
   ahead.advanceTo(medium.logicalTime + 1);
-  assert.throws(() => composeDistributedMediumProtocolSnapshotV2(medium, ahead.snapshot()), /ahead/);
+  assert.throws(() => composeDistributedMediumProtocolSnapshotV2(medium, ahead.snapshot()), /logical time must match/);
 });

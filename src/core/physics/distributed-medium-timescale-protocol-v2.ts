@@ -101,8 +101,8 @@ export function composeDistributedMediumProtocolSnapshotV2(
   const clonedMedium = structuredClone(medium);
   const clonedTimescale = structuredClone(timescale);
   const restored = DistributedMediumTimescaleStateV2.restore(clonedTimescale, law);
-  if (restored.logicalTime > clonedMedium.logicalTime)
-    throw new Error('timescale state cannot be ahead of medium logical time');
+  if (restored.logicalTime !== clonedMedium.logicalTime)
+    throw new Error('timescale and medium logical time must match');
   return {
     version: 'DistributedMediumProtocolSnapshotV2',
     protocol: 'distributed-medium-timescales-v2',
@@ -125,7 +125,8 @@ export function restoreDistributedMediumProtocolSnapshotV2(
   const timescale = structuredClone(snapshot.timescale);
   if (medium.version !== 'DistributedMediumSnapshotV1') throw new Error('embedded medium snapshot is not V1');
   const restored = DistributedMediumTimescaleStateV2.restore(timescale, law);
-  if (restored.logicalTime > medium.logicalTime) throw new Error('timescale state ahead of medium snapshot');
+  if (restored.logicalTime !== medium.logicalTime)
+    throw new Error('timescale and medium logical time must match');
   return { medium, timescale };
 }
 

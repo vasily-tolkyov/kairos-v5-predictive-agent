@@ -95,3 +95,14 @@ known-structure set, preserving the existing base-rate path's cost profile.
 Focused verification after this follow-up: build exit 0 and 21/21 state,
 recovery, adapter and medium tests passed. Production R1/R2/R2A ownership,
 checkpoints and runtime measurement authority remain unchanged and deferred.
+
+## Follow-up: boundary hardening
+
+The isolated tranche now treats a measured observation as valid only for the
+immediately following recovery interval; stale observations are retained for
+audit but do not impose an indefinitely slow rate. V2 protocol composition and
+restore require medium and timescale logical clocks to be equal, and measured
+observations cannot lie ahead of the timescale clock. Replay execution uses the
+canonical law constants internally rather than caller-provided refresh or
+homeostatic factors. Focused state/recovery/protocol/adapter/replay tests pass
+26/26 after these boundary checks. These changes remain pre-production.

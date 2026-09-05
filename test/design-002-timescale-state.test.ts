@@ -21,6 +21,7 @@ test('V2 timescale state is independent, ordered and byte-stable on restore', ()
 
 test('V2 measured observations persist and reject per-structure time reversal', () => {
   const state = new DistributedMediumTimescaleStateV2();
+  state.advanceTo(4);
   state.rememberMeasuredObservation({ structureId: 'site:0', observedAt: 4,
     surpriseMagnitude: .3, goalRelevance: .2, supportMass: .5 });
   const restored = DistributedMediumTimescaleStateV2.restore(state.snapshot());

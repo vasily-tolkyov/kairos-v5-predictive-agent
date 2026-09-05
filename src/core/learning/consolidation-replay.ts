@@ -1,5 +1,6 @@
 import type { DistributedBondReferenceV1, DistributedMediumSnapshotV1 } from '../physics/distributed-physical-contracts.js';
 import { SplitMix64 } from '../random.js';
+import { memoryTimescaleLawConfigV1 } from './memory-timescales.js';
 
 export interface ReplayIdleSignalsV1 {
   readonly goalActive: boolean;
@@ -86,14 +87,13 @@ export function buildConsolidationReplayPlanV1(snapshot: DistributedMediumSnapsh
 
 /** Execute only the replay whitelist; no trusted-real-event writer is called. */
 export function executeConsolidationReplayV1(plan: ConsolidationReplayPlanV1,
-  writer: ReplayWritePortV1, potentialRefresh = 0.01,
-  bondRefresh = 0.01, homeostaticFactor = 0.995): ConsolidationReplayReceiptV1 {
+  writer: ReplayWritePortV1): ConsolidationReplayReceiptV1 {
   if (plan.version !== 'ConsolidationReplayPlanV1' || plan.provenance !== 'replay')
     throw new Error('invalid consolidation replay plan');
-  finiteUnit(potentialRefresh, 'potentialRefresh');
-  finiteUnit(bondRefresh, 'bondRefresh');
-  if (!(homeostaticFactor > 0 && homeostaticFactor < 1))
-    throw new RangeError('homeostatic factor must be in (0,1)');
+  const law = memoryTimescaleLawConfigV1();
+  const potentialRefresh = 0.01;
+  const bondRefresh = 0.01;
+  const homeostaticFactor = law.homeostaticDownscaleFactor;
   for (const entry of plan.selected) {
     for (const siteId of entry.siteIds) writer.refreshPotentialDepth(siteId, potentialRefresh);
     for (const reference of entry.bondReferences) writer.strengthenExistingBond(reference, bondRefresh);
