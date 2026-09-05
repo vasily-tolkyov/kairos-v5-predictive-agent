@@ -30,7 +30,11 @@ Implemented in `src/core/learning/memory-timescales.ts`:
 - a snapshot-only V2 recovery transform that applies the frozen law to
   measured per-structure inputs and preserves all evidence fields; duplicate
   structure measurements in one interval are rejected rather than silently
-  overwritten.
+  overwritten. Measured observations are retained for audit and are applied
+  only to the immediately following recovery interval; stale observations do
+  not create indefinite salience. Protocol compose/restore requires equal
+  medium and timescale clocks, and replay execution binds refresh values to
+  the canonical law constants.
 
 The state and replay planner are intentionally not wired into production medium
 writes yet. They do not accept a caller-provided final salience or recovery
