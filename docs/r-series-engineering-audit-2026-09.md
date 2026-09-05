@@ -85,9 +85,11 @@ decision and were not smuggled into this implementation.
 
 The control field's recurrent and inhibitory coefficients are fixed protocol
 laws. Learned meta-representation, salience-conditioned recovery and
-control-learning arbitration remain separate gated designs. No caller may
-inject an internal meta-channel or use a metadata grade to raise a world
-evidence grade.
+control-learning arbitration remain separate gated designs. The current
+authority mapper and experiment oscillator are law-level helpers only:
+controller wiring, meta-R2A qualification and intervention dispatch remain
+gated. No caller may inject an internal meta-channel or use a metadata grade
+to raise a world evidence grade.
 
 The temporal probe compares physical terminal status and reached assembly
 identity. The current PredictionClone has no public semantic decoder, so the
@@ -106,8 +108,9 @@ implemented; a structurally valid forged V6 payload remains a known boundary.
 
 DESIGN-002 (the sole protocol revision) is partially wired for its V4 opt-in
 replay path; DESIGN-004, DESIGN-005, DESIGN-003b,
-PLAN-003 and PLAN-004 are not implemented here. DESIGN-001 authority mapping,
-intervention oscillator and production meta-R2A wiring remain deferred. G3/G4 and the
+PLAN-003 and PLAN-004 are not implemented here. DESIGN-001 authority mapping
+and intervention oscillator laws now exist as isolated helpers, while
+production meta-R2A wiring and intervention dispatch remain deferred. G3/G4 and the
 note=2 intervention design remain unresolved project-level gates. Full suite,
 capacity sweep and temporal experiment execution are intentionally deferred to
 the next review round as requested.

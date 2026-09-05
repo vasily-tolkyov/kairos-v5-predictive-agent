@@ -9,7 +9,7 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
 - PLAN-002 read-only revision-scoped cache and exact seed-batch surfaces.
 - DESIGN-006 temporal-fidelity probe and DESIGN-003a capacity probe.
 - DESIGN-001 L1 runtime-owned interoceptive provenance and isolated L2
-  meta-evidence episode index.
+  meta-evidence episode index, plus isolated authority and oscillator laws.
 - DESIGN-002 isolated tranche: continuous measured salience, autonomous
   arousal, bounded encoding gain, homeostatic scaling and strict V2 time-state
   restore primitives, an isolated idle replay whitelist planner, a strict V2
@@ -38,6 +38,9 @@ filtering), exact worker ordering, and read-only temporal/capacity probes.
   was written by the probes; the runtime snapshot path persists the index only
   after an enriched trusted event supplies a band.
 - The L2 index is not connected to world R2A grading or controller authority.
+- The authority mapper and oscillator are not connected to controller dispatch;
+  their focused tests only establish deterministic law behavior and bounded
+  zero-during-validation mapping.
 - The DESIGN-002 primitives and V2 time-state are not connected to the V1
   medium recovery path; the isolated replay planner has no production writer,
   no V1 snapshot was modified and no replay write occurred.
