@@ -65,7 +65,24 @@ export function cueFor(action: Action, observation: Observation): ActionCue {
   return { kind: action.kind, parameters: { ...action.parameters }, targetRole: target?.type ?? null };
 }
 export function validateEvent(event: RealEvent): void {
-  assert(event.version === 'RealEventV5' && event.complete && event.frames.length >= 2, 'incomplete-real-event');
+  assert((event.version === 'RealEventV5' || event.version === 'RealEventV6')
+    && event.complete && event.frames.length >= 2, 'incomplete-real-event');
+  if (event.verifiedInternalChannels !== undefined) {
+    assert(event.version === 'RealEventV6', 'verified-internal-channels-require-v6');
+    const seen = new Set<string>();
+    const allowed = new Set(['branch-entropy', 'prediction-support', 'applicable-relations',
+      'surprise-rate', 'goal-residual', 'action-budget-remaining']);
+    for (const channel of event.verifiedInternalChannels) {
+      assert(channel.version === 'VerifiedInternalChannelV1'
+        && allowed.has(channel.name)
+        && channel.provenance === 'verified-internal'
+        && channel.availableBeforeOutcome === true
+        && Number.isFinite(channel.value) && channel.value >= 0 && channel.value <= 1,
+      'invalid-verified-internal-channel');
+      assert(!seen.has(channel.name), 'duplicate-verified-internal-channel');
+      seen.add(channel.name);
+    }
+  }
   assert(event.provenance === 'executed-real-body' || event.provenance === 'observed-passive', 'non-real-event');
   if (event.provenance === 'executed-real-body') {
     assert(event.bodyResult?.executed && event.bodyResult.status === 'completed', 'unexecuted-event');

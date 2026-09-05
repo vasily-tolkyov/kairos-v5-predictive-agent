@@ -179,7 +179,7 @@ function bodyResult(value: unknown): BodyResult | null {
 
 function realEvent(value: unknown): RealEvent | null {
   const candidate = unwrapRecordedValue(value);
-  if (!isObject(candidate) || candidate.version !== 'RealEventV5') return null;
+  if (!isObject(candidate) || (candidate.version !== 'RealEventV5' && candidate.version !== 'RealEventV6')) return null;
   try { validateEvent(candidate as unknown as RealEvent); return candidate as unknown as RealEvent; }
   catch { return null; }
 }

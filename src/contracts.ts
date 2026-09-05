@@ -16,6 +16,14 @@ export interface Observation {
   readonly targetId: string | null;
   readonly contextId: string;
 }
+export interface VerifiedInternalChannelV1 {
+  readonly version: 'VerifiedInternalChannelV1';
+  readonly name: 'branch-entropy' | 'prediction-support' | 'applicable-relations'
+    | 'surprise-rate' | 'goal-residual' | 'action-budget-remaining';
+  readonly value: number;
+  readonly provenance: 'verified-internal';
+  readonly availableBeforeOutcome: true;
+}
 export type PrimitiveKind = 'observe' | 'wait' | 'look' | 'move' | 'jump' | 'interact' | 'attack' | 'break' | 'place' | 'select-hotbar';
 export interface Action {
   readonly kind: PrimitiveKind;
@@ -60,7 +68,7 @@ export interface RealEventHierarchyContinuityV1 {
   readonly dependencies: readonly RealEventContinuityEvidenceV1[];
 }
 export interface RealEvent {
-  readonly version: 'RealEventV5';
+  readonly version: 'RealEventV5' | 'RealEventV6';
   readonly id: string;
   readonly cue: ActionCue;
   readonly frames: readonly Observation[];
@@ -69,6 +77,8 @@ export interface RealEvent {
   readonly provenance: 'executed-real-body' | 'observed-passive';
   readonly complete: boolean;
   readonly hierarchyContinuity?: RealEventHierarchyContinuityV1;
+  /** Runtime-derived internal facts; callers cannot supply these to validation. */
+  readonly verifiedInternalChannels?: readonly VerifiedInternalChannelV1[];
 }
 export interface PublicChange {
   readonly subject: string;

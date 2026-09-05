@@ -13,6 +13,13 @@ research designs are implemented.
 - DESIGN-006 and DESIGN-003a are evaluation-only runners. They create fresh
   memory instances from caller fixtures and do not write project evidence or
   production snapshots unless an explicit output path is supplied.
+- DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
+  Channels are frozen before an action, carried with the trusted event as
+  `verified-internal` metadata, and deliberately kept out of public
+  `Observation.self.properties`. The L2 meta-relation learner, authority
+  mapping and external oscillator remain deferred. These channels are currently
+  provenance transport only: `eventRows` and the afferent projection do not
+  consume them, so they do not yet alter R1/R2/R2A evidence.
 
 ## Theory boundary
 
@@ -36,8 +43,9 @@ provided measurements; it never fabricates a score from event counts.
 
 ## Deferred work
 
-DESIGN-001, DESIGN-002 (the sole protocol revision), DESIGN-004, DESIGN-005,
-DESIGN-003b, PLAN-003 and PLAN-004 are not implemented here. G3/G4 and the
+DESIGN-002 (the sole protocol revision), DESIGN-004, DESIGN-005, DESIGN-003b,
+PLAN-003 and PLAN-004 are not implemented here. DESIGN-001 L2 remains
+deferred. G3/G4 and the
 note=2 intervention design remain unresolved project-level gates. Full suite,
 capacity sweep and temporal experiment execution are intentionally deferred to
 the next review round as requested.

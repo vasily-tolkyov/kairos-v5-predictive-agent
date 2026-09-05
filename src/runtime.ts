@@ -1,6 +1,6 @@
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
 import { readFile } from 'node:fs/promises';
-import type { Action, ActionCue, Observation, Prediction, RealEvent } from './contracts.js';
+import type { Action, ActionCue, Observation, Prediction, RealEvent, VerifiedInternalChannelV1 } from './contracts.js';
 import type { Configuration } from './services.js';
 import { MinecraftBody } from './body.js';
 import { Compute } from './compute.js';
@@ -18,6 +18,7 @@ import type { ActionObservationScopeV1, ActionOfferV1, BranchPredictionV1, Condi
 import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2, type PhysicalControlResultV2,
   type PhysicalControlSnapshotV2 } from './control/controller.js';
 import { ControlHabitWeightsV1, type ControlHabitCheckpointV1, type TrustedRealActionOutcomeV1 } from './control/habit.js';
+import { attachInteroceptionToEventV1, computeInteroceptiveChannelsV1 } from './control/interoception.js';
 import type { DistributedR2AInterventionPairV2 }
   from './core/learning/distributed-r2a-physical-contracts.js';
 import type { DistributedNoveltyRecordV1 }
@@ -400,6 +401,9 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       refusal: offer.action.targetId && !current.objects.some(value => value.id === offer.action.targetId)
         ? 'target-unavailable' : 'offer-stale' };
     this.attention.bindActionTarget(rebound.action.targetId ?? 'self');
+    // Freeze internal channels before the body action can produce its outcome.
+    const frozenInternalChannels = computeInteroceptiveChannelsV1({
+      control: this.controller.snapshot, actions: this.#actions, actionBudget: this.config.actionBudget });
     const execution = await this.body.execute(rebound.action, observationScope);
     if (execution.result.executed) this.#actions++;
     let eventId: string | null = null;
@@ -414,7 +418,7 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       const event: RealEvent = { ...scopedEvent,
         hierarchyContinuity: realEventHierarchyContinuityV1(scopedEvent, this.body.session.id) };
       await this.#flushPassive(first, true);
-      const written = await this.#commitEvent(event); eventId = event.id;
+      const written = await this.#commitEvent(event, frozenInternalChannels); eventId = event.id;
       const changes = eventRows(event).changes.flat().map(change => ({ ...change,
         observationSequence: event.frames[change.observationIndex]!.sequence,
         activeSeconds: event.frames[change.observationIndex]!.activeSeconds }));
@@ -472,12 +476,14 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       this.#recent = this.#recent.slice(-8);
     }
   }
-  async #commitEvent(event: RealEvent): Promise<MemoryObservationReceipt> {
+  async #commitEvent(event: RealEvent,
+    internalChannels: readonly VerifiedInternalChannelV1[] = []): Promise<MemoryObservationReceipt> {
     const start = event.frames[0]!.sequence, end = event.frames.at(-1)!.sequence;
     assert(!this.#learnedChanges.some(range => range.start < end && start < range.end), 'real-event-change-already-owned');
     const eventTime = event.frames.at(-1)!.activeSeconds; this.#advanceHabitTo(eventTime);
-    this.#beforeObserve?.(this.#newEvents, event); this.record('real-event', event);
-    const written = await this.compute.call<MemoryObservationReceipt>('observe', event);
+    const enrichedEvent = attachInteroceptionToEventV1(event, internalChannels);
+    this.#beforeObserve?.(this.#newEvents, enrichedEvent); this.record('real-event', enrichedEvent);
+    const written = await this.compute.call<MemoryObservationReceipt>('observe', enrichedEvent);
     // The shutdown test intentionally injects the retired audit-only memory
     // backend.  Its historical receipt predates novelty, so keep that test
     // double readable without restoring the retired distributed rejection
@@ -494,7 +500,7 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     }
     this.#learnedChanges.push({ start, end }); this.#events++; this.#newEvents++; this.#writes = written.writes;
     this.#buffered = written.buffered; this.#map = written.mapSha256;
-    this.record('real-event-committed', { eventId: event.id, provenance: event.provenance,
+    this.record('real-event-committed', { eventId: enrichedEvent.id, provenance: enrichedEvent.provenance,
       observationWindow: [start, end], eventCount: this.#events, novelty, learning: written });
     if (this.#newEvents % 32 === 0) {
       // An executed action's progress signal is computed by the controller after executeOffer returns.
