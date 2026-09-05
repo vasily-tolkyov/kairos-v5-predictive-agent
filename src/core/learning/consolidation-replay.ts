@@ -24,6 +24,8 @@ export interface ConsolidationReplayPlanV1 {
 
 /** The writer surface is deliberately unable to change support or evidence. */
 export interface ReplayWritePortV1 {
+  hasSite(siteId: number): boolean;
+  hasBond(reference: DistributedBondReferenceV1): boolean;
   refreshPotentialDepth(siteId: number, amount: number): void;
   strengthenExistingBond(reference: DistributedBondReferenceV1, amount: number): void;
   recordRehearsal(traceId: string): void;
@@ -95,8 +97,14 @@ export function executeConsolidationReplayV1(plan: ConsolidationReplayPlanV1,
   const bondRefresh = 0.01;
   const homeostaticFactor = law.homeostaticDownscaleFactor;
   for (const entry of plan.selected) {
-    for (const siteId of entry.siteIds) writer.refreshPotentialDepth(siteId, potentialRefresh);
-    for (const reference of entry.bondReferences) writer.strengthenExistingBond(reference, bondRefresh);
+    for (const siteId of entry.siteIds) {
+      if (!writer.hasSite(siteId)) throw new Error(`replay site is not present: ${siteId}`);
+      writer.refreshPotentialDepth(siteId, potentialRefresh);
+    }
+    for (const reference of entry.bondReferences) {
+      if (!writer.hasBond(reference)) throw new Error('replay bond is not present');
+      writer.strengthenExistingBond(reference, bondRefresh);
+    }
     writer.recordRehearsal(entry.traceId);
   }
   writer.homeostaticDownscale(homeostaticFactor);

@@ -32,6 +32,8 @@ test('replay writer surface can only refresh existing physical structures', () =
   const plan = buildConsolidationReplayPlanV1(sourceSnapshot(), 'ab', 1);
   const calls: string[] = [];
   const writer: ReplayWritePortV1 = {
+    hasSite: () => true,
+    hasBond: () => true,
     refreshPotentialDepth: (siteId, amount) => calls.push(`site:${siteId}:${amount}`),
     strengthenExistingBond: (reference, amount) => calls.push(`bond:${reference.fromSiteId}>${reference.toSiteId}:${amount}`),
     recordRehearsal: traceId => calls.push(`rehearsal:${traceId}`),
@@ -42,4 +44,17 @@ test('replay writer surface can only refresh existing physical structures', () =
   assert.ok(calls.some(call => call.startsWith('site:')));
   assert.ok(calls.some(call => call.startsWith('rehearsal:')));
   assert.equal(calls.some(call => call.includes('supportMass') || call.includes('evidence')), false);
+});
+
+test('replay cannot strengthen a structure absent from the writer substrate', () => {
+  const plan = buildConsolidationReplayPlanV1(sourceSnapshot(), 'ab', 1);
+  const writer: ReplayWritePortV1 = {
+    hasSite: () => false,
+    hasBond: () => false,
+    refreshPotentialDepth: () => assert.fail('must not refresh an absent site'),
+    strengthenExistingBond: () => assert.fail('must not strengthen an absent bond'),
+    recordRehearsal: () => assert.fail('must not rehearse an absent trace'),
+    homeostaticDownscale: () => assert.fail('must not downscale after rejection'),
+  };
+  assert.throws(() => executeConsolidationReplayV1(plan, writer), /site is not present/);
 });

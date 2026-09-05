@@ -71,6 +71,8 @@ execution scope.
   mutation and full E1–E7 validation are **deferred**.
 - Runtime measurement bridge: **implemented in isolation**; trusted runtime
   capability integration and production checkpoint ownership are **deferred**.
+- Replay's narrow writer now requires explicit site/bond existence checks, so
+  the whitelist cannot silently create structures absent from the substrate.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production
