@@ -1,7 +1,8 @@
 import { assert, sha } from '../../util.js';
 import { SplitMix64 } from '../random.js';
 import type { DistributedAttractorReadoutV1, DistributedEpisodeV1,
-  DistributedFieldRunV1, DistributedMediumSnapshotV1, DistributedProbePulseInputV1 }
+  DistributedFieldRunV1, DistributedMediumSnapshotV1, DistributedProbePulseInputV1,
+  DistributedTraceFootprintV1 }
   from '../physics/distributed-physical-contracts.js';
 import { DistributedPhysicalMedium3DV1, normalizeDistributedProbePulseV1 }
   from '../physics/distributed-physical-medium.js';
@@ -637,6 +638,7 @@ function eventChannels(signals: readonly string[]): Map<string, string> {
 export class DistributedR2APhysicalPatternLearnerV2 {
   readonly medium: DistributedPhysicalMedium3DV1;
   readonly #r2Active: (eventId: string) => boolean;
+  readonly #encodingGainProvider: () => number;
   readonly #seed: bigint;
   readonly #projection: SparseInterlayerProjectionV1;
   #afferentAllocationSequence = 0;
@@ -675,9 +677,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
 
   constructor(r2Active: (eventId: string) => boolean,
     medium?: DistributedPhysicalMedium3DV1, seed = DEFAULT_SEED,
-    state?: DistributedR2APhysicalStateV3) {
+    state?: DistributedR2APhysicalStateV3, encodingGainProvider: () => number = () => 1) {
     this.#r2Active = r2Active;
     this.#seed = seed;
+    this.#encodingGainProvider = encodingGainProvider;
     this.medium = medium ?? new DistributedPhysicalMedium3DV1({ name: 'R2A', seedHex: '523241' });
     if (state) {
       assert(state.version === 'DistributedR2APhysicalStateV3' && parseSeed(state.seedHex) === seed,
@@ -746,13 +749,24 @@ export class DistributedR2APhysicalPatternLearnerV2 {
   }
 
   static restore(state: DistributedR2APhysicalStateV3,
-    r2Active: (eventId: string) => boolean): DistributedR2APhysicalPatternLearnerV2 {
+    r2Active: (eventId: string) => boolean,
+    encodingGainProvider: () => number = () => 1): DistributedR2APhysicalPatternLearnerV2 {
     return new DistributedR2APhysicalPatternLearnerV2(r2Active,
-      DistributedPhysicalMedium3DV1.fromSnapshot(state.medium), parseSeed(state.seedHex), state);
+      DistributedPhysicalMedium3DV1.fromSnapshot(state.medium), parseSeed(state.seedHex), state,
+      encodingGainProvider);
   }
 
   restoreIndexModeForAudit(): 'fresh' | 'exact-cache' | 'physical-rediscovery' {
     return this.#restoreIndexMode;
+  }
+
+  #applyEpisodeWithEncodingGain(episode: DistributedEpisodeV1): DistributedTraceFootprintV1 {
+    const encodingGain = this.#encodingGainProvider();
+    if (!Number.isFinite(encodingGain) || encodingGain < 0.75 || encodingGain > 1.5)
+      throw new RangeError('distributed-R2A-encoding-gain-out-of-law-bounds');
+    return this.medium.applyEpisodeWithEncodingGain === undefined
+      ? this.medium.applyEpisode(episode, 1)
+      : this.medium.applyEpisodeWithEncodingGain(episode, 1, encodingGain);
   }
 
   #physicalIndexStateSha256(patterns: readonly DistributedR2APhysicalPatternV2[],
@@ -1900,13 +1914,13 @@ export class DistributedR2APhysicalPatternLearnerV2 {
           if (knownTraceIds.has(traceId)) continue;
           const populations = [factorDrives, ...prefixDrives,
             actionDrives, terminalDrives].map(value => normalizeDistributedWeightedPulseV1(value));
-          this.medium.applyEpisode({ version: 'DistributedEpisodeV1', traceId,
+          this.#applyEpisodeWithEncodingGain({ version: 'DistributedEpisodeV1', traceId,
             provenance: 'trusted-real-event',
             pulses: populations.map((siteIds, index) => ({ version: 'SparseFieldPulseV1',
               pulseId: `${traceId}:${index}`, offset: index * .04,
               drives: siteIds })),
             temporalEligibility: [{ fromPulseIndex: 0,
-              toPulseIndex: populations.length - 1, strength: 1 }] }, 1);
+              toPulseIndex: populations.length - 1, strength: 1 }] });
           knownTraceIds.add(traceId); changed = true;
         }
       }
@@ -1926,7 +1940,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     assert(!this.#events.has(event.eventId), 'R2A-event-already-observed');
     const traceId = `r2a-${event.eventId}`;
     const physical = this.#physicalEpisode(event, traceId);
-    const footprint = this.medium.applyEpisode(physical.episode, 1);
+    const footprint = this.#applyEpisodeWithEncodingGain(physical.episode);
     this.#invalidatePhysicalQueryCaches();
     this.#events.set(event.eventId, structuredClone(event));
     this.#eventInputs.set(event.eventId, { ...physical.input, traceId });

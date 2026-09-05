@@ -275,12 +275,16 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
 
   constructor() {
     this.#r1Medium = new DistributedPhysicalMedium3DV1({ name: 'R1', seedHex: '5231' });
-    this.#r1 = new DistributedR1ExperienceStoreV1(this.#r1Medium);
     this.#r2 = new DistributedR2ContinuityStoreV1(undefined, undefined, undefined,
-      footprint => this.#r1Medium.isFootprintActive(footprint));
-    this.#r2a = new DistributedR2APhysicalPatternLearnerV2(id => this.#r2.isEventActive(id));
+      footprint => this.#r1Medium.isFootprintActive(footprint),
+      () => this.#timescaleEnabled ? this.#timescaleOwner!.encodingGain('r2') : 1);
+    this.#r2a = new DistributedR2APhysicalPatternLearnerV2(id => this.#r2.isEventActive(id),
+      undefined, undefined, undefined,
+      () => this.#timescaleEnabled ? this.#timescaleOwner!.encodingGain('r2a') : 1);
     this.#timescaleOwner = DistributedHierarchicalTimescaleOwnerV1.fromExisting(
       this.#r1Medium, this.#r2.medium, this.#r2a.medium, 0);
+    this.#r1 = new DistributedR1ExperienceStoreV1(this.#r1Medium,
+      undefined, undefined, () => this.#timescaleEnabled ? this.#timescaleOwner!.encodingGain('r1') : 1);
   }
 
   get ready(): boolean { return this.#seen.size >= 128; }
@@ -1058,11 +1062,14 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     'legacy-or-incompatible-distributed-checkpoint-is-audit-only');
     const memory = new DistributedHierarchicalPhysicalMemoryV1();
     memory.#r1Medium = DistributedPhysicalMedium3DV1.fromSnapshot(snapshot.r1Medium);
-    memory.#r1 = DistributedR1ExperienceStoreV1.restore(memory.#r1Medium, snapshot.r1);
+    memory.#r1 = DistributedR1ExperienceStoreV1.restore(memory.#r1Medium, snapshot.r1,
+      () => memory.#timescaleEnabled ? memory.#timescaleOwner!.encodingGain('r1') : 1);
     memory.#r2 = DistributedR2ContinuityStoreV1.restore(snapshot.r2Medium, snapshot.r2,
-      footprint => memory.#r1Medium.isFootprintActive(footprint));
+      footprint => memory.#r1Medium.isFootprintActive(footprint),
+      () => memory.#timescaleEnabled ? memory.#timescaleOwner!.encodingGain('r2') : 1);
     memory.#r2a = DistributedR2APhysicalPatternLearnerV2.restore(snapshot.r2a,
-      id => memory.#r2.isEventActive(id));
+      id => memory.#r2.isEventActive(id),
+      () => memory.#timescaleEnabled ? memory.#timescaleOwner!.encodingGain('r2a') : 1);
     for (const value of snapshot.annotations) memory.#annotations.set(value.eventId, structuredClone(value));
     snapshot.processedR2EventIds.forEach(id => memory.#processedR2.add(id));
     snapshot.seenEventIds.forEach(id => memory.#seen.add(id));

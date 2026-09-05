@@ -139,6 +139,13 @@ export interface DistributedMediumWritePortV1 {
     random: () => number): readonly number[];
   bindSites(bindingId: string, siteIds: readonly number[]): void;
   applyEpisode(episode: R1DistributedEpisodeV1, strength: number): R1DistributedTraceFootprintV1;
+  /**
+   * Optional V4 write path.  The caller supplies only the law-derived
+   * encoding gain; evidence support remains the real episode strength.
+   * Legacy test doubles and the default V3 path deliberately omit it.
+   */
+  applyEpisodeWithEncodingGain?(episode: R1DistributedEpisodeV1, strength: number,
+    encodingGain: number): R1DistributedTraceFootprintV1;
   isFootprintActive(footprint: R1DistributedTraceFootprintV1): boolean;
   snapshot(): unknown;
 }

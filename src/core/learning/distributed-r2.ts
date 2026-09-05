@@ -112,13 +112,16 @@ export class DistributedR2ContinuityStoreV1 {
   #pending: DistributedR2AtomV1[] = [];
   readonly #events: DistributedR2ContinuousEventV1[] = [];
   readonly #r1Active: (footprint: DistributedTraceFootprintV1) => boolean;
+  readonly #encodingGainProvider: () => number;
 
   constructor(medium?: DistributedPhysicalMedium3DV1, seed = DEFAULT_R2_PROJECTION_SEED,
     state?: DistributedR2ContinuityStateV2,
     r1Active: (footprint: DistributedTraceFootprintV1) => boolean = footprint =>
-      footprint.siteIds.length > 0 && footprint.supportMass > 0) {
+      footprint.siteIds.length > 0 && footprint.supportMass > 0,
+    encodingGainProvider: () => number = () => 1) {
     this.medium = medium ?? new DistributedPhysicalMedium3DV1({ name: 'R2', seedHex: '5232' });
     this.#r1Active = r1Active;
+    this.#encodingGainProvider = encodingGainProvider;
     if (state) {
       assert(state.version === 'DistributedR2ContinuityStateV2'
         && parseSeed(state.projection.seedHex) === seed,
@@ -134,10 +137,12 @@ export class DistributedR2ContinuityStoreV1 {
   }
 
   static restore(mediumSnapshot: DistributedMediumSnapshotV1, state: DistributedR2ContinuityStateV2,
-    r1Active?: (footprint: DistributedTraceFootprintV1) => boolean):
+    r1Active?: (footprint: DistributedTraceFootprintV1) => boolean,
+    encodingGainProvider: () => number = () => 1):
   DistributedR2ContinuityStoreV1 {
     const medium = DistributedPhysicalMedium3DV1.fromSnapshot(mediumSnapshot);
-    return new DistributedR2ContinuityStoreV1(medium, parseSeed(state.projection.seedHex), state, r1Active);
+    return new DistributedR2ContinuityStoreV1(medium, parseSeed(state.projection.seedHex), state,
+      r1Active, encodingGainProvider);
   }
 
   get pendingAtomCount(): number { return this.#pending.length; }
@@ -234,8 +239,14 @@ export class DistributedR2ContinuityStoreV1 {
     if (learningEligible) assert(atoms.every(atom => this.#r1Active(atom.r1Footprint)),
     'R2-continuous-event-cannot-launder-inactive-R1-physical-support');
     const projected = learningEligible ? this.#physicalEpisode(atoms, `r2-${eventId}`) : null;
+    const encodingGain = this.#encodingGainProvider();
+    if (!Number.isFinite(encodingGain) || encodingGain < 0.75 || encodingGain > 1.5)
+      throw new RangeError('distributed-R2-encoding-gain-out-of-law-bounds');
     const footprint: DistributedTraceFootprintV1 | null = projected
-      ? this.medium.applyEpisode(projected.episode, 1) : null;
+      ? this.medium.applyEpisodeWithEncodingGain === undefined
+        ? this.medium.applyEpisode(projected.episode, 1)
+        : this.medium.applyEpisodeWithEncodingGain(projected.episode, 1, encodingGain)
+      : null;
     const event: DistributedR2ContinuousEventV1 = { version: 'DistributedR2ContinuousEventV1', eventId,
       atomIds: atoms.map(value => value.atomId), sourceEventIds: atoms.map(value => value.sourceEventId),
       sourceR1Footprints: atoms.map(value => structuredClone(value.r1Footprint)),

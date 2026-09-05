@@ -692,6 +692,23 @@ export class DistributedPhysicalMedium3DV1 {
   }
 
   applyEpisode(episode: DistributedEpisodeV1 | R1CompatibleEpisodeV1, strength = 1): DistributedTraceFootprintV1 {
+    return this.#applyEpisode(episode, strength, 1);
+  }
+
+  /**
+   * V4 encoding path.  The gain changes only plastic excitation and
+   * potential/bond strengthening.  Footprint and site support still count
+   * the actual trusted episode once, so salience cannot impersonate evidence.
+   */
+  applyEpisodeWithEncodingGain(episode: DistributedEpisodeV1 | R1CompatibleEpisodeV1,
+    strength = 1, encodingGain = 1): DistributedTraceFootprintV1 {
+    if (!Number.isFinite(encodingGain) || encodingGain < 0.75 || encodingGain > 1.5)
+      throw new RangeError("encodingGain must be within the frozen law bounds");
+    return this.#applyEpisode(episode, strength, encodingGain);
+  }
+
+  #applyEpisode(episode: DistributedEpisodeV1 | R1CompatibleEpisodeV1, strength: number,
+    encodingGain: number): DistributedTraceFootprintV1 {
     const physicalEpisode = episode.version === "R1DistributedEpisodeV1"
       ? this.#adaptR1Episode(episode)
       : episode;
@@ -702,7 +719,7 @@ export class DistributedPhysicalMedium3DV1 {
     for (const pulse of physicalEpisode.pulses) {
       const dwellWeight = Math.max(1, (pulse.dwellSeconds ?? this.#config.dt) / this.#config.dt);
       for (const drive of pulse.drives) {
-        const amount = drive.intensity * strength * dwellWeight;
+        const amount = drive.intensity * strength * encodingGain * dwellWeight;
         siteIds.add(drive.siteId);
         this.#activation[drive.siteId] = clamp(
           this.#activation[drive.siteId]! + amount,
@@ -727,6 +744,7 @@ export class DistributedPhysicalMedium3DV1 {
           const reference = this.#strengthenLocalBond(
             a.siteId,
             neighborId,
+            Math.min(a.intensity, neighborIntensity) * strength * encodingGain * dwellWeight,
             Math.min(a.intensity, neighborIntensity) * strength * dwellWeight,
           );
           bondReferences.set(`local:${localBondKey(a.siteId, neighborId)}`, reference);
@@ -740,14 +758,15 @@ export class DistributedPhysicalMedium3DV1 {
     for (let pulseIndex = 1; pulseIndex < physicalEpisode.pulses.length; pulseIndex += 1) {
       const before = physicalEpisode.pulses[pulseIndex - 1]!;
       const after = physicalEpisode.pulses[pulseIndex]!;
-      this.#learnDirectedPopulationTransition(before, after, pulseIndex, strength, bondReferences);
+      this.#learnDirectedPopulationTransition(before, after, pulseIndex,
+        strength * encodingGain, strength, bondReferences);
     }
     for (const eligibility of physicalEpisode.temporalEligibility ?? []) {
       const before = physicalEpisode.pulses[eligibility.fromPulseIndex]!;
       const after = physicalEpisode.pulses[eligibility.toPulseIndex]!;
       this.#learnDirectedPopulationTransition(before, after,
-        eligibility.toPulseIndex, strength * eligibility.strength, bondReferences,
-        ELIGIBILITY_DIRECTED_FIBRE_WIDTH);
+        eligibility.toPulseIndex, strength * encodingGain * eligibility.strength,
+        strength * eligibility.strength, bondReferences, ELIGIBILITY_DIRECTED_FIBRE_WIDTH);
     }
     const footprint: MutableFootprint = {
       traceId: physicalEpisode.traceId,
@@ -1603,7 +1622,8 @@ export class DistributedPhysicalMedium3DV1 {
     };
   }
 
-  #strengthenLocalBond(left: number, right: number, amount: number): DistributedBondReferenceV1 {
+  #strengthenLocalBond(left: number, right: number, amount: number,
+    supportAmount = amount): DistributedBondReferenceV1 {
     const key = localBondKey(left, right);
     let bond = this.#localEnhancements.get(key);
     if (bond === undefined) {
@@ -1628,12 +1648,13 @@ export class DistributedPhysicalMedium3DV1 {
       this.#localEnhancementAdjacency[bond.toSiteId] = rightAdjacency;
     }
     bond.symmetricCoupling += this.#config.symmetricLearningRate * amount;
-    bond.supportMass += amount;
+    bond.supportMass += supportAmount;
     bond.lastUpdatedAt = this.#logicalTime;
     return { fromSiteId: bond.fromSiteId, toSiteId: bond.toSiteId, kind: "local" };
   }
 
-  #strengthenDirectedBond(fromSiteId: number, toSiteId: number, amount: number): DistributedBondReferenceV1 | null {
+  #strengthenDirectedBond(fromSiteId: number, toSiteId: number, amount: number,
+    supportAmount = amount): DistributedBondReferenceV1 | null {
     if (fromSiteId === toSiteId) return null;
     const key = bondKey(fromSiteId, toSiteId);
     let bond = this.#directedBonds.get(key);
@@ -1668,7 +1689,7 @@ export class DistributedPhysicalMedium3DV1 {
     bond.directedConductance += conductanceIncrease;
     this.#directedOutgoingConductance[fromSiteId]
       = this.#directedOutgoingConductance[fromSiteId]! + conductanceIncrease;
-    bond.supportMass += amount;
+    bond.supportMass += supportAmount;
     bond.lastUpdatedAt = this.#logicalTime;
     return { fromSiteId, toSiteId, kind: "plastic-directed" };
   }
@@ -1693,6 +1714,7 @@ export class DistributedPhysicalMedium3DV1 {
     after: SparseFieldPulseV1,
     pulseIndex: number,
     strength: number,
+    supportStrength: number,
     bondReferences: Map<string, DistributedBondReferenceV1>,
     populationWidth = NEW_DIRECTED_FIBRE_WIDTH,
   ): void {
@@ -1706,6 +1728,7 @@ export class DistributedPhysicalMedium3DV1 {
           source.siteId,
           target.siteId,
           Math.min(source.intensity, target.intensity) * strength,
+          Math.min(source.intensity, target.intensity) * supportStrength,
         );
         if (reference !== null) bondReferences.set(`directed:${bondKey(source.siteId, target.siteId)}`, reference);
       }
@@ -1729,6 +1752,7 @@ export class DistributedPhysicalMedium3DV1 {
           source.siteId,
           target.siteId,
           Math.min(source.intensity, target.intensity) * strength,
+          Math.min(source.intensity, target.intensity) * supportStrength,
         );
         if (reference !== null) bondReferences.set(`directed:${bondKey(source.siteId, target.siteId)}`, reference);
       }

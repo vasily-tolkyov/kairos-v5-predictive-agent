@@ -47,6 +47,9 @@ export class DistributedHierarchicalTimescaleOwnerV1 {
 
   get logicalTime(): number { return this.#states.r1.logicalTime; }
 
+  /** Law-derived encoding gain for a layer; callers cannot set salience. */
+  encodingGain(layer: LayerName): number { return this.#states[layer].encodingGain(); }
+
   /** Advance all layers together. Measurements are trusted runtime values. */
   advanceTo(logicalTime: number, measurements: DistributedLayerMeasurementsV1 = emptyMeasurements()): void {
     if (!Number.isFinite(logicalTime) || logicalTime < this.logicalTime)

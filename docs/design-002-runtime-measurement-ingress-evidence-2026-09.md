@@ -33,7 +33,9 @@ Node worker and no external service.
 
 V3 behavior, the protected physics files, PredictionClone, model services,
 Minecraft, Formal, and existing physical evidence remain unchanged. This
-tranche does not implement passive-event salience, encoding-gain deposition,
-replay/homeostasis, or the E1–E7 gates. Those remain separate work packages;
+tranche does not implement passive-event salience, replay/homeostasis, or the
+E1–E7 gates. Encoding-gain deposition is now covered by the separate
+`design-002-encoding-gain-ingress-2026-09.md` tranche. Those remaining items
+stay separate work packages;
 the next review must not treat this focused seam as a full timescale or
 capability validation.

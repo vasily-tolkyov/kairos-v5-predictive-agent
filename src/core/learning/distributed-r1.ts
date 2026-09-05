@@ -88,12 +88,14 @@ export function compareDistributedEpisodesV1(left: DistributedEpisodeTopologyV1,
 export class DistributedR1ExperienceStoreV1 {
   readonly #medium: DistributedMediumWritePortV1;
   readonly #projection: SelfOrganizingAfferentProjectionV1;
+  readonly #encodingGainProvider: () => number;
   readonly #records = new Map<string, DistributedR1ExperienceRecordV1>();
   #qualificationCache: ReadonlyMap<string, DistributedR1AttractorQualificationV1> | null = null;
 
   constructor(medium: DistributedMediumWritePortV1, seed: bigint = DEFAULT_AFFERENT_SEED,
-    state?: DistributedR1StateV1) {
+    state?: DistributedR1StateV1, encodingGainProvider: () => number = () => 1) {
     this.#medium = medium;
+    this.#encodingGainProvider = encodingGainProvider;
     if (state) {
       assert(state.version === 'DistributedR1StateV1', 'distributed-R1-state-version-mismatch');
       assert(state.mediumSnapshotSha256 === sha(medium.snapshot()),
@@ -108,9 +110,11 @@ export class DistributedR1ExperienceStoreV1 {
     this.#projection = new SelfOrganizingAfferentProjectionV1(seed);
   }
 
-  static restore(medium: DistributedMediumWritePortV1, state: DistributedR1StateV1):
+  static restore(medium: DistributedMediumWritePortV1, state: DistributedR1StateV1,
+    encodingGainProvider: () => number = () => 1):
   DistributedR1ExperienceStoreV1 {
-    return new DistributedR1ExperienceStoreV1(medium, BigInt(state.projection.seedHex), state);
+    return new DistributedR1ExperienceStoreV1(medium, BigInt(state.projection.seedHex), state,
+      encodingGainProvider);
   }
 
   observe(event: RealEvent): DistributedR1ObservationReceiptV1 {
@@ -122,7 +126,12 @@ export class DistributedR1ExperienceStoreV1 {
     }
     const projection = this.#projection.projectEvent(event, this.#medium);
     assert(projection.episode.eventSha256 === eventSha256, 'distributed-R1-projection-event-mismatch');
-    const footprint = this.#medium.applyEpisode(projection.episode, 1);
+    const encodingGain = this.#encodingGainProvider();
+    if (!Number.isFinite(encodingGain) || encodingGain < 0.75 || encodingGain > 1.5)
+      throw new RangeError('distributed-R1-encoding-gain-out-of-law-bounds');
+    const footprint = this.#medium.applyEpisodeWithEncodingGain === undefined
+      ? this.#medium.applyEpisode(projection.episode, 1)
+      : this.#medium.applyEpisodeWithEncodingGain(projection.episode, 1, encodingGain);
     const record: DistributedR1ExperienceRecordV1 = {
       version: 'DistributedR1ExperienceRecordV1', eventId: event.id, eventSha256,
       contextId: event.frames[0]!.contextId, episodePatternSha256: projection.episode.patternSha256,

@@ -45,9 +45,11 @@ writes yet. They do not accept a caller-provided final salience or recovery
 rate, do not touch support mass/evidence, and do not introduce replay into the
 V1 medium. The V2 envelope remains a versioned contract boundary. A
 runtime-private, V4-opt-in measurement path now routes bounded action outcomes
-through the trusted owner; the ordinary V3 runtime remains unchanged. Replay
-writer/homeostasis wiring, passive-event salience and the full E1–E7 gates are
-still deferred, so these primitives are not evidence that D002 is complete.
+through the trusted owner, and that owner's arousal-derived encoding gain is
+applied to R1/R2/R2A plastic deposition without inflating evidence support;
+the ordinary V3 runtime remains unchanged. Replay writer/homeostasis wiring,
+passive-event salience and the full E1–E7 gates are still deferred, so these
+primitives are not evidence that D002 is complete.
 
 ## Focused checks
 
@@ -62,8 +64,9 @@ execution scope.
 - Isolated V2 arousal/rehearsal state and strict restore: **implemented**.
 - V2 protocol envelope and ordered measurement boundary: **implemented in
   isolation**.
-- Attention deviation measurement: **implemented in isolation**; medium
-  arousal injection is **deferred**.
+- Attention deviation measurement: **implemented in isolation**; action-outcome
+  arousal injection and V4 encoding-gain deposition are **implemented in the
+  opt-in owner seam**; passive-event arousal remains **deferred**.
 - V1/V2 logical-clock adapter: **implemented in isolation**; production medium
   replacement and per-structure recovery are **deferred**.
 - V2 snapshot recovery transform: **implemented in isolation**; live medium
@@ -88,7 +91,8 @@ execution scope.
   `advanceMeasured`, `snapshotV4` and `restoreV4` calls for this opt-in seam;
   the ordinary Runtime saver and V3 restore path still do not select it.
 - Production salience-conditioned recovery: **deferred**.
-- Arousal wired into the physical medium: **deferred**.
+- Arousal wired into V4 action-event plastic deposition: **implemented in the
+  opt-in owner seam**; default V3 and passive-event paths remain unchanged.
 - Idle replay planner and whitelist: **implemented in isolation**; production
   writer/homeostasis wiring: **deferred**.
 - E1–E7 experimental validation: **not run**.
