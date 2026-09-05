@@ -39,6 +39,9 @@ research designs are implemented.
   it is not yet connected to Runtime or production checkpoints.
   The replay whitelist also checks that each referenced site and bond exists
   before any refresh call.
+  A staged three-layer timescale owner now keeps R1/R2/R2A medium references
+  and V2 clocks aligned with byte-stable restore; the legacy hierarchy still
+  uses its V1 checkpoint and recovery path.
 - DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
   Channels are frozen before an action, carried with the trusted event as
   `verified-internal` metadata, and deliberately kept out of public
