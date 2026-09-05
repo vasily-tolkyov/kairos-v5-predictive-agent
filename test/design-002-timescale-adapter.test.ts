@@ -30,3 +30,16 @@ test('the adapter rejects clock reversal and keeps recovery derived from measure
     structureId: 'site:0', observedAt: 1, surpriseMagnitude: 0, goalRelevance: 0, supportMass: 0 });
   assert.equal(rate, .002);
 });
+
+test('measured observations use the V2 recovery law on the staged live substrate', () => {
+  const neutral = adapter();
+  neutral.advanceTo(2);
+  const salient = adapter();
+  salient.advanceTo(2, [{ version: 'RuntimeMeasuredSalienceV2', source: 'trusted-runtime-observation',
+    structureId: 'site:0', observedAt: 2, surpriseMagnitude: .9, goalRelevance: .8, supportMass: 1 }]);
+  const neutralSite = neutral.mediumSnapshot().sites.find(site => site.siteId === 0)!;
+  const salientSite = salient.mediumSnapshot().sites.find(site => site.siteId === 0)!;
+  assert(salientSite.potentialDepth > neutralSite.potentialDepth);
+  assert(salient.arousal > 0);
+  assert.equal(salient.logicalTime, salient.mediumSnapshot().logicalTime);
+});

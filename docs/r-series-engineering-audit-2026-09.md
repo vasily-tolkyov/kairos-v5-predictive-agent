@@ -19,9 +19,10 @@ research designs are implemented.
   autonomous arousal evolution, bounded encoding gain, homeostatic scaling and
   rehearsal counts. Attention now has an isolated, bounded deviation
   measurement derived from supported predictions and observed changes. The
-  staged V1/V2 logical-clock adapter keeps both snapshots aligned while still
-  delegating recovery to V1. A snapshot-only V2 recovery transform now applies
-  the frozen law to measured structure inputs without mutating live production.
+  staged V1/V2 logical-clock adapter keeps both snapshots aligned and applies
+  the snapshot transform to its own live staged substrate when measured input
+  is supplied. A snapshot-only V2 recovery transform applies the frozen law to
+  measured structure inputs without mutating live production.
   The
   distributed medium remains on its V1 protocol until the envelope, private
   measurement path and an approved replay writer are implemented together;

@@ -45,3 +45,16 @@ above is the post-fix result.
 - `src/core/physics/distributed-medium-timescale-protocol-v2.ts`
 - `test/design-002-timescale-adapter.test.ts`
 - `test/design-002-timescale-protocol.test.ts`
+
+## Follow-up: measured live adapter path (2026-09-05)
+
+The staged adapter now applies `recoverDistributedMediumProtocolSnapshotV2`
+to its live in-memory substrate whenever an ordered measured observation is
+provided. Empty intervals retain the V1 base-rate path. This is a real
+implementation of the isolated V2 law, not a caller-provided recovery rate;
+the focused adapter/protocol/recovery set is now 8/8 after the added test.
+
+This remains deliberately outside the production hierarchy. The production
+owner still lacks a versioned V2 checkpoint, runtime-private measurement
+capability (including post-event goal residual), and an approved replay writer.
+Those are required before changing production recovery semantics.
