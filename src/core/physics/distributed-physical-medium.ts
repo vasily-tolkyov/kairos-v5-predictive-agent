@@ -1362,18 +1362,40 @@ export class DistributedPhysicalMedium3DV1 {
     };
   }
 
-  recover(elapsed: number): void {
+  /**
+   * Apply the same in-place recovery operation with measured, structure-level
+   * rates.  The medium object itself is retained so R1/R2/R2A owners holding
+   * this reference cannot diverge.  Missing entries deliberately use the
+   * frozen base rate; callers must not pass unknown structure identities.
+   */
+  recoverWithStructureRates(elapsed: number,
+    rates: ReadonlyMap<string, number>): void {
     requireNonnegative(elapsed, "elapsed");
-    const slowFactor = Math.exp(-this.#config.recoveryRate * elapsed);
+    const known = new Set<string>();
+    for (let siteId = 0; siteId < this.siteCount; siteId += 1) known.add(`site:${siteId}`);
+    for (const footprint of this.#footprints.values()) known.add(`trace:${footprint.traceId}`);
+    for (const bond of this.#localEnhancements.values())
+      known.add(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
+    for (const bond of this.#directedBonds.values())
+      known.add(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
+    for (const assembly of this.#coactivationAssemblies.values())
+      known.add(`assembly:${assembly.assemblyId}`);
+    for (const [structureId, rate] of rates) {
+      if (!known.has(structureId)) throw new Error(`unknown recovery structure: ${structureId}`);
+      requireNonnegative(rate, `recovery rate for ${structureId}`);
+    }
+    const decay = (structureId: string): number =>
+      Math.exp(-(rates.get(structureId) ?? this.#config.recoveryRate) * elapsed);
     for (let siteId = 0; siteId < this.siteCount; siteId += 1) {
+      const slowFactor = decay(`site:${siteId}`);
       this.#potentialDepth[siteId] = this.#potentialDepth[siteId]! * slowFactor;
       this.#supportMass[siteId] = this.#supportMass[siteId]! * slowFactor;
       this.#activation[siteId] = this.#activation[siteId]!
         * Math.exp(-this.#dissipation[siteId]! * elapsed);
     }
     for (const [key, bond] of this.#localEnhancements) {
-      bond.symmetricCoupling *= slowFactor;
-      bond.supportMass *= slowFactor;
+      const slowFactor = decay(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
+      bond.symmetricCoupling *= slowFactor; bond.supportMass *= slowFactor;
       if (bond.supportMass < this.#config.minimumActiveMagnitude) {
         this.#localEnhancements.delete(key);
         this.#localEnhancementAdjacency[bond.fromSiteId]?.delete(bond.toSiteId);
@@ -1381,8 +1403,8 @@ export class DistributedPhysicalMedium3DV1 {
       }
     }
     for (const [key, bond] of this.#directedBonds) {
-      bond.directedConductance *= slowFactor;
-      bond.supportMass *= slowFactor;
+      const slowFactor = decay(`bond:${bond.fromSiteId}>${bond.toSiteId}:${bond.kind}`);
+      bond.directedConductance *= slowFactor; bond.supportMass *= slowFactor;
       if (bond.supportMass < this.#config.minimumActiveMagnitude) this.#deleteDirectedBond(key, bond);
     }
     this.#directedOutgoingConductance.fill(0);
@@ -1390,13 +1412,18 @@ export class DistributedPhysicalMedium3DV1 {
       this.#directedOutgoingConductance[bond.fromSiteId]
         = this.#directedOutgoingConductance[bond.fromSiteId]! + bond.directedConductance;
     }
-    for (const footprint of this.#footprints.values()) footprint.supportMass *= slowFactor;
+    for (const footprint of this.#footprints.values())
+      footprint.supportMass *= decay(`trace:${footprint.traceId}`);
     for (const assembly of this.#coactivationAssemblies.values()) {
-      assembly.supportMass *= slowFactor;
+      assembly.supportMass *= decay(`assembly:${assembly.assemblyId}`);
       assembly.lastUpdatedAt = this.#logicalTime;
     }
     this.#invalidateAttractorTopology();
     this.#logicalTime += elapsed;
+  }
+
+  recover(elapsed: number): void {
+    this.recoverWithStructureRates(elapsed, new Map());
   }
 
   site(siteId: number): DistributedSiteStateV1 {

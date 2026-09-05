@@ -74,6 +74,19 @@ test("repetition gives a footprint a longer recovery lifetime than a singleton",
   assert.ok(Math.abs(singleton.site(0).activation) < 1e-12);
 });
 
+test('measured recovery keeps the medium identity while applying a local rate', () => {
+  const medium = new DistributedPhysicalMedium3DV1({ name: 'measured-recovery-identity', seedHex: '77' });
+  medium.applyPulse({ version: 'SparseFieldPulseV1', pulseId: 'measured', offset: 0,
+    drives: [{ siteId: 0, intensity: 1 }] });
+  const before = medium.site(0).potentialDepth;
+  const same = medium;
+  medium.recoverWithStructureRates(10, new Map([['site:0', .0001]]));
+  assert.strictEqual(medium, same);
+  assert.ok(medium.site(0).potentialDepth > before * Math.exp(-.002 * 10));
+  assert.equal(medium.logicalTime, 10);
+  assert.throws(() => medium.recoverWithStructureRates(1, new Map([['site:999999', .001]])), /unknown recovery structure/);
+});
+
 test("Metropolis field evolution is fixed-seed reproducible and snapshot-restorable", () => {
   const source = new DistributedPhysicalMedium3DV1({ name: "test" });
   source.applyEpisode(episode("trace"));

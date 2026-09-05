@@ -70,3 +70,15 @@ has the stricter one-value-per-structure contract.
 Focused verification after this boundary fix: build exit 0 and 9/9
 timescale/recovery/adapter tests passed. No production hierarchy, model,
 Minecraft, or Formal V3 state was changed.
+
+## Follow-up: identity-preserving medium seam
+
+`DistributedPhysicalMedium3DV1` now exposes an in-place
+`recoverWithStructureRates` seam. It applies structure-specific decay while
+retaining the medium object identity held by R1/R2/R2A; replacing a medium
+with `fromSnapshot` is therefore not required for a future production owner.
+The seam rejects unknown structure IDs and keeps the existing `recover()` base
+rate behavior unchanged. Build plus the affected medium/recovery/adapter set
+passed 15/15. This is a preparation seam only: production hierarchy recovery
+still uses the V1 path until the versioned V2 owner and trusted measurement
+bridge are implemented together.
