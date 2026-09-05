@@ -12,6 +12,21 @@ are explicitly opt-in diagnostic runs requiring
 `KAIROS_RUN_R2A_PRECONSOLIDATION_DIAGNOSTIC=1` and
 `KAIROS_RUN_REAL_G5_TWO_STEP=1`; they were not silently counted as passes.
 
+## Post-recovery-transform rerun
+
+After the isolated `DistributedMediumRecoveryV2` transform and duplicate-
+structure validation fix, the same commands were run once more:
+
+| Command | Exit | Result |
+| --- | ---: | --- |
+| `npm run build --silent` | 0 | TypeScript build passed |
+| `npm test` | 0 | 573 passed, 0 failed, 2 skipped |
+
+The rerun duration was `796833.4638 ms`. The skipped tests and their explicit
+environment gates are unchanged. This is the authoritative regression result
+for the current source after the recovery transform; it does not promote the
+staged DESIGN-002 work to production.
+
 ## Scope and boundaries
 
 - The full suite includes the existing R1/R2/R2A, PredictionClone, control,
