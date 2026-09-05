@@ -10,6 +10,8 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
 - DESIGN-006 temporal-fidelity probe and DESIGN-003a capacity probe.
 - DESIGN-001 L1 runtime-owned interoceptive provenance and isolated L2
   meta-evidence episode index.
+- DESIGN-002 law-only tranche: continuous measured salience, autonomous
+  arousal, bounded encoding gain and homeostatic scaling primitives.
 
 ## Reproducible checks
 
@@ -31,6 +33,8 @@ filtering), exact worker ordering, and read-only temporal/capacity probes.
   was written by the probes; the runtime snapshot path persists the index only
   after an enriched trusted event supplies a band.
 - The L2 index is not connected to world R2A grading or controller authority.
+- The DESIGN-002 primitives are not connected to the V1 medium recovery path;
+  no V1 snapshot was modified and no replay write occurred.
 - The internal channel metadata is not yet consumed by `eventRows` or the
   world afferent projection; it is provenance transport only. The additional
   prediction, applicability and attention fields are bounded summaries of
@@ -44,13 +48,15 @@ filtering), exact worker ordering, and read-only temporal/capacity probes.
 - `DESIGN-001-production-wiring`: snapshot persistence is wired, but meta
   episodes are not passed through R2/R2A event state and cannot raise any world
   evidence grade.
-- `DESIGN-002-not-started`: its protocol revision remains gated on the next
-  separately approved tranche.
+- `DESIGN-002-protocol-deferred`: the law primitives are present, but the
+  versioned medium snapshot, private measurement path and replay whitelist
+  remain gated on the next separately approved tranche.
 - Full regression, capacity sweep and temporal experiment remain deferred to
   the next review round by request.
 
 ## Repositories
 
 The source checkout is `D:\kimi_kairos\kairos-v5-predictive-agent`; the original
-`D:\Kairos_V5_Predictive_Agent` checkout remains untouched. The pushed commit
-for this tranche is `9bdf482`.
+`D:\Kairos_V5_Predictive_Agent` checkout remains untouched. The previous
+tranche was pushed as `360e7b1`; this law-only addition is recorded in the
+subsequent repository commit.
