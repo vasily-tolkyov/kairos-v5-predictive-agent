@@ -15,18 +15,22 @@ Implemented in `src/core/learning/memory-timescales.ts`:
 - bounded encoding gain and fixed-factor homeostatic downscale.
 - a strict `DistributedMediumTimescaleSnapshotV2` carrying medium-owned
   arousal, logical time and deterministic rehearsal counts.
+- a deterministic idle-only consolidation replay planner with a narrow writer
+  port that can refresh existing potential/bonds and rehearsal counts, but
+  cannot create support mass, evidence, or new physical structures.
 
-The state is intentionally not wired into production medium writes yet. It
-does not accept a caller-provided final salience or recovery rate, does not
-touch support mass/evidence, and does not introduce replay into the V1 medium.
-The next D002 tranche must bind this state to a new physical-medium protocol,
-provide a runtime-private measurement path, add the replay whitelist and run
-the full E1–E7 gates; these primitives are not evidence that D002 is complete.
+The state and replay planner are intentionally not wired into production medium
+writes yet. They do not accept a caller-provided final salience or recovery
+rate, do not touch support mass/evidence, and do not introduce replay into the
+V1 medium. The next D002 tranche must bind this state to a new
+physical-medium protocol, provide a runtime-private measurement path, connect
+the replay whitelist to an approved writer, and run the full E1–E7 gates;
+these primitives are not evidence that D002 is complete.
 
 ## Focused checks
 
 `npm run build --silent` and
-`node --test dist/test/design-002-timescale-law.test.js dist/test/design-002-timescale-state.test.js` pass (7/7). Full regression
+`node --test dist/test/design-002-timescale-law.test.js dist/test/design-002-timescale-state.test.js dist/test/design-002-consolidation-replay.test.js` pass (9/9). Full regression
 and the required G0/G1/G2/G5 re-qualification remain deferred by the current
 execution scope.
 
@@ -36,5 +40,6 @@ execution scope.
 - Isolated V2 arousal/rehearsal state and strict restore: **implemented**.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
-- Idle replay and homeostasis wiring: **deferred**.
+- Idle replay planner and whitelist: **implemented in isolation**; production
+  writer/homeostasis wiring: **deferred**.
 - E1–E7 experimental validation: **not run**.
