@@ -40,15 +40,14 @@ Implemented in `src/core/learning/memory-timescales.ts`:
   existing physical structure; it accepts no caller-supplied recovery rate or
   support mass.
 
-The state and replay planner are intentionally not wired into production medium
+The state and replay planner are intentionally not wired into production replay
 writes yet. They do not accept a caller-provided final salience or recovery
 rate, do not touch support mass/evidence, and do not introduce replay into the
-V1 medium. The V2 envelope is a versioned contract and validation boundary, not
-yet the production medium implementation. The next D002 tranche must provide a
-runtime-private measurement capability, route this bounded measurement through
-the trusted runtime, connect the replay whitelist to an approved writer and the
-V2 medium, and run the full E1–E7 gates; these primitives are not evidence that
-D002 is complete.
+V1 medium. The V2 envelope remains a versioned contract boundary. A
+runtime-private, V4-opt-in measurement path now routes bounded action outcomes
+through the trusted owner; the ordinary V3 runtime remains unchanged. Replay
+writer/homeostasis wiring, passive-event salience and the full E1–E7 gates are
+still deferred, so these primitives are not evidence that D002 is complete.
 
 ## Focused checks
 
@@ -69,8 +68,9 @@ execution scope.
   replacement and per-structure recovery are **deferred**.
 - V2 snapshot recovery transform: **implemented in isolation**; live medium
   mutation and full E1–E7 validation are **deferred**.
-- Runtime measurement bridge: **implemented in isolation**; trusted runtime
-  capability integration and production checkpoint ownership are **deferred**.
+- Runtime measurement bridge: **implemented**; trusted action-outcome ingress
+  is **implemented as an explicit V4 opt-in**, while passive-event ingress and
+  full production checkpoint policy remain **deferred**.
 - Replay's narrow writer now requires explicit site/bond existence checks, so
   the whitelist cannot silently create structures absent from the substrate.
 - A staged `DistributedHierarchicalTimescaleOwnerV1` now owns one V2 time

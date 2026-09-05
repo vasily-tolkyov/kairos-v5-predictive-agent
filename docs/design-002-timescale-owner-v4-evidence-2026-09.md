@@ -10,7 +10,9 @@ the V2 time law, change the V3 checkpoint, or write any production memory.
 - `KairosV5DistributedPhysicalMemoryV4` carries the three protocol envelopes
   without changing V3 serialization.
 - `Compute`/`worker` expose explicit V4 enable, measured advance, snapshot and
-  restore calls. The ordinary Runtime saver remains V3-only.
+  restore calls. Runtime action outcomes can now submit a trusted, event-bound
+  measurement when V4 is explicitly enabled; the ordinary Runtime saver and
+  default behavior remain V3-only.
 - Same-time measurements are handled; mid-interval measurements affect only
   the post-observation segment; all layer inputs are validated before mutation.
 
@@ -52,9 +54,10 @@ regressions (`6/6`, skipped `0`).
 - Theory/contract boundary retained: `RuntimeMeasuredSalienceV2` is still a
   staged trusted-runtime seam, not a public authority claim; runtime-private
   construction is required before production migration.
-- Deferred: arousal/encoding-gain deposit wiring, replay writer, V4 pointer
-  runtime measurement ingress, arousal/encoding-gain deposit wiring, replay
-  writer, and E1–E7 re-qualification.
+- Deferred: passive-event and encoding-gain deposit wiring, replay writer,
+  homeostatic replay policy, and E1–E7 re-qualification. The executed-action
+  measurement ingress is covered by the new focused runtime test and remains
+  V4 opt-in rather than a default migration.
 
 ## State and resource boundary
 
