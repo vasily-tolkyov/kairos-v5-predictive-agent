@@ -1,6 +1,9 @@
 import { parentPort } from 'node:worker_threads';
 import { DistributedHierarchicalPhysicalMemoryV1 as PhysicalMemory,
-  type DistributedMemorySnapshotV3 as MemorySnapshot } from './distributed-hierarchical-memory.js';
+  type DistributedMemorySnapshotV3 as MemorySnapshot,
+  type KairosV5DistributedPhysicalMemoryV4 as MemorySnapshotV4 } from './distributed-hierarchical-memory.js';
+import type { DistributedLayerMeasurementsV1 }
+  from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
 import type { ActionCue, DesiredChange, Observation, RealEvent } from './contracts.js';
 import type { EffectRecallCandidateV1, GroundedGoalV1, GoalEvaluationV1,
   HypotheticalPublicStateV1 } from './control/contracts.js';
@@ -40,7 +43,13 @@ parentPort!.on('message', (message: { id: number; method: string; args: unknown[
       case 'recordDistributedMatchedIntervention': memory.recordDistributedMatchedIntervention(
         args[0] as Parameters<PhysicalMemory['recordDistributedMatchedIntervention']>[0]); value = null; break;
       case 'snapshot': value = memory.snapshot(); break;
+      case 'enableTimescaleV2': memory.enableTimescaleV2(); value = null; break;
+      case 'advanceMeasured': memory.advanceTo(args[0] as number,
+        args[1] as DistributedLayerMeasurementsV1); value = null; break;
+      case 'snapshotV4': value = memory.snapshotV4(); break;
       case 'restore': memory = PhysicalMemory.restore(args[0] as MemorySnapshot); value = { writes: memory.writes }; break;
+      case 'restoreV4': memory = PhysicalMemory.restoreV4(args[0] as MemorySnapshotV4);
+        value = { writes: memory.writes }; break;
       case 'status': value = { ready: memory.ready, writes: memory.writes, bufferedEvents: memory.bufferedEvents,
         mapSha256: memory.mapSha256 }; break;
       case 'hash': value = sha(memory.snapshot()); break;

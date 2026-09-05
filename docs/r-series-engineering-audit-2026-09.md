@@ -46,6 +46,9 @@ research designs are implemented.
   zero-elapsed measured observations are accepted, and all layer measurements
   are prevalidated before mutation to prevent partial cross-layer recovery;
   mid-interval measurements only affect recovery after their observed time.
+  The Compute/Worker pair now exposes explicit V4 opt-in RPCs; the ordinary
+  Runtime save/restore path remains V3-only, so this cannot silently discard
+  the added time state.
 - DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
   Channels are frozen before an action, carried with the trusted event as
   `verified-internal` metadata, and deliberately kept out of public

@@ -14,9 +14,9 @@ export interface DistributedHierarchicalTimescaleSnapshotV1 {
 }
 
 type LayerName = 'r1' | 'r2' | 'r2a';
-type LayerMeasurements = Readonly<Record<LayerName, readonly RuntimeMeasuredSalienceV2[]>>;
+export type DistributedLayerMeasurementsV1 = Readonly<Record<LayerName, readonly RuntimeMeasuredSalienceV2[]>>;
 
-function emptyMeasurements(): LayerMeasurements {
+function emptyMeasurements(): DistributedLayerMeasurementsV1 {
   return { r1: [], r2: [], r2a: [] };
 }
 
@@ -48,7 +48,7 @@ export class DistributedHierarchicalTimescaleOwnerV1 {
   get logicalTime(): number { return this.#states.r1.logicalTime; }
 
   /** Advance all layers together. Measurements are trusted runtime values. */
-  advanceTo(logicalTime: number, measurements: LayerMeasurements = emptyMeasurements()): void {
+  advanceTo(logicalTime: number, measurements: DistributedLayerMeasurementsV1 = emptyMeasurements()): void {
     if (!Number.isFinite(logicalTime) || logicalTime < this.logicalTime)
       throw new Error('hierarchical timescale logical-time-reversed');
     const start = this.logicalTime;

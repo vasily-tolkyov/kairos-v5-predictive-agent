@@ -1,4 +1,6 @@
 import { Worker } from 'node:worker_threads';
+import type { KairosV5DistributedPhysicalMemoryV4 } from './distributed-hierarchical-memory.js';
+import type { DistributedLayerMeasurementsV1 } from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
 
 /** The only compute worker is a physical-model owner, never another agent. */
 export class Compute {
@@ -29,6 +31,17 @@ export class Compute {
     if (this.#closed) return Promise.reject(new Error('physical-worker-closed'));
     return new Promise((resolve, reject) => { const id = ++this.#id;
       this.#pending.set(id, { resolve: resolve as (value: unknown) => void, reject }); this.worker.postMessage({ id, method, args }); });
+  }
+  /** Explicit opt-in seam for the staged V4 timescale owner. */
+  async enableTimescaleV2(): Promise<void> { await this.call('enableTimescaleV2'); }
+  async advanceMeasured(logicalTime: number, measurements: DistributedLayerMeasurementsV1): Promise<void> {
+    await this.call('advanceMeasured', logicalTime, measurements);
+  }
+  async snapshotV4(): Promise<KairosV5DistributedPhysicalMemoryV4> {
+    return this.call<KairosV5DistributedPhysicalMemoryV4>('snapshotV4');
+  }
+  async restoreV4(snapshot: KairosV5DistributedPhysicalMemoryV4): Promise<void> {
+    await this.call('restoreV4', snapshot);
   }
   async close(): Promise<void> { this.#closed = true; await this.worker.terminate(); }
 }

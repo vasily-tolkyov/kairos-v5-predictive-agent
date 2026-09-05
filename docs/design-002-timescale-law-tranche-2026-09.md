@@ -84,6 +84,9 @@ execution scope.
   any layer mutates (cross-layer validation is atomic).  Mid-interval
   measurements affect only the recovery segment after their actual observation
   time; the earlier segment retains the base rate.
+  `Compute`/`worker` now expose explicit `enableTimescaleV2`,
+  `advanceMeasured`, `snapshotV4` and `restoreV4` calls for this opt-in seam;
+  the ordinary Runtime saver and V3 restore path still do not select it.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production
