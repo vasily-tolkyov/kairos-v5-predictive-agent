@@ -49,6 +49,8 @@ import type { DistributedPredictionCloneRequestV2, DistributedPredictionCloneRes
 import { distributedEvidenceReferenceV1, distributedPredictionSampleV1,
   emptyDistributedPredictionV1 } from './core/prediction/distributed-reasoning-adapter.js';
 import { KAIROS_V5_MEMORY_SEMANTICS, KAIROS_V5_MEMORY_VERSION } from './core/compatibility.js';
+import { MetaEvidenceStoreV1 } from './control/meta-evidence.js';
+import type { MetaEvidenceStateV1 } from './control/meta-evidence.js';
 
 export const DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3 =
   KAIROS_V5_MEMORY_VERSION;
@@ -88,6 +90,11 @@ export interface KairosV5DistributedPhysicalMemoryV3 {
   readonly processedR2EventIds: readonly string[];
   readonly seenEventIds: readonly string[];
   readonly writes: number;
+  /**
+   * Isolated DESIGN-001 meta evidence.  This is an audit index only: it is
+   * not consumed by world R2A grading or by action selection.
+   */
+  readonly metaEvidence?: MetaEvidenceStateV1;
 }
 
 export interface DistributedMemoryObservationReceiptV1 {
@@ -240,6 +247,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   readonly #seen = new Set<string>();
   #activeSeconds = 0;
   #writes = 0;
+  #metaEvidence = new MetaEvidenceStoreV1();
+  #metaDepositionOrdinal = 0;
   #r1Revision = 0;
   #r2Revision = 0;
   #r1PredictionCache: { readonly snapshot: DistributedMediumSnapshotV1;
@@ -311,6 +320,14 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     this.#invalidatePredictionCaches();
     const receipt = this.#r1.observe(event);
     this.#r1Revision++;
+    // Consume one monotonic meta-observation ordinal for every trusted event.
+    // Missing channels are recorded as unknown (via observedChannels), never
+    // as an inferred absence; this prevents passive gaps from fabricating a
+    // second meta episode.
+    this.#metaEvidence.observe(event.id, this.#metaDepositionOrdinal++,
+      event.verifiedInternalChannels, [event.frames[0]!.contextId],
+      event.verifiedInternalChannels === undefined ? undefined
+        : event.verifiedInternalChannels.map(channel => channel.name));
     const rows = eventRows(event);
     const before = relativePublicFeatures(event.frames[0]!);
     const after = relativePublicFeatures(event.frames.at(-1)!);
@@ -950,13 +967,16 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   }
 
   snapshot(): KairosV5DistributedPhysicalMemoryV3 {
+    const metaEvidence = this.#metaEvidence.snapshot();
     return { version: DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3,
       hierarchy: DISTRIBUTED_HIERARCHY_SEMANTICS_V2, activeSeconds: this.#activeSeconds,
       r1Medium: this.#r1Medium.snapshot(), r1: this.#r1.snapshot(),
       r2Medium: this.#r2.medium.snapshot(), r2: this.#r2.snapshot(), r2a: this.#r2a.snapshot(),
       annotations: [...this.#annotations.values()].sort((left, right) => left.eventId.localeCompare(right.eventId, 'en'))
         .map(value => structuredClone(value)), processedR2EventIds: [...this.#processedR2].sort(),
-      seenEventIds: [...this.#seen].sort(), writes: this.#writes };
+      seenEventIds: [...this.#seen].sort(), writes: this.#writes,
+      ...(metaEvidence.observations.some(value => value.bands.length > 0)
+        ? { metaEvidence } : {}) };
   }
 
   static restore(snapshot: KairosV5DistributedPhysicalMemoryV3): DistributedHierarchicalPhysicalMemoryV1 {
@@ -975,6 +995,12 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     snapshot.processedR2EventIds.forEach(id => memory.#processedR2.add(id));
     snapshot.seenEventIds.forEach(id => memory.#seen.add(id));
     memory.#activeSeconds = snapshot.activeSeconds; memory.#writes = snapshot.writes;
+    if (snapshot.metaEvidence) {
+      memory.#metaEvidence = MetaEvidenceStoreV1.restore(snapshot.metaEvidence);
+      const observations = snapshot.metaEvidence.observations;
+      memory.#metaDepositionOrdinal = observations.length === 0 ? 0
+        : Math.max(...observations.map(value => value.depositionOrdinal)) + 1;
+    }
     // Keep the fail-closed byte-identity boundary per physical layer.  A
     // combined boolean hid which independently owned substrate was rebuilt
     // differently and forced an entire hierarchy replay for every diagnosis.

@@ -22,8 +22,12 @@ research designs are implemented.
   consume them, so they do not yet alter R1/R2/R2A evidence.
 - DESIGN-001 L2 now has an isolated meta-evidence index with fixed eight-band
   quantization, deposition-ordinal episode reconstruction, and external ×
-  internal joint-context qualification. It is not connected to world R2A
-  grading or controller authority yet.
+  internal joint-context qualification. Trusted runtime events now carry this
+  index in the optional distributed-memory snapshot field, including explicit
+  unknown-channel observations so missing values do not fabricate episode
+  exits. It remains disconnected from world R2A grading and controller
+  authority; its `meta-predictive-stable` label is coverage-only and has zero
+  behavioral authority.
 
 ## Theory boundary
 
@@ -44,6 +48,11 @@ identity. The current PredictionClone has no public semantic decoder, so the
 probe intentionally does not claim decoded public-change equivalence. The
 capacity probe likewise leaves readout rates `null` when a fixture has not
 provided measurements; it never fabricates a score from event counts.
+
+The current L1 implementation is deliberately incomplete: only branch entropy,
+goal residual and action-budget channels are computed. The remaining declared
+channels (rollout support, applicable relation count and surprise rate), and a
+stronger runtime-only provenance capability, are not yet implemented.
 
 ## Deferred work
 

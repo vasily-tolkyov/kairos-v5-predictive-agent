@@ -16,7 +16,7 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
 | Command | Result |
 | --- | --- |
 | `npm run build --silent` | exit 0 |
-| `node --test dist/test/design-001-meta-evidence.test.js dist/test/design-001-interoception.test.js dist/test/plan-002-performance.test.js dist/test/design-006-temporal-fidelity.test.js dist/test/design-003a-capacity-probe.test.js` | 14/14, skipped 0 |
+| `node --test dist/test/design-001-meta-evidence.test.js dist/test/design-001-interoception.test.js dist/test/plan-002-performance.test.js dist/test/design-006-temporal-fidelity.test.js dist/test/design-003a-capacity-probe.test.js` | 16/16, skipped 0 |
 
 The focused checks cover deterministic eight-band quantization, deposition
 ordinal episode splitting, joint-context gating, snapshot replay, V6 internal
@@ -28,7 +28,8 @@ read-only temporal/capacity probes.
 - No model, Minecraft server, viewer, Formal V3, or live network service was
   started in this tranche.
 - No production memory snapshot, R1/R2/R2A medium, or protected physics file
-  was written by the probes.
+  was written by the probes; the runtime snapshot path persists the index only
+  after an enriched trusted event supplies a band.
 - The L2 index is not connected to world R2A grading or controller authority.
 - The internal channel metadata is not yet consumed by `eventRows` or the
   world afferent projection; it is provenance transport only.
@@ -38,8 +39,9 @@ read-only temporal/capacity probes.
 - `DESIGN-001-L2-provenance-firewall`: V5 injection is rejected, while a
   structurally valid forged V6 still needs a runtime-private capability before
   any meta grade can be promoted.
-- `DESIGN-001-production-wiring`: meta episodes are isolated and tested but
-  are not yet passed through R2/R2A event state.
+- `DESIGN-001-production-wiring`: snapshot persistence is wired, but meta
+  episodes are not passed through R2/R2A event state and cannot raise any world
+  evidence grade.
 - `DESIGN-002-not-started`: its protocol revision remains gated on the next
   separately approved tranche.
 - Full regression, capacity sweep and temporal experiment remain deferred to
