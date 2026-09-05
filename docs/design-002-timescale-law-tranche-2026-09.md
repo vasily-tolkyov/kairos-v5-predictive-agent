@@ -35,6 +35,10 @@ Implemented in `src/core/learning/memory-timescales.ts`:
   not create indefinite salience. Protocol compose/restore requires equal
   medium and timescale clocks, and replay execution binds refresh values to
   the canonical law constants.
+- a staged `RuntimeMeasuredSalienceBridgeV1` that derives protocol measurements
+  from attention deviation, goal-residual change and support read from an
+  existing physical structure; it accepts no caller-supplied recovery rate or
+  support mass.
 
 The state and replay planner are intentionally not wired into production medium
 writes yet. They do not accept a caller-provided final salience or recovery
@@ -65,6 +69,8 @@ execution scope.
   replacement and per-structure recovery are **deferred**.
 - V2 snapshot recovery transform: **implemented in isolation**; live medium
   mutation and full E1–E7 validation are **deferred**.
+- Runtime measurement bridge: **implemented in isolation**; trusted runtime
+  capability integration and production checkpoint ownership are **deferred**.
 - Production salience-conditioned recovery: **deferred**.
 - Arousal wired into the physical medium: **deferred**.
 - Idle replay planner and whitelist: **implemented in isolation**; production

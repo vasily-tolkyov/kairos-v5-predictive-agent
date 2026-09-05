@@ -34,6 +34,9 @@ research designs are implemented.
   A subsequent boundary hardening limits a stored measurement to the next
   recovery interval, requires equal medium/time clocks, and binds replay
   parameters to the canonical law; no production owner consumes these APIs.
+  A staged runtime measurement bridge now derives protocol measurements from
+  attention deviation, goal-residual change and existing physical support;
+  it is not yet connected to Runtime or production checkpoints.
 - DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
   Channels are frozen before an action, carried with the trusted event as
   `verified-internal` metadata, and deliberately kept out of public
