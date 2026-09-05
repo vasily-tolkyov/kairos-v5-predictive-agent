@@ -28,6 +28,22 @@ The focused test process took approximately `9.06 s`; the worker round trip
 used one short-lived Node worker and no external service.
 The worker test performed a real V4 snapshot → restore → snapshot round trip.
 
+## V4 bundle persistence seam
+
+The runtime now has separate `saveExperienceBundleV4` and
+`restoreExperienceV4` entry points. A V4 pointer carries the exact memory
+version and the frozen timescale-law identity; the existing V3 entry points
+continue to read and write only V3 snapshots. A directory already owned by
+one protocol version rejects a writer from the other version, so an explicit
+timescale run cannot silently overwrite a legacy checkpoint. The main runtime
+entry point selects V4 only when the pointer declares the V4 version; an
+ordinary run remains V3.
+
+Focused persistence verification is in
+`test/runtime-v4-timescale-persistence.test.ts`: V4 save/restore and V3/V4
+cross-overwrite rejection pass together with the existing habit-persistence
+regressions (`6/6`, skipped `0`).
+
 ## Boundary and failure classification
 
 - Implementation defects found and fixed: same-time measurement drop,
@@ -37,7 +53,8 @@ The worker test performed a real V4 snapshot → restore → snapshot round trip
   staged trusted-runtime seam, not a public authority claim; runtime-private
   construction is required before production migration.
 - Deferred: arousal/encoding-gain deposit wiring, replay writer, V4 pointer
-  persistence, and E1–E7 re-qualification.
+  runtime measurement ingress, arousal/encoding-gain deposit wiring, replay
+  writer, and E1–E7 re-qualification.
 
 ## State and resource boundary
 

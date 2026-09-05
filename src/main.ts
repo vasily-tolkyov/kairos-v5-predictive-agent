@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { createWriteStream, watch, type FSWatcher } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import type { Server } from 'node:http';
 import { loadConfiguration, Services } from './services.js';
 import { MinecraftBody } from './body.js';
-import { assertNewExperienceOutput, restoreExperience, V5Runtime } from './runtime.js';
+import { assertNewExperienceOutput, restoreExperience, restoreExperienceV4, V5Runtime } from './runtime.js';
 import { Compute } from './compute.js';
 import { startLoopbackMineflayerViewerV1 } from './viewer.mjs';
 import { startDashboard } from './dashboard.js';
@@ -21,6 +21,14 @@ export function parseRunOptions(args: readonly string[]): { bootstrapOnly: boole
   const experiencePointer = value('--experience-pointer'), evidenceDirectory = value('--evidence-dir');
   assert(experiencePointer === null || isAbsolute(experiencePointer), 'experience-pointer-must-be-absolute');
   return { bootstrapOnly: args.includes('--bootstrap-only'), experiencePointer, evidenceDirectory };
+}
+
+async function restoreRuntimeExperience(compute: Compute, pointerPath: string | null) {
+  if (pointerPath === null) return null;
+  const pointer = JSON.parse(await readFile(pointerPath, 'utf8')) as { readonly memoryVersion?: unknown };
+  return pointer.memoryVersion === 'KairosV5DistributedPhysicalMemoryV4'
+    ? restoreExperienceV4(compute, pointerPath)
+    : restoreExperience(compute, pointerPath);
 }
 
 async function main(): Promise<void> {
@@ -48,7 +56,7 @@ async function main(): Promise<void> {
   const stop = () => { stopping = true; void body?.close(); };
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
   try {
-    compute = new Compute(); const restored = await restoreExperience(compute, options.experiencePointer);
+    compute = new Compute(); const restored = await restoreRuntimeExperience(compute, options.experiencePointer);
     status.experienceLoaded = restored !== null; status.initialPhysical = await compute.call('status');
     await services.start('empty');
     body = new MinecraftBody({ ...config.minecraft, worldId: runId, sessionId: runId,

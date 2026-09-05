@@ -66,10 +66,15 @@ intentionally exact:
 | Public context | `V5PublicRelativeLayoutV1` |
 | Configuration | `KairosV5PhysicalControlConfigV2` |
 
-New writable checkpoints are `KairosV5DistributedPhysicalMemoryV3`. They
-contain the frozen R1 representation, R1 atoms, the real-continuity replay
-ledger, R2 roads, R2A stable-pattern graph and preregistered intervention
-ledger. Upper layers are deterministically replayed and checked on restore.
+The default writable checkpoint remains `KairosV5DistributedPhysicalMemoryV3`.
+An explicitly enabled timescale run may use the additive
+`KairosV5DistributedPhysicalMemoryV4` bundle, whose pointer names the exact
+timescale-law identity. V3 and V4 writers reject cross-version overwrite, and
+V4 restore is a separate entry point; ordinary runs never silently upgrade.
+Both contain the frozen R1 representation, R1 atoms, the real-continuity
+replay ledger, R2 roads, R2A stable-pattern graph and preregistered
+intervention ledger. Upper layers are deterministically replayed and checked
+on restore.
 
 Old `KairosV5MemoryV4`, `PathProjectorStateV4` and
 `CausalFactorGraphStateV3` are not migrated into production. Old Minecraft
