@@ -16,12 +16,12 @@ It is not a model, Minecraft, Formal V3, or production-capability result.
 | Command | Result |
 | --- | --- |
 | `npm run build --silent` | exit 0 |
-| `node --test dist/test/design-001-meta-evidence.test.js dist/test/design-001-interoception.test.js dist/test/plan-002-performance.test.js dist/test/design-006-temporal-fidelity.test.js dist/test/design-003a-capacity-probe.test.js` | 16/16, skipped 0 |
+| `node --test dist/test/design-001-meta-evidence.test.js dist/test/design-001-interoception.test.js dist/test/plan-002-performance.test.js dist/test/design-006-temporal-fidelity.test.js dist/test/design-003a-capacity-probe.test.js` | 17/17, skipped 0 |
 
 The focused checks cover deterministic eight-band quantization, deposition
 ordinal episode splitting, joint-context gating, snapshot replay, V6 internal
-metadata validation, pre-outcome channel bounds, exact worker ordering, and
-read-only temporal/capacity probes.
+metadata validation, six-channel pre-outcome summaries (including freshness
+filtering), exact worker ordering, and read-only temporal/capacity probes.
 
 ## Physical and runtime boundary
 
@@ -32,7 +32,9 @@ read-only temporal/capacity probes.
   after an enriched trusted event supplies a band.
 - The L2 index is not connected to world R2A grading or controller authority.
 - The internal channel metadata is not yet consumed by `eventRows` or the
-  world afferent projection; it is provenance transport only.
+  world afferent projection; it is provenance transport only. The additional
+  prediction, applicability and attention fields are bounded summaries of
+  fresh controller state, not causal evidence or controller authority.
 
 ## Known open classifications
 

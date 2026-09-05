@@ -403,7 +403,8 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     this.attention.bindActionTarget(rebound.action.targetId ?? 'self');
     // Freeze internal channels before the body action can produce its outcome.
     const frozenInternalChannels = computeInteroceptiveChannelsV1({
-      control: this.controller.snapshot, actions: this.#actions, actionBudget: this.config.actionBudget });
+      control: this.controller.snapshot, actions: this.#actions, actionBudget: this.config.actionBudget,
+      recentAttentionNotices: this.attention.notices.slice(-16) });
     const execution = await this.body.execute(rebound.action, observationScope);
     if (execution.result.executed) this.#actions++;
     let eventId: string | null = null;

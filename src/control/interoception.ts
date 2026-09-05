@@ -7,6 +7,8 @@ export interface InteroceptiveStateInputV1 {
   readonly control: PhysicalControlSnapshotV2 | null;
   readonly actions: number;
   readonly actionBudget: number;
+  /** Bounded recent attention notices retained by the current runtime. */
+  readonly recentAttentionNotices?: readonly { readonly kind: string }[];
 }
 
 function bounded(value: number): number {
@@ -31,6 +33,24 @@ readonly VerifiedInternalChannelV1[] {
   }
   const residual = input.control?.field.lastGoalEvaluation?.residual;
   if (typeof residual === 'number') add('goal-residual', residual);
+  const nodes = input.control?.workspace.nodes ?? [];
+  const predictions = nodes.filter(node => node.prediction?.fresh)
+    .map(node => node.prediction?.value)
+    .filter((value): value is NonNullable<typeof value> => value !== undefined);
+  if (predictions.length > 0)
+    add('prediction-support', predictions.reduce((sum, value) => sum + value.prediction.support, 0)
+      / predictions.length);
+  const conditionValues = nodes.flatMap(node => {
+    const condition = node.condition?.fresh ? node.condition.value : undefined;
+    return condition?.memberResults?.map(member => member.value) ?? (condition ? [condition] : []);
+  });
+  if (conditionValues.length > 0)
+    add('applicable-relations', conditionValues.filter(value => value.productionEligible
+      && value.applicability > 0).length / conditionValues.length);
+  const notices = input.recentAttentionNotices;
+  if (notices && notices.length > 0)
+    add('surprise-rate', notices.filter(value => value.kind === 'prediction-violation').length
+      / notices.length);
   if (Number.isFinite(input.actionBudget) && input.actionBudget > 0)
     add('action-budget-remaining', (input.actionBudget - input.actions) / input.actionBudget);
   return channels;

@@ -2,7 +2,39 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { RealEvent } from '../src/contracts.js';
 import { attachInteroceptionToEventV1, computeInteroceptiveChannelsV1 } from '../src/control/interoception.js';
+import type { PhysicalControlSnapshotV2 } from '../src/control/controller.js';
 import { validateEvent } from '../src/events.js';
+
+test('available control state exposes the six deterministic L1 channels', () => {
+  const control = {
+    field: {
+      sites: [{ activation: 0.2 }, { activation: 0.8 }],
+      lastGoalEvaluation: { residual: 0.4 },
+    },
+    workspace: {
+      nodes: [
+        { prediction: { fresh: true, value: { prediction: { support: 0.75 } } },
+          condition: { fresh: true, value: { productionEligible: true, applicability: 0.9 } } },
+        { prediction: { fresh: false, value: { prediction: { support: 1 } } },
+          condition: { fresh: true, value: { productionEligible: false, applicability: 1 } } },
+      ],
+    },
+  } as unknown as PhysicalControlSnapshotV2;
+  const channels = computeInteroceptiveChannelsV1({ control, actions: 2, actionBudget: 10,
+    recentAttentionNotices: [{ kind: 'prediction-violation' }, { kind: 'unknown-change' }] });
+  assert.deepEqual([...channels].map(channel => channel.name).sort(), [
+    'action-budget-remaining', 'applicable-relations', 'branch-entropy', 'goal-residual',
+    'prediction-support', 'surprise-rate',
+  ]);
+  const values = new Map(channels.map(channel => [channel.name, channel.value]));
+  assert.equal(values.get('prediction-support'), 0.75);
+  assert.equal(values.get('applicable-relations'), 0.5);
+  assert.equal(values.get('surprise-rate'), 0.5);
+  for (const channel of channels) {
+    assert.ok(channel.value >= 0 && channel.value <= 1);
+    assert.equal(channel.availableBeforeOutcome, true);
+  }
+});
 
 test('L1 interoceptive channels are bounded, deterministic and pre-outcome', () => {
   const input = { control: null, actions: 2, actionBudget: 10 } as const;

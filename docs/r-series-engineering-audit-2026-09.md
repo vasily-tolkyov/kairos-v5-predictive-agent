@@ -16,10 +16,15 @@ research designs are implemented.
 - DESIGN-001 L1 now has a small runtime-owned interoceptive channel module.
   Channels are frozen before an action, carried with the trusted event as
   `verified-internal` metadata, and deliberately kept out of public
-  `Observation.self.properties`. The L2 meta-relation learner, authority
-  mapping and external oscillator remain deferred. These channels are currently
-  provenance transport only: `eventRows` and the afferent projection do not
-  consume them, so they do not yet alter R1/R2/R2A evidence.
+  `Observation.self.properties`. When the controller snapshot has the relevant
+  fresh state, all six declared bounded signals are computed: branch entropy,
+  prediction support, applicable-relation fraction, attention-derived surprise
+  rate, goal residual and remaining action budget. Missing source state leaves
+  that channel unavailable rather than inventing a zero. The L2 meta-relation
+  learner, authority mapping and external oscillator remain deferred. These
+  channels are currently provenance transport only: `eventRows` and the
+  afferent projection do not consume them, so they do not yet alter R1/R2/R2A
+  evidence.
 - DESIGN-001 L2 now has an isolated meta-evidence index with fixed eight-band
   quantization, deposition-ordinal episode reconstruction, and external ×
   internal joint-context qualification. Trusted runtime events now carry this
@@ -49,10 +54,12 @@ probe intentionally does not claim decoded public-change equivalence. The
 capacity probe likewise leaves readout rates `null` when a fixture has not
 provided measurements; it never fabricates a score from event counts.
 
-The current L1 implementation is deliberately incomplete: only branch entropy,
-goal residual and action-budget channels are computed. The remaining declared
-channels (rollout support, applicable relation count and surprise rate), and a
-stronger runtime-only provenance capability, are not yet implemented.
+The current L1 implementation is deliberately bounded rather than authoritative:
+the six signals are engineering summaries of already-held controller and
+attention state, not learned causal variables. In particular, applicable-relation
+and surprise-rate are aggregate fractions, and they carry no authority to grade
+world evidence. A stronger runtime-only provenance capability is still not
+implemented; a structurally valid forged V6 payload remains a known boundary.
 
 ## Deferred work
 
