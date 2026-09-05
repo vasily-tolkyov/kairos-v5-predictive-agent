@@ -1,6 +1,7 @@
 import { Worker } from 'node:worker_threads';
 import type { KairosV5DistributedPhysicalMemoryV4 } from './distributed-hierarchical-memory.js';
 import type { DistributedLayerMeasurementsV1 } from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
+import type { TrustedRuntimeMeasurementContextV1 } from './core/physics/runtime-measured-salience-bridge-v1.js';
 
 /** The only compute worker is a physical-model owner, never another agent. */
 export class Compute {
@@ -42,6 +43,9 @@ export class Compute {
   }
   async restoreV4(snapshot: KairosV5DistributedPhysicalMemoryV4): Promise<void> {
     await this.call('restoreV4', snapshot);
+  }
+  async recordRuntimeMeasurement(input: TrustedRuntimeMeasurementContextV1): Promise<void> {
+    await this.call('recordRuntimeMeasurement', input);
   }
   async close(): Promise<void> { this.#closed = true; await this.worker.terminate(); }
 }

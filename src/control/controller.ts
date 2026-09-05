@@ -32,6 +32,8 @@ export interface PhysicalControlEnvironmentV2 {
   };
   executeOffer(offer: ActionOfferV1, observationScope: ActionObservationScopeV1): Promise<{ readonly executed: boolean; readonly observation: Observation;
     readonly eventId: string | null; readonly refusal?: 'action-budget-exhausted' | 'offer-stale' | 'target-unavailable' }>;
+  recordTrustedRuntimeGoalMeasurement?(eventId: string, observedAt: number,
+    goalResidualBefore: number, goalResidualAfter: number): Promise<void>;
   commitHabitOutcome?(outcome: TrustedRealActionOutcomeV1): Promise<void>;
   status(): Promise<{ readonly ready: boolean; readonly bufferedEvents: number; readonly writes: number }>;
   readonly actionCount: number;
@@ -833,6 +835,9 @@ export class PhysicalControlManagerV2 {
       if (result.executed && result.eventId) {
         const afterEvaluation = this.#goalEvaluator.evaluate(result.observation);
         const reduction = clamp01(beforeResidual - afterEvaluation.residual);
+        if (this.environment.recordTrustedRuntimeGoalMeasurement)
+          await this.environment.recordTrustedRuntimeGoalMeasurement(result.eventId,
+            result.observation.activeSeconds, beforeResidual, afterEvaluation.residual);
         const outcome: TrustedRealActionOutcomeV1 = { source: 'trusted-real-executed-action', dispatchSequence,
           residualReduction: reduction,
           predictionViolation: explicitPredictionViolationV2(selectedPrediction, observation, result.observation) };

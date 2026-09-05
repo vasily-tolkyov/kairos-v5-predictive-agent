@@ -11,6 +11,20 @@ export interface TrustedRuntimeSalienceInputV1 {
   readonly goalResidualAfter: number;
 }
 
+/**
+ * Runtime-owned outcome context.  The caller supplies only the event identity
+ * and the two residual readings; physical structure support and the measured
+ * deviation are resolved by the trusted runtime/memory boundary.
+ */
+export interface TrustedRuntimeMeasurementContextV1 {
+  readonly version: 'TrustedRuntimeMeasurementContextV1';
+  readonly eventId: string;
+  readonly observedAt: number;
+  readonly goalResidualBefore: number;
+  readonly goalResidualAfter: number;
+  readonly predictionDeviation: PredictionViolationMeasurementV1 | null;
+}
+
 function finiteNonnegative(value: number, label: string): void {
   if (!Number.isFinite(value) || value < 0) throw new RangeError(`${label} must be finite and nonnegative`);
 }

@@ -5,11 +5,12 @@ import { assert } from '../util.js';
 import { AttentionController } from './attention-controller.js';
 import type { AttentionCandidate } from './types.js';
 import { randomUUID } from 'node:crypto';
-import { measurePredictionDeviationV1 } from './prediction-deviation.js';
+import { measurePredictionDeviationV1, type PredictionViolationMeasurementV1 } from './prediction-deviation.js';
 
 export interface AttentionNotice { readonly kind: 'prediction-violation' | 'unknown-change'; readonly subjectId: string;
   readonly sequence: number; readonly forecastCompletedBeforeSequence: number | null; readonly evidence: unknown;
-  readonly predictionDeviationMagnitude?: number; }
+  readonly predictionDeviationMagnitude?: number;
+  readonly predictionDeviation?: PredictionViolationMeasurementV1; }
 interface Forecast { readonly prediction: Prediction; readonly subjectId: string; readonly completedSequence: number; readonly originSequence: number; }
 function consistentChange(expected: PublicChange, actual: PublicChange): boolean {
   if (expected.subject !== actual.subject || expected.property !== actual.property) return false;
@@ -94,7 +95,8 @@ export class AttentionMonitor {
           this.#notice({ kind: classification, subjectId, sequence: frame.sequence,
             forecastCompletedBeforeSequence: forecast!.completedSequence,
             evidence: { changes: subjectChanges, prediction: forecast!.prediction, measurement },
-            ...(measurement ? { predictionDeviationMagnitude: measurement.magnitude } : {}) });
+            ...(measurement ? { predictionDeviationMagnitude: measurement.magnitude,
+              predictionDeviation: measurement } : {}) });
         }
         const novelty = this.#pendingNoveltySubjects.has(subjectId) ? 1 : 0;
         return { targetId: subjectId, safe: true, changeMagnitude: magnitude, changeDerivative: 0,

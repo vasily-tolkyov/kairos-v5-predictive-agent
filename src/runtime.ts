@@ -5,6 +5,7 @@ import type { Configuration } from './services.js';
 import { MinecraftBody } from './body.js';
 import { Compute } from './compute.js';
 import { AttentionMonitor } from './attention/monitor.js';
+import type { PredictionViolationMeasurementV1 } from './attention/prediction-deviation.js';
 import { actionObservationTrackedIdsV1, eventRows, cueIdentity, realEventHierarchyContinuityV1,
   validateEvent } from './events.js';
 import { assert, saveJson, sha } from './util.js';
@@ -24,6 +25,8 @@ import type { DistributedR2AInterventionPairV2 }
   from './core/learning/distributed-r2a-physical-contracts.js';
 import type { DistributedNoveltyRecordV1 }
   from './core/learning/distributed-r1-contracts.js';
+import type { TrustedRuntimeMeasurementContextV1 }
+  from './core/physics/runtime-measured-salience-bridge-v1.js';
 import { KAIROS_V5_RUNTIME_VERSION } from './core/compatibility.js';
 
 const DISTRIBUTED_MEMORY_V4_VERSION = 'KairosV5DistributedPhysicalMemoryV4' as const;
@@ -384,6 +387,8 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
   #map: string | null = null;
   #lastSnapshot: MemorySnapshot | null = null;
   #pendingPassive: RealEvent[] = [];
+  #eventPredictionDeviations = new Map<string, PredictionViolationMeasurementV1 | null>();
+  #runtimeMeasuredEventIds = new Set<string>();
   #learnedChanges: { start: number; end: number }[] = [];
   #habitObservationTime = 0;
   #periodicHabitSavePending = false;
@@ -529,6 +534,22 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     this.#timescaleV4Enabled = true;
     this.record('timescale-v4-enabled', { version: DISTRIBUTED_MEMORY_V4_VERSION });
   }
+  async recordTrustedRuntimeGoalMeasurement(eventId: string, observedAt: number,
+    goalResidualBefore: number, goalResidualAfter: number): Promise<void> {
+    if (!this.#timescaleV4Enabled) return;
+    assert(!this.#runtimeMeasuredEventIds.has(eventId), 'runtime-measurement-already-recorded');
+    const predictionDeviation = this.#eventPredictionDeviations.get(eventId) ?? null;
+    const input: TrustedRuntimeMeasurementContextV1 = {
+      version: 'TrustedRuntimeMeasurementContextV1', eventId, observedAt,
+      goalResidualBefore, goalResidualAfter, predictionDeviation,
+    };
+    await this.compute.recordRuntimeMeasurement(input);
+    this.#eventPredictionDeviations.delete(eventId);
+    this.#runtimeMeasuredEventIds.add(eventId);
+    this.record('timescale-runtime-measurement', { eventId, observedAt,
+      predictionDeviationMagnitude: predictionDeviation?.magnitude ?? 0,
+      goalResidualBefore, goalResidualAfter });
+  }
   async executeOffer(offer: ActionOfferV1, observationScope: ActionObservationScopeV1): Promise<{ executed: boolean; observation: Observation; eventId: string | null;
     refusal?: 'action-budget-exhausted' | 'offer-stale' | 'target-unavailable' }> {
     if (this.#actions >= this.config.actionBudget) return { executed: false, observation: this.body.latest(), eventId: null,
@@ -625,6 +646,8 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     const enrichedEvent = attachInteroceptionToEventV1(event, internalChannels);
     this.#beforeObserve?.(this.#newEvents, enrichedEvent); this.record('real-event', enrichedEvent);
     const written = await this.compute.call<MemoryObservationReceipt>('observe', enrichedEvent);
+    if (this.#timescaleV4Enabled && event.provenance === 'executed-real-body')
+      this.#eventPredictionDeviations.set(event.id, this.#predictionDeviationForEvent(event));
     // The shutdown test intentionally injects the retired audit-only memory
     // backend.  Its historical receipt predates novelty, so keep that test
     // double readable without restoring the retired distributed rejection
@@ -650,6 +673,22 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       else await this.save();
     }
     return written;
+  }
+  #predictionDeviationForEvent(event: RealEvent): PredictionViolationMeasurementV1 | null {
+    const first = event.frames[0]!.sequence;
+    const last = event.frames.at(-1)!.sequence;
+    const measurements = this.attention.notices
+      .filter(notice => notice.sequence > first && notice.sequence <= last)
+      .map(notice => notice.predictionDeviation)
+      .filter((value): value is PredictionViolationMeasurementV1 => value !== undefined);
+    if (measurements.length === 0) return null;
+    if (measurements.length === 1) return structuredClone(measurements[0]!);
+    const expectedChangeCount = measurements.reduce((sum, value) => sum + value.expectedChangeCount, 0);
+    const missingExpectedChangeCount = measurements.reduce((sum, value) => sum + value.missingExpectedChangeCount, 0);
+    const unexpectedChangeCount = measurements.reduce((sum, value) => sum + value.unexpectedChangeCount, 0);
+    return { version: 'PredictionViolationMeasurementV1', source: 'attention-physical-comparison',
+      expectedChangeCount, missingExpectedChangeCount, unexpectedChangeCount,
+      magnitude: Math.min(1, measurements.reduce((sum, value) => sum + value.magnitude, 0)) };
   }
   #advanceHabitTo(activeSeconds: number): void {
     assert(Number.isFinite(activeSeconds) && activeSeconds >= 0, 'invalid-control-habit-observation-time');

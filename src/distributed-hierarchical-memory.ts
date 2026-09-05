@@ -48,6 +48,8 @@ import { DistributedPredictionCloneV2 }
   from './core/prediction/distributed-prediction-clone.js';
 import { runDistributedPredictionCloneBatchParallelV1 }
   from './core/prediction/distributed-prediction-clone-parallel.js';
+import { RuntimeMeasuredSalienceBridgeV1, type TrustedRuntimeMeasurementContextV1 }
+  from './core/physics/runtime-measured-salience-bridge-v1.js';
 import { runDistributedMediumProbeBatchSyncV1, type DistributedMediumProbeJobV1 }
   from './core/physics/distributed-medium-probe-parallel.js';
 import type { DistributedPredictionCloneRequestV2, DistributedPredictionCloneResultV2 }
@@ -306,6 +308,51 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       this.#r1Revision++; this.#r2Revision++;
       this.#invalidatePredictionCaches();
       this.#activeSeconds = activeSeconds;
+    }
+  }
+
+  /**
+   * Ingest the runtime's measured outcome after the corresponding real event
+   * has been deposited.  Structure identities are resolved from the committed
+   * R1/R2/R2A records here; callers cannot choose support mass, salience or a
+   * physical location.  This path exists only for the explicit V4 owner.
+   */
+  recordRuntimeMeasurement(input: TrustedRuntimeMeasurementContextV1): void {
+    assert(this.#timescaleEnabled, 'runtime measurements require V4 timescale owner');
+    assert(input.version === 'TrustedRuntimeMeasurementContextV1'
+      && typeof input.eventId === 'string' && input.eventId.length > 0,
+    'invalid-runtime-measurement-context');
+    const annotation = this.#annotations.get(input.eventId);
+    assert(annotation, 'runtime-measurement-event-not-observed');
+    assert(Number.isFinite(input.observedAt) && input.observedAt >= 0,
+      'invalid-runtime-measurement-time');
+    const eventEnd = annotation.r1Record.footprint.depositedAt;
+    assert(input.observedAt >= eventEnd, 'runtime-measurement-before-event-end');
+
+    const bridge = new RuntimeMeasuredSalienceBridgeV1();
+    const common = { observedAt: input.observedAt,
+      predictionDeviation: input.predictionDeviation,
+      goalResidualBefore: input.goalResidualBefore,
+      goalResidualAfter: input.goalResidualAfter };
+    const capture = (medium: DistributedMediumSnapshotV1,
+      structureIds: readonly string[]): readonly RuntimeMeasuredSalienceV2[] => [...new Set(structureIds)]
+      .map(structureId => bridge.capture(medium, { ...common, structureId }));
+
+    const r1 = capture(this.#r1Medium.snapshot(),
+      [`trace:${annotation.r1Record.footprint.traceId}`]);
+    const r2Events = annotation.r2EventIds
+      .flatMap(eventId => this.#r2.events().filter(value => value.eventId === eventId))
+      .filter(value => value.physicalFootprint !== null && value.learningEligible);
+    const r2 = capture(this.#r2.medium.snapshot(), r2Events
+      .map(value => `trace:${value.physicalFootprint!.traceId}`));
+    const r2aTraceIds = r2Events.flatMap(value => this.#patternsFor(value)
+      .flatMap(pattern => pattern.physicalTraceIds));
+    const r2a = capture(this.#r2a.medium.snapshot(), r2aTraceIds.map(value => `trace:${value}`));
+    this.#timescaleOwner!.advanceTo(input.observedAt, { r1, r2, r2a });
+    if (input.observedAt > this.#activeSeconds) {
+      this.#activeSeconds = input.observedAt;
+      this.#r1.invalidatePhysicalQualification();
+      this.#r1Revision++; this.#r2Revision++; this.#invalidatePredictionCaches();
     }
   }
 

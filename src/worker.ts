@@ -4,6 +4,8 @@ import { DistributedHierarchicalPhysicalMemoryV1 as PhysicalMemory,
   type KairosV5DistributedPhysicalMemoryV4 as MemorySnapshotV4 } from './distributed-hierarchical-memory.js';
 import type { DistributedLayerMeasurementsV1 }
   from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
+import type { TrustedRuntimeMeasurementContextV1 }
+  from './core/physics/runtime-measured-salience-bridge-v1.js';
 import type { ActionCue, DesiredChange, Observation, RealEvent } from './contracts.js';
 import type { EffectRecallCandidateV1, GroundedGoalV1, GoalEvaluationV1,
   HypotheticalPublicStateV1 } from './control/contracts.js';
@@ -50,6 +52,8 @@ parentPort!.on('message', (message: { id: number; method: string; args: unknown[
       case 'restore': memory = PhysicalMemory.restore(args[0] as MemorySnapshot); value = { writes: memory.writes }; break;
       case 'restoreV4': memory = PhysicalMemory.restoreV4(args[0] as MemorySnapshotV4);
         value = { writes: memory.writes }; break;
+      case 'recordRuntimeMeasurement': memory.recordRuntimeMeasurement(
+        args[0] as TrustedRuntimeMeasurementContextV1); value = null; break;
       case 'status': value = { ready: memory.ready, writes: memory.writes, bufferedEvents: memory.bufferedEvents,
         mapSha256: memory.mapSha256 }; break;
       case 'hash': value = sha(memory.snapshot()); break;
