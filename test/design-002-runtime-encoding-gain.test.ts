@@ -5,7 +5,7 @@ import { DistributedPhysicalMedium3DV1 } from '../src/core/physics/distributed-p
 import type { DistributedEpisodeV1 } from '../src/core/physics/distributed-physical-contracts.js';
 import type { Observation, RealEvent } from '../src/contracts.js';
 
-function event(id: string, endSeconds: number): RealEvent {
+function event(id: string, endSeconds: number, passive = false): RealEvent {
   const frames: Observation[] = [0, 1].map(index => ({
     sequence: index + (endSeconds === .1 ? 0 : 2),
     activeSeconds: endSeconds - .05 + index * .05,
@@ -14,8 +14,8 @@ function event(id: string, endSeconds: number): RealEvent {
   }));
   return { version: 'RealEventV5', id,
     cue: { kind: 'wait', parameters: { ticks: 1 }, targetRole: null }, frames,
-    trackedIds: ['self'], provenance: 'executed-real-body', complete: true,
-    bodyResult: { action: { kind: 'wait', parameters: { ticks: 1 } }, executed: true,
+    trackedIds: ['self'], provenance: passive ? 'observed-passive' : 'executed-real-body', complete: true,
+    bodyResult: passive ? null : { action: { kind: 'wait', parameters: { ticks: 1 } }, executed: true,
       status: 'completed', startSequence: frames[0]!.sequence, endSequence: frames[1]!.sequence } };
 }
 
@@ -70,4 +70,20 @@ test('gain-one V4 deposition is byte-equivalent to the legacy medium path', () =
   legacy.applyEpisode(episode, 1);
   v4.applyEpisodeWithEncodingGain(episode, 1, 1);
   assert.deepEqual(v4.snapshot(), legacy.snapshot());
+});
+
+test('a V4 passive deviation can raise arousal without creating evidence', () => {
+  const memory = new DistributedHierarchicalPhysicalMemoryV1();
+  memory.snapshotV4();
+  const passive = event('encoding-gain-passive', .1, true);
+  memory.observe(passive);
+  const before = memory.snapshot();
+  memory.recordRuntimeMeasurement({ version: 'TrustedRuntimeMeasurementContextV1',
+    eventId: passive.id, observedAt: .1, goalResidualBefore: 0, goalResidualAfter: 0,
+    predictionDeviation: { version: 'PredictionViolationMeasurementV1',
+      source: 'attention-physical-comparison', expectedChangeCount: 1,
+      missingExpectedChangeCount: 1, unexpectedChangeCount: 0, magnitude: .7 } });
+  const after = memory.snapshotV4();
+  assert.deepEqual(after.r1.records, before.r1.records);
+  assert(after.timescales.r1.timescale.arousal > 0);
 });

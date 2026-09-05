@@ -52,9 +52,10 @@ its partial output is not counted as a pass.
 
 ## Boundary
 
-No model, Minecraft, Formal, replay writer, passive-event path, or E1-E7
-qualification was run. This is an additive V4-opt-in law connection, not a
-claim that DESIGN-002 is complete. The distributed medium source is changed
+No model, Minecraft, Formal, replay writer, or E1-E7 qualification was run;
+broad passive-event qualification remains outstanding. This is an additive
+V4-opt-in law connection, not a claim that DESIGN-002 is complete. The
+distributed medium source is changed
 only to expose the law-derived plastic-gain path; the underlying random field,
 Metropolis dynamics, recovery constants and PredictionClone semantics are
 unchanged.

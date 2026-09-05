@@ -646,8 +646,26 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     const enrichedEvent = attachInteroceptionToEventV1(event, internalChannels);
     this.#beforeObserve?.(this.#newEvents, enrichedEvent); this.record('real-event', enrichedEvent);
     const written = await this.compute.call<MemoryObservationReceipt>('observe', enrichedEvent);
-    if (this.#timescaleV4Enabled && event.provenance === 'executed-real-body')
-      this.#eventPredictionDeviations.set(event.id, this.#predictionDeviationForEvent(event));
+    if (this.#timescaleV4Enabled) {
+      const predictionDeviation = this.#predictionDeviationForEvent(event);
+      if (event.provenance === 'executed-real-body') {
+        // The controller submits the action's goal measurement after it has
+        // computed the residual change. Keeping this pending avoids consuming
+        // the same event twice.
+        this.#eventPredictionDeviations.set(event.id, predictionDeviation);
+      } else {
+        // Passive windows have no body result or goal residual. Their only
+        // salience input is an attention measurement from the same sealed
+        // window, so consume it immediately after the event deposit.
+        await this.compute.recordRuntimeMeasurement({
+          version: 'TrustedRuntimeMeasurementContextV1', eventId: event.id,
+          observedAt: eventTime, goalResidualBefore: 0, goalResidualAfter: 0,
+          predictionDeviation,
+        });
+        this.record('timescale-passive-measurement', { eventId: event.id,
+          observedAt: eventTime, predictionDeviationMagnitude: predictionDeviation?.magnitude ?? 0 });
+      }
+    }
     // The shutdown test intentionally injects the retired audit-only memory
     // backend.  Its historical receipt predates novelty, so keep that test
     // double readable without restoring the retired distributed rejection

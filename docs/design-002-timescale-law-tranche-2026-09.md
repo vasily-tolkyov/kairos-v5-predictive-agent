@@ -48,7 +48,7 @@ runtime-private, V4-opt-in measurement path now routes bounded action outcomes
 through the trusted owner, and that owner's arousal-derived encoding gain is
 applied to R1/R2/R2A plastic deposition without inflating evidence support;
 the ordinary V3 runtime remains unchanged. Replay writer/homeostasis wiring,
-passive-event salience and the full E1–E7 gates are still deferred, so these
+full passive-event qualification and the full E1–E7 gates are still deferred, so these
 primitives are not evidence that D002 is complete.
 
 ## Focused checks
@@ -66,14 +66,15 @@ execution scope.
   isolation**.
 - Attention deviation measurement: **implemented in isolation**; action-outcome
   arousal injection and V4 encoding-gain deposition are **implemented in the
-  opt-in owner seam**; passive-event arousal remains **deferred**.
+  opt-in owner seam**, including the V4 passive-event runtime path; broad
+  passive-event qualification remains **deferred**.
 - V1/V2 logical-clock adapter: **implemented in isolation**; production medium
   replacement and per-structure recovery are **deferred**.
 - V2 snapshot recovery transform: **implemented in isolation**; live medium
   mutation and full E1–E7 validation are **deferred**.
 - Runtime measurement bridge: **implemented**; trusted action-outcome ingress
-  is **implemented as an explicit V4 opt-in**, while passive-event ingress and
-  full production checkpoint policy remain **deferred**.
+  is **implemented as an explicit V4 opt-in**, while broad passive-event
+  qualification and full production checkpoint policy remain **deferred**.
 - Replay's narrow writer now requires explicit site/bond existence checks, so
   the whitelist cannot silently create structures absent from the substrate.
 - A staged `DistributedHierarchicalTimescaleOwnerV1` now owns one V2 time
@@ -91,8 +92,8 @@ execution scope.
   `advanceMeasured`, `snapshotV4` and `restoreV4` calls for this opt-in seam;
   the ordinary Runtime saver and V3 restore path still do not select it.
 - Production salience-conditioned recovery: **deferred**.
-- Arousal wired into V4 action-event plastic deposition: **implemented in the
-  opt-in owner seam**; default V3 and passive-event paths remain unchanged.
+- Arousal wired into V4 action/passive-event plastic deposition: **implemented
+  in the opt-in owner seam**; default V3 remains unchanged.
 - Idle replay planner and whitelist: **implemented in isolation**; production
   writer/homeostasis wiring: **deferred**.
 - E1–E7 experimental validation: **not run**.

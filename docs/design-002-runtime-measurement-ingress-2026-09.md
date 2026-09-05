@@ -19,10 +19,11 @@ deposit time, the memory top-level active time advances with the three physical
 layers and prediction caches are invalidated. A duplicate runtime measurement
 for one event is rejected by the runtime before it reaches the worker.
 
-This tranche covers executed-action outcomes only. Passive attention events,
-arousal/encoding-gain deposit wiring, idle replay/homeostasis, and the E1-E7
-experimental gates remain deferred DESIGN-002 work. No model, Minecraft,
-Formal, or long-term evidence run is part of this change.
+This tranche covers the trusted measurement boundary; the follow-up now also
+consumes V4 passive attention events and connects arousal-derived encoding
+gain. Idle replay/homeostasis and the E1-E7 experimental gates remain deferred
+DESIGN-002 work. No model, Minecraft, Formal, or long-term evidence run is part
+of this change.
 
 ## Verification
 
