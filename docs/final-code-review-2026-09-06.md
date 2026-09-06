@@ -9,11 +9,13 @@ prototype surface.
 
 ## Cleanup completed
 
-- Enabled `noUnusedLocals` and `noUnusedParameters` in `tsconfig.json`.
-- Removed unused production helpers, fields, parameters, imports and locals.
+- Audited the tree with temporary `noUnusedLocals` and `noUnusedParameters`
+  checks and removed the unused production helpers, fields, parameters,
+  imports and locals they exposed. The flags are not retained in
+  `tsconfig.json` because the protected physical-medium file must remain
+  byte-exact; its intentional unused local is part of that frozen identity.
   No physical rule, gate, timing law, evidence write, or error path was
-  changed. The cleanup removed 90 lines and added 30 lines of boundary/docs
-  code.
+  changed.
 - Kept fail-closed assertions and the outer original-error propagation. These
   are contract enforcement, not fallback behavior; removing them would allow
   stale physical evidence, invalid snapshots or unsafe actions to continue.
@@ -36,7 +38,8 @@ exports contain no Mineflayer, server or viewer dependency.
 
 ## Verification
 
-- `npm run build`: passed with strict unused-symbol checks enabled.
+- `npm run build`: passed after the cleanup; the temporary unused-symbol audit
+  also passed before its flags were removed from the build configuration.
 - Boundary, R-series and runtime-entry tests: 9/9 passed.
 - The separated prototype suite completed 487 passed, 2 skipped and one stale
   entry assertion; that assertion was updated to the current explicit fixture
