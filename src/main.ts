@@ -4,7 +4,7 @@ import { isAbsolute, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import type { Server } from 'node:http';
-import { loadConfiguration, Services } from './services.js';
+import { loadConfiguration, Services, type MinecraftFixtureModeV1 } from './services.js';
 import { MinecraftBody } from './body.js';
 import { assertNewExperienceOutput, restoreExperience, restoreExperienceV4, V5Runtime } from './runtime.js';
 import { Compute } from './compute.js';
@@ -14,18 +14,21 @@ import { startDashboard } from './dashboard.js';
 import { assert, canonical, saveJson, sha } from './util.js';
 
 export function parseRunOptions(args: readonly string[]): { bootstrapOnly: boolean;
-  experiencePointer: string | null; evidenceDirectory: string | null; goalFile: string | null } {
+  experiencePointer: string | null; evidenceDirectory: string | null; goalFile: string | null;
+  fixture: MinecraftFixtureModeV1 } {
   const value = (name: string): string | null => {
     const index = args.indexOf(name); if (index < 0) return null;
     assert(args[index + 1] && !args[index + 1]!.startsWith('--'), `missing-${name.slice(2)}`); return args[index + 1]!;
   };
   const experiencePointer = value('--experience-pointer'), evidenceDirectory = value('--evidence-dir'),
-    goalFile = value('--goal-file');
+    goalFile = value('--goal-file'), fixtureValue = value('--fixture');
   assert(experiencePointer === null || isAbsolute(experiencePointer), 'experience-pointer-must-be-absolute');
   assert(goalFile === null || isAbsolute(goalFile), 'goal-file-must-be-absolute');
+  const fixture = (fixtureValue ?? 'empty') as MinecraftFixtureModeV1;
+  assert(fixture === 'empty' || fixture === 'legacy-door', 'fixture-must-be-empty-or-legacy-door');
   assert(!(args.includes('--bootstrap-only') && goalFile !== null),
     'goal-file-incompatible-with-bootstrap-only');
-  return { bootstrapOnly: args.includes('--bootstrap-only'), experiencePointer, evidenceDirectory, goalFile };
+  return { bootstrapOnly: args.includes('--bootstrap-only'), experiencePointer, evidenceDirectory, goalFile, fixture };
 }
 
 async function restoreRuntimeExperience(compute: Compute, pointerPath: string | null) {
@@ -59,14 +62,14 @@ async function main(): Promise<void> {
   let stopWatcher: FSWatcher | null = null;
   const status: Record<string, unknown> = { runId, evidence, runtimeVersion: 'KairosV5JointPhysicalControlRuntimeV2',
     configurationSha256: sha(config), externalAnalyzerPresent: false, formalAccessed: false,
-    experiencePointer: options.experiencePointer, bootstrapOnly: options.bootstrapOnly };
+    experiencePointer: options.experiencePointer, bootstrapOnly: options.bootstrapOnly, fixture: options.fixture };
   let stopping = false;
   const stop = () => { stopping = true; void body?.close(); };
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
   try {
     compute = new Compute(); const restored = await restoreRuntimeExperience(compute, options.experiencePointer);
     status.experienceLoaded = restored !== null; status.initialPhysical = await compute.call('status');
-    await services.start('empty');
+    await services.start(options.fixture);
     body = new MinecraftBody({ ...config.minecraft, worldId: runId, sessionId: runId,
       activeSecondsOffset: restored?.snapshot.activeSeconds ?? 0 }, record);
     await body.ready(); await services.placeBot();

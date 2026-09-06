@@ -25,7 +25,7 @@
 
 ```powershell
 npm run build
-npm start -- --experience-pointer D:\path\to\EXPERIENCE_LATEST.json --goal-file D:\path\to\goal.json
+npm start -- --fixture legacy-door --experience-pointer D:\path\to\EXPERIENCE_LATEST.json --goal-file D:\path\to\goal.json
 ```
 
 如果没有经验指针，先运行 `npm start -- --bootstrap-only`，让系统只在隔离世界中采集真实经验。没有达到初始化门时不会执行目标。运行时会在 `http://127.0.0.1:3000/` 提供第一视角、在 `http://127.0.0.1:3002/` 提供只读物理/控制面板。
