@@ -8,19 +8,24 @@ import { loadConfiguration, Services } from './services.js';
 import { MinecraftBody } from './body.js';
 import { assertNewExperienceOutput, restoreExperience, restoreExperienceV4, V5Runtime } from './runtime.js';
 import { Compute } from './compute.js';
+import type { GroundedGoalV1 } from './control/contracts.js';
 import { startLoopbackMineflayerViewerV1 } from './viewer.mjs';
 import { startDashboard } from './dashboard.js';
 import { assert, canonical, saveJson, sha } from './util.js';
 
 export function parseRunOptions(args: readonly string[]): { bootstrapOnly: boolean;
-  experiencePointer: string | null; evidenceDirectory: string | null } {
+  experiencePointer: string | null; evidenceDirectory: string | null; goalFile: string | null } {
   const value = (name: string): string | null => {
     const index = args.indexOf(name); if (index < 0) return null;
     assert(args[index + 1] && !args[index + 1]!.startsWith('--'), `missing-${name.slice(2)}`); return args[index + 1]!;
   };
-  const experiencePointer = value('--experience-pointer'), evidenceDirectory = value('--evidence-dir');
+  const experiencePointer = value('--experience-pointer'), evidenceDirectory = value('--evidence-dir'),
+    goalFile = value('--goal-file');
   assert(experiencePointer === null || isAbsolute(experiencePointer), 'experience-pointer-must-be-absolute');
-  return { bootstrapOnly: args.includes('--bootstrap-only'), experiencePointer, evidenceDirectory };
+  assert(goalFile === null || isAbsolute(goalFile), 'goal-file-must-be-absolute');
+  assert(!(args.includes('--bootstrap-only') && goalFile !== null),
+    'goal-file-incompatible-with-bootstrap-only');
+  return { bootstrapOnly: args.includes('--bootstrap-only'), experiencePointer, evidenceDirectory, goalFile };
 }
 
 async function restoreRuntimeExperience(compute: Compute, pointerPath: string | null) {
@@ -33,6 +38,9 @@ async function restoreRuntimeExperience(compute: Compute, pointerPath: string | 
 
 async function main(): Promise<void> {
   const options = parseRunOptions(process.argv.slice(2)); const config = await loadConfiguration();
+  const goal = options.goalFile === null ? null
+    : JSON.parse(await readFile(options.goalFile, 'utf8')) as GroundedGoalV1;
+  if (goal !== null) assert(goal.version === 'GroundedGoalV1', 'goal-file-version-invalid');
   const runId = `v5-physical-${new Date().toISOString().replace(/[:.]/g, '-')}-${randomUUID().slice(0, 8)}`;
   const evidence = resolve(options.evidenceDirectory ?? config.evidenceRoot, options.evidenceDirectory ? '' : runId);
   const runRoot = resolve(config.runtimeRoot, runId);
@@ -77,10 +85,15 @@ async function main(): Promise<void> {
     if (!initial.ready) status.initialization = await runtime.initializeFromRealExploration();
     const physical = await runtime.status(); status.physical = physical;
     if (physical.ready && !options.bootstrapOnly && !stopping) {
-      // Production no longer invents a Minecraft-semantic objective. A caller must provide a
-      // grounded, publicly verifiable goal through an explicit future integration boundary.
-      status.goalInput = { status: 'structured-goal-required', acceptedVersion: 'GroundedGoalV1' };
-      record('structured-goal-required', status.goalInput);
+      if (goal === null) {
+        // Production no longer invents a Minecraft-semantic objective. A caller must provide a
+        // grounded, publicly verifiable goal through this explicit input boundary.
+        status.goalInput = { status: 'structured-goal-required', acceptedVersion: 'GroundedGoalV1' };
+        record('structured-goal-required', status.goalInput);
+      } else {
+        status.goalInput = { status: 'accepted', version: goal.version, file: options.goalFile };
+        status.goal = await runtime.runGoal(goal);
+      }
     }
     status.actions = runtime.actions; status.events = runtime.eventCount; status.writes = runtime.writes;
     status.physical = await runtime.status();
