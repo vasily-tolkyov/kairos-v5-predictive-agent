@@ -7,7 +7,7 @@ const root = resolve(import.meta.dirname, '..');
 const output = join(root, 'evidence/r-series-complete-prototype-v1');
 mkdirSync(output, { recursive: true });
 const mode = process.argv[2] ?? 'baseline';
-if (!['baseline', 'final', 'final-refresh', 'final-refresh-2', 'final-refresh-3', 'final-refresh-4'].includes(mode)) throw new Error('unknown audit mode');
+if (!['baseline', 'final', 'final-refresh', 'final-refresh-2', 'final-refresh-3', 'final-refresh-4', 'final-refresh-5'].includes(mode)) throw new Error('unknown audit mode');
 const digest = value => createHash('sha256').update(value).digest('hex').toUpperCase();
 const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 const files = git('ls-files').split(/\r?\n/).filter(path => /^(src|test|scripts|docs)\//.test(path)
@@ -22,7 +22,8 @@ const record = { version: 'RSeriesEngineeringAuditV1', mode, head: git('rev-pars
 const targetName = mode === 'final-refresh' ? 'FINAL_IDENTITY_REFRESH'
   : mode === 'final-refresh-2' ? 'FINAL_IDENTITY_REFRESH_2'
   : mode === 'final-refresh-3' ? 'FINAL_IDENTITY_REFRESH_3'
-  : mode === 'final-refresh-4' ? 'FINAL_IDENTITY_REFRESH_4' : mode.toUpperCase();
+  : mode === 'final-refresh-4' ? 'FINAL_IDENTITY_REFRESH_4'
+  : mode === 'final-refresh-5' ? 'FINAL_IDENTITY_REFRESH_5' : mode.toUpperCase();
 const target = join(output, `${targetName}_IDENTITY.json`);
 if (existsSync(target)) throw new Error(`audit-already-exists:${target}`);
 if (mode === 'baseline') {
