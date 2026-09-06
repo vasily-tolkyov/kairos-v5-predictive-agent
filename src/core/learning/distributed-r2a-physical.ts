@@ -570,31 +570,6 @@ export function distributedObservedPopulationCoversLocalAssemblyV1(
   return coveredFraction(localAssemblySiteIds, observedPopulationSiteIds);
 }
 
-/** Physical consensus across repeated real member footprints.  A site remains
- * in a pulse only when it was present in at least 80% of the member events;
- * no event label, result value, or coordinate transform participates. */
-function consensusPulseSequence(sequences: readonly (readonly (readonly number[])[])[],
-  minimumFraction = .8): readonly (readonly number[])[] {
-  if (sequences.length === 0) return [];
-  const required = Math.ceil(sequences.length * minimumFraction);
-  const maximumLength = Math.max(...sequences.map(value => value.length));
-  const result: number[][] = [];
-  for (let pulseIndex = 0; pulseIndex < maximumLength; pulseIndex++) {
-    const present = sequences.filter(value => (value[pulseIndex]?.length ?? 0) > 0);
-    if (present.length < required) break;
-    const counts = new Map<number, number>();
-    for (const sequence of present) {
-      for (const siteId of new Set(sequence[pulseIndex]!))
-        counts.set(siteId, (counts.get(siteId) ?? 0) + 1);
-    }
-    const pulse = [...counts].filter(([, count]) => count >= required)
-      .map(([siteId]) => siteId).sort((left, right) => left - right);
-    if (pulse.length === 0) break;
-    result.push(pulse);
-  }
-  return result;
-}
-
 function evidenceRank(value: string): number {
   return ['none', 'single-observation', 'repeated-correlation', 'predictive-stable',
     'causal-hypothesis', 'intervention-supported'].indexOf(value);
@@ -610,24 +585,8 @@ function emptyAttractor(): DistributedAttractorReadoutV1 {
     returnRate: 0, escapeRate: 1, evidenceLevel: 'none', ambiguous: false, run: emptyRun() };
 }
 
-function actualVisited(readout: DistributedAttractorReadoutV1, minimum: number): Set<number> {
-  return new Set([...readout.run.leaderSiteIds,
-    ...readout.run.finalActivations.filter(value => value.activation > minimum).map(value => value.siteId)]);
-}
-
-function reachedFraction(readout: DistributedAttractorReadoutV1,
-  target: readonly number[], minimum: number): number {
-  if (target.length === 0 || readout.evidenceLevel === 'none') return 0;
-  const visited = actualVisited(readout, minimum);
-  return target.filter(siteId => visited.has(siteId)).length / target.length;
-}
-
 function cloneBinding(value: DistributedR2AConditionBindingV2): DistributedR2AConditionBindingV2 {
   return { ...value, siteIds: [...value.siteIds] };
-}
-
-function eventChannels(signals: readonly string[]): Map<string, string> {
-  return new Map(signals.map(signal => [distributedPublicSignalChannelIdV1(signal), signal]));
 }
 
 /**
@@ -1906,7 +1865,6 @@ export class DistributedR2APhysicalPatternLearnerV2 {
           const terminalDrives = input.terminalPulseDrives
             ?? unitWeightedPulseV1(input.terminalPulseSiteIds,
               `R2A-legacy-terminal-${input.eventId}`);
-          const actionSites = weightedPulseSiteIdsV1(actionDrives);
           if (coveredFraction(basin.coreSiteIds, factorSites) < .5
             || prefixDrives.length === 0
             || actionDrives.length === 0 || terminalDrives.length === 0) continue;
@@ -2364,7 +2322,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const candidates: ContinuationCandidateV1[] = [];
     const candidateGroups = [...continuationGroups].sort(([left], [right]) =>
       left.localeCompare(right, 'en'));
-    for (const [key, group] of candidateGroups) {
+    for (const [, group] of candidateGroups) {
       const byTerminal = new Map<string, ContinuationCandidateV1[]>();
       for (const candidate of group) {
         const terminal = normalizeDistributedWeightedPulseV1(

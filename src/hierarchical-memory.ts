@@ -1143,7 +1143,6 @@ export class HierarchicalPhysicalMemoryV1 {
       .find(value => value?.pageId && value.traceId && this.#r2Store.isTraceActive(value.pageId, value.traceId));
     if (!event?.pageId || !event.traceId) return empty('stable-pattern-has-no-active-R2-trace');
     const snapshot = this.#r2Store.traceSnapshot(event.pageId, event.traceId); if (!snapshot) return empty('R2-trace-snapshot-unavailable');
-    const centers = snapshot.kernels.map(kernel => kernel.center);
     const start = new Float64Array(prefix.at(-1)!);
     const previous = prefix.at(-2)!;
     const tangent = new Float64Array(start.map((value, axis) => value - previous[axis]!));

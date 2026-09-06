@@ -108,6 +108,30 @@ npm test
 npm start -- --bootstrap-only
 ```
 
+## Prototype and live adapter boundary
+
+`src/prototype.ts` is the environment-neutral entry point. It exposes the
+distributed R1/R2/R2A memory, physical readout, prediction clone, goal
+evaluation and joint control field without importing Mineflayer, a server
+process or a viewer. A new body or simulator can implement the control
+environment against this surface.
+
+The real Minecraft wiring lives under `src/adapters/minecraft/` and is used by
+the live `src/main.ts` entry point. It is intentionally outside the prototype
+surface; Minecraft fixture setup and live-process code cannot become a hidden
+dependency of the physical core.
+
+Use the separated test commands when working on one side of the boundary:
+
+```powershell
+npm run test:prototype
+npm run test:minecraft
+```
+
+`npm test` remains the complete historical regression command. The Minecraft
+test command selects files named `minecraft-*.test.ts`; it does not run a live
+server unless a test explicitly starts one.
+
 An explicit continuation must use a `KairosV5DistributedPhysicalRuntimeV1`
 pointer whose memory payload is `KairosV5DistributedPhysicalMemoryV3`:
 

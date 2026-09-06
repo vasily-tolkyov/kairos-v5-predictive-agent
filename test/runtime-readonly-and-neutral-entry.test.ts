@@ -40,13 +40,13 @@ test('runtime display getters clone owned snapshots at the boundary', async () =
   assert.match(source, /display\(\): unknown \{[\s\S]*?return structuredClone\(\{/);
 });
 
-test('default production entry stops after initialization and requires an external grounded goal', async () => {
+test('production entry has no built-in goal and runs only an explicit grounded goal', async () => {
   const source = await readFile(resolve('src/main.ts'), 'utf8');
   assert.equal(source.includes('iron_door'), false);
   assert.equal(source.includes('changeVisibleCondition'), false);
   assert.equal(source.includes('continuedExploration'), false);
-  assert.equal(source.includes('runtime.runGoal('), false);
-  assert.match(source, /services\.start\('empty'\)/);
+  assert.equal(source.includes('runtime.runGoal('), true);
+  assert.match(source, /services\.start\(options\.fixture\)/);
   assert.match(source, /structured-goal-required/);
   assert.match(source, /acceptedVersion: 'GroundedGoalV1'/);
 });

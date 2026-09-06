@@ -16,7 +16,7 @@ import { ControlHabitWeightsV1 } from '../control/habit.js';
 import { HIERARCHICAL_MEMORY_VERSION_V1, type HierarchicalMemorySnapshotV1 }
   from '../hierarchical-memory.js';
 import type { HierarchicalMemoryObservationReceiptV1 } from '../hierarchical-memory.js';
-import { cueIdentity, eventRows, relativePublicFeatures, realEventHierarchyContinuityV1 } from '../events.js';
+import { cueIdentity, relativePublicFeatures, realEventHierarchyContinuityV1 } from '../events.js';
 import { restoreExperience, saveExperienceBundleV1, V5Runtime } from '../runtime.js';
 import { Services, type Configuration } from '../services.js';
 import type { R2AInterventionEvidenceV1, R2AInterventionProtocolV1 }

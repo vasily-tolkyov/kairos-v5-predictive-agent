@@ -1314,7 +1314,6 @@ export class DistributedPhysicalMedium3DV1 {
         const measurement = matches[0]!;
         const sampleCount = Math.max(1, measurement.sampleCount);
         const coverage = measurement.coverageSum / sampleCount;
-        const purity = measurement.puritySum / sampleCount;
         const dwellFraction = measurement.dwellSteps / sampleCount;
         const meanSupport = measurement.memberSiteIds.reduce(
           (sum, siteId) => sum + this.#supportMass[siteId]!, 0)

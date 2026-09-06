@@ -21,7 +21,7 @@ import type {
 import { PhysicalMedium3D } from "../physics/physical-medium.js";
 import { potentialFromSnapshot } from "../physics/potential-page.js";
 import { fnv1a64 } from "../serialization.js";
-import { clone3, vec3 } from "../vector.js";
+import { clone3 } from "../vector.js";
 import type { R3CausalEvaluation } from "./causal-contrast.js";
 import {
   DeterministicTokenFieldEncoder,
@@ -502,7 +502,7 @@ export class OpenCausalFactorR2A {
     for (const factorId of assigned) {
       const node = this.#nodes.get(factorId)!;
       const analysis = this.#workspace.residualAgainst(field, node.commonInput);
-      this.#reinforceNode(factorId, ticket, field, analysis.residual);
+      this.#reinforceNode(factorId, ticket, analysis.residual);
     }
     if (assigned.length === 0) this.#depositProvisionalObservation(ticket, field);
     // Event evidence must retain the trusted physical R2 coordinate. Relation
@@ -1218,7 +1218,7 @@ export class OpenCausalFactorR2A {
           event.encodedValues.map((value, valueIndex) => value - overallMean[valueIndex]!),
           residualValues,
         );
-        this.#reinforceNode(node.factorId, synthetic, this.#fieldFromValues(event.anchorId, event.encodedValues), {
+        this.#reinforceNode(node.factorId, synthetic, {
           values: eventResidualValues,
           magnitude: magnitude(eventResidualValues),
         });
@@ -1230,7 +1230,7 @@ export class OpenCausalFactorR2A {
     }
   }
 
-  #reinforceNode(factorId: string, ticket: FrozenFactorCandidatePoolV1, field: EncodedTokenField, residual: ResidualFieldState): void {
+  #reinforceNode(factorId: string, ticket: FrozenFactorCandidatePoolV1, residual: ResidualFieldState): void {
     const node = this.#nodes.get(factorId)!;
     const eventId = `event-${ticket.eventNumber.toString().padStart(6, "0")}`;
     if (node.sourceEventIds.includes(eventId)) return;

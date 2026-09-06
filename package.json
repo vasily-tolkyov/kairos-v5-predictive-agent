@@ -7,6 +7,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "node --test dist/test/*.test.js",
+    "test:prototype": "npm run build --silent && node scripts/run-prototype-tests.mjs",
+    "test:minecraft": "npm run build --silent && node scripts/run-minecraft-tests.mjs",
     "start": "node dist/src/main.js",
     "audit:legacy:minecraft-hierarchical-short-chain-live-v1": "npm run build --silent && node scripts/run-minecraft-hierarchical-short-chain-live-v1.mjs",
     "audit:legacy:minecraft-hierarchical-button-door-live-v1": "npm run build --silent && node scripts/run-minecraft-hierarchical-button-door-live-v1.mjs",

@@ -3,8 +3,6 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { cueIdentity } from '../src/events.js';
 import { HierarchicalPhysicalMemoryV1, type HierarchicalMemorySnapshotV1 } from '../src/hierarchical-memory.js';
-import { PhysicalMedium3D } from '../src/core/physics/physical-medium.js';
-import type { Observation } from '../src/contracts.js';
 import { DeterministicTokenFieldEncoder } from '../src/core/learning/token-field.js';
 import {
   MINECRAFT_HIERARCHICAL_SHORT_CHAIN_HELDOUTS_LIVE_V1,

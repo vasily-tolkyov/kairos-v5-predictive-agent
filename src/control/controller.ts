@@ -476,7 +476,6 @@ export class PhysicalControlManagerV2 {
   #rotation = 0;
   #requestNumber = 0;
   #attentionDrive = 0;
-  #lastDecision: JointControlDecisionV2 | null = null;
   #lastSnapshot: PhysicalControlSnapshotV2 | null = null;
   #goalActive = false;
   #runInProgress = false;
@@ -537,7 +536,7 @@ export class PhysicalControlManagerV2 {
         const budgetExhausted = this.environment.actionCount >= this.environment.actionBudget;
         let sites = status.ready && isRealGoal
           ? this.#reasoningAndActionSites(observation, evaluation, !budgetExhausted)
-          : this.#explorationSites(observation, evaluation, true)
+          : this.#explorationSites(observation)
             .filter(site => !budgetExhausted || (site.operation !== 'execute' && site.operation !== 'observe-public'));
         const queryAvailable = sites.some(site => site.hardEligible && (site.operation === 'recall-effect'
           || site.operation === 'compare-condition' || site.operation === 'predict-branch'
@@ -773,7 +772,7 @@ export class PhysicalControlManagerV2 {
     return sites;
   }
 
-  #explorationSites(observation: Observation, evaluation: GoalEvaluationV1, initialization: boolean): JointControlSiteInputV2[] {
+  #explorationSites(observation: Observation): JointControlSiteInputV2[] {
     const offers = this.environment.listActionOffers(observation);
     const window = fairEvidenceWindowV2(offers, this.config.branchCapacity, this.#rotation,
       value => cueIdentity(value.cue)); this.#rotation = window.nextRotation;
@@ -793,7 +792,7 @@ export class PhysicalControlManagerV2 {
   }
 
   #choose(sites: readonly JointControlSiteInputV2[]): JointControlDecisionV2 {
-    this.field.replaceSites(sites); const decision = this.field.decide(); this.#lastDecision = decision;
+    this.field.replaceSites(sites); const decision = this.field.decide();
     this.#lastSnapshot = { version: 'PhysicalControlSnapshotV2', field: this.field.snapshot(),
       workspace: this.workspace.snapshot(), habits: this.habit.exportCheckpoint(), lastDecision: decision,
       attentionDrive: this.#attentionDrive, recentDispatches: structuredClone(this.#dispatchHistory) };

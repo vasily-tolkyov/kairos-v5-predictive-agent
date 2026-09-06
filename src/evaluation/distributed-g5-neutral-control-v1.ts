@@ -1,4 +1,4 @@
-import type { Action, ActionCue, Observation, PublicValue, RealEvent } from '../contracts.js';
+import type { Action, ActionCue, Observation, RealEvent } from '../contracts.js';
 import type { ActionObservationScopeV1, ActionOfferV1, BranchPredictionV1,
   ConditionApplicabilityV1, ContinuationPredictionV2, ContinuousPatternRecallV2,
   EffectRecallCandidateV1, GroundedGoalV1, GoalEvaluationV1,

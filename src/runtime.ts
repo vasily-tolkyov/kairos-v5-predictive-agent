@@ -1,6 +1,6 @@
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
 import { access, readFile } from 'node:fs/promises';
-import type { Action, ActionCue, Observation, Prediction, RealEvent, VerifiedInternalChannelV1 } from './contracts.js';
+import type { ActionCue, Observation, RealEvent, VerifiedInternalChannelV1 } from './contracts.js';
 import type { Configuration } from './services.js';
 import { MinecraftBody } from './body.js';
 import { Compute } from './compute.js';

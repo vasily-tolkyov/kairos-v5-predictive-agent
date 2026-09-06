@@ -122,20 +122,6 @@ function stateSignals(state: ReadonlyMap<string, { readonly subject: string; rea
   return result;
 }
 
-function measuredState(entries: Readonly<Record<string,
-  Readonly<Record<string, PublicValue>>>>): Map<string, {
-    subject: string; property: string; value: PublicValue }> {
-  const result = new Map<string, { subject: string; property: string; value: PublicValue }>();
-  for (const [subject, properties] of Object.entries(entries).sort(([left], [right]) =>
-    left.localeCompare(right, 'en'))) {
-    for (const [property, value] of Object.entries(properties).sort(([left], [right]) =>
-      left.localeCompare(right, 'en'))) {
-      result.set(`${subject}/${property}`, { subject, property, value });
-    }
-  }
-  return result;
-}
-
 function mergeSignalDrives(signals: readonly SignalDriveV1[]): readonly SignalDriveV1[] {
   const values = new Map<string, SignalDriveV1>();
   for (const signal of signals) {

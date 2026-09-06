@@ -4,13 +4,12 @@ import { isAbsolute, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import type { Server } from 'node:http';
-import { loadConfiguration, Services, type MinecraftFixtureModeV1 } from './services.js';
-import { MinecraftBody } from './body.js';
-import { assertNewExperienceOutput, restoreExperience, restoreExperienceV4, V5Runtime } from './runtime.js';
+import { loadConfiguration, Services, type MinecraftFixtureModeV1,
+  MinecraftBody, assertNewExperienceOutput, restoreExperience, restoreExperienceV4,
+  V5Runtime } from './adapters/minecraft/index.js';
 import { Compute } from './compute.js';
 import type { GroundedGoalV1 } from './control/contracts.js';
-import { startLoopbackMineflayerViewerV1 } from './viewer.mjs';
-import { startDashboard } from './dashboard.js';
+import { startLoopbackMineflayerViewerV1, startDashboard } from './adapters/minecraft/viewer.js';
 import { assert, canonical, saveJson, sha } from './util.js';
 
 export function parseRunOptions(args: readonly string[]): { bootstrapOnly: boolean;

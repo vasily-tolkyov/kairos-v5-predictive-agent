@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import type { Action, ActionCue, Observation, PublicObject, RealEvent } from '../src/contracts.js';
+import type { Action, Observation, PublicObject, RealEvent } from '../src/contracts.js';
 import type { EffectRecallCandidateV1, GroundedGoalV1, OpaqueFactorTransitionTraceV1,
   PhysicalEvidenceReferenceV1 } from '../src/control/contracts.js';
 import { fileSha, sha } from '../src/util.js';

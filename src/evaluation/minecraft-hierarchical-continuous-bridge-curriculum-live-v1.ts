@@ -12,7 +12,6 @@ import { cueIdentity, realEventHierarchyContinuityV1 } from '../events.js';
 import { assert, canonical, sha } from '../util.js';
 import { minecraftMultilevelGoalChainCasesV1 } from './minecraft-multilevel-goal-chain-v1.js';
 import {
-  minecraftMultilevelGuidedFixtureGeometryLiveV1,
   minecraftMultilevelGuidedVocabularyPanelLiveV1,
   prepareMinecraftMultilevelGuidedFixtureLiveV1,
   type MinecraftFixtureCommandSinkLiveV1,

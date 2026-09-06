@@ -1,7 +1,6 @@
 import { sha } from '../../util.js';
 import {
   assertMemoryTimescaleLawV1,
-  effectiveRecoveryRateV1,
   memoryTimescaleLawConfigV1,
   type MemoryTimescaleLawConfigV1,
 } from '../learning/memory-timescales.js';

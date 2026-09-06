@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import type { Action, ActionCue, Observation, RealEvent } from '../contracts.js';
 import { MinecraftBody } from '../body.js';
 import { Compute } from '../compute.js';
-import { cueFor, cueIdentity, eventRows } from '../events.js';
+import { cueIdentity, eventRows } from '../events.js';
 import type { MemoryObservationReceipt, MemorySnapshot } from '../memory.js';
 import { Services, type Configuration } from '../services.js';
 import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2 } from '../control/controller.js';

@@ -42,7 +42,7 @@ import type { DistributedHierarchicalTimescaleSnapshotV1 }
   from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
 import type { RuntimeMeasuredSalienceV2 }
   from './core/physics/distributed-medium-timescale-protocol-v2.js';
-import type { DistributedMediumSnapshotV1, DistributedTraceFootprintV1 }
+import type { DistributedMediumSnapshotV1 }
   from './core/physics/distributed-physical-contracts.js';
 import type { DistributedAttractorReadoutV1 } from './core/physics/distributed-physical-contracts.js';
 import { DistributedPredictionCloneV2 }
@@ -855,7 +855,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     const actionInput = this.#r1.lookupActionCue(candidate.actionCue);
     if (actionInput.siteIds.length === 0)
       return this.#emptyBranch(kind, evidence, 'candidate-action-afferent-unavailable');
-    const { snapshot, clone } = this.#r1PredictionSubstrate();
+    const { clone } = this.#r1PredictionSubstrate();
     const results = Array.from({ length: 24 }, (_unused, index) => clone.run({
       currentPerceptionSeedSiteIds: currentPerception.siteIds,
       ...(currentPerception.drives === undefined ? {} : {

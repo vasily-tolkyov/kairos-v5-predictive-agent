@@ -2,7 +2,7 @@ import { createWriteStream } from 'node:fs';
 import { mkdir, readFile } from 'node:fs/promises';
 import { basename, resolve } from 'node:path';
 import { Vec3 } from 'vec3';
-import type { Action, ActionCue, BodyResult, Observation, PrimitiveKind, PublicChange,
+import type { Action, BodyResult, Observation, PrimitiveKind, PublicChange,
   PublicValue } from '../contracts.js';
 import { MinecraftBody, publicBlockSelectionShapesV1 } from '../body.js';
 import { Compute } from '../compute.js';

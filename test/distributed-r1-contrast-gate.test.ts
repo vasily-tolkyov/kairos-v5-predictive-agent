@@ -244,7 +244,7 @@ test('G2 sealed attempt-018 64/128 prefixes classify target versus contrast acro
   for (const prefix of [64, 128] as const) {
     const samples = await projectAttemptPrefix(prefix);
     const outcomes = ATTEMPT_PAIRS.flatMap(([target, contrast]) =>
-      samples.filter(value => value.arm === target || value.arm === contrast).map(value => ({
+      samples.filter(value => value.arm === target || value.arm === contrast).map(() => ({
         passed: binaryLeaveOneOutAccuracy(samples, target, contrast) >= .95,
       })));
     assert.equal(outcomes.filter(value => value.passed).length / outcomes.length, 1,

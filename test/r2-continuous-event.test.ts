@@ -11,7 +11,7 @@ import { vec3 } from "../src/core/vector.js";
 import { canonical } from "../src/util.js";
 
 function dependency(
-  atomId: string,
+  _atomId: string,
   sourceEventId: string,
   startFrameSequence: number,
   endFrameSequence: number,

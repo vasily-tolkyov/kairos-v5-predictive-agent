@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import type { Observation, PublicValue, RealEvent } from '../src/contracts.js';
+import type { Observation, RealEvent } from '../src/contracts.js';
 import type {
   DistributedMediumWritePortV1,
   R1DistributedEpisodeV1,

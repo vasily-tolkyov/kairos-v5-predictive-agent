@@ -444,7 +444,7 @@ PreparedMinecraftMultilevelGuidedFixtureLiveV1 {
   return { ...fixture, observation: publicFrame(1, fixture, false) };
 }
 
-function wiredEvent(episode: MinecraftMultilevelGuidedTrainingEpisodeLiveV1,
+function wiredEvent(_episode: MinecraftMultilevelGuidedTrainingEpisodeLiveV1,
   fixture: PreparedMinecraftMultilevelGuidedFixtureLiveV1): RealEvent {
   const action: Action = { kind: 'interact', parameters: {}, targetId: fixture.buttonId! };
   return { version: 'RealEventV5', id: 'mock-wired-event',

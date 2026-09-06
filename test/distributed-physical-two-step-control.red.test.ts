@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
 import test from 'node:test';
 import { gzipSync } from 'node:zlib';
-import type { Action, ActionCue, Observation, PublicValue, RealEvent }
+import type { Action, Observation, RealEvent }
   from '../src/contracts.js';
 import { DistributedHierarchicalPhysicalMemoryV1 }
   from '../src/distributed-hierarchical-memory.js';

@@ -7,7 +7,7 @@ import { MinecraftBody } from '../body.js';
 import { Compute } from '../compute.js';
 import type { ActionObservationScopeV1, GroundedGoalV1 } from '../control/contracts.js';
 import { ControlHabitWeightsV1 } from '../control/habit.js';
-import { cueIdentity, eventRows, realEventHierarchyContinuityV1 } from '../events.js';
+import { cueIdentity, realEventHierarchyContinuityV1 } from '../events.js';
 import type { HierarchicalMemoryObservationReceiptV1,
   HierarchicalMemorySnapshotV1 } from '../hierarchical-memory.js';
 import { HIERARCHICAL_MEMORY_VERSION_V1 } from '../hierarchical-memory.js';
@@ -20,7 +20,7 @@ import type { R2AInterventionEvidenceV1,
   R2AInterventionProtocolV1 } from '../core/learning/r2a-stable-pattern.js';
 import type { R2ContinuousEventV1 } from '../core/learning/r2-continuous-event.js';
 import { assert, canonical, fileSha, saveJson, sha } from '../util.js';
-import { guidedFixtureGeometryV1, prepareGuidedNoteFixtureLiveV1,
+import { prepareGuidedNoteFixtureLiveV1,
   type GuidedMinecraftLayoutV1 } from './minecraft-guided-affordance.js';
 
 export const MINECRAFT_HIERARCHICAL_SHORT_CHAIN_LIVE_V1 =
