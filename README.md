@@ -106,7 +106,17 @@ npm install --ignore-scripts
 npm run build
 npm test
 npm start -- --bootstrap-only
+npm run minecraft:basic-action-loop-v1
 ```
+
+`minecraft:basic-action-loop-v1` is the bounded live demonstration. It starts
+an isolated flat 1.21.4 server on loopback, prepares a visible note-block
+fixture before handing control to the generic field, and permits at most 16
+harmless actions (observation, waiting, looking, movement, jumping, hotbar
+selection and interaction). It never permits attack, breaking, placing or
+commands through the controller. The run records its public frames, field
+decisions, body receipts and temporary events under the supplied evidence
+directory; it does not initialize or write the long-term memory.
 
 ## Prototype and live adapter boundary
 
