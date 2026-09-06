@@ -44,6 +44,7 @@ import type { RuntimeMeasuredSalienceV2 }
   from './core/physics/distributed-medium-timescale-protocol-v2.js';
 import type { DistributedMediumSnapshotV1, DistributedTraceFootprintV1 }
   from './core/physics/distributed-physical-contracts.js';
+import type { DistributedAttractorReadoutV1 } from './core/physics/distributed-physical-contracts.js';
 import { DistributedPredictionCloneV2 }
   from './core/prediction/distributed-prediction-clone.js';
 import { runDistributedPredictionCloneBatchParallelV1 }
@@ -64,6 +65,15 @@ import { distributedEvidenceReferenceV1, distributedPredictionSampleV1,
 import { KAIROS_V5_MEMORY_SEMANTICS, KAIROS_V5_MEMORY_VERSION } from './core/compatibility.js';
 import { MetaEvidenceStoreV1 } from './control/meta-evidence.js';
 import type { MetaEvidenceStateV1 } from './control/meta-evidence.js';
+import { AttractorPublicEventDictionaryStoreV1, type AttractorPublicEventDictionaryV1,
+  type AttractorDictionaryResolutionV1, type TrustedAttractorPublicObservationV1 }
+  from './core/learning/attractor-public-dictionary.js';
+import { InterventionAgendaStoreV1, type InterventionAgendaStateV1,
+  type PredictionViolationV1, type MatchedArmResultV1, type FactorialCellV1,
+  type ViolationLedgerRecordV1, type InterventionArmRequestV1 } from './core/learning/intervention-agenda.js';
+import { InterventionPairCollectorV1, type TrustedInterventionWindowV1,
+  type InterventionPairCandidateV1, type InterventionPairCollectorStateV1 }
+  from './core/learning/intervention-pair-collector.js';
 
 export const DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3 =
   KAIROS_V5_MEMORY_VERSION;
@@ -108,6 +118,9 @@ export interface KairosV5DistributedPhysicalMemoryV3 {
    * not consumed by world R2A grading or by action selection.
    */
   readonly metaEvidence?: MetaEvidenceStateV1;
+  readonly attractorDictionary?: AttractorPublicEventDictionaryV1;
+  readonly interventionAgenda?: InterventionAgendaStateV1;
+  readonly interventionPairCollector?: InterventionPairCollectorStateV1;
 }
 
 /** Additive opt-in checkpoint carrying the aligned three-layer time owners. */
@@ -283,6 +296,9 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     readonly clone: DistributedPredictionCloneV2; readonly revision: number } | null = null;
   #timescaleOwner: DistributedHierarchicalTimescaleOwnerV1 | null = null;
   #timescaleEnabled = false;
+  #attractorDictionary = new AttractorPublicEventDictionaryStoreV1('KairosV5-R1-terminal');
+  #interventionAgenda = new InterventionAgendaStoreV1();
+  #interventionPairCollector = new InterventionPairCollectorV1();
 
   constructor() {
     this.#r1Medium = new DistributedPhysicalMedium3DV1({ name: 'R1', seedHex: '5231' });
@@ -1094,8 +1110,50 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     return this.#r2a.consolidationPerformanceAuditV1();
   }
 
+  /** Naming is an audit/readout operation over a terminal basin already
+   * reached by a trusted event; it never influences physical prediction. */
+  recordAttractorPublicObservation(value: TrustedAttractorPublicObservationV1): void {
+    assert(this.#seen.has(value.sourceEventId), 'attractor-dictionary-source-event-not-observed');
+    const annotation = this.#annotations.get(value.sourceEventId);
+    assert(annotation, 'attractor-dictionary-source-annotation-missing');
+    const sourceSites = new Set(annotation.r1Record.footprint.siteIds);
+    assert(value.readout.coreSiteIds.some(siteId => sourceSites.has(siteId)),
+      'attractor-dictionary-readout-not-bound-to-source-footprint');
+    this.#attractorDictionary.observe(value);
+  }
+
+  resolveAttractorPublicReadout(mediumVersion: string,
+    readout: DistributedAttractorReadoutV1): AttractorDictionaryResolutionV1 {
+    return this.#attractorDictionary.resolve(mediumVersion, readout);
+  }
+
+  recordPredictionViolation(value: PredictionViolationV1): ViolationLedgerRecordV1 | null {
+    return this.#interventionAgenda.recordPredictionViolation(value);
+  }
+
+  recordFactorialArm(value: MatchedArmResultV1): FactorialCellV1 {
+    return this.#interventionAgenda.recordMatchedArm(value);
+  }
+
+  /** Read-only agenda view.  It contains physical prefixes and opaque factor
+   * ids only; selecting or executing an arm remains the controller's job. */
+  pendingInterventionArmRequests(): readonly InterventionArmRequestV1[] {
+    return this.#interventionAgenda.pendingArmRequests();
+  }
+
+  /** Add a completed, trusted real window to the matching agenda.  Pairing is
+   * derived from physical prefix/action/factor state; this call does not grade
+   * or execute the resulting intervention. */
+  recordInterventionWindow(value: TrustedInterventionWindowV1): readonly InterventionPairCandidateV1[] {
+    assert(this.#seen.has(value.eventId), 'intervention-window-source-event-not-observed');
+    return this.#interventionPairCollector.add(value);
+  }
+
   snapshot(): KairosV5DistributedPhysicalMemoryV3 {
     const metaEvidence = this.#metaEvidence.snapshot();
+    const attractorDictionary = this.#attractorDictionary.snapshot();
+    const interventionAgenda = this.#interventionAgenda.snapshot();
+    const interventionPairCollector = this.#interventionPairCollector.snapshot();
     return { version: DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3,
       hierarchy: DISTRIBUTED_HIERARCHY_SEMANTICS_V2, activeSeconds: this.#activeSeconds,
       r1Medium: this.#r1Medium.snapshot(), r1: this.#r1.snapshot(),
@@ -1104,7 +1162,12 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
         .map(value => structuredClone(value)), processedR2EventIds: [...this.#processedR2].sort(),
       seenEventIds: [...this.#seen].sort(), writes: this.#writes,
       ...(metaEvidence.observations.some(value => value.bands.length > 0)
-        ? { metaEvidence } : {}) };
+        ? { metaEvidence } : {}),
+      ...(attractorDictionary.entries.length > 0 ? { attractorDictionary } : {}),
+      ...(interventionAgenda.violations.length > 0 || interventionAgenda.cells.length > 0
+        ? { interventionAgenda } : {}),
+      ...(interventionPairCollector.windows.length > 0
+        ? { interventionPairCollector } : {}) };
   }
 
   static restore(snapshot: KairosV5DistributedPhysicalMemoryV3): DistributedHierarchicalPhysicalMemoryV1 {
@@ -1132,6 +1195,13 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       memory.#metaDepositionOrdinal = observations.length === 0 ? 0
         : Math.max(...observations.map(value => value.depositionOrdinal)) + 1;
     }
+    if (snapshot.attractorDictionary)
+      memory.#attractorDictionary = new AttractorPublicEventDictionaryStoreV1(
+        snapshot.attractorDictionary.mediumVersion, snapshot.attractorDictionary);
+    if (snapshot.interventionAgenda)
+      memory.#interventionAgenda = InterventionAgendaStoreV1.restore(snapshot.interventionAgenda);
+    if (snapshot.interventionPairCollector)
+      memory.#interventionPairCollector = InterventionPairCollectorV1.restore(snapshot.interventionPairCollector);
     // Keep the fail-closed byte-identity boundary per physical layer.  A
     // combined boolean hid which independently owned substrate was rebuilt
     // differently and forced an entire hierarchy replay for every diagnosis.

@@ -10,6 +10,10 @@ import type { ActionCue, DesiredChange, Observation, RealEvent } from './contrac
 import type { EffectRecallCandidateV1, GroundedGoalV1, GoalEvaluationV1,
   HypotheticalPublicStateV1 } from './control/contracts.js';
 import { sha } from './util.js';
+import type { DistributedAttractorReadoutV1 } from './core/physics/distributed-physical-contracts.js';
+import type { TrustedAttractorPublicObservationV1 } from './core/learning/attractor-public-dictionary.js';
+import type { PredictionViolationV1, MatchedArmResultV1 } from './core/learning/intervention-agenda.js';
+import type { TrustedInterventionWindowV1 } from './core/learning/intervention-pair-collector.js';
 
 let memory = new PhysicalMemory();
 parentPort!.on('message', (message: { id: number; method: string; args: unknown[] }) => {
@@ -44,6 +48,16 @@ parentPort!.on('message', (message: { id: number; method: string; args: unknown[
       case 'closeContinuity': value = memory.closeContinuity(args[0] as Parameters<PhysicalMemory['closeContinuity']>[0]); break;
       case 'recordDistributedMatchedIntervention': memory.recordDistributedMatchedIntervention(
         args[0] as Parameters<PhysicalMemory['recordDistributedMatchedIntervention']>[0]); value = null; break;
+      case 'recordAttractorPublicObservation': memory.recordAttractorPublicObservation(
+        args[0] as TrustedAttractorPublicObservationV1); value = null; break;
+      case 'resolveAttractorPublicReadout': value = memory.resolveAttractorPublicReadout(
+        args[0] as string, args[1] as DistributedAttractorReadoutV1); break;
+      case 'recordPredictionViolation': value = memory.recordPredictionViolation(
+        args[0] as PredictionViolationV1); break;
+      case 'recordFactorialArm': value = memory.recordFactorialArm(args[0] as MatchedArmResultV1); break;
+      case 'pendingInterventionArmRequests': value = memory.pendingInterventionArmRequests(); break;
+      case 'recordInterventionWindow': value = memory.recordInterventionWindow(
+        args[0] as TrustedInterventionWindowV1); break;
       case 'snapshot': value = memory.snapshot(); break;
       case 'enableTimescaleV2': memory.enableTimescaleV2(); value = null; break;
       case 'advanceMeasured': memory.advanceTo(args[0] as number,

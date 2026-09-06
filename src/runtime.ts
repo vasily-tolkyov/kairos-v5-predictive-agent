@@ -23,6 +23,14 @@ import { ControlHabitWeightsV1, type ControlHabitCheckpointV1, type TrustedRealA
 import { attachInteroceptionToEventV1, computeInteroceptiveChannelsV1 } from './control/interoception.js';
 import type { DistributedR2AInterventionPairV2 }
   from './core/learning/distributed-r2a-physical-contracts.js';
+import type { TrustedAttractorPublicObservationV1, AttractorDictionaryResolutionV1 }
+  from './core/learning/attractor-public-dictionary.js';
+import type { TrustedInterventionWindowV1, InterventionPairCandidateV1 }
+  from './core/learning/intervention-pair-collector.js';
+import type { DistributedAttractorReadoutV1 }
+  from './core/physics/distributed-physical-contracts.js';
+import type { PredictionViolationV1, MatchedArmResultV1, FactorialCellV1,
+  ViolationLedgerRecordV1, InterventionArmRequestV1 } from './core/learning/intervention-agenda.js';
 import type { DistributedNoveltyRecordV1 }
   from './core/learning/distributed-r1-contracts.js';
 import type { TrustedRuntimeMeasurementContextV1 }
@@ -456,6 +464,8 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       depositedEvents: this.#writes, initializationBuffered: this.#buffered, remainingActions: this.config.actionBudget - this.#actions,
       noveltySignals: this.#noveltySignals,
       physicalMap: this.#map, attention, controlField: this.controller.snapshot,
+      attractorDictionary: this.#lastSnapshot?.attractorDictionary ?? null,
+      interventionAgenda: this.#lastSnapshot?.interventionAgenda ?? null,
       controlHabits: this.#habit.exportCheckpoint(), recentRealEvents: this.#recent });
   }
   async observe(): Promise<Observation> {
@@ -526,6 +536,33 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     await this.compute.call('recordDistributedMatchedIntervention', evidence);
     this.#lastSnapshot = await this.compute.call<MemorySnapshot>('snapshot');
     this.record('distributed-matched-physical-intervention-recorded', evidence);
+  }
+  async recordAttractorPublicObservation(evidence: TrustedAttractorPublicObservationV1): Promise<void> {
+    await this.compute.recordAttractorPublicObservation(evidence);
+    this.#lastSnapshot = await this.compute.call<MemorySnapshot>('snapshot');
+    this.record('attractor-public-dictionary-observation', { sourceEventId: evidence.sourceEventId });
+  }
+  async resolveAttractorPublicReadout(mediumVersion: string,
+    readout: DistributedAttractorReadoutV1): Promise<AttractorDictionaryResolutionV1> {
+    return this.compute.resolveAttractorPublicReadout(mediumVersion, readout);
+  }
+  async recordPredictionViolation(value: PredictionViolationV1): Promise<ViolationLedgerRecordV1 | null> {
+    const result = await this.compute.recordPredictionViolation(value);
+    this.#lastSnapshot = await this.compute.call<MemorySnapshot>('snapshot');
+    return result;
+  }
+  async recordFactorialArm(value: MatchedArmResultV1): Promise<FactorialCellV1> {
+    const result = await this.compute.recordFactorialArm(value);
+    this.#lastSnapshot = await this.compute.call<MemorySnapshot>('snapshot');
+    return result;
+  }
+  async pendingInterventionArmRequests(): Promise<readonly InterventionArmRequestV1[]> {
+    return this.compute.pendingInterventionArmRequests();
+  }
+  async recordInterventionWindow(value: TrustedInterventionWindowV1): Promise<readonly InterventionPairCandidateV1[]> {
+    const result = await this.compute.recordInterventionWindow(value);
+    this.#lastSnapshot = await this.compute.call<MemorySnapshot>('snapshot');
+    return result;
   }
   /** Explicit opt-in to the versioned V4 timescale owner. */
   async enableTimescaleV2(): Promise<void> {

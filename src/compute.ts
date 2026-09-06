@@ -2,6 +2,14 @@ import { Worker } from 'node:worker_threads';
 import type { KairosV5DistributedPhysicalMemoryV4 } from './distributed-hierarchical-memory.js';
 import type { DistributedLayerMeasurementsV1 } from './core/physics/distributed-hierarchical-timescale-owner-v1.js';
 import type { TrustedRuntimeMeasurementContextV1 } from './core/physics/runtime-measured-salience-bridge-v1.js';
+import type { TrustedAttractorPublicObservationV1, AttractorDictionaryResolutionV1 }
+  from './core/learning/attractor-public-dictionary.js';
+import type { DistributedAttractorReadoutV1 }
+  from './core/physics/distributed-physical-contracts.js';
+import type { PredictionViolationV1, MatchedArmResultV1, FactorialCellV1,
+  ViolationLedgerRecordV1, InterventionArmRequestV1 } from './core/learning/intervention-agenda.js';
+import type { TrustedInterventionWindowV1, InterventionPairCandidateV1 }
+  from './core/learning/intervention-pair-collector.js';
 
 /** The only compute worker is a physical-model owner, never another agent. */
 export class Compute {
@@ -46,6 +54,24 @@ export class Compute {
   }
   async recordRuntimeMeasurement(input: TrustedRuntimeMeasurementContextV1): Promise<void> {
     await this.call('recordRuntimeMeasurement', input);
+  }
+  async recordAttractorPublicObservation(input: TrustedAttractorPublicObservationV1): Promise<void> {
+    await this.call('recordAttractorPublicObservation', input);
+  }
+  async resolveAttractorPublicReadout(mediumVersion: string, readout: DistributedAttractorReadoutV1): Promise<AttractorDictionaryResolutionV1> {
+    return this.call('resolveAttractorPublicReadout', mediumVersion, readout);
+  }
+  async recordPredictionViolation(input: PredictionViolationV1): Promise<ViolationLedgerRecordV1 | null> {
+    return this.call('recordPredictionViolation', input);
+  }
+  async recordFactorialArm(input: MatchedArmResultV1): Promise<FactorialCellV1> {
+    return this.call('recordFactorialArm', input);
+  }
+  async pendingInterventionArmRequests(): Promise<readonly InterventionArmRequestV1[]> {
+    return this.call('pendingInterventionArmRequests');
+  }
+  async recordInterventionWindow(input: TrustedInterventionWindowV1): Promise<readonly InterventionPairCandidateV1[]> {
+    return this.call('recordInterventionWindow', input);
   }
   async close(): Promise<void> { this.#closed = true; await this.worker.terminate(); }
 }
