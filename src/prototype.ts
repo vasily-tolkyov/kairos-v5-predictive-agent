@@ -22,6 +22,8 @@ export { JointTransientControlFieldV2, JOINT_CONTROL_OPERATIONS_V2 }
   from './control/field.js';
 export { PhysicalControlManagerV2, fairEvidenceWindowV2 }
   from './control/controller.js';
+export type { PhysicalControlEnvironmentV2, PhysicalControlResultV2,
+  PhysicalControlSnapshotV2 } from './control/controller.js';
 export { GroundedGoalEvaluatorV1, groundedPublicObservableV1,
   evaluateGroundedPredicateValueV1, goalPredicates, desiredChangesForGoal }
   from './control/goal.js';
