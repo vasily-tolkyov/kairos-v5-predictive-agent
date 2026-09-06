@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { AttractorPublicEventDictionaryStoreV1, publicReadoutSignatureV1 } from '../src/core/learning/attractor-public-dictionary.js';
-import { InterventionAgendaStoreV1 } from '../src/core/learning/intervention-agenda.js';
+import { InterventionAgendaStoreV1, interventionPairIdentityV1 } from '../src/core/learning/intervention-agenda.js';
 import { KairosV5RSeriesRuntimeV1, KAIROS_V5_R_SERIES_NAMESPACE_V1 }
   from '../src/r-series-runtime.js';
 import { InterventionPairCollectorV1 } from '../src/core/learning/intervention-pair-collector.js';
@@ -47,7 +47,7 @@ test('conflicting observations become ambiguous without majority coercion', () =
 test('intervention cells open only after two physical violations and grade four matched arms', () => {
   const agenda = new InterventionAgendaStoreV1();
   const violation = (contextId: string) => agenda.recordPredictionViolation({
-    source: 'trusted-real-prediction-outcome', combinationId: 'combo', physicalPrefixId: 'prefix',
+    source: 'trusted-real-prediction-outcome', sourceEventId: `event-${contextId}`, combinationId: 'combo', physicalPrefixId: 'prefix',
     predictedAttractorSignature: 'predicted', terminalAttractorSignature: 'actual',
     factorIds: ['factor-q', 'factor-r'], contextId, highConfidence: true,
   });
@@ -58,7 +58,8 @@ test('intervention cells open only after two physical violations and grade four 
   assert.deepEqual(agenda.pendingArmRequests().map(value => value.arm),
     ['baseline', 'q-only', 'q+r', 'r-only']);
   for (const arm of ['baseline', 'q-only', 'r-only', 'q+r'] as const) for (let index = 0; index < 4; index += 1)
-    agenda.recordMatchedArm({ source: 'trusted-real-intervention-result', combinationId: 'combo',
+    agenda.recordMatchedArm({ source: 'trusted-real-intervention-result', pairId: interventionPairIdentityV1('combo', arm,
+      `${arm}-b-${index}`, `${arm}-i-${index}`), combinationId: 'combo',
       factorIds: ['factor-q', 'factor-r'], arm, baselineEventId: `${arm}-b-${index}`,
       interventionEventId: `${arm}-i-${index}`, contextId: `context-${index}`, samePrefix: true,
       sameAction: true, onlyPlannedFactorsChanged: true, physicalBranchSelectionRate: 1,

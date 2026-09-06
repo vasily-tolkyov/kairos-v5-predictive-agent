@@ -5,6 +5,8 @@ export type InterventionArmKindV1 = 'baseline' | 'q-only' | 'r-only' | 'q+r';
 
 export interface PredictionViolationV1 {
   readonly source: 'trusted-real-prediction-outcome';
+  /** Event whose sealed public window produced the measured terminal readout. */
+  readonly sourceEventId: string;
   readonly combinationId: string;
   readonly physicalPrefixId: string;
   readonly terminalAttractorSignature: string;
@@ -56,6 +58,8 @@ export interface InterventionAgendaStateV1 {
 
 export interface MatchedArmResultV1 {
   readonly source: 'trusted-real-intervention-result';
+  /** Pair emitted by InterventionPairCollectorV1 for these two real events. */
+  readonly pairId: string;
   readonly combinationId: string;
   readonly factorIds: readonly string[];
   readonly arm: InterventionArmKindV1;
@@ -92,6 +96,13 @@ function emptyArm(arm: InterventionArmKindV1): FactorialArmV1 {
   return { arm, pairIds: [], matchedCount: 0, correctCount: 0, ablationLosses: [] };
 }
 
+/** Canonical identity shared by the collector and the grading store. */
+export function interventionPairIdentityV1(combinationId: string,
+  arm: InterventionArmKindV1, baselineEventId: string, interventionEventId: string): string {
+  return sha({ version: 'InterventionMatchedArmV1', combinationId, arm,
+    baselineEventId, interventionEventId });
+}
+
 function cellStatus(arms: readonly FactorialArmV1[]): FactorialCellV1['status'] {
   const complete = arms.every(arm => arm.matchedCount >= 4);
   const accurate = arms.every(arm => arm.matchedCount === 0
@@ -116,10 +127,10 @@ export class InterventionAgendaStoreV1 {
   recordPredictionViolation(value: PredictionViolationV1): ViolationLedgerRecordV1 | null {
     assert(value.source === 'trusted-real-prediction-outcome' && value.highConfidence,
       'intervention-violation-requires-high-confidence-real-outcome');
-    assert(value.combinationId.length > 0 && value.physicalPrefixId.length > 0
+    assert(value.sourceEventId.length > 0 && value.combinationId.length > 0 && value.physicalPrefixId.length > 0
       && value.terminalAttractorSignature !== value.predictedAttractorSignature,
       'intervention-violation-physical-identity-invalid');
-    const violationId = sha({ combinationId: value.combinationId,
+    const violationId = sha({ sourceEventId: value.sourceEventId, combinationId: value.combinationId,
       predicted: value.predictedAttractorSignature, actual: value.terminalAttractorSignature,
       contextId: value.contextId });
     const existing = this.#violations.get(value.combinationId);
@@ -159,8 +170,10 @@ export class InterventionAgendaStoreV1 {
     assert(cell && cell.factorIds.length === 2
       && canonical(sortedUnique(value.factorIds)) === canonical(cell.factorIds),
       'intervention-cell-not-open');
-    const pairId = sha({ combinationId: value.combinationId, arm: value.arm,
-      baselineEventId: value.baselineEventId, interventionEventId: value.interventionEventId });
+    const expectedPairId = interventionPairIdentityV1(value.combinationId, value.arm,
+      value.baselineEventId, value.interventionEventId);
+    assert(value.pairId === expectedPairId, 'intervention-arm-pair-identity-mismatch');
+    const pairId = expectedPairId;
     const prior = cell.arms.find(arm => arm.arm === value.arm)!;
     if (prior.pairIds.includes(pairId)) return structuredClone(cell);
     const updatedArm: FactorialArmV1 = { ...prior, pairIds: [...prior.pairIds, pairId].sort(),

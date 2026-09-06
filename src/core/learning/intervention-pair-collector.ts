@@ -1,5 +1,5 @@
 import { assert, canonical, sha } from '../../util.js';
-import type { InterventionArmKindV1 } from './intervention-agenda.js';
+import { interventionPairIdentityV1, type InterventionArmKindV1 } from './intervention-agenda.js';
 
 export interface TrustedInterventionWindowV1 {
   readonly version: 'TrustedInterventionWindowV1';
@@ -102,10 +102,9 @@ export class InterventionPairCollectorV1 {
       const intervention = baseline.eventId === prior.eventId ? next : prior;
       const interventionArm = armFor(intervention.factorStates, factorIds);
       if (!interventionArm || interventionArm === 'baseline') continue;
-      const pairId = sha({ version: 'InterventionPairCandidateV1', baselineEventId: baseline.eventId,
-        interventionEventId: intervention.eventId, combinationId: sha({
-          physicalPrefixId: value.physicalPrefixId, exactActionIdentity: value.exactActionIdentity,
-          factorIds }), });
+      const pairId = interventionPairIdentityV1(sha({ physicalPrefixId: value.physicalPrefixId,
+        exactActionIdentity: value.exactActionIdentity, factorIds }), interventionArm,
+        baseline.eventId, intervention.eventId);
       if (this.#emitted.has(pairId)) continue;
       this.#emitted.add(pairId);
       results.push({ version: 'InterventionPairCandidateV1', pairId,
@@ -127,6 +126,10 @@ export class InterventionPairCollectorV1 {
         .map(value => structuredClone(value)), emittedPairIds: [...this.#emitted].sort() };
   }
 
+  /** Used by the memory owner to ensure grading only consumes a pair emitted
+   * by this collector, never an independently fabricated arm. */
+  hasPair(pairId: string): boolean { return this.#emitted.has(pairId); }
+
   static restore(state: InterventionPairCollectorStateV1): InterventionPairCollectorV1 {
     assert(state.version === 'InterventionPairCollectorStateV1', 'intervention-pair-state-invalid');
     const collector = new InterventionPairCollectorV1();
@@ -135,4 +138,3 @@ export class InterventionPairCollectorV1 {
     return collector;
   }
 }
-

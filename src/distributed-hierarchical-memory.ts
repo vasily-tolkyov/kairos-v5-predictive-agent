@@ -1116,6 +1116,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     assert(this.#seen.has(value.sourceEventId), 'attractor-dictionary-source-event-not-observed');
     const annotation = this.#annotations.get(value.sourceEventId);
     assert(annotation, 'attractor-dictionary-source-annotation-missing');
+    assert(annotation.completion === 'complete', 'attractor-dictionary-source-event-incomplete');
     const sourceSites = new Set(annotation.r1Record.footprint.siteIds);
     assert(value.readout.coreSiteIds.some(siteId => sourceSites.has(siteId)),
       'attractor-dictionary-readout-not-bound-to-source-footprint');
@@ -1128,10 +1129,20 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   }
 
   recordPredictionViolation(value: PredictionViolationV1): ViolationLedgerRecordV1 | null {
+    assert(this.#seen.has(value.sourceEventId), 'intervention-violation-source-event-not-observed');
+    const annotation = this.#annotations.get(value.sourceEventId);
+    assert(annotation?.completion === 'complete', 'intervention-violation-source-event-incomplete');
     return this.#interventionAgenda.recordPredictionViolation(value);
   }
 
   recordFactorialArm(value: MatchedArmResultV1): FactorialCellV1 {
+    assert(this.#seen.has(value.baselineEventId) && this.#seen.has(value.interventionEventId),
+      'intervention-arm-source-event-not-observed');
+    assert(this.#annotations.get(value.baselineEventId)?.completion === 'complete'
+      && this.#annotations.get(value.interventionEventId)?.completion === 'complete',
+      'intervention-arm-source-event-incomplete');
+    assert(this.#interventionPairCollector.hasPair(value.pairId),
+      'intervention-arm-pair-not-collected');
     return this.#interventionAgenda.recordMatchedArm(value);
   }
 
@@ -1146,6 +1157,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
    * or execute the resulting intervention. */
   recordInterventionWindow(value: TrustedInterventionWindowV1): readonly InterventionPairCandidateV1[] {
     assert(this.#seen.has(value.eventId), 'intervention-window-source-event-not-observed');
+    assert(this.#annotations.get(value.eventId)?.completion === 'complete',
+      'intervention-window-source-event-incomplete');
     return this.#interventionPairCollector.add(value);
   }
 
