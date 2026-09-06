@@ -473,7 +473,9 @@ export class PhysicalControlManagerV2 {
   readonly #goalEvaluator = new GroundedGoalEvaluatorV1();
   readonly #useInhibition = new Map<string, number>();
   readonly #dispatchHistory: DispatchRecord[] = [];
-  #rotation = 0;
+  #explorationRotation = 0;
+  #groundedRotation = 0;
+  #explorationWindow: string[] | null = null;
   #requestNumber = 0;
   #attentionDrive = 0;
   #lastSnapshot: PhysicalControlSnapshotV2 | null = null;
@@ -516,16 +518,23 @@ export class PhysicalControlManagerV2 {
     try {
       let observation = await this.environment.observe();
       this.#goalEvaluator.setGoal(goal, observation); this.workspace.setGoal(goal); this.field.setGoal(goal.id);
-      this.#goalActive = true; this.#dispatchHistory.length = 0; this.habit.beginNewControlEpisode();
+      this.#goalActive = true; this.#dispatchHistory.length = 0;
+      this.#explorationRotation = 0; this.#groundedRotation = 0; this.#explorationWindow = null;
+      this.habit.beginNewControlEpisode();
       for (const notice of this.#queuedAttention.splice(0)) this.workspace.ingest({ kind: 'attention', notice });
       while (true) {
-        const evaluation = this.#goalEvaluator.evaluate(observation), status = await this.environment.status();
+        const evaluation = this.#goalEvaluator.evaluate(observation);
+        // Readiness is only a completion condition for the explicit
+        // initialization mode.  Do not enqueue a worker status query on every
+        // exploration/goal cycle; it is neither a permission check nor useful
+        // to the field's decision.
+        const status = mode === 'initialization' ? await this.environment.status() : null;
         const currentWorkspace = this.workspace.snapshot();
         if (currentWorkspace.observationSequence !== observation.sequence || currentWorkspace.goalEvaluation === null)
           this.#ingestObservation(observation, evaluation);
         this.field.setGoalEvaluation(evaluation);
         this.environment.record('goal-difference', evaluation);
-        if (mode === 'initialization' && status.ready) return this.#result('initialization-complete', cycles, null);
+        if (mode === 'initialization' && status?.ready) return this.#result('initialization-complete', cycles, null);
         if (mode === 'exploration' && stopCondition?.(observation))
           return this.#result('exploration-stop-condition-met', cycles, null);
 
@@ -534,7 +543,9 @@ export class PhysicalControlManagerV2 {
         else firstSatisfiedSequence = null;
 
         const budgetExhausted = this.environment.actionCount >= this.environment.actionBudget;
-        let sites = status.ready && isRealGoal
+        // Physical readiness is telemetry, not a permission gate. Goals may
+        // run while the substrate is still collecting its first events.
+        let sites = isRealGoal
           ? this.#reasoningAndActionSites(observation, evaluation, !budgetExhausted)
           : this.#explorationSites(observation)
             .filter(site => !budgetExhausted || (site.operation !== 'execute' && site.operation !== 'observe-public'));
@@ -580,9 +591,8 @@ export class PhysicalControlManagerV2 {
     const offers = this.environment.listActionOffers(observation);
     const result = this.workspace.ingest({ kind: 'observation', observation, offers, goalEvaluation: evaluation });
     assert(result.accepted, `control-observation-rejected:${result.reason}`);
-    const window = fairEvidenceWindowV2(offers, Math.max(1, this.config.branchCapacity - 1), this.#rotation,
-      value => cueIdentity(value.cue)); this.#rotation = window.nextRotation;
-    for (const offer of window.selected) this.workspace.registerExploration(offer);
+    for (const offer of this.#explorationOffers(offers).slice(0, Math.max(1, this.config.branchCapacity - 1)))
+      this.workspace.registerExploration(offer);
   }
 
   #terminalSites(observation: Observation, evaluation: GoalEvaluationV1, isRealGoal: boolean,
@@ -657,7 +667,6 @@ export class PhysicalControlManagerV2 {
       return this.#candidates(value, snapshot).some(candidate => hasProductionPhysicalRepresentationV2(candidate.evidence));
     }).map(value => this.#nodeCueIdentity(value)));
     const exploration = snapshot.nodes.filter(value => value.node.kind === 'exploration'
-      && value.node.offer.observationSequence === observation.sequence
       && !physicallyRepresentedCues.has(this.#nodeCueIdentity(value)));
     const all = [...publicRequirements, ...experienced, ...exploration];
     const active = all.map(node => ({ node, sites: this.#sitesForNode(node, snapshot, observation, evaluation)
@@ -675,10 +684,10 @@ export class PhysicalControlManagerV2 {
     // still selected only by fair rotation; this reserve does not score or pick
     // an operation, branch, or action.
     const capacity = Math.max(1, this.config.branchCapacity - (rootSites.length ? 1 : 0) - 1);
-    const window = fairGroundedControlWindowV2(modulated, capacity, this.#rotation,
+    const window = fairGroundedControlWindowV2(modulated, capacity, this.#groundedRotation,
       value => this.#nodeCueIdentity(value.node), value => value.node.node.kind !== 'exploration'
         && value.sites.some(productiveGoalControlSiteV2));
-    this.#rotation = window.nextRotation;
+    this.#groundedRotation = window.nextRotation;
     const sites = [...rootSites];
     for (const value of window.selected) sites.push(...value.sites);
     return sites;
@@ -774,13 +783,36 @@ export class PhysicalControlManagerV2 {
 
   #explorationSites(observation: Observation): JointControlSiteInputV2[] {
     const offers = this.environment.listActionOffers(observation);
-    const window = fairEvidenceWindowV2(offers, this.config.branchCapacity, this.#rotation,
-      value => cueIdentity(value.cue)); this.#rotation = window.nextRotation;
-    return window.selected.map(offer => {
+    return this.#explorationOffers(offers).map(offer => {
       const nodeId = this.workspace.registerExploration(offer), observe = offer.action.kind === 'observe' || offer.action.kind === 'wait';
       return this.#site(observe ? 'observe-public' : 'execute', nodeId, true,
         { unknown: 1, novelty: this.#novelty(offer), attention: this.#attentionDrive });
     });
+  }
+
+  /** Keep a fair offer window stable while the public reality is unchanged.
+   * Offers are rebound to the newest frame before execution; only admission is
+   * cached so the field can accumulate activation instead of rotating away. */
+  #explorationOffers(offers: readonly ActionOfferV1[]): readonly ActionOfferV1[] {
+    const capacity = this.config.branchCapacity;
+    const identity = (offer: ActionOfferV1): string => `${cueIdentity(offer.cue)}:${offer.action.targetId ?? ''}`;
+    if (this.#explorationWindow === null) {
+      const window = fairEvidenceWindowV2(offers, capacity, this.#explorationRotation, identity);
+      this.#explorationRotation = window.nextRotation;
+      this.#explorationWindow = window.selected.map(identity);
+    }
+    const current = new Map(offers.map(offer => [identity(offer), offer]));
+    const selected = this.#explorationWindow
+      .map(key => current.get(key)).filter((offer): offer is ActionOfferV1 => offer !== undefined);
+    if (selected.length < Math.min(capacity, offers.length)) {
+      const known = new Set(this.#explorationWindow);
+      const remaining = offers.filter(offer => !known.has(identity(offer)));
+      const fill = fairEvidenceWindowV2(remaining, capacity - selected.length, this.#explorationRotation, identity);
+      this.#explorationRotation = fill.nextRotation;
+      this.#explorationWindow.push(...fill.selected.map(identity));
+      selected.push(...fill.selected);
+    }
+    return selected.slice(0, capacity);
   }
 
   #site(operation: JointControlOperationV2, nodeId: string, hardEligible: boolean,

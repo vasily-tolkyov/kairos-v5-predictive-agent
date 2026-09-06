@@ -261,6 +261,11 @@ function samePopulation(left: readonly number[], right: readonly number[]): bool
 export class DistributedPredictionCloneV2 {
   readonly #snapshot: DistributedMediumSnapshotV1;
   readonly #source: DistributedPhysicalMedium3DV1;
+  #assemblyValidationCache: {
+    readonly source: readonly DistributedReadoutAssemblyV1[];
+    readonly assemblies: readonly ReturnType<typeof validateAssembly>[];
+    readonly readoutUniverseSiteIds: readonly number[];
+  } | null = null;
 
   constructor(snapshot: DistributedMediumSnapshotV1) {
     // Persistent potential and bonds are copied once into the read-only clone.
@@ -274,6 +279,26 @@ export class DistributedPredictionCloneV2 {
 
   snapshot(): DistributedMediumSnapshotV1 {
     return structuredClone(this.#snapshot) as DistributedMediumSnapshotV1;
+  }
+
+  #normalizedAssemblies(readoutAssemblies: readonly DistributedReadoutAssemblyV1[]): {
+    readonly assemblies: readonly ReturnType<typeof validateAssembly>[];
+    readonly readoutUniverseSiteIds: readonly number[];
+  } {
+    if (this.#assemblyValidationCache?.source === readoutAssemblies)
+      return this.#assemblyValidationCache;
+    const defaultDomainSiteIds = [...new Set(readoutAssemblies
+      .flatMap(assembly => assembly.siteIds))].sort((left, right) => left - right);
+    const assemblies = readoutAssemblies.map((assembly) =>
+      validateAssembly(assembly, this.#snapshot.sites.length, defaultDomainSiteIds));
+    if (new Set(assemblies.map((assembly) => assembly.assemblyId)).size !== assemblies.length) {
+      throw new Error("readout assembly ids must be unique");
+    }
+    const readoutUniverseSiteIds = [...new Set(assemblies.flatMap(assembly =>
+      assembly.enclosingDomainSiteIds))].sort((left, right) => left - right);
+    const value = { source: readoutAssemblies, assemblies, readoutUniverseSiteIds } as const;
+    this.#assemblyValidationCache = value;
+    return value;
   }
 
   run(request: DistributedPredictionCloneRequestV2): DistributedPredictionCloneResultV2 {
@@ -330,13 +355,8 @@ export class DistributedPredictionCloneV2 {
     const action = actionDrives;
     const sequentialInputs = [...realPrefixInputs, action];
     if (steps < sequentialInputs.length) return emptyUnknown("insufficient-sequential-seed-steps");
-    const defaultDomainSiteIds = [...new Set(request.readoutAssemblies
-      .flatMap(assembly => assembly.siteIds))].sort((left, right) => left - right);
-    const assemblies = request.readoutAssemblies.map((assembly) =>
-      validateAssembly(assembly, this.#snapshot.sites.length, defaultDomainSiteIds));
-    if (new Set(assemblies.map((assembly) => assembly.assemblyId)).size !== assemblies.length) {
-      throw new Error("readout assembly ids must be unique");
-    }
+    const { assemblies, readoutUniverseSiteIds } = this.#normalizedAssemblies(
+      request.readoutAssemblies);
     // The field is simulated exactly once. Candidate assemblies never enter
     // the seed; after the run they are only passive masks over the terminal
     // physical residence core.
@@ -345,8 +365,6 @@ export class DistributedPredictionCloneV2 {
         request.seed, steps)
       : this.#source.probeSequential(sequentialInputs, request.seed, steps);
     const reaches: DistributedPredictionAssemblyReachV1[] = [];
-    const readoutUniverseSiteIds = [...new Set(assemblies.flatMap(assembly =>
-      assembly.enclosingDomainSiteIds))].sort((left, right) => left - right);
     for (let index = 0; index < assemblies.length; index += 1) {
       const assembly = assemblies[index]!;
       const physicalMembers = assembly.siteIds.filter(siteId => {

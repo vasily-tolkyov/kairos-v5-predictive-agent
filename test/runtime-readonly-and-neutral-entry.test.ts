@@ -46,6 +46,7 @@ test('production entry has no built-in goal and runs only an explicit grounded g
   assert.equal(source.includes('changeVisibleCondition'), false);
   assert.equal(source.includes('continuedExploration'), false);
   assert.equal(source.includes('runtime.runGoal('), true);
+  assert.doesNotMatch(source, /if \(physical\.ready && !options\.bootstrapOnly/);
   assert.match(source, /services\.start\(options\.fixture\)/);
   assert.match(source, /structured-goal-required/);
   assert.match(source, /acceptedVersion: 'GroundedGoalV1'/);

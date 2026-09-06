@@ -856,7 +856,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     if (actionInput.siteIds.length === 0)
       return this.#emptyBranch(kind, evidence, 'candidate-action-afferent-unavailable');
     const { clone } = this.#r1PredictionSubstrate();
-    const results = Array.from({ length: 24 }, (_unused, index) => clone.run({
+    const results = clone.runMany({
       currentPerceptionSeedSiteIds: currentPerception.siteIds,
       ...(currentPerception.drives === undefined ? {} : {
         currentPerceptionSeedDrives: currentPerception.drives,
@@ -870,7 +870,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       ...(actionInput.drives === undefined ? {} : {
         actionSeedDrives: actionInput.drives,
       }),
-      readoutAssemblies: assemblies, seed: BigInt(index + 1), steps: 180 }));
+      readoutAssemblies: assemblies, seeds: Array.from({ length: 24 }, (_unused, index) =>
+        BigInt(index + 1)), steps: 180 });
     const currentPublic = eventLocalCurrentPublicStateV1(state, annotation.publicRoleBindings);
     let progressSampleCount = 0;
     const nextStates: HypotheticalPublicStateV1[] = [];

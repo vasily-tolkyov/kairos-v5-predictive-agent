@@ -15,5 +15,6 @@ test('basic action runner keeps fixture setup outside the generic prototype', as
   const prototype = await readFile(resolve('src', 'prototype.ts'), 'utf8');
   assert.match(runner, /controllerAccess: false/);
   assert.match(runner, /runtime\.exploreUntil/);
+  assert.doesNotMatch(runner, /runtime\?\.writes \?\? 0\) === 0/);
   assert.doesNotMatch(prototype, /mineflayer|MinecraftBody|Services|viewer\.mjs|dashboard\.js/);
 });

@@ -514,3 +514,22 @@ test('habit violation requires an explicitly comparable opposite readout', () =>
   assert.deepEqual(explicitPredictionViolationV2(prediction, before, after),
     { matched: true, highSupport: true, deviation: 1 });
 });
+
+test('goal reasoning is available before physical memory readiness', async () => {
+  class UnreadyEnvironment extends NeutralEnvironment {
+    statusCalls = 0;
+    override async status() { this.statusCalls++; return { ready: false, bufferedEvents: 0, writes: 0 }; }
+  }
+  class CountingReasoning extends NeutralReasoning {
+    recalls = 0;
+    override async recallByEffect(...args: Parameters<NeutralReasoning['recallByEffect']>) {
+      this.recalls++;
+      return super.recallByEffect(...args);
+    }
+  }
+  const environment = new UnreadyEnvironment(), reasoning = new CountingReasoning(environment, 2);
+  const result = await new PhysicalControlManagerV2(reasoning, environment, config(37)).runGoal(goal);
+  assert.equal(result.status, 'goal-verified');
+  assert(reasoning.recalls > 0, 'readiness incorrectly blocked goal reasoning');
+  assert.equal(environment.statusCalls, 0, 'goal loop still polls readiness as a gate');
+});

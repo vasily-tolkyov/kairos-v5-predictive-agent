@@ -155,7 +155,9 @@ export async function runMinecraftBasicActionLoopV1(config: Configuration, evide
   const actionCount = runtime?.actions ?? actions.length;
   const passed = error === null && fixtureReady && actions.length >= 6 && observerActionPresent
     && spatialActionPresent && forbiddenActionCount === 0 && duplicateActionReceiptCount === 0
-    && bodyReceiptCount === actionCount && (runtime?.writes ?? 0) === 0;
+    // Experience writes are expected in the live loop.  Readiness is a
+    // reported substrate fact, not an acceptance or action-permission gate.
+    && bodyReceiptCount === actionCount;
   const result: MinecraftBasicActionLoopResultV1 = { version: 'MinecraftBasicActionLoopResultV1',
     status: passed ? 'passed' : 'failed', controllerStatus, fixtureReady, actions,
     actionCount, bodyReceiptCount, eventCount: runtime?.eventCount ?? 0,

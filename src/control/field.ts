@@ -59,11 +59,13 @@ const operationDrive = (operation: JointControlOperationV2, d: JointControlDrive
       // Unknown has opposite meanings at the two generic execution boundaries.
       // With physical evidence it is a missing-condition penalty; without physical
       // evidence it is the only domain-neutral pressure for a legal exploration.
-      // This is derived solely from the evidence drive and does not inspect an
-      // action kind, object type, target, or task stage.
+      // Attention is an interrupt signal, not an execution veto: the controller
+      // invalidates stale evidence and rebinds the offer at dispatch time.  Keep a
+      // small salience penalty so an explicit observation can win an interruption,
+      // without pushing otherwise legal exploration below field convergence.
       return clampInput(.25 * d.goal + .20 * d.evidence + .20 * d.condition + .25 * d.rollout
         + .25 * d.novelty + .15 * d.unknown * (1 - d.evidence)
-        + d.habit - .20 * d.unknown * d.evidence - .35 * d.attention);
+        + d.habit - .20 * d.unknown * d.evidence - .15 * d.attention);
     case 'observe-public':
       // A currently satisfied goal still needs a second real observation.  Goal
       // drive therefore distinguishes that verification site from equally novel

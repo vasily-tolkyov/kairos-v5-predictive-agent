@@ -84,9 +84,14 @@ async function main(): Promise<void> {
       operatorStopFile: resolve(runRoot, 'STOP'), evidence }));
     await runtime.save();
     const initial = await runtime.status();
-    if (!initial.ready) status.initialization = await runtime.initializeFromRealExploration();
+    // Initialization remains an explicit observation mode for callers that did
+    // not provide a goal.  It is not a prerequisite for goal execution: a
+    // grounded goal may begin from an empty substrate and let recall, control
+    // and real exploration establish the first evidence in one run.
+    if (!initial.ready && (options.bootstrapOnly || goal === null))
+      status.initialization = await runtime.initializeFromRealExploration();
     const physical = await runtime.status(); status.physical = physical;
-    if (physical.ready && !options.bootstrapOnly && !stopping) {
+    if (!options.bootstrapOnly && !stopping) {
       if (goal === null) {
         // Production no longer invents a Minecraft-semantic objective. A caller must provide a
         // grounded, publicly verifiable goal through this explicit input boundary.
@@ -99,8 +104,9 @@ async function main(): Promise<void> {
     }
     status.actions = runtime.actions; status.events = runtime.eventCount; status.writes = runtime.writes;
     status.physical = await runtime.status();
-    status.conclusion = !physical.ready ? 'real-initialization-incomplete'
-      : options.bootstrapOnly ? 'real-initialization-ready' : 'structured-goal-required';
+    status.conclusion = options.bootstrapOnly
+      ? (physical.ready ? 'real-initialization-ready' : 'real-initialization-incomplete')
+      : goal === null ? 'structured-goal-required' : 'goal-run-complete';
   } catch (error) {
     const failure = error as Error; status.conclusion = stopping ? 'operator-stopped' : 'run-failed';
     status.error = { message: failure.message, stack: failure.stack };

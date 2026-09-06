@@ -464,6 +464,7 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       depositedEvents: this.#writes, initializationBuffered: this.#buffered, remainingActions: this.config.actionBudget - this.#actions,
       noveltySignals: this.#noveltySignals,
       physicalMap: this.#map, attention, controlField: this.controller.snapshot,
+      computeQueue: this.compute.performanceAudit(),
       attractorDictionary: this.#lastSnapshot?.attractorDictionary ?? null,
       interventionAgenda: this.#lastSnapshot?.interventionAgenda ?? null,
       controlHabits: this.#habit.exportCheckpoint(), recentRealEvents: this.#recent });

@@ -1902,8 +1902,43 @@ export class DistributedPhysicalMedium3DV1 {
       phiActivation[siteId] = phi(activation[siteId]!);
     }
     const frontier = new Set<number>();
+    // Maintain the ascending frontier order incrementally.  The previous
+    // implementation sorted the complete Set on every physical tick; this
+    // preserves that exact order for the seeded sweep without paying O(F log F)
+    // each time.
+    const frontierOrder: number[] = [];
+    const insertFrontierId = (siteId: number): void => {
+      if (frontier.has(siteId)) return;
+      frontier.add(siteId);
+      let low = 0, high = frontierOrder.length;
+      while (low < high) {
+        const middle = (low + high) >>> 1;
+        if (frontierOrder[middle]! < siteId) low = middle + 1;
+        else high = middle;
+      }
+      frontierOrder.splice(low, 0, siteId);
+    };
+    const addFrontier = (siteId: number): void => {
+      if (frontier.size === this.siteCount) return;
+      insertFrontierId(siteId);
+      if (frontier.size === this.siteCount) return;
+      for (const neighbor of this.#localNeighbors(siteId)) insertFrontierId(neighbor);
+      for (const target of this.#directedOut.get(siteId) ?? []) insertFrontierId(target);
+    };
+    const removeFrontier = (siteId: number): void => {
+      if (!frontier.delete(siteId)) return;
+      let low = 0, high = frontierOrder.length - 1;
+      while (low <= high) {
+        const middle = (low + high) >>> 1;
+        const value = frontierOrder[middle]!;
+        if (value < siteId) low = middle + 1;
+        else if (value > siteId) high = middle - 1;
+        else { frontierOrder.splice(middle, 1); return; }
+      }
+      throw new Error('ordered frontier membership mismatch');
+    };
     for (let siteId = 0; siteId < activation.length; siteId += 1) {
-      if (activation[siteId]! >= this.#config.minimumActiveMagnitude) this.#addFrontier(frontier, siteId);
+      if (activation[siteId]! >= this.#config.minimumActiveMagnitude) addFrontier(siteId);
     }
     let acceptedSteps = 0;
     let rejectedSteps = 0;
@@ -1918,13 +1953,13 @@ export class DistributedPhysicalMedium3DV1 {
         const siteId = drive.siteId;
         if (activation[siteId]! < drive.intensity) activation[siteId] = drive.intensity;
         phiActivation[siteId] = phi(activation[siteId]!);
-        this.#addFrontier(frontier, siteId);
+        addFrontier(siteId);
       }
       if (frontier.size === 0) break;
       const fullFrontier = frontier.size === this.siteCount;
       const frontierIds = fullFrontier
         ? Array.from({ length: this.siteCount }, (_unused, siteId) => siteId)
-        : [...frontier].sort((left, right) => left - right);
+        : frontierOrder.slice();
       for (const siteId of frontierIds) {
         activation[siteId] = activation[siteId]! * decay;
         if (activation[siteId]! < this.#config.minimumActiveMagnitude) activation[siteId] = 0;
@@ -1937,7 +1972,7 @@ export class DistributedPhysicalMedium3DV1 {
       // variance.  It never mutates persistent sites/bonds and is absent when
       // no live repeated assembly was found.
       if (terminalField !== undefined) this.#applyTransientCoactivationResonance(
-        activation, phiActivation, terminalField, frontier);
+        activation, phiActivation, terminalField, addFrontier);
       // `steps` denotes physical field ticks, not a number of globally shared
       // lottery tickets.  During one tick every site in the active frontier
       // receives one local Metropolis micro-proposal, in a seeded random
@@ -1951,9 +1986,9 @@ export class DistributedPhysicalMedium3DV1 {
       // Learned directed channels likewise move that same mass and remain a
       // non-equilibrium flux outside the scalar energy.
       directedTransportMass += this.#applyDirectedTransport(
-        activation, phiActivation, frontierIds, frontier);
+        activation, phiActivation, frontierIds, frontier, addFrontier);
 
-      const proposalOrder = [...frontierIds];
+      const proposalOrder = frontierIds.slice();
       // One 64-bit draw names this physical tick.  Cheap deterministic
       // substream then provides the sweep's thermal/acceptance draws.  This is
       // exactly the same stochastic field contract while avoiding millions of
@@ -2034,8 +2069,8 @@ export class DistributedPhysicalMedium3DV1 {
           phiActivation[siteId] = proposalPhi;
           phiActivation[neighbor] = neighborProposalPhi;
           acceptedSteps += 1;
-          this.#addFrontier(frontier, siteId);
-          this.#addFrontier(frontier, neighbor);
+          addFrontier(siteId);
+          addFrontier(neighbor);
         } else {
           rejectedSteps += 1;
         }
@@ -2046,7 +2081,7 @@ export class DistributedPhysicalMedium3DV1 {
       // becomes an irreversible bookkeeping state and every later tick scans
       // thousands of physically inactive locations.
       for (const candidate of [...frontier]) {
-        if (activation[candidate] === 0 && this.#allInfluencesInactive(candidate, activation)) frontier.delete(candidate);
+        if (activation[candidate] === 0 && this.#allInfluencesInactive(candidate, activation)) removeFrontier(candidate);
       }
       let leader = -1;
       let strongest = this.#config.minimumActiveMagnitude;
@@ -2074,7 +2109,7 @@ export class DistributedPhysicalMedium3DV1 {
     }
     const finalFrontier = frontier.size === this.siteCount
       ? Array.from({ length: this.siteCount }, (_unused, siteId) => siteId)
-      : [...frontier];
+      : frontierOrder.slice();
     const finalActivations = finalFrontier
       .filter((siteId) => activation[siteId]! >= this.#config.minimumActiveMagnitude)
       .sort((left, right) => left - right)
@@ -2095,7 +2130,7 @@ export class DistributedPhysicalMedium3DV1 {
 
   #applyTransientCoactivationResonance(activation: Float64Array,
     phiActivation: Float64Array, terminalField: TerminalFieldStatisticsV1,
-    frontier: Set<number>): void {
+    addFrontier: (siteId: number) => void): void {
     const strength = terminalField.coactivationResonanceStrength;
     if (strength <= 0 || terminalField.coactivationAssembly === null
       || terminalField.coactivationSeedSiteIds.size < 2) return;
@@ -2133,7 +2168,7 @@ export class DistributedPhysicalMedium3DV1 {
       activation[siteId] = clamp(next, 0, this.#config.maximumActivation);
       phiActivation[siteId] = phi(activation[siteId]!);
       if (activation[siteId]! >= this.#config.minimumActiveMagnitude)
-        this.#addFrontier(frontier, siteId);
+        addFrontier(siteId);
     }
   }
 
@@ -2165,7 +2200,8 @@ export class DistributedPhysicalMedium3DV1 {
   }
 
   #applyDirectedTransport(activation: Float64Array, phiActivation: Float64Array,
-    frontierIds: readonly number[], frontier: Set<number>): number {
+    frontierIds: readonly number[], frontier: Set<number>,
+    addFrontier: (siteId: number) => void): number {
     const requested: Array<{ source: number; target: number; amount: number }> = [];
     const incoming = new Map<number, number>();
     for (const source of frontierIds) {
@@ -2211,7 +2247,7 @@ export class DistributedPhysicalMedium3DV1 {
       }
       activation[siteId] = clamp(next, 0, this.#config.maximumActivation);
       phiActivation[siteId] = phi(activation[siteId]!);
-      if (activation[siteId]! >= this.#config.minimumActiveMagnitude) this.#addFrontier(frontier, siteId);
+      if (activation[siteId]! >= this.#config.minimumActiveMagnitude) addFrontier(siteId);
     }
     for (const transfer of requested) {
       transportedMass += transfer.amount * targetScale.get(transfer.target)!;
@@ -2227,14 +2263,6 @@ export class DistributedPhysicalMedium3DV1 {
       if (activation[source]! >= this.#config.minimumActiveMagnitude) return false;
     }
     return true;
-  }
-
-  #addFrontier(frontier: Set<number>, siteId: number): void {
-    if (frontier.size === this.siteCount) return;
-    frontier.add(siteId);
-    if (frontier.size === this.siteCount) return;
-    for (const neighbor of this.#localNeighbors(siteId)) frontier.add(neighbor);
-    for (const target of this.#directedOut.get(siteId) ?? []) frontier.add(target);
   }
 
   #evidenceLevel(meanSupport: number): DistributedEvidenceLevelV1 {

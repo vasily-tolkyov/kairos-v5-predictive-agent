@@ -91,6 +91,14 @@ export class DistributedR1ExperienceStoreV1 {
   readonly #encodingGainProvider: () => number;
   readonly #records = new Map<string, DistributedR1ExperienceRecordV1>();
   #qualificationCache: ReadonlyMap<string, DistributedR1AttractorQualificationV1> | null = null;
+  /**
+   * A conservative candidate index for qualification.  Shared action-cue
+   * pulses must have the same drive cardinality before their exact weighted
+   * comparison can succeed, so this index can only remove impossible pairs;
+   * the original comparison remains the final authority.
+   */
+  #qualificationCandidateIndex: Map<number, DistributedR1ExperienceRecordV1[]> | null = null;
+  #episodeComparisonCache = new Map<string, DistributedEpisodeComparisonV1>();
 
   constructor(medium: DistributedMediumWritePortV1, seed: bigint = DEFAULT_AFFERENT_SEED,
     state?: DistributedR1StateV1, encodingGainProvider: () => number = () => 1) {
@@ -140,6 +148,12 @@ export class DistributedR1ExperienceStoreV1 {
     };
     this.#records.set(event.id, record);
     this.#qualificationCache = null;
+    if (this.#qualificationCandidateIndex !== null) {
+      const cuePulseLength = record.episodeTopology.pulses[1]?.length ?? 0;
+      const bucket = this.#qualificationCandidateIndex.get(cuePulseLength) ?? [];
+      bucket.push(record);
+      this.#qualificationCandidateIndex.set(cuePulseLength, bucket);
+    }
     return { version: 'DistributedR1ObservationReceiptV1', status: 'deposited',
       record: structuredClone(record), novelty: {
         version: 'DistributedNoveltyRecordV1', source: 'trusted-real-event',
@@ -198,7 +212,15 @@ export class DistributedR1ExperienceStoreV1 {
 
   #measureAttractors(): ReadonlyMap<string, DistributedR1AttractorQualificationV1> {
     const records = [...this.#records.values()];
-    const active = records.filter(record => this.#medium.isFootprintActive(record.footprint));
+    if (this.#qualificationCandidateIndex === null) {
+      const index = new Map<number, DistributedR1ExperienceRecordV1[]>();
+      for (const record of records) {
+        const cuePulseLength = record.episodeTopology.pulses[1]?.length ?? 0;
+        const bucket = index.get(cuePulseLength) ?? [];
+        bucket.push(record); index.set(cuePulseLength, bucket);
+      }
+      this.#qualificationCandidateIndex = index;
+    }
     const snapshot = this.#medium.snapshot() as DistributedMediumSnapshotV1;
     const probeMedium = DistributedPhysicalMedium3DV1.fromSnapshot(restSnapshot(snapshot));
     const result = new Map<string, DistributedR1AttractorQualificationV1>();
@@ -211,9 +233,21 @@ export class DistributedR1ExperienceStoreV1 {
       'eventId' | 'supportingEventIds' | 'independentContextCount'>>();
 
     for (const record of records) {
-      const comparisonTo = (other: DistributedR1ExperienceRecordV1) =>
-        compareDistributedEpisodesV1(record.episodeTopology, other.episodeTopology);
-      const supporting = active.filter(other => {
+      const comparisonTo = (other: DistributedR1ExperienceRecordV1): DistributedEpisodeComparisonV1 => {
+        const leftId = record.eventId.localeCompare(other.eventId, 'en') <= 0
+          ? record.eventId : other.eventId;
+        const rightId = leftId === record.eventId ? other.eventId : record.eventId;
+        const key = `${leftId}\u0000${rightId}`;
+        const cached = this.#episodeComparisonCache.get(key);
+        if (cached !== undefined) return cached;
+        const measured = compareDistributedEpisodesV1(record.episodeTopology, other.episodeTopology);
+        this.#episodeComparisonCache.set(key, measured);
+        return measured;
+      };
+      const candidates = this.#qualificationCandidateIndex.get(
+        record.episodeTopology.pulses[1]?.length ?? 0) ?? [];
+      const supporting = candidates.filter(other => {
+        if (!this.#medium.isFootprintActive(other.footprint)) return false;
         const comparison = comparisonTo(other);
         return comparison.sharedActionCuePulse && comparison.terminalWeightedJaccard >= .8;
       });
@@ -234,7 +268,8 @@ export class DistributedR1ExperienceStoreV1 {
           value.terminalPulseSiteIds.length === targetPopulation.length
           && value.terminalPulseSiteIds.every((siteId, index) =>
             siteId === targetPopulation[index]))?.assemblyId;
-        const competingPopulations = active.filter(other => {
+        const competingPopulations = candidates.filter(other => {
+          if (!this.#medium.isFootprintActive(other.footprint)) return false;
           const comparison = comparisonTo(other);
           return comparison.sharedActionCuePulse && comparison.terminalWeightedJaccard < .8;
         }).map(other => other.episodeTopology.terminalSiteIds);
@@ -242,11 +277,18 @@ export class DistributedR1ExperienceStoreV1 {
         // itself. Cue-to-result propagation is a separate road property and
         // cannot substitute for return to the terminal basin.
         const basinPopulation = record.episodeTopology.pulses.at(-1)!.map(drive => drive.siteId);
+        // Stable qualification already requires eight active supporting
+        // footprints.  When that necessary condition is false, running the
+        // 16x180 physical probes cannot change the qualification outcome; the
+        // probe is therefore an exact mathematical short-circuit, not a
+        // cognitive or semantic action policy.
+        const activePhysicalSupport = supporting.length >= 8;
         let targetReturnCount = 0, ambiguousProbeCount = 0;
         let dwellTotal = 0, returnTotal = 0, escapeTotal = 0;
         let maximumCompetingCoreAffinity = 0;
         const returnedCoreCounts = new Map<number, number>();
-        for (let probeIndex = 0; probeIndex < ATTRACTOR_PROBE_COUNT; probeIndex += 1) {
+        for (let probeIndex = 0; activePhysicalSupport
+          && probeIndex < ATTRACTOR_PROBE_COUNT; probeIndex += 1) {
           const perturbed = basinPopulation.filter((_siteId, index) =>
             (index + probeIndex) % 8 !== 0);
           const seedSites = perturbed.length > 0 ? perturbed : basinPopulation;
@@ -279,7 +321,6 @@ export class DistributedR1ExperienceStoreV1 {
         const meanDwellSteps = dwellTotal / divisor;
         const meanReturnRate = returnTotal / divisor;
         const meanEscapeRate = targetReturnCount > 0 ? escapeTotal / targetReturnCount : 1;
-        const activePhysicalSupport = supporting.length >= 8;
         const physicalStable = activePhysicalSupport
           && targetReturnCount >= MINIMUM_UNAMBIGUOUS_PROBE_COUNT
           && meanDwellSteps >= 20 && meanReturnRate >= .25 && meanEscapeRate <= .75

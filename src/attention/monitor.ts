@@ -34,6 +34,7 @@ export class AttentionMonitor {
   #window: Observation[] = [];
   #forecast: Forecast | null = null;
   #busy = false;
+  #forecastGeneration = 0;
   #lastSequence = 0;
   #fault: Error | null = null;
   readonly notices: AttentionNotice[] = [];
@@ -71,6 +72,7 @@ export class AttentionMonitor {
   }
   #processWindow(frames: readonly Observation[]): void {
     const frame = frames.at(-1)!;
+    const generation = ++this.#forecastGeneration;
     try {
       const trackedIds = ['self', ...new Set(frames.flatMap(f => f.objects.map(o => o.id)))];
       const eventWithoutContinuity: RealEvent = { version: 'RealEventV5', id: `${this.sessionId}:monitor-${frame.sequence}`, cue: { kind: 'passive', parameters: {}, targetRole: null },
@@ -147,6 +149,7 @@ export class AttentionMonitor {
         const prefix = { ...event, trackedIds: [focus] };
         this.#busy = true;
         void this.compute.call<Prediction>('predict', prefix.cue, frame, { prefix }).then(prediction => {
+          if (generation !== this.#forecastGeneration) return;
           const complete = this.#lastSequence;
           this.#forecast = { prediction, subjectId: focus, completedSequence: complete, originSequence: frame.sequence };
           this.record('focus-forecast', { originSequence: frame.sequence, completedSequence: complete, subjectId: focus, prediction });
