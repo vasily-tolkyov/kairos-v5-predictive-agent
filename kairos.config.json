@@ -15,5 +15,7 @@
     "predictionSeeds": 24, "predictionSteps": 180, "goalVerificationTicks": 5
   },
   "viewer": { "enabled": true, "host": "127.0.0.1", "port": 3000, "dashboardPort": 3002 },
+  "evidence": { "snapshotEveryEvents": 32, "attentionRecordEveryWindows": 20,
+    "attentionScoreEpsilon": 0.1, "writerQueueLineLimit": 65536 },
   "stateRoot": "state", "evidenceRoot": "evidence", "runtimeRoot": "runtime"
 }

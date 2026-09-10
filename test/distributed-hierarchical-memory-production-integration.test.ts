@@ -8,6 +8,7 @@ import { DistributedHierarchicalPhysicalMemoryV1,
   type KairosV5DistributedPhysicalMemoryV3 }
   from "../src/distributed-hierarchical-memory.js";
 import { realEventHierarchyContinuityV1 } from "../src/events.js";
+import { DistributedR2ContinuityStoreV1 } from "../src/core/learning/distributed-r2.js";
 import { sha } from "../src/util.js";
 
 type Mode = "effect" | "motion" | "verify";
@@ -179,7 +180,7 @@ test("production hierarchy deposits R1 immediately and reaches the 128-event rea
   assert.equal(JSON.stringify(restored.snapshot()), JSON.stringify(snapshot));
 });
 
-test("production hierarchy queries are read-only and each physical layer fails closed independently", () => {
+test("production hierarchy queries are read-only and each physical layer fails closed independently", t => {
   const memory = new DistributedHierarchicalPhysicalMemoryV1();
   for (let chain = 0; chain < 8; chain += 1) {
     const start = chain * 3, base = chain * 0.02;
@@ -193,7 +194,12 @@ test("production hierarchy queries are read-only and each physical layer fails c
   const observation = event(200, "verify").frames[0]!;
   const { goal, evaluation } = goalAndEvaluation(observation);
   const before = sha(restored.snapshot());
+  const allEvents = t.mock.method(DistributedR2ContinuityStoreV1.prototype, 'events');
+  const wholeSnapshot = t.mock.method(DistributedR2ContinuityStoreV1.prototype, 'snapshot');
   const continuous = restored.recallContinuousPattern(goal, evaluation, observation);
+  assert.equal(allEvents.mock.callCount(), 0, 'point recall copied the entire event table');
+  assert.equal(wholeSnapshot.mock.callCount(), 0, 'pending count copied the entire physical snapshot');
+  allEvents.mock.restore(); wholeSnapshot.mock.restore();
   // The stochastic clone's full read-only path is covered by the G5 tests.
   // Here an unsupported exact cue exercises the production prediction entry
   // without turning this integration test into another 24-rollout benchmark.

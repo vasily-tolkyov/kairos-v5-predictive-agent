@@ -7,7 +7,7 @@ import type { ActionObservationScopeV1, ActionOfferV1, BranchPredictionV1, Condi
   GroundedGoalV1, GoalEvaluationV1, JointControlDecisionV2,
   JointControlDrivesV2, JointControlOperationV2, JointControlSiteInputV2,
   JointTransientControlFieldConfigV2, OpaqueFactorTransitionTraceV1,
-  PhysicalEvidenceReferenceV1, PhysicalReasoningPortV2,
+  PhysicalEvidenceReferenceV1, PhysicalReasoningPortV2, PhysicalReasoningPortV3, PhysicalPredictionBindingV1,
   ProjectedParentRelationApplicabilityV1 } from './contracts.js';
 import { JointTransientControlFieldV2 } from './field.js';
 import { ControlHabitWeightsV1, type ControlHabitGraphRelationV1,
@@ -16,6 +16,8 @@ import { goalPredicates, groundedPublicObservableV1, GroundedGoalEvaluatorV1 } f
 import { compactBranchPredictionForControlAuditV2, ControlWorkspaceV2, type ControlWorkspaceNodeSnapshotV2,
   type ControlWorkspaceSnapshotV2, type BoundContinuationPredictionV2,
   type ControlBranchPredictionResultV2 } from './workspace.js';
+import { ActiveControlTrajectoryV1, type ActivePredictionContextV1 } from './active-trajectory.js';
+import { physicalDependencyPathsV1 } from './short-chain-paths.js';
 
 export interface PhysicalControlEnvironmentV2 {
   observe(): Promise<Observation>;
@@ -30,8 +32,9 @@ export interface PhysicalControlEnvironmentV2 {
     readonly missing: readonly string[];
     readonly goal: GroundedGoalV1 | null;
   };
-  executeOffer(offer: ActionOfferV1, observationScope: ActionObservationScopeV1): Promise<{ readonly executed: boolean; readonly observation: Observation;
-    readonly eventId: string | null; readonly refusal?: 'action-budget-exhausted' | 'offer-stale' | 'target-unavailable' }>;
+  executeOffer(offer: ActionOfferV1, observationScope: ActionObservationScopeV1,
+    predictionBinding?: PhysicalPredictionBindingV1): Promise<{ readonly executed: boolean; readonly observation: Observation;
+    readonly eventId: string | null; readonly refusal?: 'action-budget-exhausted' | 'offer-stale' | 'target-unavailable' | 'prediction-stale' }>;
   recordTrustedRuntimeGoalMeasurement?(eventId: string, observedAt: number,
     goalResidualBefore: number, goalResidualAfter: number): Promise<void>;
   commitHabitOutcome?(outcome: TrustedRealActionOutcomeV1): Promise<void>;
@@ -58,6 +61,7 @@ export interface PhysicalControlSnapshotV2 {
   readonly habits: ReturnType<ControlHabitWeightsV1['exportCheckpoint']>;
   readonly lastDecision: JointControlDecisionV2 | null;
   readonly attentionDrive: number;
+  readonly activeTrajectory: ReturnType<ActiveControlTrajectoryV1['snapshot']>;
   readonly recentDispatches: readonly { readonly operation: JointControlOperationV2; readonly nodeId: string }[];
 }
 
@@ -128,6 +132,19 @@ export function modulateBlindExplorationInputsV2(sites: readonly JointControlSit
   return sites.map(site => site.drives.goal === 0 && site.drives.evidence === 0 && site.drives.rollout === 0
     ? { ...site, drives: { ...site.drives, unknown: 0, novelty: 0 } }
     : site);
+}
+
+/** A retained physical branch with an unresolved condition is already useful
+ * reasoning work, even before it is production-qualified.  Its compare,
+ * factor-expansion or prediction site must be allowed to compete before a
+ * blind body action can consume the same observation.  This is a transient
+ * drive relation, not an action-order script: it does not choose which query
+ * wins and it never makes an execution site eligible. */
+export function physicalReasoningPendingControlSiteV2(site: JointControlSiteInputV2): boolean {
+  if (!site.hardEligible || site.productiveGrounding?.kind !== 'physical-branch') return false;
+  if (site.operation !== 'compare-condition' && site.operation !== 'expand-condition'
+    && site.operation !== 'predict-branch') return false;
+  return site.drives.goal > 0 && site.drives.evidence > 0;
 }
 
 /** A goal-grounded operation is productive only when it is a real outstanding
@@ -482,6 +499,9 @@ export class PhysicalControlManagerV2 {
   #goalActive = false;
   #runInProgress = false;
   #queuedAttention: AttentionNotice[] = [];
+  readonly activity = new ActiveControlTrajectoryV1();
+  #sealedContext: ActivePredictionContextV1 | null = null;
+  #queryContext: ActivePredictionContextV1 | null = null;
 
   constructor(readonly reasoning: PhysicalReasoningPortV2, readonly environment: PhysicalControlEnvironmentV2,
     readonly config: JointTransientControlFieldConfigV2, habit = new ControlHabitWeightsV1(),
@@ -491,10 +511,16 @@ export class PhysicalControlManagerV2 {
   }
 
   get snapshot(): PhysicalControlSnapshotV2 | null {
-    return this.#lastSnapshot ? structuredClone(this.#lastSnapshot) : null;
+    return this.#lastSnapshot ? structuredClone({ ...this.#lastSnapshot,
+      activeTrajectory: this.activity.snapshot() }) : null;
   }
 
+  /** Called by the body while the numerical worker is busy. No learning or
+   * field winner is produced on the frame callback. */
+  acceptPublicFeedback(observation: Observation): void { this.activity.accept(observation); }
+
   interrupt(notice: AttentionNotice): void {
+    this.activity.deviation();
     this.#attentionDrive = 1;
     if (this.#goalActive) this.workspace.ingest({ kind: 'attention', notice });
     else this.#queuedAttention.push(structuredClone(notice));
@@ -515,6 +541,11 @@ export class PhysicalControlManagerV2 {
     assert(!this.#runInProgress, 'physical-control-run-already-in-progress');
     this.#runInProgress = true;
     let cycles = 0, firstSatisfiedSequence: number | null = null;
+    // A read-only operation that leaves the same node on the same public frame
+    // cannot discover anything by being submitted again.  This is a
+    // computation bound, not a cognitive priority: it ends only a repeated
+    // no-progress query and leaves the root goal/evidence intact.
+    let noProgressFingerprint: string | null = null, noProgressCount = 0;
     try {
       let observation = await this.environment.observe();
       this.#goalEvaluator.setGoal(goal, observation); this.workspace.setGoal(goal); this.field.setGoal(goal.id);
@@ -569,6 +600,25 @@ export class PhysicalControlManagerV2 {
             : 'current-experience-and-budget-exhausted', cycles, isRealGoal ? evaluation : null);
         const dispatchEpoch = this.workspace.snapshot().epoch;
         await this.#dispatch(decision, goal, evaluation, observation);
+        if (decision.operation !== 'execute' && decision.operation !== 'observe-public') {
+          const current = this.workspace.snapshot();
+          // Physical ticks are not semantic progress.  A stable public scene
+          // may produce thousands of new sequence numbers while the same
+          // read-only query is being recomputed.  Count only the public state
+          // that the query can actually observe; retain epoch/node/operation
+          // so a real world or goal change starts a fresh query opportunity.
+          const fingerprint = sha({ operation: decision.operation, nodeId: decision.nodeId,
+            epoch: current.epoch, targetId: observation.targetId,
+            objects: observation.objects, self: observation.self });
+          noProgressCount = fingerprint === noProgressFingerprint ? noProgressCount + 1 : 1;
+          noProgressFingerprint = fingerprint;
+          if (noProgressCount >= 2) {
+            this.environment.record('control-no-progress-stop', { operation: decision.operation,
+              nodeId: decision.nodeId, observationSequence: observation.sequence,
+              repeatedQueries: noProgressCount, reason: 'same-read-only-query-no-new-state' });
+            return this.#result('current-experience-and-budget-exhausted', cycles, evaluation);
+          }
+        } else { noProgressFingerprint = null; noProgressCount = 0; }
         // A reasoning chain is evaluated against one sealed public frame. Raw
         // Minecraft ticks may continue while the worker runs, but they do not
         // silently invalidate compare -> predict -> execute before the model
@@ -576,6 +626,8 @@ export class PhysicalControlManagerV2 {
         // boundaries, so both force a new public frame before the next site.
         if (decision.operation === 'execute' || decision.operation === 'observe-public')
           this.field.crossRealityBoundary();
+        if (this.#sealedContext && !this.activity.current(this.#sealedContext)
+          && this.workspace.snapshot().epoch === dispatchEpoch) this.workspace.invalidateFeedback();
         if (decision.operation === 'execute' || decision.operation === 'observe-public'
           || this.workspace.snapshot().epoch !== dispatchEpoch)
           observation = await this.environment.observe();
@@ -586,6 +638,7 @@ export class PhysicalControlManagerV2 {
   }
 
   #ingestObservation(observation: Observation, evaluation: GoalEvaluationV1): void {
+    this.activity.accept(observation); this.#sealedContext = this.activity.capture();
     const snapshot = this.workspace.snapshot();
     if (snapshot.observationSequence !== null && observation.sequence <= snapshot.observationSequence) return;
     const offers = this.environment.listActionOffers(observation);
@@ -676,8 +729,11 @@ export class PhysicalControlManagerV2 {
     const groundedWorkAvailable = rootSites.some(productiveGoalControlSiteV2)
       || active.some(value => value.node.node.kind !== 'exploration'
         && value.sites.some(productiveGoalControlSiteV2));
+    const physicalReasoningAvailable = active.some(value => value.node.node.kind !== 'exploration'
+      && value.sites.some(physicalReasoningPendingControlSiteV2));
     const modulated = active.map(value => value.node.node.kind === 'exploration'
-      ? { ...value, sites: modulateBlindExplorationInputsV2(value.sites, groundedWorkAvailable) }
+      ? { ...value, sites: modulateBlindExplorationInputsV2(value.sites,
+        groundedWorkAvailable || physicalReasoningAvailable) }
       : value);
     // Keep one transient slot for an observation/verification event that may be
     // admitted later in this same global competition.  The remaining nodes are
@@ -686,7 +742,8 @@ export class PhysicalControlManagerV2 {
     const capacity = Math.max(1, this.config.branchCapacity - (rootSites.length ? 1 : 0) - 1);
     const window = fairGroundedControlWindowV2(modulated, capacity, this.#groundedRotation,
       value => this.#nodeCueIdentity(value.node), value => value.node.node.kind !== 'exploration'
-        && value.sites.some(productiveGoalControlSiteV2));
+        && value.sites.some(site => productiveGoalControlSiteV2(site)
+          || physicalReasoningPendingControlSiteV2(site)));
     this.#groundedRotation = window.nextRotation;
     const sites = [...rootSites];
     for (const value of window.selected) sites.push(...value.sites);
@@ -745,13 +802,13 @@ export class PhysicalControlManagerV2 {
     const sites: JointControlSiteInputV2[] = [];
     if (!condition) sites.push(this.#site('compare-condition', node.node.nodeId, binding > 0,
       { goal: depthGoal, evidence: binding, unknown, attention: this.#attentionDrive }, physicalGrounding));
-    // A prediction needs a current R2A comparison.  With no comparison (or a
-    // zero-applicability comparison) the physical port can only return the
-    // same unsupported result; the live compare/expand sites must first be
-    // allowed to expose the missing condition.  This is a material input
-    // requirement, not a scripted operation order.
-    if (!prediction && condition !== null && condition.applicability > 0) sites.push(this.#site('predict-branch', node.node.nodeId, binding > 0,
-      { goal: depthGoal, evidence: binding, condition: condition?.applicability ?? .25,
+    // A zero applicability readout is a physical result to investigate, not a
+    // reason to hide the read-only rollout.  If the retained R1/R2/R2A
+    // footprint is present, the predictor must be allowed to test the current
+    // condition and report reached/unknown honestly.  Action execution still
+    // requires the separate production qualification below.
+    if (!prediction && condition !== null && binding > 0) sites.push(this.#site('predict-branch', node.node.nodeId, true,
+      { goal: depthGoal, evidence: binding, condition: condition.applicability,
         unknown, attention: this.#attentionDrive }, physicalGrounding));
     if (condition && factors.length > 0
       && !this.workspace.hasCompleted('expand-condition', node.node.nodeId, { currentEpoch: true }))
@@ -776,7 +833,9 @@ export class PhysicalControlManagerV2 {
       && requirement?.satisfied !== false && !dependencyAwaitingRealityCheck)
       sites.push(this.#site('execute', node.node.nodeId, true,
         { goal: depthGoal, evidence: binding, condition: winner.condition.applicability,
-          rollout: Math.max(winner.progress, continuationSupport), unknown: 0, attention: this.#attentionDrive },
+          rollout: Math.max(winner.progress, continuationSupport,
+            winner.prediction.shortChain ? winner.prediction.shortChain.progressSampleCount
+              / winner.prediction.shortChain.totalSampleCount : 0), unknown: 0, attention: this.#attentionDrive },
         physicalGrounding));
     return sites;
   }
@@ -827,7 +886,8 @@ export class PhysicalControlManagerV2 {
     this.field.replaceSites(sites); const decision = this.field.decide();
     this.#lastSnapshot = { version: 'PhysicalControlSnapshotV2', field: this.field.snapshot(),
       workspace: this.workspace.snapshot(), habits: this.habit.exportCheckpoint(), lastDecision: decision,
-      attentionDrive: this.#attentionDrive, recentDispatches: structuredClone(this.#dispatchHistory) };
+      attentionDrive: this.#attentionDrive, activeTrajectory: this.activity.snapshot(),
+      recentDispatches: structuredClone(this.#dispatchHistory) };
     this.environment.record('joint-control-decision', this.#lastSnapshot); return decision;
   }
 
@@ -841,6 +901,14 @@ export class PhysicalControlManagerV2 {
     const node = workspace.nodes.find(value => value.node.nodeId === nodeId);
     assert(node, 'joint-control-selected-node-not-found');
     const requestId = `control-request-${++this.#requestNumber}`;
+
+    const latest = await this.environment.observe(); this.activity.accept(latest);
+    if (this.#sealedContext && !this.activity.current(this.#sealedContext)) {
+      this.workspace.invalidateFeedback();
+      this.environment.record('control-stale-feedback', { requestId, operation, nodeId,
+        baseSequence: observation.sequence, latestSequence: latest.sequence, reason: 'public-state-changed' });
+      return;
+    }
 
     if (operation === 'execute' || operation === 'observe-public') {
       const physicalMembers = node.node.kind === 'exploration' ? [] : this.#candidates(node, workspace);
@@ -858,7 +926,10 @@ export class PhysicalControlManagerV2 {
         baseSequence: observation.sequence });
       const beforeResidual = evaluation.residual;
       const selectedPrediction = winningMember?.prediction ?? null;
-      const result = await this.environment.executeOffer(offer, this.#actionObservationScope(goal, workspace));
+      const result = await this.environment.executeOffer(offer, this.#actionObservationScope(goal, workspace),
+        selectedPrediction?.binding);
+      this.activity.accept(result.observation);
+      if (result.executed && result.eventId) this.activity.action(result.eventId);
       const accepted = this.workspace.ingest({ kind: 'action-completed', requestId: request.requestId, nodeId,
         result: { executed: result.executed, observation: result.observation, result } });
       assert(accepted.accepted, `control-action-result-rejected:${accepted.reason}`);
@@ -881,6 +952,7 @@ export class PhysicalControlManagerV2 {
     const request = this.workspace.beginRequest({ requestId, channel: 'reasoning', operation, nodeId,
       baseSequence: observation.sequence, factorIds: operation === 'expand-condition'
         ? this.#missingFactors(nodeId) : undefined });
+    this.#queryContext = this.activity.begin(requestId, nodeId);
     try {
       if (operation === 'recall-effect') {
         const queryGoal = node.node.kind === 'root' || node.node.kind === 'public-requirement'
@@ -892,11 +964,11 @@ export class PhysicalControlManagerV2 {
           this.reasoning.recallContinuousPattern(queryGoal, queryEvaluation, observation),
         ]);
         const result = { version: 'PhysicalRecallBundleV2' as const, atomicCandidates, continuousPatterns };
-        this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
+        await this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
           nodeId, baseSequence: request.baseSequence, result });
       } else if (operation === 'compare-condition') {
         const result = await this.#compareCandidateGroup(this.#candidates(node, workspace), observation);
-        this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
+        await this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
           nodeId, baseSequence: request.baseSequence, result });
       } else if (operation === 'predict-branch') {
         const predictionGoal = this.#objectiveGoal(node, workspace, goal);
@@ -906,20 +978,31 @@ export class PhysicalControlManagerV2 {
           ? projectedParentRelationIdsV1(nodeId, workspace) : null;
         const result = await this.#predictCandidateGroup(this.#candidates(node, workspace),
           node.continuousPatterns, observation, predictionGoal, predictionEvaluation, parentRelationIds);
-        this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
+        await this.#attachDependencyRollout(result, nodeId, workspace, observation, goal, evaluation);
+        await this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
           nodeId, baseSequence: request.baseSequence, result });
       } else if (operation === 'expand-condition') {
         const result = await this.reasoning.recallFactorTransition(request.factorIds, observation);
-        this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
+        await this.#acceptOperation({ kind: 'operation-completed', requestId, epoch: request.epoch, operation,
           nodeId, baseSequence: request.baseSequence, result });
       }
     } catch (error) {
+      this.activity.end(null);
       this.workspace.ingest({ kind: 'operation-failed', requestId, epoch: request.epoch, operation,
         nodeId, baseSequence: request.baseSequence, error }); throw error;
     }
   }
 
-  #acceptOperation(event: Parameters<ControlWorkspaceV2['ingest']>[0]): void {
+  async #acceptOperation(event: Parameters<ControlWorkspaceV2['ingest']>[0]): Promise<void> {
+    const prediction = event.kind === 'operation-completed' && event.operation === 'predict-branch'
+      ? event.result.atomic : null;
+    const version = prediction?.binding?.mediumVersion ?? null;
+    const port = this.reasoning as Partial<PhysicalReasoningPortV3>;
+    const staleMedium = version !== null && port.physicalVersion !== undefined
+      && version !== await port.physicalVersion();
+    if ((this.#queryContext && !this.activity.current(this.#queryContext)) || staleMedium)
+      this.workspace.invalidateFeedback();
+    this.activity.end(version); this.#queryContext = null;
     const accepted = this.workspace.ingest(event);
     const auditEvent = event.kind === 'operation-completed' && event.operation === 'predict-branch'
       ? { ...event, result: { ...event.result,
@@ -930,6 +1013,37 @@ export class PhysicalControlManagerV2 {
     this.environment.record('control-operation-result', { event: auditEvent, accepted });
     if (!accepted.accepted && !accepted.reason.startsWith('stale-operation'))
       throw new Error(`control-operation-result-rejected:${accepted.reason}`);
+  }
+
+  async #attachDependencyRollout(result: ControlBranchPredictionResultV2, nodeId: string,
+    workspace: ControlWorkspaceSnapshotV2, observation: Observation, goal: GroundedGoalV1,
+    evaluation: GoalEvaluationV1): Promise<void> {
+    const port = this.reasoning as Partial<PhysicalReasoningPortV3>;
+    if (!port.predictShortChain) return; // V2 synthetic ports have no future-state capability.
+    const node = workspace.nodes.find(value => value.node.nodeId === nodeId)!;
+    const members = this.#candidates(node, workspace);
+    const selected = result.atomic.memberResults
+      ? selectQualifiedPredictionMemberV1(members, result.atomic.memberResults)
+      : result.atomic.validSampleCount >= 8 ? { candidateId: members[0]!.candidateId, value: result.atomic } : null;
+    if (!selected) return;
+    for (const path of physicalDependencyPathsV1(nodeId, workspace)) {
+      const candidates = path.map((id, index) => {
+        const pathNode = workspace.nodes.find(value => value.node.nodeId === id)!;
+        const group = this.#candidates(pathNode, workspace);
+        // A single physical member nominates a path. It lends no qualification
+        // to the other members; every step gets its own actual field rollout.
+        return index === 0 ? group.find(value => value.candidateId === selected.candidateId)! : group[0]!;
+      });
+      const chain = await port.predictShortChain(candidates, observation, goal, evaluation);
+      this.environment.record('control-physical-short-chain', { nodeId, dependencyPath: path, chain });
+      // This is additional rollout input, never permission to run a suffix.
+      // The first action still needs its own current condition and prediction.
+      if (!selected.value.shortChain || chain.progressSampleCount > selected.value.shortChain.progressSampleCount) {
+        Object.assign(selected.value, { shortChain: chain });
+        if (result.atomic.winningCandidateId === selected.candidateId || members.length === 1)
+          Object.assign(result.atomic, { shortChain: chain });
+      }
+    }
   }
 
   #candidate(node: ControlWorkspaceNodeSnapshotV2, workspace: ControlWorkspaceSnapshotV2): EffectRecallCandidateV1 {

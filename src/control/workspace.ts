@@ -52,7 +52,7 @@ export interface VersionedControlEvidenceV2<T> {
   readonly epoch: number;
   readonly observationSequence: number;
   readonly value: T;
-  readonly invalidatedBy: 'attention' | 'action' | null;
+  readonly invalidatedBy: 'attention' | 'action' | 'feedback' | null;
 }
 
 export interface ControlRequestV2 {
@@ -397,6 +397,10 @@ export class ControlWorkspaceV2 {
     return this.#fresh(evidence) ? structuredClone(evidence.value) : null;
   }
 
+  invalidateFeedback(): void {
+    this.#epoch++; this.#invalidateTransientEvidence('feedback'); this.#invalidatePending();
+  }
+
   currentPrediction(nodeId: string): BranchPredictionV1 | null {
     const evidence = this.#requireNode(nodeId).prediction;
     return this.#fresh(evidence) ? structuredClone(evidence.value) : null;
@@ -575,17 +579,21 @@ export class ControlWorkspaceV2 {
     const byId = new Map<string, OpaqueFactorTransitionTraceV1>();
     const add = (member: OpaqueFactorTransitionTraceV1): void => {
       const existing = byId.get(member.transitionId);
-      assert(!existing || canonical(existing) === canonical(member),
-        'factor-transition-member-identity-collision');
+      if (existing) {
+        // The real event/factor transition is immutable. Its present physical
+        // support and R3 applicability are query-time views, not its identity.
+        const { evidence: _oldEvidence, ...oldFact } = existing;
+        const { evidence: _newEvidence, ...newFact } = member;
+        assert(canonical(oldFact) === canonical(newFact), 'factor-transition-member-identity-collision');
+      }
       byId.set(member.transitionId, structuredClone(member));
     };
     if (prior?.node.kind === 'factor-transition')
       for (const member of prior.node.transitionMembers ?? [prior.node.transition]) add(member);
     for (const member of transitionMembers) add(member);
     const merged = [...byId.values()].sort((left, right) => left.transitionId.localeCompare(right.transitionId, 'en'));
-    const membershipChanged = prior?.node.kind === 'factor-transition'
-      && canonical((prior.node.transitionMembers ?? [prior.node.transition]).map(value => value.transitionId).sort())
-        !== canonical(merged.map(value => value.transitionId));
+    const evidenceChanged = prior?.node.kind === 'factor-transition'
+      && canonical(prior.node.transitionMembers ?? [prior.node.transition]) !== canonical(merged);
     const node: ControlWorkspaceNodeV2 = { nodeId, kind: 'factor-transition', transition: merged[0]!,
       transitionMembers: merged, physicalGroupKey,
       createdEpoch: prior?.node.createdEpoch ?? this.#epoch,
@@ -593,10 +601,9 @@ export class ControlWorkspaceV2 {
         ?? this.#observation?.sequence ?? null };
     if (prior) {
       prior.node = node;
-      // A group prediction is lossless only for the exact member set it
-      // evaluated.  Newly discovered provenance therefore invalidates the
-      // aggregate readouts without touching long-term physical memory.
-      if (membershipChanged) {
+      // A changed member set OR current support view needs fresh comparison
+      // and prediction. Refreshing history does not certify its applicability.
+      if (evidenceChanged) {
         prior.condition = null; prior.prediction = null; prior.continuationPredictions = null;
       }
     } else this.#upsertNode(node);
@@ -622,7 +629,7 @@ export class ControlWorkspaceV2 {
     return false;
   }
 
-  #invalidateTransientEvidence(reason: 'attention' | 'action'): void {
+  #invalidateTransientEvidence(reason: 'attention' | 'action' | 'feedback'): void {
     for (const state of this.#nodes.values()) {
       if (state.condition && !state.condition.invalidatedBy) state.condition = { ...state.condition, invalidatedBy: reason };
       if (state.prediction && !state.prediction.invalidatedBy) state.prediction = { ...state.prediction, invalidatedBy: reason };

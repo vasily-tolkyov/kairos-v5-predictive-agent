@@ -1,5 +1,5 @@
 import type { ActionCue, Observation, PublicChange, PublicValue, RealEvent } from '../../contracts.js';
-import { eventLocalCurrentPublicStateV1, eventRows,
+import { eventLocalCurrentPublicStateV1, eventRows, type EventLocalCurrentPublicValueV1,
   type EventLocalPublicRoleBindingV1 } from '../../events.js';
 import { assert, canonical, sha } from '../../util.js';
 import { SplitMix64 } from '../random.js';
@@ -147,7 +147,8 @@ function mergeSignalDrives(signals: readonly SignalDriveV1[]): readonly SignalDr
   return ordered;
 }
 
-function eventSignalPulses(event: RealEvent): readonly SignalPulseV1[] {
+function eventSignalPulses(event: RealEvent,
+  previouslyObservedOutcomeChannels: ReadonlySet<string>): readonly SignalPulseV1[] {
   const rows = eventRows(event);
   // Only true public state transitions become distinct pulses.  A completed
   // no-effect window is represented by residence in one unchanged state.
@@ -163,6 +164,18 @@ function eventSignalPulses(event: RealEvent): readonly SignalPulseV1[] {
     const key = channelKey(change);
     if (!state.has(key)) state.set(key, { subject: change.subject, property: change.property,
       value: change.before });
+  }
+  const targetId = event.bodyResult?.action.targetId;
+  const targetRole = targetId === undefined || targetId === null ? undefined : rows.roles[targetId];
+  // Preserve an actually learned outcome channel through a no-effect attempt.
+  // Never-changing object context belongs to current perception/R2A, not to
+  // every R1 terminal basin merely because it shares the action target.
+  if (targetRole !== undefined) {
+    for (const [property, value] of Object.entries(rows.measurementStates[0]?.[targetRole] ?? {})) {
+      const key = channelKey({ subject: targetRole, property });
+      if (!state.has(key) && previouslyObservedOutcomeChannels.has(key))
+        state.set(key, { subject: targetRole, property, value: value as PublicValue });
+    }
   }
   if (state.size === 0) state.set('event/change-within-observed-window', {
     subject: 'event', property: 'change-within-observed-window', value: false,
@@ -206,14 +219,13 @@ function eventSignalPulses(event: RealEvent): readonly SignalPulseV1[] {
   // change during the action window.  Keep the direct action target's
   // terminal state in the final population so a stable false (or true)
   // result remains physically decodable alongside any other changed field.
-  const targetId = event.bodyResult?.action.targetId;
   if (targetId !== undefined && targetId !== null) {
     const terminal = rows.measurementStates.at(-1);
-    const targetRole = rows.roles[targetId];
     if (terminal !== undefined && targetRole !== undefined) {
       for (const [property, value] of Object.entries(terminal[targetRole] ?? {})) {
         const key = channelKey({ subject: targetRole, property });
-        if (!state.has(key)) state.set(key, { subject: targetRole, property,
+        if (!state.has(key) && previouslyObservedOutcomeChannels.has(key))
+          state.set(key, { subject: targetRole, property,
           value: value as PublicValue });
       }
       const finalSignals = mergeSignalDrives(stateSignals(state));
@@ -354,9 +366,12 @@ export class SelfOrganizingAfferentProjectionV1 {
   #allocationSequence: number;
   readonly #bindings = new Map<string, AfferentBindingStateV1>();
   readonly #terminalOutcomeChannels = new Set<string>();
+  readonly #terminalOutcomeScopes = new Map<string, Set<string>>();
+  #hasScopedOutcomeState: boolean;
 
   constructor(seed: bigint = 0x534f415246463031n,
     state?: SelfOrganizingAfferentStateV1) {
+    this.#hasScopedOutcomeState = state === undefined || state.terminalOutcomeScopes !== undefined;
     if (state) {
       assert(state.version === 'SelfOrganizingAfferentStateV1', 'afferent-state-version-mismatch');
       assert(parseSeed(state.seedHex) === seed, 'afferent-seed-mismatch');
@@ -380,6 +395,8 @@ export class SelfOrganizingAfferentProjectionV1 {
           'afferent-invalid-restored-terminal-outcome-channel');
         this.#terminalOutcomeChannels.add(channel);
       }
+      for (const scope of state.terminalOutcomeScopes ?? [])
+        this.#terminalOutcomeScopes.set(scope.cueIdentity, new Set(scope.channels));
     } else {
       this.#seed = seed;
       this.#allocationSequence = 0;
@@ -455,17 +472,51 @@ export class SelfOrganizingAfferentProjectionV1 {
     return this.#lookupSignals(cueSignals(cue));
   }
 
+  /** Existing receptors for public channels measured in an atom's result.
+   * Include their already observed alternate values, never a remembered value
+   * as the answer. The closing frame must supply the actual value. */
+  publicResultChannelSiteIds(resultSiteIds: readonly number[]): readonly number[] {
+    const result = new Set(resultSiteIds), channels = new Set<string>();
+    for (const binding of this.#bindings.values()) {
+      const descriptor = binding.descriptor;
+      if (descriptor?.source === 'public-state'
+        && descriptor.publicProperty !== 'change-within-observed-window'
+        && binding.siteIds.some(site => result.has(site))) channels.add(descriptor.channel);
+    }
+    return [...new Set([...this.#bindings.values()].filter(binding =>
+      binding.descriptor?.source === 'public-state' && channels.has(binding.descriptor.channel))
+      .flatMap(binding => binding.siteIds))].sort((a, b) => a - b);
+  }
+
   /**
    * Resolve a real current observation in an event-local public frame.  This
    * path is pure: unknown public roles or signal values remain unresolved and
    * cannot allocate, reinforce, or move an afferent binding.
    */
   lookupCurrentObservation(observation: Observation,
-    roleBindings: readonly EventLocalPublicRoleBindingV1[]): ReadOnlyAfferentLookupV1 {
+    roleBindings: readonly EventLocalPublicRoleBindingV1[], cue?: ActionCue,
+    purpose: 'query-origin' | 'observed-terminal' = 'query-origin'): ReadOnlyAfferentLookupV1 {
     const current = eventLocalCurrentPublicStateV1(observation, roleBindings);
-    const state = new Map(current.values.map(value => [`${value.subjectRole}/${value.property}`,
+    return this.lookupDecodedPublicState(current.values, cue, current.unresolvedRoles, purpose);
+  }
+
+  /** Re-encode only actual terminal readout values through frozen receptors.
+   * No original observation or historical after-state is available here. */
+  lookupDecodedPublicState(values: readonly EventLocalCurrentPublicValueV1[], cue?: ActionCue,
+    unresolvedRoles: readonly string[] = [],
+    purpose: 'query-origin' | 'observed-terminal' = 'query-origin'): ReadOnlyAfferentLookupV1 {
+    const scope = cue === undefined ? undefined : this.#terminalOutcomeScopes.get(canonical(cue));
+    const state = new Map(values.filter(value => {
+      // A fresh prediction defines its own zero displacement/angle origin.
+      // Those synthetic zeroes are not observations that an earlier moving
+      // process returned to its origin. Its actual motion remains in the
+      // ordered R1 pulses; only persistent public values can close an R2 road.
+      if (purpose === 'observed-terminal' && (value.property === 'yaw' || value.property === 'pitch'
+        || value.property.startsWith('displacement.'))) return false;
+      return scope === undefined || scope.has(`${value.subjectRole}/${value.property}`);
+    }).map(value => [`${value.subjectRole}/${value.property}`,
       { subject: value.subjectRole, property: value.property, value: value.value }] as const));
-    return this.#lookupSignals(stateSignals(state), current.unresolvedRoles);
+    return this.#lookupSignals(stateSignals(state), unresolvedRoles);
   }
 
   /**
@@ -520,7 +571,9 @@ export class SelfOrganizingAfferentProjectionV1 {
 
   projectEvent(event: RealEvent, medium: DistributedMediumWritePortV1): SelfOrganizingProjectionResultV1 {
     const rows = eventRows(event);
-    const signalPulses = eventSignalPulses(event);
+    const cueIdentity = canonical(event.cue);
+    const knownOutcomeChannels = this.#terminalOutcomeScopes.get(cueIdentity) ?? new Set<string>();
+    const signalPulses = eventSignalPulses(event, knownOutcomeChannels);
     const uniqueSignals = new Map<string, { readonly signal: SignalDriveV1;
       readonly pulseOrdinal: number }>();
     for (const [pulseOrdinal, pulse] of signalPulses.entries()) for (const signal of pulse.signals) {
@@ -563,8 +616,14 @@ export class SelfOrganizingAfferentProjectionV1 {
       eventSha256, pulses, patternSha256, sourceFrameCount: event.frames.length,
       retainedTransitionWaveCount: wavesWithActualPublicChange(event) };
     for (const change of rows.measurementChanges.flat()) {
-      if (!Object.is(change.before, change.after)) this.#terminalOutcomeChannels.add(channelKey(change));
+      if (!Object.is(change.before, change.after)) {
+        const channel = channelKey(change);
+        this.#terminalOutcomeChannels.add(channel);
+        knownOutcomeChannels.add(channel);
+      }
     }
+    this.#terminalOutcomeScopes.set(cueIdentity, knownOutcomeChannels);
+    this.#hasScopedOutcomeState = true;
     return { version: 'SelfOrganizingProjectionResultV1', episode,
       newlyAllocatedSignalCount, newlyAllocatedSignalIds,
       reusedSignalCount: uniqueSignals.size - newlyAllocatedSignalCount };
@@ -575,6 +634,10 @@ export class SelfOrganizingAfferentProjectionV1 {
       allocationSequence: this.#allocationSequence,
       terminalOutcomeChannels: [...this.#terminalOutcomeChannels]
         .sort((left, right) => left.localeCompare(right, 'en')),
+      ...(this.#hasScopedOutcomeState ? { terminalOutcomeScopes: [...this.#terminalOutcomeScopes]
+        .sort(([left], [right]) => left.localeCompare(right, 'en'))
+        .map(([cueIdentity, channels]) => ({ cueIdentity,
+          channels: [...channels].sort((left, right) => left.localeCompare(right, 'en')) })) } : {}),
       bindings: [...this.#bindings.values()].sort((left, right) =>
         left.signalId.localeCompare(right.signalId, 'en')).map(binding => ({ ...binding,
           siteIds: [...binding.siteIds], ...(binding.descriptor === undefined ? {}

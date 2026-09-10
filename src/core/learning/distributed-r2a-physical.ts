@@ -1,4 +1,5 @@
 import { assert, sha } from '../../util.js';
+import { canonicalStreamSha256 } from '../../util-stream.js';
 import { SplitMix64 } from '../random.js';
 import type { DistributedAttractorReadoutV1, DistributedEpisodeV1,
   DistributedFieldRunV1, DistributedMediumSnapshotV1, DistributedProbePulseInputV1,
@@ -6,16 +7,17 @@ import type { DistributedAttractorReadoutV1, DistributedEpisodeV1,
   from '../physics/distributed-physical-contracts.js';
 import { DistributedPhysicalMedium3DV1, normalizeDistributedProbePulseV1 }
   from '../physics/distributed-physical-medium.js';
-import { runDistributedMediumProbeBatchSyncV1 }
+import { runDistributedMediumProbeBatchSyncV1, runDistributedMediumProbeSerialV1 }
   from '../physics/distributed-medium-probe-parallel.js';
 import { scanAnonymousPhysicalStructureV1 } from '../physics/distributed-physical-structure-scanner.js';
 import { DistributedPredictionCloneV2, physicalActivationResidenceMatchV1,
   physicalResidenceMatchV1 }
   from '../prediction/distributed-prediction-clone.js';
-import type { DistributedPredictionCloneResultV2 } from '../prediction/distributed-prediction-clone.js';
+import type { DistributedPredictionCloneResultV2, DistributedReadoutAssemblyV1 }
+  from '../prediction/distributed-prediction-clone.js';
 import type { DistributedPublicSignalOccurrenceV1, DistributedR2ContinuousEventV1 }
   from './distributed-r2-contracts.js';
-import { distributedPublicSignalChannelIdV1 } from './distributed-r2.js';
+import { distributedPublicSignalChannelIdV1, PASSIVE_EXPERIENCE_IDENTITY_V1 } from './distributed-r2.js';
 import type { DistributedSiteDriveV1 } from './distributed-r1-contracts.js';
 import type { DistributedR2AConditionBindingV2, DistributedR2AEventPhysicalInputV2,
   DistributedR2AAnonymousPhysicalBranchV2,
@@ -31,6 +33,9 @@ import type { DistributedR2AConditionBindingV2, DistributedR2AEventPhysicalInput
   DistributedR2AConsolidationPerformanceAuditV1 }
   from './distributed-r2a-physical-contracts.js';
 import { SparseInterlayerProjectionV1 } from './sparse-interlayer-projection.js';
+import { runDistributedPredictionCloneBatchSyncV1 }
+  from '../prediction/distributed-prediction-clone-parallel.js';
+import { r2aInputAtActionBoundaryV1 } from './r2a-action-input-boundary.js';
 
 const DEFAULT_SEED = 0x5232415048595332n;
 const AFFERENT_SALT = 0x9e3779b97f4a7c15n;
@@ -54,6 +59,56 @@ const PHYSICAL_BRANCH_CACHE_LIMIT = 16;
 // trajectory; parallel seed execution remains an explicit diagnostic option
 // in the lower-level probe API.
 const R2A_QUERY_PARALLELISM_V1 = 1 as const;
+// Measured on the real 192-event substrate: six independent seed lanes
+// preserve the scalar 24-run hash, with a measured peak RSS below 4.9 GB.
+// Small discovery probes still borrow the single prepared substrate.
+const CONTINUATION_SEED_LANES_V1 = 6;
+
+/** Matched physical counterfactual: change only one observed variable. */
+export function distributedR2AMatchedConditionPulseV1(
+  current: readonly DistributedSiteDriveV1[], variableSites: ReadonlySet<number>,
+  measuredAlternative: readonly DistributedSiteDriveV1[] = [],
+): DistributedSiteDriveV1[] {
+  return [...current.filter(drive => !variableSites.has(drive.siteId)), ...measuredAlternative];
+}
+
+/** The shared ordered road was already deposited by its real R2 event.
+ * Differential consolidation strengthens only the actually observed factor
+ * and later terminal population, never the common road a second time. */
+export function distributedR2ADifferentialEpisodeV1(traceId: string,
+  factor: readonly DistributedSiteDriveV1[],
+  terminal: readonly DistributedSiteDriveV1[]): DistributedEpisodeV1 {
+  const populations = [factor, terminal]
+    .map(value => normalizeDistributedWeightedPulseV1(value));
+  return { version: 'DistributedEpisodeV1', traceId, provenance: 'trusted-real-event',
+    pulses: populations.map((drives, index) => ({ version: 'SparseFieldPulseV1',
+      pulseId: `${traceId}:${index}`, offset: index * .04, drives })),
+    temporalEligibility: [{ fromPulseIndex: 0, toPulseIndex: populations.length - 1, strength: 1 }] };
+}
+
+/** An observed terminal nominates a calibration measurement, not its answer.
+ * If the field settles elsewhere, that other attractor cannot be attached to
+ * this event's observed result. */
+export function distributedObservedTerminalReadoutMatchesV1(
+  terminalSites: readonly number[], readout: DistributedAttractorReadoutV1): boolean {
+  return !readout.ambiguous && readout.evidenceLevel !== 'none'
+    && physicalResidenceMatchV1(readout.coreSiteIds, terminalSites).coverage >= .75;
+}
+
+/** Ordered roads can share a terminal basin. Readout nominates the physical
+ * basin once, never duplicate masks named after different historical roads. */
+export function distributedPhysicalBranchReadoutAssembliesV1(
+  branches: readonly Pick<DistributedR2AAnonymousPhysicalBranchV2,
+    'branchId' | 'attractor' | 'topologicalEnvelopeSiteIds'>[]): readonly DistributedReadoutAssemblyV1[] {
+  return branches.filter(branch => branch.attractor.coreSiteIds.length > 0).map(branch => {
+    const envelope = branch.topologicalEnvelopeSiteIds;
+    return { assemblyId: branch.branchId, siteIds: branch.attractor.coreSiteIds,
+      enclosingDomainSiteIds: envelope,
+      referenceActivations: (branch.attractor.terminalActivations ?? [])
+        .filter(activation => envelope.includes(activation.siteId)),
+      minimumResidenceScore: .5, minimumCoverage: .75, minimumPurity: .75 };
+  });
+}
 /**
  * V5 commits weighted terminal pulse/readout semantics together with the
  * higher-order coactivation assembly identity carried by physical readouts.
@@ -75,12 +130,38 @@ export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V6 =
  * calibration and terminal-free continuation queries. */
 export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7 =
   'distributed-r2a-observed-terminal-calibration-v7' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V8 =
+  'distributed-r2a-ordered-road-terminal-pattern-v8' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V9 =
+  'distributed-r2a-matched-condition-counterfactual-v9' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V10 =
+  'distributed-r2a-local-difference-before-components-v10' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V11 =
+  'distributed-r2a-topological-site-correspondence-v11' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V12 =
+  'distributed-r2a-differential-deposit-scope-v12' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V13 =
+  'distributed-r2a-measured-terminal-identity-v13' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V14 =
+  'distributed-r2a-neighbour-anchored-site-v14' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V15 =
+  'distributed-r2a-passive-measurement-arrival-v15' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V16 =
+  'distributed-r2a-pairwise-matched-differences-v16' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V17 =
+  'distributed-r2a-terminal-local-contrast-v17' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V18 =
+  'distributed-r2a-complete-terminal-membership-v18' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V19 =
+  'distributed-r2a-observer-independent-contained-readout-v19' as const;
+export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V20 =
+  'distributed-r2a-prescribed-action-boundary-v20' as const;
 
 /** Compatibility export for callers that only record an algorithm identity.
- * New snapshots use V7; the alias deliberately does not accept a literal V6
+ * New snapshots use V20; the alias deliberately does not accept a literal V6
  * checkpoint as an exact derived-index cache. */
 export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V5 =
-  DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7;
+  DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V20;
 
 /**
  * Derive an anonymous branch identity from the measured dynamic core and, when
@@ -125,8 +206,15 @@ const physicalBranchReadoutCache = new Map<string, PhysicalBranchReadoutCacheVal
  * input is retained in the key (not only a digest), so a cache hit cannot
  * silently reuse a result for a different condition population.
  */
+export interface DistributedR3CurrentActionInputV1 {
+  readonly sourceR2PrefixDrives: readonly DistributedSiteDriveV1[];
+  readonly exactActionIdentity: string;
+  readonly seeds: readonly bigint[];
+}
+
 export function distributedR2APhysicalApplicabilityCacheKeyV1(
   revision: number, relationId: string, currentSignalIds: readonly string[],
+  currentAction?: DistributedR3CurrentActionInputV1,
 ): string {
   return JSON.stringify({
     version: 'DistributedR2APhysicalApplicabilityCacheKeyV1',
@@ -134,6 +222,7 @@ export function distributedR2APhysicalApplicabilityCacheKeyV1(
     relationId,
     currentSignalIds: [...currentSignalIds],
     canonicalCurrentSignalIds: uniqueStrings(currentSignalIds),
+    currentAction: currentAction && { ...currentAction, seeds: currentAction.seeds.map(String) },
   });
 }
 
@@ -236,7 +325,7 @@ function continuationCandidateKeyV1(conditionDrives: readonly DistributedSiteDri
   });
 }
 
-function continuationCandidateForInputV1(input: DistributedR2AEventPhysicalInputV2):
+export function continuationCandidateForInputV1(input: DistributedR2AEventPhysicalInputV2):
   ContinuationCandidateV1 {
   const conditionDrives = input.conditionDrives === undefined
     ? unitWeightedPulseV1(input.conditionSiteIds, `continuation-condition-${input.eventId}`)
@@ -274,7 +363,7 @@ function continuationCandidateForInputV1(input: DistributedR2AEventPhysicalInput
     }
   }
   const recoveredLegacyRoute = finalActionEpisodeIndex > 0
-    ? episode.slice(1, finalActionEpisodeIndex + 1)
+    ? episode.slice(0, finalActionEpisodeIndex + 1)
     : undefined;
   const route = explicitRoute === undefined ? recoveredLegacyRoute
     : explicitRoute.map(pulse => normalizeDistributedWeightedPulseV1(pulse));
@@ -448,14 +537,17 @@ function terminalActivationProfileOverlap(
   left: DistributedAttractorReadoutV1,
   right: DistributedAttractorReadoutV1,
 ): number {
-  const leftActivations = left.run.finalActivations.map(value => ({
-    siteId: value.siteId, meanActivation: value.activation }));
-  const rightActivations = right.run.finalActivations.map(value => ({
-    siteId: value.siteId, meanActivation: value.activation }));
+  const leftCore = new Set(left.coreSiteIds), rightCore = new Set(right.coreSiteIds);
+  // The physical readout has already identified the terminal population.
+  // Whole-field finalActivations also contains residual context, prefix and
+  // other basins. Shared background must not make distinct local outcomes
+  // identical. Keep the measured terminal sites and amplitudes unchanged.
+  const leftActivations = (left.terminalActivations ?? left.run.finalActivations.map(value => ({
+    siteId: value.siteId, meanActivation: value.activation }))).filter(value => leftCore.has(value.siteId));
+  const rightActivations = (right.terminalActivations ?? right.run.finalActivations.map(value => ({
+    siteId: value.siteId, meanActivation: value.activation }))).filter(value => rightCore.has(value.siteId));
   if (leftActivations.length > 0 && rightActivations.length > 0) {
-    const domain = unique([...left.coreSiteIds, ...right.coreSiteIds,
-      ...leftActivations.map(value => value.siteId),
-      ...rightActivations.map(value => value.siteId)]);
+    const domain = unique([...left.coreSiteIds, ...right.coreSiteIds]);
     return physicalActivationResidenceMatchV1(leftActivations, rightActivations,
       domain, domain).profileOverlap;
   }
@@ -465,18 +557,42 @@ function terminalActivationProfileOverlap(
   return overlap(left.coreSiteIds, right.coreSiteIds);
 }
 
+/** The input is the already deposited action population, not an action name.
+ * Do not take its consensus across different roads: an empty first consensus
+ * pulse would truncate all later actions, including an identical last action. */
+export function partitionDistributedR2AOrderedRoadsV1<T extends {
+  readonly actionPulseSiteIds: readonly (readonly number[])[];
+}>(inputs: readonly T[]): readonly (readonly T[])[] {
+  const groups = new Map<string, T[]>();
+  for (const input of inputs) {
+    const key = JSON.stringify(input.actionPulseSiteIds.map(pulse => unique(pulse)));
+    const group = groups.get(key) ?? [];
+    group.push(input); groups.set(key, group);
+  }
+  return [...groups].sort(([a], [b]) => a.localeCompare(b, 'en')).map(([, group]) => group);
+}
+
+function physicalBranchForPatternV1(pattern: DistributedR2APhysicalPatternV2): string {
+  return pattern.physicalBranchId ?? anonymousPhysicalBranchIdentityV3(pattern.attractor);
+}
+
+function orderedRoadPatternIdentityV1(branchId: string,
+  actions: readonly (readonly number[])[]): string {
+  return sha({ version: 'DistributedR2AOrderedRoadPatternIdentityV1', branchId,
+    orderedActionPopulations: actions.map(pulse => unique(pulse)) });
+}
+
 /**
- * A terminal readout can carry a broad low-amplitude residue profile even when
- * its measured dynamic core is an exact, physically resolved population.  Use
- * the profile when it is discriminative and the symmetric core residence as a
- * conservative fallback; both are anonymous physical measurements and neither
- * depends on an event/result annotation.
+ * Both the completed terminal population and its local measured profile must
+ * agree. A few strongly activated common sites are not the complete assembly.
+ * This is the same population-coverage requirement used by physical branch
+ * selection, not an alternative semantic classifier.
  */
 function physicalTerminalMembershipScoreV1(
   readout: DistributedAttractorReadoutV1,
   candidate: DistributedAttractorReadoutV1,
 ): number {
-  return Math.max(terminalActivationProfileOverlap(readout, candidate),
+  return Math.min(terminalActivationProfileOverlap(readout, candidate),
     physicalResidenceMatchV1(readout.coreSiteIds, candidate.coreSiteIds).score);
 }
 
@@ -539,7 +655,7 @@ export function distributedR2APhysicalMatchedContrastV1(
   // occupied.  The same-branch readout elsewhere in this substrate accepts
   // residence scores at .75, so a contrast must fall strictly below that
   // physical membership boundary while still permitting shared subassemblies.
-  return terminalActivationProfileOverlap(target.attractor, contrast.attractor)
+  return physicalTerminalMembershipScoreV1(target.attractor, contrast.attractor)
     < MATCHED_CONTRAST_MAX_TERMINAL_OVERLAP;
 }
 
@@ -558,6 +674,57 @@ export function distributedR2AConditionDifferentialV1(
     coveredFraction(basinSiteIds, population) >= .5).length / contrastConditionPopulations.length;
   return { memberPresence, contrastPresence,
     qualifies: memberPresence >= .8 && contrastPresence <= .2 };
+}
+
+/** Subtract shared physical excitation before identifying its connected
+ * components. A condition's local population may touch a shared background
+ * population; their connected union must not erase the actual difference.
+ * This reads only measured site occurrence and qualified learned local bonds,
+ * not input names, result labels, action answers or afferent binding groups. */
+export function distributedR2ADifferentialComponentsV1(
+  snapshot: DistributedMediumSnapshotV1,
+  memberConditionPopulations: readonly (readonly number[])[],
+  contrastConditionPopulations: readonly (readonly number[])[],
+): AnonymousPhysicalScanV1['basins'] {
+  if (memberConditionPopulations.length === 0 || contrastConditionPopulations.length === 0) return [];
+  const occurrences = (populations: readonly (readonly number[])[]): Map<number, number> => {
+    const counts = new Map<number, number>();
+    for (const population of populations) for (const site of new Set(population))
+      counts.set(site, (counts.get(site) ?? 0) + 1);
+    return counts;
+  };
+  const own = occurrences(memberConditionPopulations), contrast = occurrences(contrastConditionPopulations);
+  const differentialSites = new Set([...own].filter(([site, count]) =>
+    count / memberConditionPopulations.length >= .8
+    && (contrast.get(site) ?? 0) / contrastConditionPopulations.length <= .2).map(([site]) => site));
+  return scanAnonymousPhysicalStructureV1(snapshot, differentialSites).basins
+    .filter(basin => basin.internalLocalBondCount > 0);
+}
+
+/** Compare independent matched alternative roads without treating their union
+ * as one counterfactual.  The caller supplies only physically matched cohorts. */
+export function distributedR2APairwiseDifferentialComponentsV1(
+  snapshot: DistributedMediumSnapshotV1,
+  memberConditionPopulations: readonly (readonly number[])[],
+  matchedContrastPopulations: readonly (readonly (readonly number[])[])[],
+): AnonymousPhysicalScanV1['basins'] {
+  const components = new Map<string, AnonymousPhysicalScanV1['basins'][number]>();
+  for (const contrast of matchedContrastPopulations) {
+    for (const basin of distributedR2ADifferentialComponentsV1(snapshot,
+      memberConditionPopulations, contrast)) {
+      components.set(basin.coreSiteIds.join(','), basin);
+    }
+  }
+  // Stable order and set identity prevent a duplicated/reordered contrast from
+  // depositing another copy of the same real event's differential footprint.
+  return [...components.values()].sort((a, b) => {
+    const length = Math.min(a.coreSiteIds.length, b.coreSiteIds.length);
+    for (let i = 0; i < length; i++) {
+      const difference = a.coreSiteIds[i]! - b.coreSiteIds[i]!;
+      if (difference !== 0) return difference;
+    }
+    return a.coreSiteIds.length - b.coreSiteIds.length;
+  });
 }
 
 /** Fraction of one local physical assembly that is present in a larger,
@@ -618,7 +785,15 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     readonly mediumSha256: string;
   } | null = null;
   #restingQuerySubstrateBuildCount = 0;
+  #currentActionClone: DistributedPredictionCloneV2 | null = null;
+  #branchCandidateBuildCount = 0;
+  #branchReadoutCache: { readonly structure: AnonymousPhysicalScanV1;
+    readonly activeEventKey: string;
+    readonly branches: readonly DistributedR2AAnonymousPhysicalBranchV2[];
+    readonly assignments: readonly (readonly [string, string])[] } | null = null;
   #physicalQueryRevision = 0;
+  #terminalProbeCache = new WeakMap<DistributedPhysicalMedium3DV1,
+    Map<string, DistributedAttractorReadoutV1>>();
   readonly #applicabilityQueryCache = new Map<string, DistributedR2APhysicalApplicabilityV2>();
   #applicabilityQueryCacheHits = 0;
   #applicabilityQueryCacheMisses = 0;
@@ -644,7 +819,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     if (state) {
       assert(state.version === 'DistributedR2APhysicalStateV3' && parseSeed(state.seedHex) === seed,
         'distributed-R2A-state-version-or-seed-mismatch');
-      assert(sha(state.medium) === sha(this.medium.snapshot()), 'distributed-R2A-medium-state-mismatch');
+      assert(canonicalStreamSha256(state.medium) === canonicalStreamSha256(this.medium.snapshot()),
+        'distributed-R2A-medium-state-mismatch');
       this.#afferentAllocationSequence = state.conditionAllocationSequence;
       for (const value of state.conditionBindings) {
         this.medium.bindSites(`r2a:condition:${value.signalId}`, value.siteIds);
@@ -657,11 +833,12 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       for (const value of state.evidenceEvents) this.#events.set(value.eventId, structuredClone(value));
       for (const value of state.eventInputs) {
         assertWeightedEventInputV1(value);
-        this.#eventInputs.set(value.eventId, structuredClone(value));
+        this.#eventInputs.set(value.eventId, r2aInputAtActionBoundaryV1(structuredClone(value),
+          this.#events.get(value.eventId)!));
       }
     }
     this.#projection = new SparseInterlayerProjectionV1(this.medium,
-      { projectionId: 'R2-site-to-R2A-sparse-fibre', seed: PROJECTION_SEED }, state?.projection);
+      { projectionId: 'R2-site-to-R2A-neighbour-anchored-site-v3', seed: PROJECTION_SEED, winnerCount: 1 }, state?.projection);
     if (state) {
       // Validate intervention references before deciding whether a derived
       // index cache can be rediscovered.  A forged assessment must never be
@@ -677,7 +854,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         state.patterns, state.relations, state.interventions);
       const cacheIsExact = state.physicalIndexIdentity.version === 'DistributedR2APhysicalIndexIdentityV1'
         && state.physicalIndexIdentity.algorithmIdentity
-          === DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7
+          === DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V5
         && state.physicalIndexIdentity.physicalIndexInputsSha256
           === this.#physicalIndexInputsSha256(state.interventions)
         && state.physicalIndexIdentity.physicalIndexStateSha256 === indexStateSha256;
@@ -690,9 +867,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
           const input = this.#eventInputs.get(eventId)!;
           const candidate = continuationCandidateForInputV1(input).key;
           const existing = this.#candidateBranchAssignments.get(candidate);
-          assert(existing === undefined || existing === pattern.patternId,
+          const branchId = physicalBranchForPatternV1(pattern);
+          assert(existing === undefined || existing === branchId,
             'distributed-R2A-restored-candidate-branch-conflict');
-          this.#candidateBranchAssignments.set(candidate, pattern.patternId);
+          this.#candidateBranchAssignments.set(candidate, branchId);
         }
         this.#indexesDirty = false;
         this.#restoreIndexMode = 'exact-cache';
@@ -731,7 +909,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
   #physicalIndexStateSha256(patterns: readonly DistributedR2APhysicalPatternV2[],
     relations: readonly DistributedR2APhysicalRelationV2[],
     interventions: readonly DistributedR2AInterventionAssessmentV2[]): string {
-    return sha({ version: 'DistributedR2APhysicalIndexStateV1',
+    return canonicalStreamSha256({ version: 'DistributedR2APhysicalIndexStateV1',
       patterns, relations, interventions });
   }
 
@@ -746,8 +924,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       baselineR2EventId: value.baselineR2EventId,
       interventionR2EventId: value.interventionR2EventId }))
       .sort((left, right) => left.pairId.localeCompare(right.pairId, 'en'));
-    return sha({ version: 'DistributedR2APhysicalIndexInputsV1',
-       algorithmIdentity: DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7,
+    return canonicalStreamSha256({ version: 'DistributedR2APhysicalIndexInputsV1',
+       algorithmIdentity: DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V5,
       seedHex: `0x${this.#seed.toString(16)}`,
       restingMediumSha256: this.#restingQuerySubstrate().mediumSha256,
       projection: this.#projection.snapshot(),
@@ -763,7 +941,9 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     for (const pattern of this.#patterns.values()) {
       assert(!patternIds.has(pattern.patternId), 'distributed-R2A-restored-pattern-id-duplicate');
       patternIds.add(pattern.patternId);
-      assert(pattern.patternId === anonymousPhysicalBranchIdentityV3(pattern.attractor),
+      assert(pattern.physicalBranchId === anonymousPhysicalBranchIdentityV3(pattern.attractor)
+        && pattern.patternId === orderedRoadPatternIdentityV1(pattern.physicalBranchId,
+          pattern.corridor.actionPulseSiteIds),
       'distributed-R2A-restored-pattern-identity-invalid');
       assert(pattern.memberR2EventIds.length > 0 && pattern.memberR2EventIds.every(eventId =>
         this.#eventInputs.has(eventId) && this.#r2Active(eventId)),
@@ -826,6 +1006,15 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     return this.#restingQuerySubstrate().medium;
   }
 
+  #prescribedActionSiteIds(): readonly number[] {
+    return unique([...this.#eventInputs.values()].flatMap(input =>
+      this.#events.get(input.eventId)!.orderedExperienceIdentities.flatMap((identity, ordinal) =>
+        identity === PASSIVE_EXPERIENCE_IDENTITY_V1 ? [] : [
+          ...input.actionPulseSiteIds[ordinal]!,
+          ...input.projectedPulseSiteIds[input.projectedCommandPulseIndices![ordinal]!]!,
+        ])));
+  }
+
   #restingSnapshot(): DistributedMediumSnapshotV1 {
     const snapshot = this.medium.snapshot();
     return { ...snapshot, sites: snapshot.sites.map(site => ({ ...site, activation: 0 })) };
@@ -839,8 +1028,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     if (this.#restingQueryCache) return this.#restingQueryCache;
     const snapshot = this.#restingSnapshot();
     const value = { snapshot,
-      medium: DistributedPhysicalMedium3DV1.fromSnapshot(snapshot),
-      mediumSha256: sha(snapshot) } as const;
+      medium: DistributedPhysicalMedium3DV1.fromSnapshot(snapshot, this.#prescribedActionSiteIds()),
+      mediumSha256: canonicalStreamSha256(snapshot) } as const;
     this.#restingQueryCache = value;
     this.#restingQuerySubstrateBuildCount++;
     return value;
@@ -858,7 +1047,9 @@ export class DistributedR2APhysicalPatternLearnerV2 {
 
   #invalidatePhysicalQueryCaches(): void {
     this.#restingQueryCache = null;
+    this.#currentActionClone = null;
     this.#structureScanCache = null;
+    this.#branchReadoutCache = null;
     this.#invalidateApplicabilityQueryCache();
   }
 
@@ -886,6 +1077,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
   physicalQueryCachePerformanceAuditV1(): {
     readonly revision: number;
     readonly restingSubstrateBuildCount: number;
+    readonly branchCandidateBuildCount: number;
     readonly applicabilityCacheHits: number;
     readonly applicabilityCacheMisses: number;
     readonly applicabilityCacheEntryCount: number;
@@ -893,6 +1085,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
   } {
     return { revision: this.#physicalQueryRevision,
       restingSubstrateBuildCount: this.#restingQuerySubstrateBuildCount,
+      branchCandidateBuildCount: this.#branchCandidateBuildCount,
       applicabilityCacheHits: this.#applicabilityQueryCacheHits,
       applicabilityCacheMisses: this.#applicabilityQueryCacheMisses,
       applicabilityCacheEntryCount: this.#applicabilityQueryCache.size,
@@ -1038,7 +1231,13 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       'R2A-public-sensor-pulse-occurrences-mismatch');
       [...occurrences].sort((left, right) => left.channelOrdinal - right.channelOrdinal
         || left.receptorOrdinal - right.receptorOrdinal).forEach(occurrence => {
-        if (!firstOccurrences.has(occurrence.signalId)) firstOccurrences.set(occurrence.signalId, occurrence);
+        // Later atom boundaries are real prefix observations, not facts known
+        // before this continuous event. Unioning all of them into the initial
+        // condition field injects both before and after values at once and
+        // makes matched interventions condition on their own consequences.
+        // Their timing is already represented in the ordered projected road.
+        if (pulseOrdinal === 0 && !firstOccurrences.has(occurrence.signalId))
+          firstOccurrences.set(occurrence.signalId, occurrence);
       });
     });
     const conditionSignals = [...firstOccurrences.keys()];
@@ -1073,19 +1272,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // and prevented it from ever forming a local field assembly.
     const conditionDrives = unitWeightedPulseV1(conditionSiteIds, 'R2A-condition-binding');
     push(conditionDrives, `${traceId}:conditions`);
-    let finalActionCombinedIndex = -1;
-    const finalActionAtomIndex = event.atomPulseRanges.length - 1;
     event.atomPulseRanges.forEach((range, atomIndex) => {
-      const beforeActionLength = combined.length;
       push(actionPulseDrives[atomIndex] ?? [], `${traceId}:action:${atomIndex}`);
-      // The final action binding is the last input that belongs to the
-      // reachable continuation.  Projected pulses that follow it are the
-      // observed result, not part of the condition/prefix/action identity.
-      // Record the index while the pulse-id boundary is still explicit;
-      // deriving it from atom range lengths would accidentally include a
-      // terminal result pulse when an atom contains both action and effects.
-      if (atomIndex === finalActionAtomIndex && combined.length > beforeActionLength)
-        finalActionCombinedIndex = combined.length - 1;
       for (let pulseIndex = range.startPulseIndex; pulseIndex < range.endPulseIndexExclusive; pulseIndex++) {
         const pulse = projected[pulseIndex];
         if (pulse) push(pulse.drives, `${traceId}:projected:${pulseIndex}`);
@@ -1105,33 +1293,22 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       .map(pulse => weightedPulseSiteIdsV1(pulse));
     const episodePulseDrives = cloneWeightedPulsesV1(combined.map(pulse => pulse.drives));
     const actionPulseSiteIds = actionPulseDrives.map(pulse => weightedPulseSiteIdsV1(pulse));
-    // Preserve the exact physical continuation prefix.  The old
-    // nextActionPrefix field contains only projected R2 populations and loses
-    // the preceding action wires; replaying it alone can therefore funnel
-    // every result into one basin.  Keep the complete route through the final
-    // action, while excluding all post-action projected result pulses.
-    assert(finalActionCombinedIndex > 0 && finalActionCombinedIndex < combined.length,
-      'R2A-final-action-continuation-index-invalid');
-    const reachableContinuationPulseDrives = cloneWeightedPulsesV1(
-      episodePulseDrives.slice(0, finalActionCombinedIndex + 1));
-    const reachableContinuationPulseSiteIds = reachableContinuationPulseDrives
-      .map(pulse => weightedPulseSiteIdsV1(pulse));
     return { episode: { version: 'DistributedEpisodeV1', traceId,
       provenance: 'trusted-real-event', pulses: combined },
-    input: { eventId: event.eventId, contextIds: [...event.contextIds].sort(),
+    input: r2aInputAtActionBoundaryV1({ eventId: event.eventId, contextIds: [...event.contextIds].sort(),
       conditionSignalIds: conditionSignals, conditionSiteIds, conditionDrives,
       actionSiteIds: unique(actionPulseSiteIds.flat()), actionPulseSiteIds,
       actionPulseDrives, projectedPulseSiteIds, projectedPulseDrives,
       nextActionPrefixPulseSiteIds, nextActionPrefixPulseDrives,
-      reachableContinuationPulseSiteIds, reachableContinuationPulseDrives,
       episodePulseSiteIds: episodePulseDrives.map(pulse => weightedPulseSiteIdsV1(pulse)),
-      episodePulseDrives, terminalPulseSiteIds, terminalPulseDrives } };
+      episodePulseDrives, terminalPulseSiteIds, terminalPulseDrives }, event) };
   }
 
   #aggregateAttractorProbes(terminalSites: readonly number[],
     probes: readonly DistributedAttractorReadoutV1[]): DistributedAttractorReadoutV1 {
     if (terminalSites.length === 0) return emptyAttractor();
-    const valid = probes.filter(value => value.coreSiteIds.length > 0 && !value.ambiguous);
+    const valid = probes.filter(value =>
+      distributedObservedTerminalReadoutMatchesV1(terminalSites, value));
     if (valid.length === 0) return emptyAttractor();
     const counts = new Map<number, number>();
     valid.forEach(value => value.coreSiteIds.forEach(siteId => counts.set(siteId, (counts.get(siteId) ?? 0) + 1)));
@@ -1195,6 +1372,26 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       readonly terminalDrives?: readonly DistributedSiteDriveV1[];
       readonly seedOffset: bigint }[]):
   readonly DistributedAttractorReadoutV1[] {
+    // Repeated roads can nominate exactly the same physical terminal probe.
+    // The resting medium is immutable and each job has its own explicit seed;
+    // reuse only an identical pulse/seed/measurement, not a similar result.
+    let cache = this.#terminalProbeCache.get(medium);
+    if (cache === undefined) { cache = new Map(); this.#terminalProbeCache.set(medium, cache); }
+    const keys = inputs.map(input => JSON.stringify({ terminalSites: input.terminalSites,
+      terminalDrives: input.terminalDrives ?? null, seedOffset: input.seedOffset.toString(),
+      seed: this.#seed.toString(), steps: PROBE_STEPS, probes: DISCOVERY_PROBES }));
+    const missing = new Map<string, (typeof inputs)[number]>();
+    inputs.forEach((input, index) => { if (!cache!.has(keys[index]!)) missing.set(keys[index]!, input); });
+    const measured = this.#measureAttractorsUncached(medium, [...missing.values()]);
+    [...missing.keys()].forEach((key, index) => cache!.set(key, measured[index]!));
+    return keys.map(key => structuredClone(cache!.get(key)!));
+  }
+
+  #measureAttractorsUncached(medium: DistributedPhysicalMedium3DV1,
+    inputs: readonly { readonly terminalSites: readonly number[];
+      readonly terminalDrives?: readonly DistributedSiteDriveV1[];
+      readonly seedOffset: bigint }[]):
+  readonly DistributedAttractorReadoutV1[] {
     if (inputs.length === 0) return [];
     const jobs: Array<Parameters<typeof runDistributedMediumProbeBatchSyncV1>[1][number]> = [];
     const owners: number[] = [];
@@ -1219,8 +1416,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // structured-cloning multiplies its memory footprint.  Production uses
     // the exact single-copy serial path; explicit parallelism remains
     // available only to callers that have measured sufficient headroom.
-    runDistributedMediumProbeBatchSyncV1(this.#readOnlyProbeSnapshot(medium), jobs,
-      R2A_QUERY_PARALLELISM_V1)
+    this.#runReadOnlyProbeBatch(medium, jobs)
       .forEach((readout, index) =>
       grouped[owners[index]!]!.push(readout));
     return inputs.map((input, index) =>
@@ -1316,8 +1512,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     });
     const grouped: DistributedAttractorReadoutV1[][] = inputs.map(() => []);
     if (jobs.length > 0) {
-      runDistributedMediumProbeBatchSyncV1(this.#readOnlyProbeSnapshot(medium), jobs,
-        R2A_QUERY_PARALLELISM_V1)
+      this.#runReadOnlyProbeBatch(medium, jobs)
         .forEach((readout, index) => grouped[owners[index]!]!.push(readout));
     }
     return inputs.map((input, index) => this.#aggregateAttractorProbes(
@@ -1329,6 +1524,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       readonly branchId: string; readonly score: number }[] {
     const universe = unique(branches.flatMap(value => value.topologicalEnvelopeSiteIds));
     return branches.map(branch => {
+      if (physicalResidenceMatchV1(readout.coreSiteIds, branch.attractor.coreSiteIds).coverage < .75)
+        return { branchId: branch.branchId, score: 0 };
       // Once a readout carries an exact repeated-terminal assembly id, only a
       // branch from that same physical population is eligible to receive the
       // score.  A core-only comparison would make two independent assemblies
@@ -1356,6 +1553,17 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     targetCore: readonly number[], probeCount: number, seedOffset: bigint): number {
     return this.#selectionRates(medium, [{ currentConditionSiteIds, seedPulses,
       targetCore, probeCount, seedOffset }])[0]!;
+  }
+
+  #runReadOnlyProbeBatch(medium: DistributedPhysicalMedium3DV1,
+    jobs: Parameters<typeof runDistributedMediumProbeBatchSyncV1>[1],
+    options: Parameters<typeof runDistributedMediumProbeBatchSyncV1>[3] = {}):
+  readonly DistributedAttractorReadoutV1[] {
+    return R2A_QUERY_PARALLELISM_V1 === 1
+      ? runDistributedMediumProbeSerialV1(medium, jobs, options)
+      : runDistributedMediumProbeBatchSyncV1(this.#readOnlyProbeSnapshot(medium), jobs,
+        R2A_QUERY_PARALLELISM_V1, { ...options,
+          prescribedActionSiteIds: medium.prescribedActionSiteIds });
   }
 
   #selectionRates(medium: DistributedPhysicalMedium3DV1, queries: readonly {
@@ -1392,7 +1600,6 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       }
       queryJobs.push({ queryIndex, jobs });
     });
-    const restingSnapshot = this.#readOnlyProbeSnapshot(medium);
     // Consume bounded chunks rather than serialising all intervention
     // readouts in one message.  Chunking does not alter a trajectory: seeds,
     // pulse inputs, integration steps and target scoring are unchanged.
@@ -1406,9 +1613,9 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       for (const item of chunk) for (const job of item.jobs) {
         jobs.push({ ...job, index: jobs.length }); owners.push(item.queryIndex);
       }
-      const readouts = runDistributedMediumProbeBatchSyncV1(restingSnapshot, jobs,
-        R2A_QUERY_PARALLELISM_V1,
-        { compactReadout: true, compactSiteIds: selectionFocusSiteIds });
+      const readouts = runDistributedMediumProbeBatchSyncV1(this.#readOnlyProbeSnapshot(medium), jobs,
+        CONTINUATION_SEED_LANES_V1, { compactReadout: true, compactSiteIds: selectionFocusSiteIds,
+          prescribedActionSiteIds: medium.prescribedActionSiteIds });
       readouts.forEach((readout, index) => {
         const owner = owners[index]!;
         const ranked = this.#scoreReadoutAgainstBranches(readout, branches);
@@ -1541,7 +1748,9 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // the branch would make contradiction counts depend on branch compression.
     const matched = [...this.#eventInputs.values()]
       .filter(input => this.#candidateBranchAssignments.get(
-        continuationCandidateForInputV1(input).key) === pattern.patternId)
+        continuationCandidateForInputV1(input).key) === physicalBranchForPatternV1(pattern))
+      .filter(input => orderedRoadPatternIdentityV1(physicalBranchForPatternV1(pattern),
+        input.actionPulseSiteIds) === pattern.patternId)
       .filter(input => input.nextActionPrefixPulseSiteIds.length >= prefix.length
         && prefix.every((pulse, index) =>
           distributedObservedPopulationCoversLocalAssemblyV1(
@@ -1564,9 +1773,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const activeInputs = [...this.#eventInputs.values()].filter(input =>
       this.#r2Active(input.eventId) && this.medium.isFootprintActive(input.traceId));
     for (const branch of physicalBranches.filter(value => value.terminalUnderCurrentChannels)) {
-      const members = activeInputs.filter(input => this.#candidateBranchAssignments.get(
+      const branchInputs = activeInputs.filter(input => this.#candidateBranchAssignments.get(
         continuationCandidateForInputV1(input).key)
         === branch.branchId);
+      for (const members of partitionDistributedR2AOrderedRoadsV1(branchInputs)) {
       if (members.length === 0) continue;
       const orderedPrefixPulseDrives = consensusWeightedPulseSequence(
         members.map(value => value.nextActionPrefixPulseDrives
@@ -1610,7 +1820,9 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         physicalBranches.filter(value => value.branchId !== branch.branchId)
           .map(value => value.attractor), medium);
       const base = { version: 'DistributedR2APhysicalPatternV2' as const,
-        patternId: branch.branchId, memberR2EventIds: members.map(value => value.eventId).sort(),
+        patternId: orderedRoadPatternIdentityV1(branch.branchId, actionPulseSiteIds),
+        physicalBranchId: branch.branchId,
+        memberR2EventIds: members.map(value => value.eventId).sort(),
         contextIds, physicalTraceIds: members.map(value => value.traceId).sort(),
         // Evidence cardinality is the number of still-active independent
         // continuous events.  Repeated deposition can deepen a distributed
@@ -1633,7 +1845,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
           corridorCoreSiteIds,
           forwardPropagationRate, reverseRejectionRate: 1 - reverseToPrefix } };
       const grade = this.#grade(base);
-      this.#patterns.set(branch.branchId, { ...base, grade });
+      this.#patterns.set(base.patternId, { ...base, grade });
+      }
     }
     if (rebuildRelations) this.#rebuildPhysicalRelations(medium, scan);
     this.#indexesDirty = false;
@@ -1644,6 +1857,31 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     if (this.#indexesDirty) this.#rediscoverPhysicalIndexes();
   }
 
+  #patternContinuation(pattern: DistributedR2APhysicalPatternV2):
+    readonly (readonly DistributedSiteDriveV1[])[] {
+    return consensusWeightedPulseSequence(pattern.memberR2EventIds
+      .flatMap(eventId => {
+        const input = this.#eventInputs.get(eventId);
+        return input ? [continuationCandidateForInputV1(input).seedPulses] : [];
+      }));
+  }
+
+  #matchedDifferentialComponents(pattern: DistributedR2APhysicalPatternV2,
+    patterns: readonly DistributedR2APhysicalPatternV2[],
+    snapshot: DistributedMediumSnapshotV1): AnonymousPhysicalScanV1['basins'] {
+    const populations = (events: readonly string[]): readonly (readonly number[])[] =>
+      events.flatMap(eventId => {
+        const input = this.#eventInputs.get(eventId);
+        return input ? [input.conditionSiteIds] : [];
+      });
+    const contrasts = patterns.filter(value => value.patternId !== pattern.patternId
+      && evidenceRank(value.grade) >= evidenceRank('predictive-stable')
+      && distributedR2APhysicalMatchedContrastV1(pattern, value));
+    return distributedR2APairwiseDifferentialComponentsV1(snapshot,
+      populations(pattern.memberR2EventIds),
+      contrasts.map(value => populations(value.memberR2EventIds)));
+  }
+
   #rebuildPhysicalRelations(medium: DistributedPhysicalMedium3DV1,
     scan = this.#physicalStructure(), options: { readonly deferRollout?: boolean } = {}): void {
     this.#invalidateApplicabilityQueryCache();
@@ -1651,23 +1889,15 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const previousAssessments = [...this.#interventions.values()];
     this.#relations.clear();
     const patterns = [...this.#patterns.values()];
-    const physicalFactorBasins = scan.basins.filter(value =>
-      value.meanSupportMass >= 2 && value.internalLocalBondCount > 0);
+    const snapshot = this.#readOnlyProbeSnapshot(medium);
     for (const pattern of patterns) {
       const patternEventInputs = pattern.memberR2EventIds
         .map(eventId => this.#eventInputs.get(eventId))
         .filter((value): value is DistributedR2AEventPhysicalInputV2 => value !== undefined);
       const prefix = pattern.corridor.orderedPrefixPulseSiteIds;
       const nextActionPulse = pattern.corridor.actionPulseSiteIds.at(-1) ?? [];
-      const prefixDrives = pattern.corridor.orderedPrefixPulseDrives
-        ?? weightedPulsesForIdsV1(undefined, prefix, `R2A-legacy-pattern-prefix-${pattern.patternId}`);
-      const actionDrives = pattern.corridor.actionPulseDrives
-        ?? weightedPulsesForIdsV1(undefined, pattern.corridor.actionPulseSiteIds,
-          `R2A-legacy-pattern-action-${pattern.patternId}`);
-      const nextActionDrives = actionDrives.at(-1) ?? unitWeightedPulseV1(nextActionPulse,
-        `R2A-pattern-action-${pattern.patternId}`);
       if (prefix.length === 0 || nextActionPulse.length === 0) continue;
-      for (const basin of physicalFactorBasins) {
+      for (const basin of this.#matchedDifferentialComponents(pattern, patterns, snapshot)) {
         if (overlap(basin.coreSiteIds, pattern.attractor.coreSiteIds) >= .25) continue;
         const decoderBindings = [...this.#conditionBindings.values()]
           .filter(binding => distributedObservedPopulationCoversLocalAssemblyV1(
@@ -1692,8 +1922,13 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         // A physical factor comparison is a matched intervention: both arms
         // contain the same real prefix and the same exact next-action
         // population.  Only the candidate condition basin is removed.
-        const continuation: readonly DistributedProbePulseInputV1[] = [
-          ...prefixDrives, nextActionDrives];
+        const factorVariableSites = new Set([...this.#conditionBindings.values()]
+          .filter(binding => sourceChannelIds.includes(distributedPublicSignalChannelIdV1(binding.signalId)))
+          .flatMap(binding => binding.siteIds));
+        const continuation: readonly DistributedProbePulseInputV1[] = this.#patternContinuation(pattern)
+          .map(pulse => normalizeDistributedProbePulseV1(pulse)
+            .filter(drive => !factorVariableSites.has(drive.siteId)))
+          .filter(pulse => pulse.length > 0);
         const probeSeed = BigInt((basin.coreSiteIds[0] ?? 0) + 1) ^ 0x66756c6cn;
         let fullRate = 0, stateContrastLoss = 0, factorAblationLoss = 0;
         let physicalFactorQualified = false;
@@ -1715,21 +1950,52 @@ export class DistributedR2APhysicalPatternLearnerV2 {
           // of two otherwise symmetric arms appear unsupported.  Keep the
           // complete measured pulse for the full arm; the factor-specific
           // ablation below removes only the corresponding variable.
+          const factorObservedInputs = patternEventInputs.filter(input => {
+            const condition = input.conditionDrives
+              ?? unitWeightedPulseV1(input.conditionSiteIds,
+                `R2A-legacy-relation-condition-${input.eventId}`);
+            return coveredFraction([...factorVariableSites],
+              condition.map(value => value.siteId)) >= .5;
+          });
+          const conditionInputs = factorObservedInputs.length >= 2
+            ? factorObservedInputs : patternEventInputs;
           const factorConditionDrives = consensusWeightedPulseSequence(
-            patternEventInputs.map(input => {
+            conditionInputs.map(input => {
               const condition = input.conditionDrives
                 ?? unitWeightedPulseV1(input.conditionSiteIds,
                   `R2A-legacy-relation-condition-${input.eventId}`);
               return [condition];
             })).at(0) ?? [];
-          fullRate = this.#selectionRate(medium, factorConditionDrives, continuation,
-            pattern.attractor.coreSiteIds, 8, probeSeed);
-          const alternativeStateRate = alternativeStateBindings.length === 0 ? 0
-            : Math.max(...alternativeStateBindings.map(binding => this.#selectionRate(medium,
-              binding.siteIds, continuation, pattern.attractor.coreSiteIds, 8, probeSeed)));
+          // All matched arms read the same immutable substrate and differ
+          // only in their prescribed condition pulse. Prepare them together
+          // so independent seeds share one worker batch, without changing
+          // seed order, the physical trajectories, or the contrast formula.
+          const alternativeConditions = alternativeStateBindings.map(binding => {
+              const channel = distributedPublicSignalChannelIdV1(binding.signalId);
+              const changedSites = new Set([...this.#conditionBindings.values()]
+                .filter(value => distributedPublicSignalChannelIdV1(value.signalId) === channel)
+                .flatMap(value => value.siteIds));
+              // Only amplitudes present in actual complete observations can
+              // supply the alternative state. The rest of the matched public
+              // boundary stays byte-for-byte unchanged in both query arms.
+              const alternative = consensusWeightedPulseSequence([...this.#eventInputs.values()]
+                .filter(input => binding.siteIds.every(site => input.conditionSiteIds.includes(site)))
+                .map(input => [(input.conditionDrives ?? unitWeightedPulseV1(input.conditionSiteIds,
+                  `R2A-legacy-contrast-condition-${input.eventId}`))
+                  .filter(drive => binding.siteIds.includes(drive.siteId))])).at(0) ?? [];
+              return distributedR2AMatchedConditionPulseV1(factorConditionDrives, changedSites, alternative);
+            });
+          const matchedRates = this.#selectionRates(medium, [factorConditionDrives,
+            ...alternativeConditions,
+            distributedR2AMatchedConditionPulseV1(factorConditionDrives, factorVariableSites)]
+            .map(currentConditionSiteIds => ({ currentConditionSiteIds,
+              seedPulses: continuation, targetCore: pattern.attractor.coreSiteIds,
+              probeCount: 8, seedOffset: probeSeed })));
+          fullRate = matchedRates[0]!;
+          const alternativeStateRate = alternativeConditions.length === 0 ? 0
+            : Math.max(...matchedRates.slice(1, -1));
           stateContrastLoss = fullRate - alternativeStateRate;
-          const ablatedRate = this.#selectionRate(medium, [], continuation,
-            pattern.attractor.coreSiteIds, 8, probeSeed);
+          const ablatedRate = matchedRates.at(-1)!;
           factorAblationLoss = Math.max(0, fullRate - ablatedRate);
           physicalFactorQualified = fullRate >= .75
             && (alternativeStateBindings.length > 0 ? stateContrastLoss : factorAblationLoss) >= .25;
@@ -1810,7 +2076,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
    * build their complete ordered R2A traces with no condition-to-result shortcut.
    * Only after repeated terminal attractors exist do we compare anonymous
    * condition basins across their real member footprints.  A basin present in
-   * at least 80% of one branch and at most 20% of the other stable branches is
+   * at least 80% of one branch and at most 20% of a matched alternative is
    * replayed as the corresponding real event subsequence.  Common and balanced
    * pseudo-correlates therefore never receive a long-range result channel.
    */
@@ -1827,28 +2093,14 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       this.#indexesDirty = false;
       return;
     }
-    const scan = prepared.scan;
-    const conditionBasins = scan.basins.filter(basin =>
-      basin.meanSupportMass >= 2 && basin.internalLocalBondCount > 0
-      && [...this.#conditionBindings.values()].some(binding =>
-        distributedObservedPopulationCoversLocalAssemblyV1(
-          basin.coreSiteIds, binding.siteIds) >= .5));
+    const snapshot = this.#readOnlyProbeSnapshot(prepared.medium);
     const knownTraceIds = new Set(this.medium.snapshot().footprints.map(value => value.traceId));
     let changed = false;
     for (const pattern of stablePatterns) {
       const members = pattern.memberR2EventIds
         .map(eventId => this.#eventInputs.get(eventId)).filter(value => value !== undefined);
-      const comparableContrasts = stablePatterns.filter(value => value.patternId !== pattern.patternId
-        && distributedR2APhysicalMatchedContrastV1(pattern, value));
-      const contrasts = comparableContrasts
-        .flatMap(value => value.memberR2EventIds)
-        .map(eventId => this.#eventInputs.get(eventId)).filter(value => value !== undefined);
-      if (members.length < 8 || contrasts.length === 0) continue;
-      for (const basin of conditionBasins) {
-        const differential = distributedR2AConditionDifferentialV1(basin.coreSiteIds,
-          members.map(input => input.conditionSiteIds),
-          contrasts.map(input => input.conditionSiteIds));
-        if (!differential.qualifies) continue;
+      if (members.length < 8) continue;
+      for (const basin of this.#matchedDifferentialComponents(pattern, stablePatterns, snapshot)) {
         const factorIdentity = sha({ version: 'DistributedR2AStableDifferentialBasinV1',
           coreSiteIds: basin.coreSiteIds });
         for (const input of members) {
@@ -1870,15 +2122,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
             || actionDrives.length === 0 || terminalDrives.length === 0) continue;
           const traceId = `r2a-differential-${input.eventId}-${factorIdentity}`;
           if (knownTraceIds.has(traceId)) continue;
-          const populations = [factorDrives, ...prefixDrives,
-            actionDrives, terminalDrives].map(value => normalizeDistributedWeightedPulseV1(value));
-          this.#applyEpisodeWithEncodingGain({ version: 'DistributedEpisodeV1', traceId,
-            provenance: 'trusted-real-event',
-            pulses: populations.map((siteIds, index) => ({ version: 'SparseFieldPulseV1',
-              pulseId: `${traceId}:${index}`, offset: index * .04,
-              drives: siteIds })),
-            temporalEligibility: [{ fromPulseIndex: 0,
-              toPulseIndex: populations.length - 1, strength: 1 }] });
+          this.#applyEpisodeWithEncodingGain(distributedR2ADifferentialEpisodeV1(
+            traceId, factorDrives, terminalDrives));
           knownTraceIds.add(traceId); changed = true;
         }
       }
@@ -2009,9 +2254,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         continuationCandidateForInputV1(baseline).key);
       const interventionBranchId = this.#candidateBranchAssignments.get(
         continuationCandidateForInputV1(intervention).key);
-      const baselinePattern = baselineBranchId ? this.#patterns.get(baselineBranchId) : undefined;
-      const interventionPattern = interventionBranchId
-        ? this.#patterns.get(interventionBranchId) : undefined;
+      const baselinePattern = baselineBranchId ? this.#patterns.get(
+        orderedRoadPatternIdentityV1(baselineBranchId, baseline.actionPulseSiteIds)) : undefined;
+      const interventionPattern = interventionBranchId ? this.#patterns.get(
+        orderedRoadPatternIdentityV1(interventionBranchId, intervention.actionPulseSiteIds)) : undefined;
       assert(baselinePattern && interventionPattern
         && distributedR2APhysicalMatchedContrastV1(interventionPattern, baselinePattern),
       'R2A-intervention-pair-is-not-a-physical-matched-contrast');
@@ -2022,7 +2268,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       const candidates = [...this.#relations.values()].flatMap(relation => {
         const pattern = this.#patterns.get(relation.patternId);
         if (!pattern) return [];
-        const branchMembership = Number(interventionBranchId === pattern.patternId);
+        const branchMembership = Number(interventionPattern.patternId === pattern.patternId);
         return relation.factors.map(factor => ({ relation, pattern, factor, branchMembership,
           factorChange: factor.afferentSiteIds.filter(siteId => changedSites.has(siteId)).length
             / Math.max(1, factor.afferentSiteIds.length) }))
@@ -2045,16 +2291,11 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         && baselineOther.every((siteId, index) => siteId === interventionOther[index]);
       const baselineFactor = baseline.conditionSiteIds.some(siteId => factorSites.has(siteId));
       const interventionFactor = intervention.conditionSiteIds.some(siteId => factorSites.has(siteId));
-      const patternPrefixDrives = pattern.corridor.orderedPrefixPulseDrives
-        ?? weightedPulsesForIdsV1(undefined, pattern.corridor.orderedPrefixPulseSiteIds,
-          `R2A-legacy-intervention-prefix-${pattern.patternId}`);
       const patternActionDrives = pattern.corridor.actionPulseDrives
         ?? weightedPulsesForIdsV1(undefined, pattern.corridor.actionPulseSiteIds,
           `R2A-legacy-intervention-action-${pattern.patternId}`);
       const withoutFactorDrives = (drives: readonly DistributedSiteDriveV1[]): DistributedSiteDriveV1[] =>
         drives.filter(drive => !factorVariableSites.has(drive.siteId));
-      const physicalPrefix = patternPrefixDrives.map(withoutFactorDrives)
-        .filter(pulse => pulse.length > 0);
       const nextActionDrives = patternActionDrives.at(-1) ?? [];
       const nextActionPulse = weightedPulseSiteIdsV1(nextActionDrives);
       assert(nextActionPulse.length > 0, 'R2A-intervention-requires-exact-next-action-population');
@@ -2062,10 +2303,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         ?? unitWeightedPulseV1(intervention.conditionSiteIds,
           `R2A-legacy-intervention-condition-${intervention.eventId}`);
       const ablatedConditionDrives = withoutFactorDrives(interventionConditionDrives);
-      const continuation: readonly DistributedProbePulseInputV1[] = [
-        ...physicalPrefix, nextActionDrives].filter(pulse => pulse.length > 0);
-      const interventionReachedRelationBranch = this.#candidateBranchAssignments.get(
-        continuationCandidateForInputV1(intervention).key) === pattern.patternId;
+      const continuation: readonly DistributedProbePulseInputV1[] =
+        continuationCandidateForInputV1(intervention).seedPulses
+          .map(withoutFactorDrives).filter(pulse => pulse.length > 0);
+      const interventionReachedRelationBranch = interventionPattern.patternId === pattern.patternId;
       const queries: Prepared['queries'] = [
         { currentConditionSiteIds: interventionConditionDrives, seedPulses: continuation,
           targetCore: pattern.attractor.coreSiteIds, probeCount: 24,
@@ -2129,10 +2370,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
   }
 
   compareCurrentFactors(relationId: string,
-    currentSignalIds: readonly string[]): DistributedR2APhysicalApplicabilityV2 {
+    currentSignalIds: readonly string[], currentAction?: DistributedR3CurrentActionInputV1): DistributedR2APhysicalApplicabilityV2 {
     this.#ensurePhysicalIndexes();
     const cacheKey = distributedR2APhysicalApplicabilityCacheKeyV1(
-      this.#physicalQueryRevision, relationId, currentSignalIds);
+      this.#physicalQueryRevision, relationId, currentSignalIds, currentAction);
     const cached = this.#applicabilityQueryCache.get(cacheKey);
     if (cached !== undefined) {
       this.#applicabilityQueryCacheHits++;
@@ -2152,22 +2393,26 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     }
     const currentSites = unique(currentSignalIds.flatMap(signal => this.#conditionBindings.get(signal)?.siteIds ?? []));
     const currentDrives = unitWeightedPulseV1(currentSites, 'R2A-current-condition');
-    const patternPrefixDrives = pattern.corridor.orderedPrefixPulseDrives
-      ?? weightedPulsesForIdsV1(undefined, pattern.corridor.orderedPrefixPulseSiteIds,
-        `R2A-legacy-current-prefix-${pattern.patternId}`);
-    const patternActionDrives = pattern.corridor.actionPulseDrives
-      ?? weightedPulsesForIdsV1(undefined, pattern.corridor.actionPulseSiteIds,
-        `R2A-legacy-current-action-${pattern.patternId}`);
-    const physicalBranchSelectionRate = currentSites.length > 0
+    // Candidate-specific R3 tests the same physical question as the action
+    // rollout: actual current afferents, exact motor cue and the same seeds.
+    // The historical pattern names only the branch whose arrival is measured;
+    // it must not substitute its stored continuation for the actual input.
+    const currentResults = currentAction && this.#predictCurrentAction(currentSignalIds,
+      currentAction.sourceR2PrefixDrives, currentAction.exactActionIdentity, currentAction.seeds).results;
+    const physicalBranchSelectionRate = currentResults
+      ? currentResults.filter(result => result.status === 'reached'
+        && result.reachedAssemblyIds.includes(physicalBranchForPatternV1(pattern))).length
+        / Math.max(1, currentResults.length)
+      : currentSites.length > 0
       && pattern.corridor.orderedPrefixPulseSiteIds.length > 0
       && (pattern.corridor.actionPulseSiteIds.at(-1)?.length ?? 0) > 0
       ? this.#selectionRate(this.#restingMedium(), currentDrives,
-        [...patternPrefixDrives, patternActionDrives.at(-1)!],
+        this.#patternContinuation(pattern),
         pattern.attractor.coreSiteIds, 24,
         BigInt((pattern.attractor.coreSiteIds[0] ?? 0) + 1) ^ 0x5233434f4d504152n)
       : 0;
     const minimum = this.#restingQuerySubstrate().snapshot.config.minimumActiveMagnitude;
-    const branch = this.physicalBranches().find(value => value.branchId === pattern.patternId);
+    const branch = this.physicalBranches().find(value => value.branchId === physicalBranchForPatternV1(pattern));
     const physicalSupportActive = branch !== undefined && branch.terminalUnderCurrentChannels
       && relation.physicalTraceIds.some(traceId => this.medium.isFootprintActive(traceId))
       && relation.factors.every(factor => factor.coreSiteIds.some(siteId => {
@@ -2232,10 +2477,50 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     sourceR2PrefixSiteIds: readonly number[] | readonly DistributedSiteDriveV1[], observedAtomCount: number,
     exactActionIdentity: string,
     seeds: readonly bigint[]): { readonly snapshot: DistributedMediumSnapshotV1;
+      readonly targetPhysicalBranchId: string;
       readonly results: readonly DistributedPredictionCloneResultV2[] } {
     this.#ensurePhysicalIndexes();
     const pattern = this.#patterns.get(patternId);
     if (!pattern) throw new Error('unknown-distributed-R2A-pattern');
+    const expected = pattern.memberR2EventIds.flatMap(id => {
+      const identity = this.#events.get(id)?.orderedExperienceIdentities[observedAtomCount];
+      return identity === undefined ? [] : [identity];
+    });
+    const action = expected.length > 0 && expected.every(id => id === exactActionIdentity)
+      ? exactActionIdentity : null;
+    const queried = this.#predictCurrentAction(currentSignalIds, sourceR2PrefixSiteIds, action, seeds);
+    return { ...queried, targetPhysicalBranchId: pattern.physicalBranchId ?? pattern.patternId };
+  }
+
+  get physicalQueryRevision(): number { return this.#physicalQueryRevision; }
+
+  /** Conditioned single-action prediction, independent of a desired result.
+   * R1 supplies current perception, R2 its existing projection, R3 the current
+   * condition field; only real stochastic arrival may be decoded afterwards. */
+  predictCurrentAction(currentSignalIds: readonly string[],
+    sourceR2CurrentDrives: readonly DistributedSiteDriveV1[], exactActionIdentity: string,
+    seeds: readonly bigint[]): readonly DistributedPredictionCloneResultV2[] {
+    return structuredClone(this.readCurrentAction(currentSignalIds, sourceR2CurrentDrives,
+      exactActionIdentity, seeds));
+  }
+
+  /** Immutable in-process physical readout; no lattice-sized result copies. */
+  readCurrentAction(currentSignalIds: readonly string[],
+    sourceR2CurrentDrives: readonly DistributedSiteDriveV1[], exactActionIdentity: string,
+    seeds: readonly bigint[]): readonly DistributedPredictionCloneResultV2[] {
+    this.#ensurePhysicalIndexes();
+    return this.#predictCurrentAction(currentSignalIds, sourceR2CurrentDrives, exactActionIdentity, seeds).results;
+  }
+
+  readR2Pulse(drives: readonly DistributedSiteDriveV1[]): readonly DistributedSiteDriveV1[] {
+    return this.#projection.readSourcePulse(drives);
+  }
+
+  #predictCurrentAction(currentSignalIds: readonly string[],
+    sourceR2PrefixSiteIds: readonly number[] | readonly DistributedSiteDriveV1[],
+    exactActionIdentity: string | null, seeds: readonly bigint[]): {
+      readonly snapshot: DistributedMediumSnapshotV1;
+      readonly results: readonly DistributedPredictionCloneResultV2[] } {
     const currentPerceptionSeedSiteIds = unique(currentSignalIds
       .flatMap(signal => this.#conditionBindings.get(signal)?.siteIds ?? []));
     // Afferent bindings currently expose membership only; represent that
@@ -2252,38 +2537,47 @@ export class DistributedR2APhysicalPatternLearnerV2 {
         'R2A-prediction-prefix');
     const mappedPrefixDrives = this.#projection.lookupPulse(sourcePrefixDrives);
     const mappedPrefix = unique(mappedPrefixDrives.map(value => value.siteId));
-    const expectedNextIdentities = pattern.memberR2EventIds.flatMap(eventId => {
-      const event = this.#events.get(eventId);
-      const identity = event?.orderedExperienceIdentities[observedAtomCount];
-      return identity === undefined ? [] : [identity];
-    });
-    const exactActionPhysicallyBelongsToContinuation = expectedNextIdentities.length > 0
-      && expectedNextIdentities.every(identity => identity === exactActionIdentity);
-    const actionSeedSiteIds = exactActionPhysicallyBelongsToContinuation
-      ? [...(this.#actionBindings.get(exactActionIdentity)?.siteIds ?? [])] : [];
-    const actionSeedDrives = unitWeightedPulseV1(actionSeedSiteIds,
-      'R2A-prediction-action');
-    const snapshot = this.medium.snapshot();
-    const clone = new DistributedPredictionCloneV2(snapshot);
-    const branchById = new Map(this.physicalBranches().map(value => [value.branchId, value]));
-    const readoutAssemblies = [...this.#patterns.values()].map(value => ({
-      assemblyId: value.patternId, siteIds: value.attractor.coreSiteIds,
-      enclosingDomainSiteIds: branchById.get(value.patternId)?.topologicalEnvelopeSiteIds
-        ?? value.attractor.coreSiteIds,
-      referenceActivations: (branchById.get(value.patternId)?.attractor.terminalActivations ?? [])
-        .filter(activation => (branchById.get(value.patternId)?.topologicalEnvelopeSiteIds
-          ?? value.attractor.coreSiteIds).includes(activation.siteId)),
-      minimumResidenceScore: .5,
-      minimumCoverage: .75,
-      minimumPurity: .75,
-    })).filter(value => value.siteIds.length > 0);
-    const results = seeds.map(seed => clone.run({ currentPerceptionSeedSiteIds,
+    const commandDrives = new Map<number, number>();
+    if (exactActionIdentity !== null) {
+      for (const siteId of this.#actionBindings.get(exactActionIdentity)?.siteIds ?? [])
+        commandDrives.set(siteId, 1);
+      // Lookup only the exact motor cue. No historical before/after state or
+      // desired terminal supplies a future input.
+      for (const input of this.#eventInputs.values()) {
+        const event = this.#events.get(input.eventId)!;
+        event.orderedExperienceIdentities.forEach((identity, ordinal) => {
+          if (identity !== exactActionIdentity) return;
+          const index = input.projectedCommandPulseIndices![ordinal]!;
+          const drives = input.projectedPulseDrives?.[index]
+            ?? unitWeightedPulseV1(input.projectedPulseSiteIds[index]!, 'R2A-projected-command');
+          for (const drive of drives) commandDrives.set(drive.siteId,
+            Math.max(commandDrives.get(drive.siteId) ?? 0, drive.intensity));
+        });
+      }
+    }
+    const actionSeedDrives = [...commandDrives].sort(([a], [b]) => a - b)
+      .map(([siteId, intensity]) => ({ siteId, intensity }));
+    const actionSeedSiteIds = actionSeedDrives.map(drive => drive.siteId);
+    const snapshot = this.#restingQuerySubstrate().snapshot;
+    // Reuse only an immutable physical version. runMany compares every seed,
+    // input amplitude, mode, step count and readout mask exactly; evidence and
+    // goal scoring remain separate for each historical candidate.
+    if (this.#currentActionClone === null) {
+      const ports = this.#prescribedActionSiteIds();
+      this.#currentActionClone = new DistributedPredictionCloneV2(snapshot, ports,
+        request => runDistributedPredictionCloneBatchSyncV1(snapshot, request,
+          request.currentPerceptionSeedSiteIds.length > 0 && request.actionSeedSiteIds.length > 0
+            && request.realPrefixSeedSiteIds.length > 0 ? CONTINUATION_SEED_LANES_V1 : 1, ports));
+    }
+    const clone = this.#currentActionClone;
+    const readoutAssemblies = distributedPhysicalBranchReadoutAssembliesV1(this.physicalBranches());
+    const results = clone.runManyReadOnly({ currentPerceptionSeedSiteIds,
       currentPerceptionSeedDrives,
       currentPerceptionMode: 'held-boundary',
       realPrefixSeedSiteIds: mappedPrefix.length ? [mappedPrefix] : [],
       realPrefixSeedDrives: mappedPrefixDrives.length ? [mappedPrefixDrives] : [],
       actionSeedSiteIds, actionSeedDrives,
-      readoutAssemblies, seed, steps: PROBE_STEPS }));
+      readoutAssemblies, seeds, steps: PROBE_STEPS });
     return { snapshot, results };
   }
 
@@ -2295,6 +2589,24 @@ export class DistributedR2APhysicalPatternLearnerV2 {
    * perturbation of the physical medium determines the surviving dynamic core.
   */
   physicalBranches(structure = this.#physicalStructure()): readonly DistributedR2AAnonymousPhysicalBranchV2[] {
+    // One immutable substrate is queried many times during consolidation.
+    // Re-normalizing every complete event route at each reverse/condition
+    // probe is redundant. Dependency liveness remains part of this key.
+    const activeInputs = [...this.#eventInputs.values()]
+      .filter(value => this.#r2Active(value.eventId) && this.medium.isFootprintActive(value.traceId));
+    const activeEventKey = JSON.stringify(activeInputs.map(value => value.eventId));
+    if (this.#branchReadoutCache?.structure === structure
+      && this.#branchReadoutCache.activeEventKey === activeEventKey) {
+      this.#candidateBranchAssignments.clear();
+      for (const [candidate, branch] of this.#branchReadoutCache.assignments)
+        this.#candidateBranchAssignments.set(candidate, branch);
+      return structuredClone(this.#branchReadoutCache.branches);
+    }
+    this.#branchCandidateBuildCount++;
+    const rememberBranches = (branches: readonly DistributedR2AAnonymousPhysicalBranchV2[]): void => {
+      this.#branchReadoutCache = { structure, activeEventKey, branches: structuredClone(branches),
+        assignments: [...this.#candidateBranchAssignments.entries()] };
+    };
     const substrate = this.#restingQuerySubstrate();
     const restingSnapshot = substrate.snapshot;
     const continuationGroups = new Map<string, ContinuationCandidateV1[]>();
@@ -2306,9 +2618,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // Discover only from a condition/prefix/action continuation that a real
     // event actually traversed.  An observed terminal population is not a
     // valid probe seed: injecting it would make the answer inevitable.
-    [...this.#eventInputs.values()]
-      .filter(value => this.#r2Active(value.eventId) && this.medium.isFootprintActive(value.traceId))
-      .forEach(value => addContinuation(continuationCandidateForInputV1(value)));
+    activeInputs.forEach(value => addContinuation(continuationCandidateForInputV1(value)));
     // During physical rediscovery the derived event table may be absent.  An
     // immutable footprint can recover a pre-terminal route, but a singleton
     // footprint cannot establish a reachable branch.
@@ -2379,7 +2689,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const orderedCandidates = candidates
       .sort((left, right) => left.key.localeCompare(right.key, 'en'));
     const cacheKey = sha({ version: 'DistributedR2APhysicalBranchReadoutCacheV5',
-      algorithmIdentity: DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7,
+      algorithmIdentity: DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V5,
       // The immutable substrate digest already identifies every site, bond,
       // footprint and snapshot parameter.  Hashing the full object again
       // here transiently serialises hundreds of megabytes and creates a
@@ -2390,6 +2700,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       this.#candidateBranchAssignments.clear();
       cached.candidateAssignments.forEach(([candidate, branchId]) =>
         this.#candidateBranchAssignments.set(candidate, branchId));
+      rememberBranches(cached.branches);
       return structuredClone(cached.branches);
     }
     // Build the anonymous branch index from terminal populations that were
@@ -2464,6 +2775,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       candidateAssignments }));
     while (physicalBranchReadoutCache.size > PHYSICAL_BRANCH_CACHE_LIMIT)
       physicalBranchReadoutCache.delete(physicalBranchReadoutCache.keys().next().value!);
+    rememberBranches(result);
     return structuredClone(result);
   }
 
@@ -2506,14 +2818,13 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const hits = new Map(branches.map(value => [value.branchId, 0]));
     let validSampleCount = 0;
     const pulses: readonly DistributedProbePulseInputV1[] = [...prefixDrives, actionDrives];
-    const readouts = runDistributedMediumProbeBatchSyncV1(this.#readOnlyProbeSnapshot(medium),
+    const readouts = this.#runReadOnlyProbeBatch(medium,
       Array.from({ length: 24 }, (_unused, index) => current.length > 0
         ? { index, kind: 'conditioned-sequential' as const, conditionSiteIds: currentDrives,
           seedPulses: pulses,
           seed: this.#seed ^ 0x4252414e43485052n ^ BigInt(index + 1), steps: PROBE_STEPS }
         : { index, kind: 'sequential' as const, seedPulses: pulses,
           seed: this.#seed ^ 0x4252414e43485052n ^ BigInt(index + 1), steps: PROBE_STEPS }),
-      R2A_QUERY_PARALLELISM_V1,
       { compactReadout: true, compactSiteIds: unique(branches.flatMap(value =>
         value.topologicalEnvelopeSiteIds)) });
     for (const readout of readouts) {
@@ -2575,7 +2886,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const patterns = this.patterns(), relations = this.relations(), interventions = this.interventions();
     const physicalIndexIdentity = {
       version: 'DistributedR2APhysicalIndexIdentityV1' as const,
-       algorithmIdentity: DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7,
+       algorithmIdentity: DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V5,
       physicalIndexInputsSha256: this.#physicalIndexInputsSha256(interventions),
       physicalIndexStateSha256: this.#physicalIndexStateSha256(patterns, relations, interventions),
     };

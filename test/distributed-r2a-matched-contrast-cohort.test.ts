@@ -70,3 +70,35 @@ test('near-identical terminal populations are one noisy branch, not a matched co
   assert.equal(distributedR2APhysicalMatchedContrastV1(target, oneSiteDrift), false);
   assert.equal(distributedR2APhysicalMatchedContrastV1(target, halfDifferent), true);
 });
+
+test('common field activation outside measured terminal cores cannot erase a real contrast', () => {
+  const prefix = [[1, 2, 3, 4, 5]], action = [21, 22, 23, 24];
+  const a = pattern(prefix, action, [31, 32, 33, 34]);
+  const b = pattern(prefix, action, [41, 42, 43, 44]);
+  const background = Array.from({ length: 128 }, (_, i) => ({ siteId: 1000 + i, activation: 1 }));
+  const measured = (p: typeof a) => ({ ...p, attractor: { ...p.attractor,
+    run: { ...p.attractor.run, finalActivations: [...background,
+      ...p.attractor.coreSiteIds.map(siteId => ({ siteId, activation: 1 }))] } } });
+  assert.equal(distributedR2APhysicalMatchedContrastV1(measured(a), measured(b)), true);
+  assert.equal(distributedR2APhysicalMatchedContrastV1(measured(a), measured(a)), false);
+});
+
+test('terminal-local comparison still tolerates one-site drift and requires measured activation', () => {
+  const prefix = [[1, 2, 3, 4, 5]], action = [21, 22, 23, 24];
+  const a = pattern(prefix, action, [31, 32, 33, 34, 35, 36, 37, 38]);
+  const b = pattern(prefix, action, [31, 32, 33, 34, 35, 36, 37, 39]);
+  const measured = (p: typeof a) => ({ ...p, attractor: { ...p.attractor,
+    run: { ...p.attractor.run, finalActivations: p.attractor.coreSiteIds
+      .map(siteId => ({ siteId, activation: 1 })) } } });
+  assert.equal(distributedR2APhysicalMatchedContrastV1(measured(a), measured(b)), false);
+});
+
+test('a dominant shared subassembly cannot impersonate two different completed terminal assemblies', () => {
+  const prefix = [[1, 2, 3, 4, 5]], action = [21, 22, 23, 24];
+  const a = pattern(prefix, action, [31, 32, 33, 34, 35, 36, 37, 38]);
+  const b = pattern(prefix, action, [31, 32, 33, 34, 41, 42, 43, 44]);
+  const measured = (p: typeof a) => ({ ...p, attractor: { ...p.attractor,
+    run: { ...p.attractor.run, finalActivations: p.attractor.coreSiteIds
+      .map(siteId => ({ siteId, activation: siteId < 35 ? 100 : 1 })) } } });
+  assert.equal(distributedR2APhysicalMatchedContrastV1(measured(a), measured(b)), true);
+});

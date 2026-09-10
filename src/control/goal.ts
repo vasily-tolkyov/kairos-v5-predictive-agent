@@ -139,6 +139,16 @@ export class GroundedGoalEvaluatorV1 {
 
 export function goalPredicates(goal: GroundedGoalV1): readonly GoalPredicateV1[] { return predicateList(goal.expression); }
 
+/** Same predicate algebra for a sparse physical readout. Missing channels
+ * stay undefined; the caller cannot start from a copied future Observation. */
+export function evaluateGroundedReadoutV1(goal: GroundedGoalV1, baseline: GoalEvaluationV1,
+  sequence: number, value: (predicate: GoalPredicateV1) => PublicValue | undefined): GoalEvaluationV1 {
+  const predicates = predicateList(goal.expression).map(predicate => evaluateGroundedPredicateValueV1(
+    predicate, value(predicate), baseline.predicates.find(p => p.predicateId === predicate.id)?.baseline ?? null));
+  return { goalId: goal.id, observationSequence: sequence, predicates,
+    ...combine(goal.expression, new Map(predicates.map(p => [p.predicateId, p]))) };
+}
+
 export function desiredChangesForGoal(goal: GroundedGoalV1, evaluation: GoalEvaluationV1): readonly {
   readonly predicateId: string; readonly desired: DesiredChange;
 }[] {

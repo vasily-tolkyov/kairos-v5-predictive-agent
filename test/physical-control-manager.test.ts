@@ -9,6 +9,7 @@ import type { ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, Conti
 import { fairEvidenceWindowV2, fairGroundedControlWindowV2,
   hasProductionPhysicalRepresentationV2, physicalEvidenceBindingV2, PhysicalControlManagerV2,
   modulateBlindExplorationInputsV2,
+  physicalReasoningPendingControlSiteV2,
   productiveGoalControlSiteV2,
   dependencyDepthV2, dependencyEdgeSatisfiedV2, explicitPredictionViolationV2,
   type PhysicalControlEnvironmentV2 } from '../src/control/controller.js';
@@ -381,8 +382,15 @@ test('one reasoning chain keeps a sealed public frame until a body or attention 
   const result = await manager.runGoal(goal);
   assert.equal(result.status, 'goal-verified');
   assert.deepEqual(environment.timeline, ['alpha', 'beta', 'observe']);
-  assert.equal(environment.reads, 4,
-    `the controller refreshed outside a real body boundary:${JSON.stringify(environment.timeline)}`);
+  assert(environment.reads > 4, 'the controller did not check live feedback while retaining its sealed query frame');
+  const epochs = new Map<number, Set<number>>();
+  for (const record of environment.records) if (record.kind === 'control-operation-result') {
+    const event = (record.value as { event: { epoch: number; baseSequence: number } }).event;
+    const sequences = epochs.get(event.epoch) ?? new Set<number>();
+    sequences.add(event.baseSequence); epochs.set(event.epoch, sequences);
+  }
+  assert([...epochs.values()].every(sequences => sequences.size === 1),
+    'unchanged raw ticks split one sealed reasoning frame');
 });
 
 test('provisional R2A history cannot erase the same exact legal exploration cue', async () => {
@@ -424,9 +432,10 @@ test('provisional R2A history cannot erase the same exact legal exploration cue'
   assert(betaResult, 'the legal interact cue was not explored after provisional R2A history');
 });
 
-test('the controller has no wall-clock or cycle-count fallback outside the joint field', async () => {
+test('the controller has no wall-clock fallback and bounds repeated identical read-only queries', async () => {
   const source = await import('node:fs/promises').then(fs => fs.readFile('src/control/controller.ts', 'utf8'));
-  assert.doesNotMatch(source, /cycles\s*<\s*4096|joint-control-event-wait-expired|setTimeout\s*\(/);
+  assert.doesNotMatch(source, /joint-control-event-wait-expired|setTimeout\s*\(/);
+  assert.match(source, /same-read-only-query-no-new-state/);
   assert.match(source, /waitForObservationAfter\(observation\.sequence\)/);
 });
 
@@ -483,6 +492,45 @@ test('a live R2A footprint with zero current applicability still admits conditio
   // retained footprint and relation are the physical substrate that makes a
   // compare/expand query meaningful; they are not an execution qualification.
   assert.equal(physicalEvidenceBindingV2(currentMismatch), .85);
+});
+
+test('unresolved physical reasoning suppresses blind exploration without granting execution', () => {
+  const evidence = physical('pending-condition', 0);
+  const compare = { siteId: 'compare:pending', operation: 'compare-condition' as const,
+    nodeId: 'pending', hardEligible: true,
+    productiveGrounding: { kind: 'physical-branch' as const, evidence: [evidence] },
+    drives: { goal: .8, evidence: .85, condition: 0, rollout: 0,
+      unknown: 1, attention: 0, novelty: 0, habit: 0 } };
+  assert.equal(physicalReasoningPendingControlSiteV2(compare), true);
+  assert.equal(physicalReasoningPendingControlSiteV2({ ...compare,
+    operation: 'execute', siteId: 'execute:pending' }), false,
+  'unresolved physical evidence must not make a body action executable');
+  assert.equal(physicalReasoningPendingControlSiteV2({ ...compare,
+    hardEligible: false, siteId: 'compare:ineligible' }), false);
+});
+
+test('unresolved physical reasoning receives fair admission ahead of blind exploration', () => {
+  const evidence = physical('window-pending', 0);
+  const compare = { siteId: 'compare:window-pending', operation: 'compare-condition' as const,
+    nodeId: 'experienced-window-pending', hardEligible: true,
+    productiveGrounding: { kind: 'physical-branch' as const, evidence: [evidence] },
+    drives: { goal: .8, evidence: .85, condition: 0, rollout: 0, unknown: 1,
+      attention: 0, novelty: 0, habit: 0 } };
+  const exploration = { siteId: 'execute:blind', operation: 'execute' as const,
+    nodeId: 'exploration-blind', hardEligible: true,
+    productiveGrounding: { kind: 'none' as const },
+    drives: { goal: 0, evidence: 0, condition: 0, rollout: 0, unknown: 0,
+      attention: 0, novelty: 0, habit: 0 } };
+  const values = [
+    { node: { node: { kind: 'experienced' as const, nodeId: compare.nodeId } }, sites: [compare] },
+    { node: { node: { kind: 'exploration' as const, nodeId: exploration.nodeId } }, sites: [exploration] },
+  ];
+  const selected = fairGroundedControlWindowV2(values, 1, 0,
+    value => value.node.node.nodeId,
+    value => value.node.node.kind !== 'exploration' && value.sites.some(site =>
+      productiveGoalControlSiteV2(site) || physicalReasoningPendingControlSiteV2(site)),
+  );
+  assert.deepEqual(selected.selected.map(value => value.node.node.nodeId), [compare.nodeId]);
 });
 
 test('multi-parent dependency depth is insertion-order independent', () => {

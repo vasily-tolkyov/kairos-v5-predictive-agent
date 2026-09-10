@@ -12,6 +12,8 @@ import type { DistributedR2AtomV1, DistributedR2BoundaryBeforeV1,
 import { SparseInterlayerProjectionV1 } from './sparse-interlayer-projection.js';
 
 const DEFAULT_R2_PROJECTION_SEED = 0x5232444953543031n;
+/** The runtime's passive observation marker is not a body command. */
+export const PASSIVE_EXPERIENCE_IDENTITY_V1 = sha({ kind: 'passive', parameters: {}, targetRole: null });
 
 function parseSeed(value: string): bigint {
   assert(/^0x[0-9a-f]+$/i.test(value), 'distributed-R2-invalid-seed');
@@ -129,7 +131,9 @@ export class DistributedR2ContinuityStoreV1 {
       assert(state.mediumSnapshotSha256 === sha(this.medium.snapshot()), 'distributed-R2-medium-state-mismatch');
     }
     this.#projection = new SparseInterlayerProjectionV1(this.medium,
-      { projectionId: 'R1-site-to-R2-sparse-fibre', seed }, state?.projection);
+      // A source is already one physical site, not a new sensory component.
+      // Preserve the whole distributed population without expanding it again.
+      { projectionId: 'R1-site-to-R2-neighbour-anchored-site-v3', seed, winnerCount: 1 }, state?.projection);
     if (state) {
       this.#pending = [...structuredClone(state.pending)];
       this.#events.push(...structuredClone(state.events));
@@ -147,6 +151,20 @@ export class DistributedR2ContinuityStoreV1 {
 
   get pendingAtomCount(): number { return this.#pending.length; }
   get committedEventCount(): number { return this.#events.length; }
+
+  lookupR1Pulse(drives: readonly DistributedSiteDriveV1[]): readonly DistributedSiteDriveV1[] {
+    return this.#projection.lookupPulse(drives);
+  }
+
+  readR1Pulse(drives: readonly DistributedSiteDriveV1[]): readonly DistributedSiteDriveV1[] {
+    return this.#projection.readSourcePulse(drives);
+  }
+
+  prescribedActionSiteIds(): readonly number[] {
+    return [...new Set(this.#events.flatMap(event => event.atomPulseRanges.flatMap((range, ordinal) =>
+      event.orderedExperienceIdentities[ordinal] === PASSIVE_EXPERIENCE_IDENTITY_V1 ? []
+        : event.physicalPulseSiteIds[range.startPulseIndex + 1] ?? [])))].sort((a, b) => a - b);
+  }
 
   #sourceNeighborhoods(atom: DistributedR2AtomV1): readonly {
     readonly sourceSiteId: number; readonly neighborSiteIds: readonly number[];
@@ -195,6 +213,28 @@ export class DistributedR2ContinuityStoreV1 {
       atomPulseRanges.push({ atomId: atom.atomId, startPulseIndex,
         endPulseIndexExclusive: pulses.length });
     });
+    // Closing a process observes its current state, not just the last atom's
+    // change list. A no-change verification must not replace all earlier
+    // physical results with its generic no-change receptor. Read only the
+    // final real frame, restricted to the latest measured result channels.
+    // Earlier preparation is already on the ordered road: accumulating it
+    // into the last basin would make every result share the same background.
+    // A no-change verification carries no new result channel and therefore
+    // does not erase the result being verified. Unseen objects remain unknown.
+    const realSourceSites = new Set(atoms.flatMap(atom => atom.r1Topology.pulses
+      .flatMap(pulse => pulse.map(drive => drive.siteId))));
+    const resultScope = atoms.every(atom => atom.resultChannelR1SiteIds !== undefined)
+      ? new Set(atoms.findLast(atom => atom.resultChannelR1SiteIds!.length > 0)?.resultChannelR1SiteIds ?? [])
+      : realSourceSites; // Explicit read-only compatibility for old atom records.
+    const actualTerminal = (atoms.at(-1)!.observedTerminalR1Drives ?? [])
+      .filter(drive => realSourceSites.has(drive.siteId) && resultScope.has(drive.siteId));
+    const terminalDrives = this.#projection.lookupPulse(actualTerminal);
+    if (terminalDrives.length > 0) {
+      pulses.push({ version: 'SparseFieldPulseV1', pulseId: `${traceId}:observed-process-terminal`,
+        offset: atoms.at(-1)!.endedAt - eventStartedAt, drives: terminalDrives });
+      const last = atomPulseRanges.at(-1)!;
+      atomPulseRanges[atomPulseRanges.length - 1] = { ...last, endPulseIndexExclusive: pulses.length };
+    }
     return { episode: { version: 'DistributedEpisodeV1', traceId,
       provenance: 'trusted-real-event', pulses }, atomPulseRanges };
   }
@@ -279,6 +319,16 @@ export class DistributedR2ContinuityStoreV1 {
   events(options: { readonly learningEligibleOnly?: boolean } = {}): readonly DistributedR2ContinuousEventV1[] {
     return this.#events.filter(value => !options.learningEligibleOnly || value.learningEligible)
       .map(value => structuredClone(value));
+  }
+
+  event(eventId: string): DistributedR2ContinuousEventV1 | undefined {
+    const event = this.#events.find(value => value.eventId === eventId);
+    return event ? structuredClone(event) : undefined;
+  }
+
+  eventContextIds(eventId: string): readonly string[] | undefined {
+    const event = this.#events.find(value => value.eventId === eventId);
+    return event ? [...event.contextIds] : undefined;
   }
 
   isEventActive(eventId: string): boolean {

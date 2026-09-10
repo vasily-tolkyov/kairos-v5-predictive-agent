@@ -39,6 +39,11 @@ export interface SelfOrganizingAfferentStateV1 {
    * coordinate by itself.
    */
   readonly terminalOutcomeChannels?: readonly string[];
+  /** Sensor scope learned for an exact body cue, not a result or action rule.
+   * It carries channel membership only; current values always come from reality. */
+  readonly terminalOutcomeScopes?: readonly {
+    readonly cueIdentity: string; readonly channels: readonly string[];
+  }[];
 }
 
 export interface AfferentPopulationBinReadoutV1 {

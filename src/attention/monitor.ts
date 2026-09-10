@@ -3,7 +3,7 @@ import type { Compute } from '../compute.js';
 import { eventRows, realEventHierarchyContinuityV1 } from '../events.js';
 import { assert } from '../util.js';
 import { AttentionController } from './attention-controller.js';
-import type { AttentionCandidate } from './types.js';
+import type { AttentionCandidate, AttentionSnapshot } from './types.js';
 import { randomUUID } from 'node:crypto';
 import { measurePredictionDeviationV1, type PredictionViolationMeasurementV1 } from './prediction-deviation.js';
 
@@ -29,6 +29,20 @@ export function comparePublicPrediction(prediction: Prediction | null, actual: r
   if (actual.some(a => !supported.some(e => consistentChange(e, a)))) return 'prediction-violation';
   return 'within-envelope';
 }
+/**
+ * Evidence cadence for the per-window `attention` record (PLAN-005 1.3).
+ * This gates only the evidence log; focus, wake and capture decisions are
+ * computed exactly as before on every window.
+ */
+export interface AttentionEvidenceOptionsV1 {
+  /** Also record every Nth processed window even when unchanged; 0 disables. */
+  readonly recordEveryWindows: number;
+  /** Record when the largest per-subject score total moved by more than this. */
+  readonly scoreEpsilon: number;
+}
+export const DEFAULT_ATTENTION_EVIDENCE_OPTIONS_V1: AttentionEvidenceOptionsV1 =
+  Object.freeze({ recordEveryWindows: 20, scoreEpsilon: .1 });
+
 export class AttentionMonitor {
   readonly controller = new AttentionController({ next: () => .5 });
   #window: Observation[] = [];
@@ -38,10 +52,16 @@ export class AttentionMonitor {
   #lastSequence = 0;
   #fault: Error | null = null;
   readonly notices: AttentionNotice[] = [];
+  #processedWindows = 0;
   #pendingNoveltySubjects = new Set<string>();
   constructor(readonly compute: Compute, readonly record: (kind: string, value: unknown) => void,
     readonly wake: (notice: AttentionNotice) => void, readonly capture: (event: RealEvent) => void = () => {},
-    readonly sessionId: string = randomUUID()) {}
+    readonly sessionId: string = randomUUID(),
+    readonly evidenceOptions: AttentionEvidenceOptionsV1 = DEFAULT_ATTENTION_EVIDENCE_OPTIONS_V1) {
+    assert(Number.isSafeInteger(evidenceOptions.recordEveryWindows) && evidenceOptions.recordEveryWindows >= 0
+      && typeof evidenceOptions.scoreEpsilon === 'number' && evidenceOptions.scoreEpsilon >= 0,
+    'invalid-attention-evidence-options');
+  }
   check(): void { if (this.#fault) throw this.#fault; }
   bindActionTarget(subject: string): void { this.controller.bindActionTarget(subject); }
   /**
@@ -131,7 +151,7 @@ export class AttentionMonitor {
         && (beforeAttention.focusTargetId === null
           || snapshot.preemptionCount > beforeAttention.preemptionCount);
       if (newlyFocused) noticeUnknown(snapshot.focusTargetId);
-      this.record('attention', { sequence: frame.sequence, snapshot, changes });
+      this.#recordWindow(frame.sequence, snapshot, beforeAttention, noticesBefore, changes);
       // Never pair a late result with changes that had already begun, or reuse it for later windows.
       if (this.#forecast) {
         this.record('forecast-timing', { originSequence: this.#forecast.originSequence,
@@ -156,6 +176,23 @@ export class AttentionMonitor {
         }).catch(error => { this.#fault = error; }).finally(() => { this.#busy = false; });
       }
     } catch (error) { this.#fault = error as Error; }
+  }
+  /** The attention decision ran on every window above; only its evidence record is selective. */
+  #recordWindow(sequence: number, snapshot: AttentionSnapshot, before: AttentionSnapshot,
+    noticesBefore: number, changes: readonly PublicChange[]): void {
+    this.#processedWindows++;
+    const reasons: string[] = [];
+    if (snapshot.focusTargetId !== before.focusTargetId) reasons.push('focus-changed');
+    if (this.notices.length > noticesBefore) reasons.push('notice');
+    const beforeScores = new Map(before.scores.map(score => [score.targetId, score.score.total]));
+    let scoreDelta = 0;
+    for (const score of snapshot.scores)
+      scoreDelta = Math.max(scoreDelta, Math.abs(score.score.total - (beforeScores.get(score.targetId) ?? 0)));
+    if (scoreDelta > this.evidenceOptions.scoreEpsilon) reasons.push('score-delta');
+    if (this.evidenceOptions.recordEveryWindows > 0
+      && this.#processedWindows % this.evidenceOptions.recordEveryWindows === 0) reasons.push('periodic');
+    if (reasons.length === 0) return;
+    this.record('attention', { sequence, snapshot, changes, reasons });
   }
   #notice(notice: AttentionNotice): void {
     if (this.notices.some(value => value.kind === notice.kind && value.subjectId === notice.subjectId

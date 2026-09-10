@@ -1,5 +1,30 @@
 # Kairos V5 Hierarchical Physical-Control Agent
 
+## Latest development snapshot — 2026-09-10
+
+This update includes physical short-chain rollouts, retained control dependencies,
+real-feedback invalidation, exact computation reuse and snapshot/worker transport
+optimizations. It is a development snapshot, **not a passed three-stage release**.
+The latest three-stage Minecraft attempt completed two supported interactions
+(`0 → 1 → 2`), but did not complete the final `note=3` goal. The subsequent
+continuation-query optimization has targeted test coverage, not a new live pass.
+
+See [current test status and limitations](docs/three-stage-test-status-2026-09-10.md).
+Raw evidence, experience snapshots, game worlds and local model/runtime binaries
+remain local and are not included in this repository.
+
+## Current demonstrated scope — 2026-09-08
+
+Real Minecraft records now show autonomous basic exploration and a **direct
+public-goal action chosen with actual distributed physical prediction support**.
+The current-code heldout run completed `note 0 → 1 → verification observation`;
+its goal action had 24 valid, progressing samples and frozen R1/R2/R2A evidence.
+This is not a general multistep or autonomous aiming qualification.
+
+See [demonstration and exact evidence boundaries](docs/prototype-demonstration-v1.md)
+for the read-only recorded viewer and the isolated live-run command. The recorded
+viewer reconstructs public frames; it is not a video or a running Minecraft world.
+
 This branch has no LLM or Pi analysis core. Its production memory path is the
 new hierarchy below; the former `PhysicalMemory`/`PathProjector` R2 and old R2A
 checkpoints remain in the repository only so historical evidence can be read.
@@ -151,6 +176,31 @@ npm start -- --experience-pointer D:\path\to\EXPERIENCE_LATEST.json
 
 The first-person viewer is `http://127.0.0.1:3000/` and the read-only
 physical/control dashboard is `http://127.0.0.1:3002/` while a run is active.
+
+PLAN-005 live-stability: the dashboard's `/state` route now returns a bounded
+summary (runtime counters, control field, habit summary and per-medium
+statistics with revision) and never serializes full media by default; full
+media is reachable only through explicit revision-pinned pages
+(`/state?media=r1&revision=…&limit=…&offset=…`).  Snapshot canonicalization
+and hashing run inside the compute worker, evidence writes are bounded and
+backpressured, and an event-loop stall watchdog records `stall` evidence and
+can end a saturating run as `stall-protective-stop` with a final checkpoint.
+A run that loses its server connection still writes `RUN_RESULT.json` with
+the `connection-lost` classification.  `--profile lean` disables the
+dashboard (the viewer stays opt-in via `--viewer`), minimizes attention
+records, and marks the run `reduced-fidelity`; `--snapshot-interval <events>`
+overrides the checkpoint cadence (default 32).  Lean mode changes auxiliary
+I/O only — physics, learning, gates and decisions are identical.
+
+PLAN-008: snapshot persistence never materializes one large JSON string.
+Checkpoints are written with a streaming canonical writer (byte-identical to
+`canonical()`, hashed as it streams) directly from the compute worker; a
+snapshot whose canonical text would exceed `evidence.segmentThresholdBytes`
+(default 256 MiB) is stored as a small manifest plus one canonical segment
+file per top-level shard (`experience-NNNN.json` + `experience-NNNN.segments/`),
+with the pointer carrying `manifestSha256` on top of the unchanged fields.
+Restore accepts both formats and re-verifies the full canonical hash; old
+single-file checkpoints remain read-only restorable forever.
 
 ## Current evidence boundary
 

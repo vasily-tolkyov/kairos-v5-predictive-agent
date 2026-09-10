@@ -84,3 +84,28 @@ test('explicit source-lattice adjacency still permits anchored allocation', () =
   assert.deepEqual(medium.nearCalls, [firstBinding.targetSiteIds],
     'only explicit source-lattice adjacency may provide target anchors');
 });
+
+test('new connected population follows its measured frontier rather than numeric source order', () => {
+  // Actual anonymous source topology of the newly captured terminal. Numeric
+  // order visits several unanchored leaves before their connecting nodes.
+  const source = [15569, 16561, 16593, 17553, 17584, 17585, 17616, 17617];
+  const edges = [[15569,16593], [16561,16593], [16561,17585], [16593,17617],
+    [17553,17585], [17584,17585], [17584,17616], [17585,17617], [17616,17617]];
+  const neighborhoods = source.map(sourceSiteId => ({ sourceSiteId,
+    neighborSiteIds: edges.flatMap(([a,b]) => a === sourceSiteId ? [b!]
+      : b === sourceSiteId ? [a!] : []) }));
+  const run = (ids: readonly number[]) => {
+    const medium = new RecordingMedium(), project = projection(medium);
+    const pulse = { pulseId: 'connected', offset: 0,
+      drives: ids.map(siteId => ({ siteId, intensity: 1 })), sourceNeighborhoods: neighborhoods };
+    project.projectPulse(pulse);
+    assert.equal(medium.nearCalls.length, source.length - 1,
+      'one connected source population must not create extra unanchored roots while its frontier remains');
+    const original = project.snapshot().bindings.map(({ sourceSiteId, targetSiteIds }) => ({ sourceSiteId, targetSiteIds }));
+    project.projectPulse(pulse);
+    assert.equal(medium.allocateCalls.length, source.length, 'repeat input must not allocate or relocate old fibres');
+    assert.deepEqual(project.snapshot().bindings.map(({ sourceSiteId, targetSiteIds }) => ({ sourceSiteId, targetSiteIds })), original);
+    return original;
+  };
+  assert.deepEqual(run(source), run([...source].reverse()), 'input enumeration cannot change the measured topology');
+});

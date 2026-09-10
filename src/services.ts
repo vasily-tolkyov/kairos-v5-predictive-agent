@@ -8,6 +8,28 @@ import { fileSha, assert, saveJson } from './util.js';
 import type { JointTransientControlFieldConfigV2 } from './control/contracts.js';
 import { KAIROS_V5_CONFIG_VERSION } from './core/compatibility.js';
 
+/**
+ * Optional auxiliary evidence/I-O tuning (PLAN-005).  Physics, learning,
+ * gates and decision semantics never read these; they only bound auxiliary
+ * I-O.  Absent fields keep the historical full-audit defaults.
+ */
+export interface EvidenceConfigurationV1 {
+  /** Checkpoint cadence in committed events.  Default 32 (historical). */
+  readonly snapshotEveryEvents?: number;
+  /** Record an attention window every Nth window even when unchanged; 0 disables.  Default 20. */
+  readonly attentionRecordEveryWindows?: number;
+  /** Minimum attention score delta that justifies an attention record.  Default 0.1. */
+  readonly attentionScoreEpsilon?: number;
+  /** Bounded evidence-writer queue (lines per stream) before the run fails explicitly.  Default 65536. */
+  readonly writerQueueLineLimit?: number;
+  /** Canonical size at or below which snapshots stay single-file (PLAN-008).  Default 256 MiB. */
+  readonly segmentThresholdBytes?: number;
+  /** PLAN-008b (optional): per-section cap inside the segmented format; oversized sections split
+   * into element-boundary pages of at most segmentPageLimitBytes (default: half the cap). */
+  readonly segmentLimitBytes?: number;
+  readonly segmentPageLimitBytes?: number;
+}
+
 export interface Configuration {
   readonly version: typeof KAIROS_V5_CONFIG_VERSION;
   readonly minecraft: { readonly version: '1.21.4'; readonly host: '127.0.0.1'; readonly port: number;
@@ -17,6 +39,7 @@ export interface Configuration {
   readonly initializationEvents: 128;
   readonly viewer: { readonly enabled: boolean; readonly host: '127.0.0.1'; readonly port: number; readonly dashboardPort: number };
   readonly stateRoot: string; readonly evidenceRoot: string; readonly runtimeRoot: string;
+  readonly evidence?: EvidenceConfigurationV1;
 }
 
 export type MinecraftFixtureModeV1 = 'legacy-door' | 'empty';
@@ -27,6 +50,18 @@ export async function loadConfiguration(): Promise<Configuration> {
     && config.minecraft.host === '127.0.0.1' && config.initializationEvents === 128
     && Number.isInteger(config.actionBudget) && config.actionBudget > 0
     && config.control.version === 'JointTransientControlFieldConfigV2', 'invalid-V5-physical-control-configuration');
+  if (config.evidence !== undefined)
+    assert((config.evidence.snapshotEveryEvents === undefined
+      || Number.isSafeInteger(config.evidence.snapshotEveryEvents) && config.evidence.snapshotEveryEvents > 0)
+    && (config.evidence.attentionRecordEveryWindows === undefined
+      || Number.isSafeInteger(config.evidence.attentionRecordEveryWindows) && config.evidence.attentionRecordEveryWindows >= 0)
+    && (config.evidence.attentionScoreEpsilon === undefined
+      || typeof config.evidence.attentionScoreEpsilon === 'number' && config.evidence.attentionScoreEpsilon >= 0)
+    && (config.evidence.writerQueueLineLimit === undefined
+      || Number.isSafeInteger(config.evidence.writerQueueLineLimit) && config.evidence.writerQueueLineLimit > 0)
+    && (config.evidence.segmentThresholdBytes === undefined
+      || Number.isSafeInteger(config.evidence.segmentThresholdBytes) && config.evidence.segmentThresholdBytes > 0),
+    'invalid-V5-evidence-configuration');
   return config;
 }
 
@@ -93,9 +128,20 @@ export class Services {
       serverRoot, resolve(this.evidence, 'minecraft-server.log'), tmp);
     await this.server.ready(/Done \([^\n]+\)!/);
     if (fixture === 'legacy-door') await this.#fixture();
-    else await saveJson(resolve(this.evidence, 'FIXTURE_SETUP.json'), {
-      kind: 'empty-evaluation-world', controllerAccess: false, dynamicRuleCallbacks: false,
-    });
+    else {
+      // A flat world may spawn around y=-60; placeBot uses y=64. Prepare
+      // support before the client joins instead of letting it fall through.
+      // No task objects or runtime outcome callbacks are installed here.
+      const commands = ['gamerule spawnRadius 0', 'gamerule doMobSpawning false',
+        'gamerule doDaylightCycle false', 'time set noon',
+        'forceload add -16 -16 16 32',
+        'fill -12 63 -8 12 63 24 minecraft:smooth_stone',
+        'fill -12 64 -8 12 71 24 air', 'setworldspawn 2 64 12'];
+      for (const command of commands) this.server.command(command);
+      await saveJson(resolve(this.evidence, 'FIXTURE_SETUP.json'), {
+        kind: 'empty-evaluation-world', commands, controllerAccess: false, dynamicRuleCallbacks: false,
+      });
+    }
   }
   /** Evaluation setup boundary. Commands are never exposed to the controller or body. */
   command(command: string): void { this.server!.command(command); }

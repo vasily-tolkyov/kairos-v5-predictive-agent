@@ -119,7 +119,10 @@ export class SparseInterlayerProjectionV1 {
     const candidates = targetAnchors.length > 0
       ? this.#medium.allocateSitesNear(targetAnchors, this.#candidateCount, draw)
       : this.#medium.allocateSites(this.#candidateCount, draw);
-    const targetSiteIds = this.#medium.competeForSites(candidates, this.#winnerCount, draw);
+    // Already bound fibres of measured source neighbours are coactive input
+    // to the same target competition. Treating them only as occupied sites
+    // made the generic anti-crowding term repel every adjacent source pair.
+    const targetSiteIds = this.#medium.competeForSites(candidates, this.#winnerCount, draw, targetAnchors);
     this.#medium.bindSites(this.#mediumBindingId(sourceSiteId), targetSiteIds);
     const value: SparseInterlayerProjectionBindingV1 = {
       sourceSiteId, targetSiteIds: [...targetSiteIds], observationCount: 1,
@@ -154,7 +157,17 @@ export class SparseInterlayerProjectionV1 {
     // topology honest and prevents unrelated coactivation from merging target
     // basins.
     const result: DistributedSiteDriveV1[] = [];
-    for (const [sourceSiteId, intensity] of [...unique].sort(([left], [right]) => left - right)) {
+    const pending = [...unique].sort(([left], [right]) => left - right);
+    while (pending.length > 0) {
+      // Numeric source order is not a traversal of its lattice. Allocate an
+      // already reachable neighbour before opening another unanchored root;
+      // otherwise one connected observed population can be scattered into
+      // unrelated target basins. This uses measured edges only, never a
+      // semantic label or a source coordinate. Existing fibres never move.
+      const frontierIndex = allocate ? pending.findIndex(([siteId]) =>
+        this.#bindings.has(siteId) || (neighborhoodBySite.get(siteId) ?? [])
+          .some(neighbor => this.#bindings.has(neighbor))) : -1;
+      const [sourceSiteId, intensity] = pending.splice(Math.max(0, frontierIndex), 1)[0]!;
       const binding = allocate
         ? this.#ensureBinding(sourceSiteId, neighborhoodBySite.get(sourceSiteId) ?? [])
         : this.#bindings.get(sourceSiteId);
@@ -182,6 +195,19 @@ export class SparseInterlayerProjectionV1 {
   /** Existing fibre lookup for a read-only open-prefix query; never allocates. */
   lookupPulse(sourceDrives: readonly DistributedSiteDriveV1[]): readonly DistributedSiteDriveV1[] {
     return this.#mappedDrives(sourceDrives, false);
+  }
+
+  /** Adjoint of the already formed, disjoint 1/sqrt(n) fibres. This reads
+   * actually activated target sites; it cannot invent an unvisited source. */
+  readSourcePulse(targetDrives: readonly DistributedSiteDriveV1[]): readonly DistributedSiteDriveV1[] {
+    const activation = new Map(targetDrives.map(drive => [drive.siteId, drive.intensity]));
+    const result: DistributedSiteDriveV1[] = [];
+    for (const binding of this.#bindings.values()) {
+      const intensity = binding.targetSiteIds.reduce((sum, siteId) => sum + (activation.get(siteId) ?? 0), 0)
+        / Math.sqrt(binding.targetSiteIds.length);
+      if (intensity > 0) result.push({ siteId: binding.sourceSiteId, intensity });
+    }
+    return result.sort((a, b) => a.siteId - b.siteId);
   }
 
   snapshot(): SparseInterlayerProjectionStateV1 {

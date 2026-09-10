@@ -15,6 +15,12 @@ test('read-only physical query reuse is byte-identical and its key retains every
   assert.equal(secondAudit.restingSubstrateBuildCount,
     firstAudit.restingSubstrateBuildCount,
     'a repeated read rebuilt the resting physical substrate');
+  assert.equal(secondAudit.branchCandidateBuildCount, firstAudit.branchCandidateBuildCount,
+    'a repeated branch read rebuilt every ordered input route');
+  learner.recover(.05);
+  learner.physicalBranches();
+  assert.equal(learner.physicalQueryCachePerformanceAuditV1().branchCandidateBuildCount,
+    firstAudit.branchCandidateBuildCount + 1, 'physical recovery retained a stale branch cache');
 
   const signals = ['signal-a', 'signal-b', 'signal-c'];
   const key = distributedR2APhysicalApplicabilityCacheKeyV1(7, 'relation-x', signals);

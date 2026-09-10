@@ -35,6 +35,13 @@ export interface DistributedR2AtomV1 {
   readonly afterPublicSignals: readonly string[];
   readonly beforePublicSignalOccurrences: readonly DistributedPublicSignalOccurrenceV1[];
   readonly afterPublicSignalOccurrences: readonly DistributedPublicSignalOccurrenceV1[];
+  /** Existing R1 receptors driven by the actual final public frame, not a
+   * remembered result. R2 intersects these with the real process footprint. */
+  readonly observedTerminalR1Drives?: readonly DistributedSiteDriveV1[];
+  /** Public channels of this atom's result, including already bound alternate
+   * values. Empty for a generic no-change verification. This scopes the final
+   * real observation, not the earlier states kept on the ordered road. */
+  readonly resultChannelR1SiteIds?: readonly number[];
 }
 
 export type DistributedR2BoundaryBeforeV1 = 'continuous' | 'reset' | 'gap' | 'external-takeover';

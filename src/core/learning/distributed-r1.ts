@@ -175,12 +175,32 @@ export class DistributedR1ExperienceStoreV1 {
   }
 
   lookupCurrentObservation(observation: Observation,
-    roleBindings: readonly EventLocalPublicRoleBindingV1[]): ReadOnlyAfferentLookupV1 {
-    return this.#projection.lookupCurrentObservation(observation, roleBindings);
+    roleBindings: readonly EventLocalPublicRoleBindingV1[], cue?: ActionCue,
+    purpose: 'query-origin' | 'observed-terminal' = 'query-origin'): ReadOnlyAfferentLookupV1 {
+    return this.#projection.lookupCurrentObservation(observation, roleBindings, cue, purpose);
+  }
+
+  lookupDecodedPublicState(...args: Parameters<SelfOrganizingAfferentProjectionV1['lookupDecodedPublicState']>) {
+    return this.#projection.lookupDecodedPublicState(...args);
   }
 
   lookupActionCue(cue: ActionCue): ReadOnlyAfferentLookupV1 {
     return this.#projection.lookupActionCue(cue);
+  }
+
+  /** Physical populations deposited by the explicit command pulse, not by a result. */
+  prescribedActionSiteIds(): readonly number[] {
+    const passiveKind = this.#projection.snapshot().bindings.find(binding =>
+      binding.descriptor?.source === 'cue' && binding.descriptor.channel === 'kind'
+      && binding.descriptor.categoricalValue === '"passive"')?.siteIds ?? [];
+    const records = [...this.#records.values()].filter(record => passiveKind.length === 0
+      || !passiveKind.every(site => record.episodeTopology.pulses[1]?.some(d => d.siteId === site)));
+    return [...new Set(records.flatMap(record =>
+      record.episodeTopology.pulses[1]?.map(drive => drive.siteId) ?? []))].sort((a, b) => a - b);
+  }
+
+  publicResultChannelSiteIds(resultSiteIds: readonly number[]): readonly number[] {
+    return this.#projection.publicResultChannelSiteIds(resultSiteIds);
   }
 
   /**
@@ -222,13 +242,9 @@ export class DistributedR1ExperienceStoreV1 {
       this.#qualificationCandidateIndex = index;
     }
     const snapshot = this.#medium.snapshot() as DistributedMediumSnapshotV1;
-    const probeMedium = DistributedPhysicalMedium3DV1.fromSnapshot(restSnapshot(snapshot));
+    const probeMedium = DistributedPhysicalMedium3DV1.fromSnapshot(restSnapshot(snapshot),
+      this.prescribedActionSiteIds());
     const result = new Map<string, DistributedR1AttractorQualificationV1>();
-    const physicalGroupKey = (record: DistributedR1ExperienceRecordV1): string =>
-      sha({ initial: record.episodeTopology.pulses[0]!.map(drive => ({ siteId: drive.siteId,
-        intensity: Number(drive.intensity.toFixed(12)) })),
-      terminal: record.episodeTopology.pulses.at(-1)!.map(drive => ({ siteId: drive.siteId,
-        intensity: Number(drive.intensity.toFixed(12)) })) });
     const measuredGroups = new Map<string, Omit<DistributedR1AttractorQualificationV1,
       'eventId' | 'supportingEventIds' | 'independentContextCount'>>();
 
@@ -252,10 +268,25 @@ export class DistributedR1ExperienceStoreV1 {
         return comparison.sharedActionCuePulse && comparison.terminalWeightedJaccard >= .8;
       });
       const independentContextCount = new Set(supporting.map(value => value.contextId)).size;
-      const groupKey = physicalGroupKey(record);
+      const targetPopulation = record.episodeTopology.terminalSiteIds;
+      const targetAssemblyId = snapshot.coactivationAssemblies?.find(value =>
+        value.terminalPulseSiteIds.length === targetPopulation.length
+        && value.terminalPulseSiteIds.every((siteId, index) => siteId === targetPopulation[index]))?.assemblyId;
+      const competingPopulations = candidates.filter(other => {
+        if (!this.#medium.isFootprintActive(other.footprint)) return false;
+        const comparison = comparisonTo(other);
+        return comparison.sharedActionCuePulse && comparison.terminalWeightedJaccard < .8;
+      }).map(other => other.episodeTopology.terminalSiteIds);
+      const basinPopulation = record.episodeTopology.pulses.at(-1)!.map(drive => drive.siteId);
+      const activePhysicalSupport = supporting.length >= 8;
+      // Basin perturbation never injects the event's initial population.
+      // Key its exact measured inputs, including competitors/support, rather
+      // than re-running an identical experiment for each earlier scene.
+      // The substrate, seeds and probe parameters are fixed in this call.
+      const groupKey = sha({ targetPopulation, targetAssemblyId, competingPopulations,
+        basinPopulation, activePhysicalSupport });
       let measured = measuredGroups.get(groupKey);
       if (measured === undefined) {
-        const targetPopulation = record.episodeTopology.terminalSiteIds;
         // A repeated same-time population is a physical assembly in its own
         // right.  Terminal populations can be nested when a later public
         // change adds members to an already active population (for example a
@@ -264,25 +295,14 @@ export class DistributedR1ExperienceStoreV1 {
         // not a competing result basin.  The probe must still return the
         // exact assembly through the live medium; metadata alone is not
         // enough to waive the separation test.
-        const targetAssemblyId = snapshot.coactivationAssemblies?.find(value =>
-          value.terminalPulseSiteIds.length === targetPopulation.length
-          && value.terminalPulseSiteIds.every((siteId, index) =>
-            siteId === targetPopulation[index]))?.assemblyId;
-        const competingPopulations = candidates.filter(other => {
-          if (!this.#medium.isFootprintActive(other.footprint)) return false;
-          const comparison = comparisonTo(other);
-          return comparison.sharedActionCuePulse && comparison.terminalWeightedJaccard < .8;
-        }).map(other => other.episodeTopology.terminalSiteIds);
         // Basin stability is tested by perturbing the candidate attractor
         // itself. Cue-to-result propagation is a separate road property and
         // cannot substitute for return to the terminal basin.
-        const basinPopulation = record.episodeTopology.pulses.at(-1)!.map(drive => drive.siteId);
         // Stable qualification already requires eight active supporting
         // footprints.  When that necessary condition is false, running the
         // 16x180 physical probes cannot change the qualification outcome; the
         // probe is therefore an exact mathematical short-circuit, not a
         // cognitive or semantic action policy.
-        const activePhysicalSupport = supporting.length >= 8;
         let targetReturnCount = 0, ambiguousProbeCount = 0;
         let dwellTotal = 0, returnTotal = 0, escapeTotal = 0;
         let maximumCompetingCoreAffinity = 0;
@@ -362,6 +382,10 @@ export class DistributedR1ExperienceStoreV1 {
           : [...measured.reasons, 'fewer-than-four-independent-contexts'] });
     }
     return result;
+  }
+
+  projectionSha256(): string {
+    return sha(this.#projection.snapshot());
   }
 
   snapshot(): DistributedR1StateV1 {

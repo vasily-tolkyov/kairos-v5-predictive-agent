@@ -30,6 +30,14 @@ export interface EventLocalDecodedPublicFeaturesV1 {
   readonly mappedValueCount: number;
   readonly unresolvedChannels: readonly string[];
 }
+
+/** Naming/coordinate basis only. No object properties or future world state. */
+export interface PublicReadoutProjectionContextV1 {
+  readonly referencePitch: number;
+  readonly roles: readonly { readonly role: string; readonly objectId: string;
+    readonly type: string; readonly prefix: string }[];
+  readonly unresolvedRoles: readonly string[];
+}
 export interface EventRows { readonly rows: readonly FeatureRow[]; readonly changes: readonly (readonly PublicChange[])[];
   /** Event-local, self-centred changes used only by the physical
    * representation and its topology compatibility guard.  `changes` keeps
@@ -159,7 +167,7 @@ function publicBodyPropertiesInEgocentricFrameV1(observation: Observation): Reco
   return publicPropertiesInEgocentricFrameV1(observation.self.properties, observation.self.yaw);
 }
 
-function resolveEventLocalPublicRolesV1(observation: Observation,
+export function resolveEventLocalPublicRolesV1(observation: Observation,
   roleBindings: readonly EventLocalPublicRoleBindingV1[]): {
     readonly byRole: ReadonlyMap<string, PublicObject>;
     readonly unresolvedRoles: readonly string[];
@@ -168,15 +176,24 @@ function resolveEventLocalPublicRolesV1(observation: Observation,
   const unresolvedRoles: string[] = [];
   const usedIds = new Set<string>();
   for (const binding of [...roleBindings].sort((left, right) => left.role.localeCompare(right.role, 'en'))) {
-    const satisfiesBinding = (object: PublicObject): boolean => object.type === binding.type
-      && !usedIds.has(object.id)
-      && Object.entries(binding.stableProperties).every(([property, expected]) =>
+    const samePublicType = (object: PublicObject): boolean => object.type === binding.type
+      && !usedIds.has(object.id);
+    const matchesRecordedProperties = (object: PublicObject): boolean =>
+      Object.entries(binding.stableProperties).every(([property, expected]) =>
         Object.prototype.hasOwnProperty.call(object.properties, property)
         && Object.is(object.properties[property], expected));
     const currentTarget = binding.directActionTarget
       ? observation.objects.find(object => object.id === observation.targetId) : undefined;
-    const matches = currentTarget && satisfiesBinding(currentTarget) ? [currentTarget]
-      : binding.directActionTarget ? [] : observation.objects.filter(satisfiesBinding);
+    const candidates = binding.directActionTarget
+      ? currentTarget && samePublicType(currentTarget) ? [currentTarget] : []
+      : observation.objects.filter(samePublicType);
+    // A property constant during one old event is a remembered condition,
+    // not an immutable object identity. Keep a unique currently visible
+    // subject (or the body's exact crosshair binding) when that condition
+    // changes, so R3 can compare it rather than treating the subject as lost.
+    // With multiple public candidates, properties may disambiguate only a
+    // unique match; no nearest-object or historical-ID substitution occurs.
+    const matches = candidates.length <= 1 ? candidates : candidates.filter(matchesRecordedProperties);
     if (matches.length !== 1) { unresolvedRoles.push(binding.role); continue; }
     byRole.set(binding.role, matches[0]!); usedIds.add(matches[0]!.id);
   }
@@ -260,11 +277,14 @@ export function eventLocalCurrentPublicStateV1(observation: Observation,
 export function eventLocalDecodedPublicFeaturesV1(observation: Observation,
   roleBindings: readonly EventLocalPublicRoleBindingV1[],
   decodedValues: readonly EventLocalCurrentPublicValueV1[]): EventLocalDecodedPublicFeaturesV1 {
-  const row: Record<string, number> = {};
-  const unresolved = new Set<string>();
-  const mapped = new Set<string>();
+  return decodedPublicFeaturesFromContextV1(publicReadoutProjectionContextV1(
+    observation, roleBindings, decodedValues), decodedValues);
+}
+
+export function publicReadoutProjectionContextV1(observation: Observation,
+  roleBindings: readonly EventLocalPublicRoleBindingV1[],
+  decodedValues: readonly EventLocalCurrentPublicValueV1[] = []): PublicReadoutProjectionContextV1 {
   const { byRole, unresolvedRoles } = resolveEventLocalPublicRolesV1(observation, roleBindings);
-  unresolvedRoles.forEach(role => unresolved.add(`role-unresolved:${role}`));
 
   const decodedYaw = decodedValues.find(value => value.subjectRole === 'self'
     && value.property === 'yaw' && typeof value.value === 'number')?.value;
@@ -280,6 +300,17 @@ export function eventLocalDecodedPublicFeaturesV1(observation: Observation,
     counts.set(object.type, ordinal + 1);
     prefixes.set(object.id, `visible/${object.type}/${ordinal}`);
   }
+  return { referencePitch: observation.self.pitch,
+    roles: [...byRole].map(([role, object]) => ({ role, objectId: object.id,
+      type: object.type, prefix: prefixes.get(object.id)! })), unresolvedRoles };
+}
+
+export function decodedPublicFeaturesFromContextV1(context: PublicReadoutProjectionContextV1,
+  decodedValues: readonly EventLocalCurrentPublicValueV1[]): EventLocalDecodedPublicFeaturesV1 {
+  const row: Record<string, number> = {}, unresolved = new Set<string>(), mapped = new Set<string>();
+  context.unresolvedRoles.forEach(role => unresolved.add(`role-unresolved:${role}`));
+  const decodedYaw = decodedValues.find(value => value.subjectRole === 'self'
+    && value.property === 'yaw' && typeof value.value === 'number')?.value;
   const mapValue = (source: string, key: string, value: PublicValue): void => {
     put(row, key, value); mapped.add(source);
   };
@@ -292,7 +323,7 @@ export function eventLocalDecodedPublicFeaturesV1(observation: Observation,
     if (value.subjectRole === 'self') {
       if (value.property === 'pitch') {
         if (typeof value.value !== 'number') { unresolved.add(`value-not-numeric:${source}`); continue; }
-        const predictedPitch = observation.self.pitch + value.value;
+        const predictedPitch = context.referencePitch + value.value;
         mapValue(source, 'self/pitch', predictedPitch);
         put(row, 'self/pitch-15deg-bucket', String(Math.round(predictedPitch / (Math.PI / 12))));
         continue;
@@ -315,9 +346,8 @@ export function eventLocalDecodedPublicFeaturesV1(observation: Observation,
     if (value.subjectRole === 'event') {
       unresolved.add(`not-a-current-R3-channel:${source}`); continue;
     }
-    const object = byRole.get(value.subjectRole);
-    const prefix = object ? prefixes.get(object.id) : undefined;
-    if (!object || !prefix) { unresolved.add(`role-unresolved:${value.subjectRole}`); continue; }
+    const prefix = context.roles.find(role => role.role === value.subjectRole)?.prefix;
+    if (!prefix) { unresolved.add(`role-unresolved:${value.subjectRole}`); continue; }
     if (value.property.startsWith('displacement.')) {
       unresolved.add(`not-a-current-R3-channel:${source}`); continue;
     }
@@ -479,10 +509,26 @@ export function eventRows(event: RealEvent): EventRows {
   const changes = changesFrom(event.frames.map(frame => values(frame, false)));
   const measurementStates = event.frames.map(frame => values(frame, true));
   const measurementChanges = changesFrom(measurementStates);
+  // A position-anchored id that legitimately changes type mid-event (copper
+  // oxidizing in place) produces an explicit public transition, never a fatal error.
+  for (const { id, object } of trackedObjects) {
+    const transitionAt = event.frames.findIndex(frame => {
+      const current = frame.objects.find(value => value.id === id);
+      return current !== undefined && current.type !== object.type;
+    });
+    if (transitionAt > 0) {
+      const after = event.frames[transitionAt]!.objects.find(value => value.id === id)!;
+      const row = { subject: roles[id]!, property: 'type', before: object.type, after: after.type,
+        observationIndex: transitionAt, meaning: 'observed-co-occurrence' as const };
+      changes[transitionAt]!.push(row);
+      measurementChanges[transitionAt]!.push(row);
+    }
+  }
   const roleBindings: EventLocalPublicRoleBindingV1[] = trackedObjects.map(({ id, object }) => {
     const observed = event.frames.map(frame => frame.objects.find(value => value.id === id));
-    assert(observed.every(value => value === undefined || value.type === object.type),
-      'event-local-public-role-type-changed');
+    // A position-anchored id may legitimately change type mid-event (copper
+    // oxidizes in place): the type transition is real public evidence recorded
+    // below, never a run-fatal error.
     const stableProperties = Object.fromEntries(Object.keys(object.properties).sort().flatMap(property => {
       const expected = object.properties[property];
       return observed.length === event.frames.length

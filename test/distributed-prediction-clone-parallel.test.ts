@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { Worker } from 'node:worker_threads';
 import type { DistributedEpisodeV1 }
   from "../src/core/physics/distributed-physical-contracts.js";
 import { DistributedPhysicalMedium3DV1 }
   from "../src/core/physics/distributed-physical-medium.js";
 import { DistributedPredictionCloneV2 }
   from "../src/core/prediction/distributed-prediction-clone.js";
-import { runDistributedPredictionCloneBatchParallelV1 }
+import { runDistributedPredictionCloneBatchParallelV1, runDistributedPredictionCloneBatchSyncV1 }
   from "../src/core/prediction/distributed-prediction-clone-parallel.js";
 import { sha } from "../src/util.js";
 
@@ -39,7 +40,39 @@ test("parallel seed batching is byte-identical to unchanged sequential Clone run
   const sequential = new DistributedPredictionCloneV2(snapshot).runMany(request);
   const parallel = await runDistributedPredictionCloneBatchParallelV1(snapshot, request, 2);
   assert.deepEqual(parallel, sequential);
+  assert.deepEqual(runDistributedPredictionCloneBatchSyncV1(snapshot, request, 3), sequential);
+  const worker = new Worker(new URL('data:text/javascript,' + encodeURIComponent(`
+    import { parentPort, workerData } from 'node:worker_threads';
+    const { runDistributedPredictionCloneBatchSyncV1 } = await import(workerData.module);
+    parentPort.postMessage(runDistributedPredictionCloneBatchSyncV1(workerData.snapshot, workerData.request, 2));
+  `)), { workerData: { module: new URL('../src/core/prediction/distributed-prediction-clone-parallel.js', import.meta.url).href,
+    snapshot, request } });
+  try {
+    const fromPhysicalOwner = await new Promise((resolve, reject) => {
+      worker.once('message', resolve); worker.once('error', reject);
+    });
+    assert.deepEqual(fromPhysicalOwner, sequential);
+  } finally { await worker.terminate(); }
   assert.equal(sha(snapshot), before);
+});
+
+test('sync seed lanes preserve original errors and exact cached results', () => {
+  const { medium, source, terminal } = fixture();
+  const snapshot = medium.snapshot();
+  const request = { currentPerceptionSeedSiteIds: source,
+    currentPerceptionMode: 'held-boundary' as const, realPrefixSeedSiteIds: [source],
+    actionSeedSiteIds: source, readoutAssemblies: [{ assemblyId: 'terminal', siteIds: terminal }],
+    steps: 12, seeds: [19n, 2n, 7n] };
+  const ports = [0, 1]; let batches = 0;
+  const clone = new DistributedPredictionCloneV2(snapshot, ports, value => {
+    batches++; return runDistributedPredictionCloneBatchSyncV1(snapshot, value, 2, ports);
+  });
+  const expected = new DistributedPredictionCloneV2(snapshot, ports).runMany(request);
+  assert.deepEqual(clone.runMany(request), expected);
+  assert.deepEqual(clone.runMany(request), expected);
+  assert.equal(batches, 1);
+  assert.throws(() => runDistributedPredictionCloneBatchSyncV1(snapshot, { ...request, steps: 0 }, 2),
+    /prediction steps must be positive/);
 });
 
 test("parallel batching validates concurrency and keeps empty input empty", async () => {

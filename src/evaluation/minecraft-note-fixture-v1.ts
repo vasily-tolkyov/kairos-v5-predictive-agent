@@ -84,6 +84,22 @@ export async function prepareGuidedNoteFixtureLiveV1(services: Services, body: M
   }
   assert(controlBlock?.name === 'note_block' && controlBlock.shapes.length > 0,
     'fixture-control-block-shape-unavailable');
+  const floor = new Vec3(Math.floor(geometry.bot[0]), 63, Math.floor(geometry.bot[2]));
+  for (let ticks = 0; body.bot.blockAt(floor)?.name !== 'smooth_stone' && ticks < 200; ticks++)
+    await body.waitTicks(1);
+  assert(body.bot.blockAt(floor)?.name === 'smooth_stone', 'fixture-floor-not-delivered-to-client');
+  // The first teleport requested the destination chunks. Place the subject
+  // after those real collision blocks have arrived; otherwise physics may
+  // have fallen below the new floor while the chunk was in flight.
+  services.command(`tp ${body.bot.username} ${geometry.bot.join(' ')} 0 0`);
+  let settled = 0;
+  for (let ticks = 0; settled < 3 && ticks < 200; ticks++) {
+    await body.waitTicks(1);
+    const current = body.latest();
+    const atStart = Math.hypot(...current.self.position.map((value, axis) => value - geometry.bot[axis]!)) < .001;
+    settled = atStart ? settled + 1 : 0;
+  }
+  assert(settled >= 3, 'fixture-placement-not-observed-on-loaded-floor');
   const shape = controlBlock.shapes[0]!;
   const target = new Vec3(geometry.control[0] + (shape[0]! + shape[3]!) / 2,
     geometry.control[1] + (shape[1]! + shape[4]!) / 2,

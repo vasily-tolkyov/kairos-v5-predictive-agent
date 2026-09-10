@@ -58,16 +58,22 @@ test('G5 production predictCandidate has no historical event-result template rea
   assert(start >= 0 && end > start, 'predictCandidate production block is not auditable');
   const block = source.slice(start, end);
 
-  assert.doesNotMatch(block, /changeWaves|byAssembly|#annotations\.(?:get|values)/,
+  // The observed window length is horizon metadata, not a decoded result.
+  const withoutWindowLength = block.replace(/annotation\.changeWaves\.length/g, 'observedWindowLength');
+  assert.doesNotMatch(withoutWindowLength, /changeWaves|byAssembly|#annotations\.(?:get|values)/,
     'predictCandidate still converts a reached field basin into a historical event result template');
   assert.match(block, /#stableR1AssembliesForCue\s*\(\s*candidate\.actionCue\s*\)/,
     'readout assemblies are not selected from stable physical attractors for the exact cue');
   assert.match(block, /#r1\.readPublicState\s*\(/,
     'the terminal distributed activation is not decoded through the learned afferent field');
-  assert.match(block, /currentPerceptionSeedDrives:\s*currentPerception\.drives/,
+  assert.match(block, /sourceR2PrefixDrives:\s*this\.#r2\.lookupR1Pulse\(perception\.drives/,
     'predictCandidate rebuilds current perception at unit intensity instead of forwarding its physical drives');
-  assert.match(block, /actionSeedDrives:\s*actionInput\.drives/,
-    'predictCandidate rebuilds action population at unit intensity instead of forwarding its physical drives');
+  assert.match(block, /#r2a\.readCurrentAction\(/,
+    'conditional action prediction bypasses the R2A physical field');
+  assert.match(block, /exactActionIdentity:\s*cueIdentity\(annotation\.cue\)/,
+    'conditional query must resolve the exact learned command');
+  assert.match(block, /#r2\.readR1Pulse\(this\.#r2a\.readR2Pulse\(physicalTerminalDrivesV1\(result\)\)\)/,
+    'the actual physical arrival is not read through the existing fibres');
 });
 
 test('G5 exact action A/B drives separate physical terminal populations in 24x180 read-only rollouts', () => {
@@ -112,9 +118,12 @@ test('G5 exact action A/B drives separate physical terminal populations in 24x18
 
   const run = (arm: Arm) => clone.runMany({
     currentPerceptionSeedSiteIds: perception.siteIds,
+    currentPerceptionSeedDrives: perception.drives,
     currentPerceptionMode: 'sequential-prefix',
     realPrefixSeedSiteIds: [perception.siteIds],
+    ...(perception.drives ? { realPrefixSeedDrives: [perception.drives] } : {}),
     actionSeedSiteIds: store.lookupActionCue(cue(arm)).siteIds,
+    actionSeedDrives: store.lookupActionCue(cue(arm)).drives,
     readoutAssemblies: assemblies, steps: 180,
     seeds: Array.from({ length: 24 }, (_unused, index) => BigInt(index + 1)),
   });

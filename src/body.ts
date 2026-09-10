@@ -180,6 +180,8 @@ export class MinecraftBody extends EventEmitter {
   readonly frames: Observation[] = [];
   #sequence = 0;
   #fatal: Error | null = null;
+  // Set when the connection itself died (kick/end); a clean close never sets it.
+  #connectionFailure: Error | null = null;
   #closed = false;
   #executing = false;
   #eventNumber = 0;
@@ -196,8 +198,15 @@ export class MinecraftBody extends EventEmitter {
     this.bot = mineflayer.createBot({ host: configuration.host, port: configuration.port, username: configuration.username,
       version: '1.21.4', auth: 'offline', hideErrors: false, viewDistance: 'short' });
     this.bot.on('error', error => this.#fail(error));
-    this.bot.on('kicked', reason => this.#fail(new Error(`Minecraft kicked: ${JSON.stringify(reason)}`)));
-    this.bot.on('end', reason => { if (!this.#closed) this.#fail(new Error(`Minecraft disconnected: ${reason}`)); });
+    this.bot.on('kicked', reason => {
+      this.#connectionFailure = new Error(`Minecraft kicked: ${JSON.stringify(reason)}`);
+      this.#fail(this.#connectionFailure);
+    });
+    this.bot.on('end', reason => {
+      if (this.#closed) return; // a close-initiated quit is not a connection failure
+      this.#connectionFailure = new Error(`Minecraft disconnected: ${reason}`);
+      this.#fail(this.#connectionFailure);
+    });
     this.bot.on('physicsTick', () => {
       if (this.#closed || this.#fatal || !this.bot.entity) return;
       try { const frame = this.#capture(); this.frames.push(frame);
@@ -210,6 +219,8 @@ export class MinecraftBody extends EventEmitter {
   }
   #fail(error: Error): void { this.#fatal ??= error; this.emit('fault', error); }
   check(): void { if (this.#fatal) throw this.#fatal; }
+  /** Non-null once the server connection itself was lost (kick/disconnect). */
+  get connectionFailure(): Error | null { return this.#connectionFailure; }
   get executing(): boolean { return this.#executing; }
   get physicalCalls(): number { return this.#physicalCalls; }
   latest(): Observation { this.check(); const frame = this.frames.at(-1); assert(frame, 'no-real-public-frame'); return frame; }
@@ -540,5 +551,13 @@ export class MinecraftBody extends EventEmitter {
       this.record('body-result', receipt); return { result: receipt, event };
     } finally { this.bot.clearControlStates(); if (action.kind !== 'break' || this.bot.targetDigBlock) this.bot.stopDigging(); this.#executing = false; }
   }
-  async close(): Promise<void> { this.#closed = true; this.bot.clearControlStates(); this.bot.stopDigging(); this.bot.quit('V5 run ended'); }
+  async close(): Promise<void> {
+    if (this.#closed) return; // close is idempotent: stop(), the run finale and double-close tests all converge here
+    this.#closed = true;
+    this.bot.clearControlStates(); this.bot.stopDigging(); this.bot.quit('V5 run ended');
+    // Release pending observation waiters so an operator/stall stop unwinds
+    // the run loop instead of hanging.  This is not a fatal fault: latest()
+    // must stay usable for the shutdown passive flush and final checkpoint.
+    this.emit('fault', new Error('minecraft-body-closed'));
+  }
 }

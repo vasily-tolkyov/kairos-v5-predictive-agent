@@ -96,6 +96,7 @@ function orderedUnique(values: Iterable<number>): readonly number[] {
  */
 export function scanAnonymousPhysicalStructureV1(
   snapshot: DistributedMediumSnapshotV1,
+  siteMask?: ReadonlySet<number>,
 ): AnonymousPhysicalStructureScanV1 {
   if (snapshot.version !== 'DistributedMediumSnapshotV1') throw new Error('unsupported-distributed-medium-snapshot');
   const minimum = snapshot.config.minimumActiveMagnitude;
@@ -117,7 +118,8 @@ export function scanAnonymousPhysicalStructureV1(
   };
 
   const qualifiedSites = new Set(snapshot.sites
-    .filter(site => meetsPhysicalFloor(site.supportMass, thresholds.siteSupportMass)
+    .filter(site => (siteMask === undefined || siteMask.has(site.siteId))
+      && meetsPhysicalFloor(site.supportMass, thresholds.siteSupportMass)
       && meetsPhysicalFloor(site.potentialDepth, thresholds.potentialDepth))
     .map(site => site.siteId));
   const parent = new Map<number, number>([...qualifiedSites].map(siteId => [siteId, siteId]));

@@ -2,16 +2,20 @@ import type { ActionCue, DesiredChange, Observation, PublicChange, RealEvent }
   from './contracts.js';
 import type { DistributedPredictionV3 }
   from './core/prediction/distributed-reasoning-contracts.js';
-import type { BranchPredictionV1, ConditionApplicabilityV1, ContinuationPredictionV2,
+import type { BranchPredictionV1, BranchReadoutDiagnosticsV1, ConditionApplicabilityV1, ContinuationPredictionV2,
   ContinuousPatternRecallV2, EffectRecallCandidateV1, GroundedGoalV1, GoalEvaluationV1,
   HypotheticalPublicStateV1, OpaqueFactorTransitionTraceV1,
-  PhysicalEvidenceReferenceV1, ProjectedParentRelationApplicabilityV1 }
+  PhysicalEvidenceReferenceV1, ProjectedParentRelationApplicabilityV1, PhysicalPredictionBindingV1 }
   from './control/contracts.js';
-import { desiredChangesForGoal } from './control/goal.js';
+import { desiredChangesForGoal, goalPredicates, evaluateGroundedReadoutV1 } from './control/goal.js';
+import { predictPhysicalShortChainV1 } from './core/prediction/physical-short-chain.js';
 import { cueIdentity, eventLocalCurrentPublicStateV1, eventLocalDecodedPublicFeaturesV1,
-  eventRows, relativePublicFeatures, validateEvent,
-  type EventLocalCurrentPublicValueV1, type EventLocalPublicRoleBindingV1 } from './events.js';
+  decodedPublicFeaturesFromContextV1, publicReadoutProjectionContextV1,
+  eventRows, relativePublicFeatures, resolveEventLocalPublicRolesV1, validateEvent,
+  type EventLocalCurrentPublicValueV1, type EventLocalPublicRoleBindingV1,
+  type PublicReadoutProjectionContextV1 } from './events.js';
 import { assert, canonical, sha } from './util.js';
+import { canonicalStreamSha256 } from './util-stream.js';
 import { DistributedR1ExperienceStoreV1 }
   from './core/learning/distributed-r1.js';
 import type { AfferentPublicStateReadoutV1, DistributedR1ExperienceRecordV1, DistributedR1StateV1,
@@ -26,6 +30,8 @@ import type { DistributedR2AtomV1, DistributedR2BoundaryBeforeV1,
   from './core/learning/distributed-r2-contracts.js';
 import { DistributedR2APhysicalPatternLearnerV2 }
   from './core/learning/distributed-r2a.js';
+import type { DistributedR3CurrentActionInputV1 }
+  from './core/learning/distributed-r2a-physical.js';
 import type { DistributedR2AInterventionAssessmentV2, DistributedR2AInterventionPairV2,
   DistributedR2APhysicalApplicabilityV2, DistributedR2APhysicalPatternV2,
   DistributedR2APhysicalRelationV2, DistributedR2APhysicalStateV3 }
@@ -45,7 +51,7 @@ import type { RuntimeMeasuredSalienceV2 }
 import type { DistributedMediumSnapshotV1 }
   from './core/physics/distributed-physical-contracts.js';
 import type { DistributedAttractorReadoutV1 } from './core/physics/distributed-physical-contracts.js';
-import { DistributedPredictionCloneV2 }
+import { DistributedPredictionCloneV2, physicalResidenceMatchV1 }
   from './core/prediction/distributed-prediction-clone.js';
 import { runDistributedPredictionCloneBatchParallelV1 }
   from './core/prediction/distributed-prediction-clone-parallel.js';
@@ -203,6 +209,46 @@ interface PhysicalTerminalPublicReadoutV1 {
   readonly unknown: readonly string[];
 }
 
+interface RetainedPhysicalReadoutV1 {
+  readonly binding: PhysicalPredictionBindingV1;
+  readonly context: PublicReadoutProjectionContextV1;
+  readonly values: readonly EventLocalCurrentPublicValueV1[];
+  readonly signalIds: readonly string[];
+  readonly horizonObservationSteps: number;
+}
+
+/** Passive result relevance, not goal success. A measured intermediate value
+ * can concern the exact goal object without already being its desired value. */
+export function distributedGoalReadoutDiagnosticsV1(
+  readouts: readonly Pick<PhysicalTerminalPublicReadoutV1, 'valid' | 'decodedValues'>[],
+  goal: GroundedGoalV1, observation: Observation,
+  bindings: readonly EventLocalPublicRoleBindingV1[]): BranchReadoutDiagnosticsV1 {
+  const predicates = goalPredicates(goal);
+  const { byRole } = resolveEventLocalPublicRolesV1(observation, bindings);
+  const relevant = (value: EventLocalCurrentPublicValueV1): boolean => predicates.some(predicate => {
+    const property = predicate.observable.startsWith('properties.')
+      ? predicate.observable.slice('properties.'.length) : predicate.observable;
+    if (value.property !== property) return false;
+    if (predicate.subject.kind === 'self') return value.subjectRole === 'self';
+    if (predicate.subject.kind === 'crosshair') return value.subjectRole === 'crosshair';
+    const actual = byRole.get(value.subjectRole);
+    return actual?.id === predicate.subject.id && actual.type === predicate.subject.expectedType;
+  });
+  const count = readouts.filter(readout => readout.valid && readout.decodedValues.some(relevant)).length;
+  const publicPredicates = predicates.filter(predicate => predicate.subject.kind === 'public-object');
+  const missing = publicPredicates.some(predicate => {
+    const subject = predicate.subject;
+    return subject.kind === 'public-object' && !observation.objects.some(object => object.id === subject.id
+      && object.type === subject.expectedType);
+  });
+  return { version: 'BranchReadoutDiagnosticsV1',
+    roleBindingStatus: publicPredicates.length === 0 ? 'not-required'
+      : missing ? 'target-unavailable' : count > 0 ? 'matched' : 'goal-change-not-reached',
+    goalRelevantReadoutCount: count, maxVisitedOriginalKernelIndex: null,
+    // Retained interface name; distributed fields have no original kernel index.
+    goalRelevantKernelVisited: count > 0 };
+}
+
 /**
  * Compare a terminal afferent population with the real event-local public
  * prefix.  No event id, historical outcome, goal answer or world coordinate
@@ -290,9 +336,14 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   #metaDepositionOrdinal = 0;
   #r1Revision = 0;
   #r2Revision = 0;
+  #originIdentity = 'empty-distributed-substrate';
+  readonly #physicalReadouts = new Map<string, RetainedPhysicalReadoutV1>();
+  #continuationQueryCache: { readonly key: string; readonly result: ContinuationPredictionV2 } | null = null;
   #r1PredictionCache: { readonly snapshot: DistributedMediumSnapshotV1;
+    readonly prescribedActionSiteIds: readonly number[];
     readonly clone: DistributedPredictionCloneV2; readonly revision: number } | null = null;
   #r2PredictionCache: { readonly snapshot: DistributedMediumSnapshotV1;
+    readonly prescribedActionSiteIds: readonly number[];
     readonly clone: DistributedPredictionCloneV2; readonly revision: number } | null = null;
   #timescaleOwner: DistributedHierarchicalTimescaleOwnerV1 | null = null;
   #timescaleEnabled = false;
@@ -318,7 +369,15 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   get writes(): number { return this.#writes; }
   get bufferedEvents(): number { return Math.min(this.#seen.size, 128); }
   get mapSha256(): string | null {
-    return this.ready ? sha(this.#r1.snapshot().projection) : null;
+    return this.ready ? this.#r1.projectionSha256() : null;
+  }
+
+  /** Cheap identity for one physical/query version, not a per-action full hash.
+   * Derived readout handles are transient and are never checkpoint contents. */
+  physicalVersion(): string {
+    return sha({ origin: this.#originIdentity, r1: this.#r1Revision, r2: this.#r2Revision,
+      r2a: this.#r2a.physicalQueryRevision, time: this.#activeSeconds,
+      events: this.#seen.size, writes: this.#writes, protocol: this.#timescaleEnabled });
   }
 
   advanceTo(activeSeconds: number, measurements?: Readonly<Record<'r1' | 'r2' | 'r2a', readonly RuntimeMeasuredSalienceV2[]>>): void {
@@ -372,7 +431,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     const r1 = capture(this.#r1Medium.snapshot(),
       [`trace:${annotation.r1Record.footprint.traceId}`]);
     const r2Events = annotation.r2EventIds
-      .flatMap(eventId => this.#r2.events().filter(value => value.eventId === eventId))
+      .flatMap(eventId => { const event = this.#r2.event(eventId); return event ? [event] : []; })
       .filter(value => value.physicalFootprint !== null && value.learningEligible);
     const r2 = capture(this.#r2.medium.snapshot(), r2Events
       .map(value => `trace:${value.physicalFootprint!.traceId}`));
@@ -429,25 +488,33 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   }
 
   #invalidatePredictionCaches(): void {
+    this.#continuationQueryCache = null;
     this.#r1PredictionCache = null;
     this.#r2PredictionCache = null;
+    this.#physicalReadouts.clear();
   }
 
   #r1PredictionSubstrate(): { readonly snapshot: DistributedMediumSnapshotV1;
+    readonly prescribedActionSiteIds: readonly number[];
     readonly clone: DistributedPredictionCloneV2 } {
     if (this.#r1PredictionCache === null) {
       const snapshot = this.#r1Medium.snapshot();
-      this.#r1PredictionCache = { snapshot, clone: new DistributedPredictionCloneV2(snapshot),
+      const prescribedActionSiteIds = this.#r1.prescribedActionSiteIds();
+      this.#r1PredictionCache = { snapshot, prescribedActionSiteIds,
+        clone: new DistributedPredictionCloneV2(snapshot, prescribedActionSiteIds),
         revision: this.#r1Revision };
     }
     return this.#r1PredictionCache;
   }
 
   #r2PredictionSubstrate(): { readonly snapshot: DistributedMediumSnapshotV1;
+    readonly prescribedActionSiteIds: readonly number[];
     readonly clone: DistributedPredictionCloneV2 } {
     if (this.#r2PredictionCache === null) {
       const snapshot = this.#r2.medium.snapshot();
-      this.#r2PredictionCache = { snapshot, clone: new DistributedPredictionCloneV2(snapshot),
+      const prescribedActionSiteIds = this.#r2.prescribedActionSiteIds();
+      this.#r2PredictionCache = { snapshot, prescribedActionSiteIds,
+        clone: new DistributedPredictionCloneV2(snapshot, prescribedActionSiteIds),
         revision: this.#r2Revision };
     }
     return this.#r2PredictionCache;
@@ -495,6 +562,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       this.#consumeR2Receipt(this.#r2.interrupt('continuity-reset'));
       return this.#receipt(receipt.novelty);
     }
+    const actualTerminal = this.#r1.lookupCurrentObservation(event.frames.at(-1)!, rows.roleBindings,
+      undefined, 'observed-terminal');
     const atom: DistributedR2AtomV1 = { version: 'DistributedR2AtomV1', atomId: `r1:${event.id}`,
       sourceEventId: event.id, exactExperienceIdentity: cueIdentity(event.cue),
       episodePatternSha256: receipt.record.episodePatternSha256,
@@ -507,7 +576,11 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       dependencies: structuredClone(continuity.dependencies), publicChanges: rows.changes.flat(),
       beforePublicSignals: annotation.beforeSignalIds, afterPublicSignals: annotation.afterSignalIds,
       beforePublicSignalOccurrences: annotation.beforeSignalOccurrences,
-      afterPublicSignalOccurrences: annotation.afterSignalOccurrences };
+      afterPublicSignalOccurrences: annotation.afterSignalOccurrences,
+      resultChannelR1SiteIds: this.#r1.publicResultChannelSiteIds(
+        receipt.record.episodeTopology.terminalSiteIds),
+      observedTerminalR1Drives: actualTerminal.drives
+        ?? actualTerminal.siteIds.map(siteId => ({ siteId, intensity: 1 })) };
     const ingested = this.#r2.ingest(atom, boundaryBefore(event));
     if (ingested.closedBefore) this.#consumeR2Receipt(ingested.closedBefore);
     if (continuity.processStatusAfter === 'publicly-resolved')
@@ -570,7 +643,9 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   }
 
   #r2Event(annotation: DistributedR1AnnotationV1): DistributedR2ContinuousEventV1 | null {
-    return annotation.r2EventIds.flatMap(id => this.#r2.events().filter(value => value.eventId === id))
+    return annotation.r2EventIds.flatMap(id => {
+      const event = this.#r2.event(id); return event ? [event] : [];
+    })
       .find(value => value.learningEligible && this.#r2.isEventActive(value.eventId)) ?? null;
   }
 
@@ -590,16 +665,15 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     readonly activePhysicalTraceIds: readonly string[];
     readonly contextIds: readonly string[];
   } {
-    const events = new Map(this.#r2.events().map(value => [value.eventId, value] as const));
-    const active: { readonly event: DistributedR2ContinuousEventV1; readonly traceId: string }[] = [];
+    const active: { readonly eventId: string; readonly contextIds: readonly string[]; readonly traceId: string }[] = [];
     pattern.memberR2EventIds.forEach((eventId, index) => {
-      const event = events.get(eventId), traceId = pattern.physicalTraceIds[index];
+      const contextIds = this.#r2.eventContextIds(eventId), traceId = pattern.physicalTraceIds[index];
       // The member event and the corresponding R2A deposition are one weakest
       // physical chain.  Missing/misaligned audit metadata fails closed.
-      if (event && traceId && this.#r2.isEventActive(eventId)
-        && this.#r2a.medium.isFootprintActive(traceId)) active.push({ event, traceId });
+      if (contextIds && traceId && this.#r2.isEventActive(eventId)
+        && this.#r2a.medium.isFootprintActive(traceId)) active.push({ eventId, contextIds, traceId });
     });
-    const contextIds = [...new Set(active.flatMap(value => value.event.contextIds))].sort();
+    const contextIds = [...new Set(active.flatMap(value => value.contextIds))].sort();
     // The index is live only while the physically discovered attractor and
     // ordered propagation corridor remain measurable.  Event counts decode
     // the physical basin; they cannot manufacture its qualification.
@@ -612,7 +686,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       ? pattern.grade : 'single-observation';
     return {
       grade,
-      activeMemberR2EventIds: active.map(value => value.event.eventId),
+      activeMemberR2EventIds: active.map(value => value.eventId),
       activePhysicalTraceIds: active.map(value => value.traceId),
       contextIds,
     };
@@ -628,9 +702,9 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   }
 
   #currentRelationApplicability(relation: DistributedR2APhysicalRelationV2,
-    observation: Observation): DistributedR2APhysicalApplicabilityV2 {
+    observation: Observation | readonly string[], currentAction?: DistributedR3CurrentActionInputV1): DistributedR2APhysicalApplicabilityV2 {
     const historical = this.#r2a.compareCurrentFactors(relation.relationId,
-      distributedPublicSignalIdsV1(relativePublicFeatures(observation)));
+      'sequence' in observation ? distributedPublicSignalIdsV1(relativePublicFeatures(observation)) : observation, currentAction);
     const pattern = this.#r2a.patterns().find(value => value.patternId === relation.patternId);
     const qualification = pattern ? this.#activePatternQualification(pattern) : null;
     const grade = this.#activeRelationGrade(relation);
@@ -643,17 +717,18 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   }
 
   #relationComparisons(relations: readonly DistributedR2APhysicalRelationV2[],
-    observation: Observation): readonly DistributedR2APhysicalApplicabilityV2[] {
-    return relations.map(value => this.#currentRelationApplicability(value, observation));
+    observation: Observation | readonly string[], currentAction?: DistributedR3CurrentActionInputV1): readonly DistributedR2APhysicalApplicabilityV2[] {
+    return relations.map(value => this.#currentRelationApplicability(value, observation, currentAction));
   }
 
-  #evidence(annotation: DistributedR1AnnotationV1, observation: Observation): PhysicalEvidenceReferenceV1 {
+  #evidence(annotation: DistributedR1AnnotationV1, observation: Observation | readonly string[],
+    currentAction?: DistributedR3CurrentActionInputV1): PhysicalEvidenceReferenceV1 {
     const r1Qualification = this.#r1.attractorQualification(annotation.eventId);
     const r1Active = r1Qualification.status === 'stable-attractor'
       && this.#r1Medium.isFootprintActive(annotation.r1Record.footprint);
     const r2Event = this.#r2Event(annotation), patterns = this.#patternsFor(r2Event);
     const r2Footprint = r2Event?.physicalFootprint ?? null;
-    const relations = this.#relationsFor(patterns), comparisons = this.#relationComparisons(relations, observation);
+    const relations = this.#relationsFor(patterns), comparisons = this.#relationComparisons(relations, observation, currentAction);
     const grade = gradeMaximum([...patterns.map(value => this.#activePatternQualification(value).grade),
       ...relations.map(value => this.#activeRelationGrade(value))]);
     const applicability = Math.max(0, ...comparisons.map(value => value.applicability));
@@ -695,7 +770,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       const goalPredicateIds = desired.filter(item =>
         changes.some(change => publicChangeMatches(change, item.desired))).map(item => item.predicateId);
       if (goalPredicateIds.length === 0) continue;
-      const evidence = this.#evidence(annotation, observation);
+      const evidence = this.#evidence(annotation, observation, this.#currentActionInput(annotation, observation));
       result.push({ candidateId: sha({ version: 'DistributedEffectCandidateV1',
         eventId: annotation.eventId, effect: effectSignature(changes) }), goalPredicateIds,
       actionCue: structuredClone(annotation.cue), observedChanges: structuredClone(changes),
@@ -721,7 +796,11 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     observation: Observation): readonly ContinuousPatternRecallV2[] {
     const desired = desiredChangesForGoal(goal, evaluation);
     return this.#r2a.patterns().flatMap(pattern => {
-      const events = pattern.memberR2EventIds.flatMap(id => this.#r2.events().filter(value => value.eventId === id));
+      // Fetch the named members, not a copy of the whole event store for
+      // every member. Order and owned-result isolation remain identical.
+      const events = pattern.memberR2EventIds.flatMap(id => {
+        const event = this.#r2.event(id); return event ? [event] : [];
+      });
       if (!events.some(event => desired.some(item =>
         (event.processChanges ?? event.terminalChanges)
           .some(change => publicChangeMatches(change, item.desired))))) return [];
@@ -736,7 +815,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       const currentApplicability = Math.max(0, ...comparisons.map(value => value.applicability));
       const currentPredictionEligible = activePatternTraces.length > 0
         && comparisons.some(value => value.predictionEligible);
-      const observedAtomCount = this.#r2.snapshot().pending.length;
+      const observedAtomCount = this.#r2.pendingAtomCount;
       const nextActionCueIdentities = [...new Set(events.flatMap(event => {
         const identity = event.orderedExperienceIdentities[observedAtomCount];
         return identity === undefined ? [] : [identity];
@@ -755,7 +834,11 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
 
   compareCurrentFactors(relationId: string, observation: Observation): ConditionApplicabilityV1 {
     const relation = this.#r2a.relations().find(value => value.relationId === relationId);
-    if (!relation) throw new Error('unknown-distributed-R2A-relation');
+    // A physical index can change after recovery or a new real event. The
+    // retained control branch still names the old relation; absence is zero
+    // current support, not permission to relabel it as a different relation.
+    if (!relation) return { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
+      applicability: 0, productionEligible: false, unavailableRelationIds: [relationId] };
     const value = this.#currentRelationApplicability(relation, observation);
     return { matchedFactorIds: value.matchedFactorIds,
       contradictedFactorIds: value.contradictedFactorIds, unknownFactorIds: value.unknownFactorIds,
@@ -764,14 +847,19 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
 
   compareConditions(candidate: EffectRecallCandidateV1,
     state: Observation | HypotheticalPublicStateV1): ConditionApplicabilityV1 {
-    if ('version' in state) return { matchedFactorIds: state.knownActiveFactorIds,
-      contradictedFactorIds: state.knownInactiveFactorIds, unknownFactorIds: state.unknownFactorIds,
-      applicability: 0, productionEligible: false };
-    const values = candidate.evidence.r2a.relationIds.map(id => this.compareCurrentFactors(id, state));
-    return values.sort((left, right) => Number(right.productionEligible) - Number(left.productionEligible)
-      || right.applicability - left.applicability)[0]
-      ?? { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
-        applicability: 0, productionEligible: false };
+    const currentAction = this.#currentActionInput(this.#annotationFor(candidate), state);
+    if (!currentAction) return { matchedFactorIds: [], contradictedFactorIds: [],
+      unknownFactorIds: 'version' in state ? state.unknownFactorIds : [], applicability: 0, productionEligible: false };
+    const relations = this.#r2a.relations().filter(value => candidate.evidence.r2a.relationIds.includes(value.relationId));
+    const values = [...this.#relationComparisons(relations, currentAction.signalIds, currentAction)];
+    const selected = values.sort((a, b) => Number(b.highConfidenceActionEligible) - Number(a.highConfidenceActionEligible)
+      || b.applicability - a.applicability)[0];
+    return selected ? { matchedFactorIds: selected.matchedFactorIds,
+      contradictedFactorIds: selected.contradictedFactorIds, unknownFactorIds: selected.unknownFactorIds,
+      applicability: selected.applicability, productionEligible: selected.highConfidenceActionEligible }
+      : { matchedFactorIds: [], contradictedFactorIds: [], unknownFactorIds: [],
+        applicability: 0, productionEligible: false,
+        unavailableRelationIds: [...candidate.evidence.r2a.relationIds] };
   }
 
   #annotationFor(candidate: EffectRecallCandidateV1): DistributedR1AnnotationV1 {
@@ -810,7 +898,8 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     const substrate = request.medium === 'r1'
       ? this.#r1PredictionSubstrate() : this.#r2PredictionSubstrate();
     return runDistributedPredictionCloneBatchParallelV1(substrate.snapshot,
-      { ...request.request, seeds: request.seeds }, request.parallelism ?? 1);
+      { ...request.request, seeds: request.seeds }, request.parallelism ?? 1,
+      substrate.prescribedActionSiteIds);
   }
 
   /** Exact seed-level medium probes for capacity/temporal measurements. */
@@ -819,9 +908,9 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     parallelism = 1,
     options: { readonly compactReadout?: boolean; readonly compactSiteIds?: readonly number[] } = {},
   ) {
-    const snapshot = medium === 'r1' ? this.#r1PredictionSubstrate().snapshot
-      : this.#r2PredictionSubstrate().snapshot;
-    return runDistributedMediumProbeBatchSyncV1(snapshot, jobs, parallelism, options);
+    const substrate = medium === 'r1' ? this.#r1PredictionSubstrate() : this.#r2PredictionSubstrate();
+    return runDistributedMediumProbeBatchSyncV1(substrate.snapshot, jobs, parallelism,
+      { ...options, prescribedActionSiteIds: substrate.prescribedActionSiteIds });
   }
 
   /** Read-only diagnostics for PLAN-002; revisions never enter persisted state. */
@@ -836,56 +925,102 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
 
   predictCandidate(candidate: EffectRecallCandidateV1, state: Observation | HypotheticalPublicStateV1,
     goal: GroundedGoalV1, evaluation: GoalEvaluationV1): BranchPredictionV1 {
+    return this.#predictCandidate(candidate, state, goal, evaluation,
+      Array.from({ length: 24 }, (_unused, index) => index + 1));
+  }
+
+  predictShortChain(candidates: readonly EffectRecallCandidateV1[], observation: Observation,
+    goal: GroundedGoalV1, evaluation: GoalEvaluationV1) {
+    return predictPhysicalShortChainV1(candidates, observation, goal, evaluation,
+      (candidate, state, target, baseline, seeds) => this.#predictCandidate(candidate, state, target, baseline, seeds));
+  }
+
+  #retainedReadout(state: HypotheticalPublicStateV1): RetainedPhysicalReadoutV1 | undefined {
+    const ref = state.physicalReadout;
+    if (!ref || ref.mediumVersion !== this.physicalVersion()) return undefined;
+    const value = this.#physicalReadouts.get(ref.readoutId);
+    return value?.binding.mediumVersion === ref.mediumVersion ? value : undefined;
+  }
+
+  #currentActionInput(annotation: DistributedR1AnnotationV1, state: Observation | HypotheticalPublicStateV1,
+    seeds: readonly number[] = Array.from({ length: 24 }, (_, index) => index + 1)):
+    (DistributedR3CurrentActionInputV1 & { readonly signalIds: readonly string[] }) | undefined {
+    const retained = 'version' in state ? this.#retainedReadout(state) : undefined;
+    if ('version' in state && !retained) return undefined;
+    if (retained && annotation.publicRoleBindings.some(binding => !retained.context.roles.some(role =>
+      role.role === binding.role && role.type === binding.type))) return undefined;
+    const perception = retained ? this.#r1.lookupDecodedPublicState(retained.values, annotation.cue)
+      : this.#r1.lookupCurrentObservation(state as Observation, annotation.publicRoleBindings, annotation.cue);
+    if (perception.siteIds.length === 0 || perception.unresolvedRoles.length > 0) return undefined;
+    return { signalIds: retained?.signalIds
+      ?? distributedPublicSignalIdsV1(relativePublicFeatures(state as Observation)),
+      sourceR2PrefixDrives: this.#r2.lookupR1Pulse(perception.drives
+        ?? perception.siteIds.map(siteId => ({ siteId, intensity: 1 }))),
+      exactActionIdentity: cueIdentity(annotation.cue), seeds: seeds.map(BigInt) };
+  }
+
+  #predictCandidate(candidate: EffectRecallCandidateV1, state: Observation | HypotheticalPublicStateV1,
+    goal: GroundedGoalV1, evaluation: GoalEvaluationV1, seeds: readonly number[]): BranchPredictionV1 {
     const kind = 'hypothetical-prediction' as const;
-    if ('version' in state) return this.#emptyBranch(kind, candidate.evidence,
-      'hypothetical-public-prefix-has-no-real-R1-afferent-input');
-    const annotation = this.#annotationFor(candidate), evidence = this.#evidence(annotation, state);
+    const retained = 'version' in state ? this.#retainedReadout(state) : undefined;
+    if ('version' in state && !retained) return this.#emptyBranch(kind, candidate.evidence,
+      'hypothetical-physical-readout-missing-or-stale');
+    const annotation = this.#annotationFor(candidate);
+    if (retained && annotation.publicRoleBindings.some(binding => !retained.context.roles.some(role =>
+      role.role === binding.role && role.type === binding.type)))
+      return this.#emptyBranch(kind, candidate.evidence, 'hypothetical-subject-binding-unavailable');
+    const currentAction = this.#currentActionInput(annotation, state, seeds);
+    const evidence = this.#evidence(annotation, retained?.signalIds ?? state as Observation, currentAction);
     if (!evidence.r1.active) return this.#emptyBranch(kind, evidence, 'distributed-R1-attractor-inactive');
     if (!evidence.r2.active) return this.#emptyBranch(kind, evidence, 'distributed-R2-road-inactive');
-    if (!evidence.r2a.predictionEligible || evidence.r2a.applicability <= 0)
+    // Current applicability is the result of the live physical probe, not a
+    // precondition for asking the probe to run.  A zero result is precisely an
+    // unresolved/contradicted condition that a read-only rollout can
+    // characterize.  Keep the real substrate and evidence-grade requirements;
+    // only execution qualification continues to depend on positive progress.
+    if (!evidence.r2a.predictionEligible)
       return this.#emptyBranch(kind, evidence, 'current-distributed-R2A-pattern-unsupported');
     const physicalAssemblies = this.#stableR1AssembliesForCue(candidate.actionCue);
-    const assemblies = physicalAssemblies.map(value => ({ assemblyId: value.assemblyId,
-      siteIds: value.coreSiteIds, minimumCoverage: .75, minimumPurity: .75 }));
-    if (assemblies.length === 0)
+    if (physicalAssemblies.length === 0)
       return this.#emptyBranch(kind, evidence, 'candidate-has-no-stable-physical-terminal-attractor');
-    const currentPerception = this.#r1.lookupCurrentObservation(state, annotation.publicRoleBindings);
-    if (currentPerception.siteIds.length === 0 || currentPerception.unresolvedRoles.length > 0)
+    if (!currentAction)
       return this.#emptyBranch(kind, evidence, 'current-real-public-perception-afferent-unavailable');
     const actionInput = this.#r1.lookupActionCue(candidate.actionCue);
     if (actionInput.siteIds.length === 0)
       return this.#emptyBranch(kind, evidence, 'candidate-action-afferent-unavailable');
-    const { clone } = this.#r1PredictionSubstrate();
-    const results = clone.runMany({
-      currentPerceptionSeedSiteIds: currentPerception.siteIds,
-      ...(currentPerception.drives === undefined ? {} : {
-        currentPerceptionSeedDrives: currentPerception.drives,
-      }),
-      currentPerceptionMode: 'sequential-prefix',
-      realPrefixSeedSiteIds: [currentPerception.siteIds],
-      ...(currentPerception.drives === undefined ? {} : {
-        realPrefixSeedDrives: [currentPerception.drives],
-      }),
-      actionSeedSiteIds: actionInput.siteIds,
-      ...(actionInput.drives === undefined ? {} : {
-        actionSeedDrives: actionInput.drives,
-      }),
-      readoutAssemblies: assemblies, seeds: Array.from({ length: 24 }, (_unused, index) =>
-        BigInt(index + 1)), steps: 180 });
-    const currentPublic = eventLocalCurrentPublicStateV1(state, annotation.publicRoleBindings);
+    // R1 alone holds the alternatives; it must not replace the conditional
+    // R2A rollout with its unconditional associative result. Current signals
+    // are projected through already learned fibres, without a past/future
+    // event template or the goal entering the physical query.
+    const results = this.#r2a.readCurrentAction(currentAction.signalIds, currentAction.sourceR2PrefixDrives,
+      currentAction.exactActionIdentity, currentAction.seeds);
+    const currentValues = retained?.values
+      ?? eventLocalCurrentPublicStateV1(state as Observation, annotation.publicRoleBindings).values;
+    const binding: PhysicalPredictionBindingV1 = retained?.binding ?? {
+      mediumVersion: this.physicalVersion(), observationSequence: (state as Observation).sequence,
+      observationIdentity: sha({ self: (state as Observation).self, objects: (state as Observation).objects,
+        targetId: (state as Observation).targetId }), actionPrefix: [] };
     let progressSampleCount = 0;
     const nextStates: HypotheticalPublicStateV1[] = [];
-    const terminalReadouts = results.map(result => result.status === 'reached'
-      ? physicalTerminalChangesV1(this.#r1.readPublicState(physicalTerminalDrivesV1(result)),
-        currentPublic.values)
-      : { valid: false, changes: [], decodedValues: [],
-        unknown: [result.reason] } satisfies PhysicalTerminalPublicReadoutV1);
+    const terminalReadouts = results.map((result): PhysicalTerminalPublicReadoutV1 => {
+      if (result.status !== 'reached') return { valid: false, changes: [], decodedValues: [],
+        unknown: [result.reason] };
+      const r1Arrival = this.#r2.readR1Pulse(this.#r2a.readR2Pulse(physicalTerminalDrivesV1(result)));
+      // A conditional result must also belong to a live R1 result population
+      // for this exact cue. This keeps mere R3 excitation from crediting an
+      // unrelated command (or observation) with a remembered outcome.
+      const supported = physicalAssemblies.some(assembly =>
+        physicalResidenceMatchV1(r1Arrival.map(drive => drive.siteId), assembly.coreSiteIds).score >= .75);
+      if (!supported) return { valid: false, changes: [], decodedValues: [],
+        unknown: ['conditional-arrival-has-no-active-exact-action-R1-population'] };
+      return physicalTerminalChangesV1(this.#r1.readPublicState(r1Arrival), currentValues);
+    });
     const samples = results.map((value, index) => {
       const reachedAssemblyId = value.status === 'reached' ? value.reachedAssemblyIds[0] : undefined;
       const changes = terminalReadouts[index]!.valid && reachedAssemblyId
         ? new Map([[reachedAssemblyId, terminalReadouts[index]!.changes] as const])
         : new Map<string, readonly PublicChange[]>();
-      return distributedPredictionSampleV1(index + 1, value, changes);
+      return distributedPredictionSampleV1(seeds[index]!, value, changes);
     });
     const liveRelations = this.#r2a.relations();
     const relationIds = liveRelations.map(relation => relation.relationId);
@@ -894,11 +1029,12 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     const projectionCache = new Map<string,
       ReturnType<DistributedR2APhysicalPatternLearnerV2['projectTransientFactors']>>();
     const projectionUnknown: string[] = [];
-    for (const readout of terminalReadouts) {
+    for (const [readoutIndex, readout] of terminalReadouts.entries()) {
       if (!readout.valid) continue;
       if (goalProgress(readout.changes, goal, evaluation)) progressSampleCount++;
-      const sparse = eventLocalDecodedPublicFeaturesV1(state,
+      const context = retained?.context ?? publicReadoutProjectionContextV1(state as Observation,
         annotation.publicRoleBindings, readout.decodedValues);
+      const sparse = decodedPublicFeaturesFromContextV1(context, readout.decodedValues);
       projectionUnknown.push(...sparse.unresolvedChannels.map(value => `terminal-R2A-${value}`));
       const predictedSignalIds = distributedPublicSignalIdsV1(sparse.features);
       const cacheKey = sha(predictedSignalIds);
@@ -907,14 +1043,38 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
         factors = this.#r2a.projectTransientFactors(relationIds, predictedSignalIds, factorUniverse);
         projectionCache.set(cacheKey, factors);
       }
-      nextStates.push({ version: 'HypotheticalPublicStateV1', baseObservationSequence: state.sequence,
+      const nextBinding = { ...binding, actionPrefix: [...binding.actionPrefix, cueIdentity(candidate.actionCue)] };
+      const horizonObservationSteps = (retained?.horizonObservationSteps ?? 0)
+        + Math.max(0, annotation.changeWaves.length - 1);
+      const retainedValue: RetainedPhysicalReadoutV1 = { binding: nextBinding, context,
+        values: readout.decodedValues, signalIds: predictedSignalIds, horizonObservationSteps };
+      const readoutId = sha(retainedValue);
+      this.#physicalReadouts.set(readoutId, retainedValue);
+      const goalEvaluation = evaluateGroundedReadoutV1(goal, evaluation, binding.observationSequence, predicate => {
+        const property = predicate.observable.startsWith('properties.')
+          ? predicate.observable.slice('properties.'.length) : predicate.observable;
+        const subject = predicate.subject;
+        const role = subject.kind === 'self' ? 'self' : subject.kind === 'crosshair' ? 'crosshair'
+          : context.roles.find(value => value.objectId === subject.id && value.type === subject.expectedType)?.role;
+        if (!role) return undefined;
+        if (subject.kind === 'public-object' && readout.decodedValues.some(value =>
+          value.subjectRole === role && value.property === 'visible' && value.value === false)) return undefined;
+        // World positions and absolute orientation cannot be reconstructed
+        // from a local event displacement without a complete physical frame.
+        if (property.startsWith('position.') || property.startsWith('relativePosition.')
+          || property === 'yaw' || property === 'pitch') return undefined;
+        return readout.decodedValues.find(value => value.subjectRole === role && value.property === property)?.value;
+      });
+      nextStates.push({ version: 'HypotheticalPublicStateV1', baseObservationSequence: binding.observationSequence,
         knownChanges: structuredClone(readout.changes),
         knownActiveFactorIds: factors.knownActiveFactorIds,
         knownInactiveFactorIds: factors.knownInactiveFactorIds,
         unknownFactorIds: [...new Set([...factors.unknownFactorIds,
           ...factorUniverse.filter(factorId => !factors!.knownActiveFactorIds.includes(factorId)
             && !factors!.knownInactiveFactorIds.includes(factorId))])].sort(),
-        unobserved: 'unknown' });
+        unobserved: 'unknown', goalEvaluation, physicalReadout: { readoutId, mediumVersion: binding.mediumVersion,
+          sourceSeed: seeds[readoutIndex]!, observationSequence: binding.observationSequence,
+          actionPrefix: nextBinding.actionPrefix, horizonObservationSteps } });
     }
     const validSampleCount = terminalReadouts.filter(value => value.valid).length;
     const unknown = [...new Set([...terminalReadouts.flatMap(value => value.unknown),
@@ -924,10 +1084,9 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       unknown, substrateSha256: this.mapSha256 };
     return { prediction, currentEvidence: evidence, validSampleCount, progressSampleCount,
       progressFraction: validSampleCount === 0 ? 0 : progressSampleCount / validSampleCount,
-      nextStates, unknown,
-      readoutDiagnostics: { version: 'BranchReadoutDiagnosticsV1', roleBindingStatus: 'not-required',
-        goalRelevantReadoutCount: progressSampleCount, maxVisitedOriginalKernelIndex: null,
-        goalRelevantKernelVisited: progressSampleCount > 0 } };
+      nextStates, unknown, binding,
+      readoutDiagnostics: retained ? undefined : distributedGoalReadoutDiagnosticsV1(terminalReadouts, goal,
+        state as Observation, annotation.publicRoleBindings) };
   }
 
   #emptyBranch(kind: DistributedPredictionV3['kind'], evidence: PhysicalEvidenceReferenceV1,
@@ -940,6 +1099,22 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
   }
 
   predictContinuation(patternId: string, exactActionCue: ActionCue,
+    observation: Observation): ContinuationPredictionV2 {
+    // One exact read-through entry, not a branch-selection or history cache.
+    // Recovery, writes, changed parameters or any changed public input miss.
+    const inputIdentity = sha({ patternId, exactActionCue, observation });
+    const key = `${this.physicalVersion()}:${inputIdentity}`;
+    if (this.#continuationQueryCache?.key === key)
+      return structuredClone(this.#continuationQueryCache.result);
+    const result = this.#predictContinuationUncached(patternId, exactActionCue, observation);
+    // A cold read can finish a lazy evidence index and advance its revision;
+    // bind the result to that completed version, never the pre-read index.
+    this.#continuationQueryCache = { key: `${this.physicalVersion()}:${inputIdentity}`,
+      result: structuredClone(result) };
+    return result;
+  }
+
+  #predictContinuationUncached(patternId: string, exactActionCue: ActionCue,
     observation: Observation): ContinuationPredictionV2 {
     const pattern = this.#r2a.patterns().find(value => value.patternId === patternId);
     assert(pattern, 'unknown-distributed-continuous-pattern');
@@ -961,14 +1136,14 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     if (!comparisons.some(value => value.predictionEligible))
       return empty('current-distributed-R3-relation-not-applicable');
     const currentSignals = distributedPublicSignalIdsV1(relativePublicFeatures(observation));
-    const observedAtomCount = this.#r2.snapshot().pending.length;
+    const observedAtomCount = this.#r2.pendingAtomCount;
     const physical = this.#r2a.predictPhysicalContinuation(patternId, currentSignals,
       seedDrives, observedAtomCount, cueIdentity(exactActionCue),
       Array.from({ length: 24 }, (_unused, index) => BigInt(index + 1)));
     const samples = physical.results.map((result, index) =>
       distributedPredictionSampleV1(index + 1, result, new Map()));
     const reached = samples.filter(value => value.status === 'reached'
-      && value.reaches.some(reach => reach.assemblyId === patternId)).length;
+      && value.reaches.some(reach => reach.assemblyId === physical.targetPhysicalBranchId)).length;
     return { version: 'ContinuationPredictionV2', patternId, support: reached / 24,
       samples, evidenceGrade: grade,
       unknown: reached > 0 ? [] : ['distributed-trajectory-did-not-reach-pattern-terminal'] };
@@ -1190,6 +1365,7 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
       && snapshot.r2a.version === 'DistributedR2APhysicalStateV3',
     'legacy-or-incompatible-distributed-checkpoint-is-audit-only');
     const memory = new DistributedHierarchicalPhysicalMemoryV1();
+    memory.#originIdentity = canonicalStreamSha256(snapshot);
     memory.#r1Medium = DistributedPhysicalMedium3DV1.fromSnapshot(snapshot.r1Medium);
     memory.#r1 = DistributedR1ExperienceStoreV1.restore(memory.#r1Medium, snapshot.r1,
       () => memory.#timescaleEnabled ? memory.#timescaleOwner!.encodingGain('r1') : 1);
@@ -1219,15 +1395,15 @@ export class DistributedHierarchicalPhysicalMemoryV1 {
     // Keep the fail-closed byte-identity boundary per physical layer.  A
     // combined boolean hid which independently owned substrate was rebuilt
     // differently and forced an entire hierarchy replay for every diagnosis.
-    assert(sha(memory.#r1Medium.snapshot()) === sha(snapshot.r1Medium),
+    assert(canonicalStreamSha256(memory.#r1Medium.snapshot()) === canonicalStreamSha256(snapshot.r1Medium),
       'distributed-R1-checkpoint-restore-not-byte-equivalent');
-    assert(sha(memory.#r2.medium.snapshot()) === sha(snapshot.r2Medium),
+    assert(canonicalStreamSha256(memory.#r2.medium.snapshot()) === canonicalStreamSha256(snapshot.r2Medium),
       'distributed-R2-checkpoint-restore-not-byte-equivalent');
     const restoredR2A = memory.#r2a.snapshot();
-    assert(sha(restoredR2A.medium) === sha(snapshot.r2a.medium),
+    assert(canonicalStreamSha256(restoredR2A.medium) === canonicalStreamSha256(snapshot.r2a.medium),
       'distributed-R2A-medium-checkpoint-restore-not-byte-equivalent');
     if (memory.#r2a.restoreIndexModeForAudit() === 'exact-cache')
-      assert(sha(restoredR2A) === sha(snapshot.r2a),
+      assert(canonicalStreamSha256(restoredR2A) === canonicalStreamSha256(snapshot.r2a),
         'distributed-R2A-checkpoint-restore-not-byte-equivalent');
     else assert(memory.#r2a.restoreIndexModeForAudit() === 'physical-rediscovery',
       'distributed-R2A-checkpoint-restore-mode-invalid');

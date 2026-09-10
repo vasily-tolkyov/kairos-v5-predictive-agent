@@ -4,6 +4,8 @@ import type { DistributedAttractorReadoutV1, DistributedMediumSnapshotV1,
   DistributedProbePulseInputV1 }
   from './distributed-physical-contracts.js';
 import { DistributedPhysicalMedium3DV1 } from './distributed-physical-medium.js';
+import { encodeDistributedSnapshotForWorkersV1, decodeDistributedSnapshotInWorkerV1 }
+  from './distributed-snapshot-transfer.js';
 
 const WORKER_KIND = 'distributed-medium-exact-probe-worker-v1' as const;
 
@@ -46,8 +48,9 @@ export type DistributedMediumProbeJobV1 = {
 };
 
 interface WorkerInputV1 {
+  readonly prescribedActionSiteIds?: readonly number[];
   readonly kind: typeof WORKER_KIND;
-  readonly snapshot: DistributedMediumSnapshotV1;
+  readonly snapshotBytes: SharedArrayBuffer;
   readonly jobs: readonly DistributedMediumProbeJobV1[];
   readonly compactReadout?: boolean;
   readonly compactSiteIds?: readonly number[];
@@ -96,6 +99,22 @@ function compactSelectionReadoutV1(value: DistributedAttractorReadoutV1,
     run: { ...value.run, finalActivations: [] } };
 }
 
+/** Borrow an already prepared substrate. Each probe owns its transient field;
+ * the medium's learned state is never changed by runJob. Serial callers do
+ * not need to serialize and restore the same substrate for every query. */
+export function runDistributedMediumProbeSerialV1(
+  medium: DistributedPhysicalMedium3DV1,
+  jobs: readonly DistributedMediumProbeJobV1[],
+  options: { readonly compactReadout?: boolean;
+    readonly compactSiteIds?: readonly number[] } = {},
+): readonly DistributedAttractorReadoutV1[] {
+  return [...jobs].sort((left, right) => left.index - right.index).map(job => {
+    const readout = runJob(medium, job);
+    return options.compactReadout
+      ? compactSelectionReadoutV1(readout, options.compactSiteIds) : readout;
+  });
+}
+
 /**
  * Synchronous exact seed parallelism for the synchronous R2A query surface.
  * Each worker restores the identical read-only snapshot and runs complete,
@@ -110,31 +129,31 @@ export function runDistributedMediumProbeBatchSyncV1(
   // enough headroom may still opt into explicit seed parallelism.
   parallelism = 1,
   options: { readonly compactReadout?: boolean;
-    readonly compactSiteIds?: readonly number[] } = {},
+    readonly compactSiteIds?: readonly number[];
+    readonly prescribedActionSiteIds?: readonly number[] } = {},
 ): readonly DistributedAttractorReadoutV1[] {
   if (!Number.isInteger(parallelism) || parallelism < 1)
     throw new RangeError('parallelism must be a positive integer');
   if (jobs.length === 0) return [];
   if (parallelism === 1 || jobs.length === 1) {
-    const medium = DistributedPhysicalMedium3DV1.fromSnapshot(snapshot);
-    return [...jobs].sort((left, right) => left.index - right.index)
-      .map(job => {
-        const readout = runJob(medium, job);
-        return options.compactReadout
-          ? compactSelectionReadoutV1(readout, options.compactSiteIds) : readout;
-      });
+    const medium = DistributedPhysicalMedium3DV1.fromSnapshot(snapshot, options.prescribedActionSiteIds);
+    return runDistributedMediumProbeSerialV1(medium, jobs, options);
   }
-  if (!isMainThread) throw new Error('exact probe worker cannot recursively coordinate workers');
+  if (!isMainThread && (workerData as Partial<WorkerInputV1> | undefined)?.kind === WORKER_KIND)
+    throw new Error('exact probe worker cannot recursively coordinate workers');
   if (new Set(jobs.map(job => job.index)).size !== jobs.length)
     throw new Error('exact probe job indexes must be unique');
   const workerCount = Math.min(parallelism, jobs.length);
   const partitions: DistributedMediumProbeJobV1[][] = Array.from({ length: workerCount }, () => []);
   jobs.forEach((job, position) => partitions[position % workerCount]!.push(job));
+  const snapshotBytes = encodeDistributedSnapshotForWorkersV1(snapshot);
   const handles = partitions.map(partition => {
     const { port1, port2 } = new MessageChannel();
     const completionBuffer = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT);
     const completion = new Int32Array(completionBuffer);
-    const input: WorkerInputV1 = { kind: WORKER_KIND, snapshot, jobs: partition,
+    const input: WorkerInputV1 = { kind: WORKER_KIND, snapshotBytes, jobs: partition,
+      ...(options.prescribedActionSiteIds === undefined ? {} : {
+        prescribedActionSiteIds: options.prescribedActionSiteIds }),
       ...(options.compactReadout ? { compactReadout: true,
         ...(options.compactSiteIds === undefined ? {} : { compactSiteIds: options.compactSiteIds }) } : {}),
       completionBuffer, port: port2 };
@@ -178,7 +197,8 @@ if (!isMainThread && input?.kind === WORKER_KIND) {
   const port = input.port!;
   let output: WorkerOutputV1;
   try {
-    const medium = DistributedPhysicalMedium3DV1.fromSnapshot(input.snapshot!);
+    const medium = DistributedPhysicalMedium3DV1.fromSnapshot(
+      decodeDistributedSnapshotInWorkerV1(input.snapshotBytes!), input.prescribedActionSiteIds);
     output = { results: input.jobs!.map(job => {
       const readout = runJob(medium, job);
       return { index: job.index,

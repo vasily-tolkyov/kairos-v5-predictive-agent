@@ -43,6 +43,9 @@ test('normal close seals passive facts and the R2 boundary before its final chec
     if (method === 'observe') return memory.observe(args[0] as RealEvent) as T;
     if (method === 'closeContinuity') return memory.closeContinuity(args[0] as Parameters<typeof memory.closeContinuity>[0]) as T;
     if (method === 'snapshot') return memory.snapshot() as T;
+    // PLAN-005 1.2: save() now asks the worker for a serialized bundle; an
+    // injected retired backend reports itself through the explicit variant.
+    if (method === 'snapshotBundle') return { kind: 'retired-snapshot-bundle', snapshot: memory.snapshot() } as T;
     if (method === 'predict') return memory.predict(args[0] as Parameters<typeof memory.predict>[0],
       args[1] as Parameters<typeof memory.predict>[1], args[2] as Parameters<typeof memory.predict>[2]) as T;
     throw new Error(`unexpected-test-compute-method:${method}`);
@@ -66,7 +69,7 @@ test('normal close seals passive facts and the R2 boundary before its final chec
     runtime.attention.capture(passiveEvent());
     await runtime.close();
 
-    assert.deepEqual(order, ['observe', 'closeContinuity', 'snapshot', 'body-close', 'compute-close']);
+    assert.deepEqual(order, ['observe', 'closeContinuity', 'snapshotBundle', 'body-close', 'compute-close']);
     const pointer = JSON.parse(await readFile(resolve(directory, 'EXPERIENCE_LATEST.json'), 'utf8')) as ExperiencePointer;
     const snapshot = JSON.parse(await readFile(resolve(directory, pointer.filename), 'utf8')) as HierarchicalMemorySnapshotV1;
     assert.equal(pointer.eventCount, 1);

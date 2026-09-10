@@ -135,6 +135,12 @@ interface PredictionInvocationAuditV1 {
   readonly progressSampleCount: number;
   readonly progressFraction: number;
   readonly delegatedToPhysicalPort: true;
+  /** Observational diagnostics only; never returned to the controller. */
+  readonly readoutAudit: {
+    readonly unknown: readonly string[];
+    readonly distinctNextStates: readonly HypotheticalPublicStateV1[];
+    readonly currentEvidence: BranchPredictionV1['currentEvidence'];
+  };
 }
 
 export interface DistributedG5NeutralCaseAuditV1 {
@@ -582,7 +588,9 @@ class OpaquePermutationReasoningPortV1 implements PhysicalReasoningPortV2 {
       opaqueCandidateId: candidate.candidateId, observationSequence,
       sampleCount: result.prediction.samples.length, validSampleCount: result.validSampleCount,
       progressSampleCount: result.progressSampleCount, progressFraction: result.progressFraction,
-      delegatedToPhysicalPort: true });
+      delegatedToPhysicalPort: true,
+      readoutAudit: { unknown: [...result.unknown], currentEvidence: result.currentEvidence,
+        distinctNextStates: [...new Map(result.nextStates.map(value => [sha(value), value])).values()] } });
     return result;
   }
 

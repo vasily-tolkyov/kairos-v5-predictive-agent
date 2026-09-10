@@ -34,6 +34,9 @@ export { ControlWorkspaceV2, effectCandidatePhysicalGroupKeyV1,
   groupFactorTransitionsForControlV2, compactBranchPredictionForControlAuditV2 }
   from './control/workspace.js';
 export * from './control/contracts.js';
+export { ActiveControlTrajectoryV1 } from './control/active-trajectory.js';
+export { physicalDependencyPathsV1 } from './control/short-chain-paths.js';
+export { predictPhysicalShortChainV1 } from './core/prediction/physical-short-chain.js';
 
 export { DistributedPhysicalMedium3DV1 } from './core/physics/distributed-physical-medium.js';
 export type { DistributedMediumConfigV1, DistributedMediumConfigInputV1,

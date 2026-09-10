@@ -10,6 +10,72 @@ import type { PredictionViolationV1, MatchedArmResultV1, FactorialCellV1,
   ViolationLedgerRecordV1, InterventionArmRequestV1 } from './core/learning/intervention-agenda.js';
 import type { TrustedInterventionWindowV1, InterventionPairCandidateV1 }
   from './core/learning/intervention-pair-collector.js';
+import type { DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3 } from './distributed-hierarchical-memory.js';
+import type { DISTRIBUTED_MEMORY_V4_VERSION } from './experience-snapshot-contract.js';
+
+/** Bounded per-medium statistics for the dashboard summary; computed inside the worker. */
+export interface MediumStatisticsV1 {
+  readonly siteCount: number; readonly activeSiteCount: number;
+  readonly learnedBondCount: number; readonly localBondCount: number;
+  readonly bindingCount: number; readonly footprintCount: number;
+  readonly logicalTime: number; readonly allocationSequence: number; readonly metropolisSequence: number;
+  readonly sha256: string;
+}
+export interface SnapshotMediaStatisticsV1 {
+  readonly r1: MediumStatisticsV1; readonly r2: MediumStatisticsV1; readonly r2a: MediumStatisticsV1;
+}
+/** Where and how the worker should persist the snapshot (PLAN-005/008). */
+export interface SnapshotBundleRequestV1 {
+  readonly directory: string;
+  readonly filename: string;
+  readonly includeMediaStatistics: boolean;
+  /** Single-file canonical is written at or below this size; above it the
+   * segmented manifest+segments format is used instead. */
+  readonly segmentThresholdBytes: number;
+  /** PLAN-008b (optional, tests): per-section cap inside the segmented format;
+   * oversized sections are split into element-boundary pages of at most
+   * `segmentPageLimitBytes` (default: half the section cap). */
+  readonly segmentLimitBytes?: number;
+  readonly segmentPageLimitBytes?: number;
+}
+/**
+ * Worker-serialized snapshot bundle: canonical bytes and their hash are
+ * produced inside the compute worker and streamed straight to disk, so the
+ * main thread never holds the snapshot text at all (PLAN-008).  `sha256`
+ * covers the canonical text alone (no trailing newline), exactly as the
+ * legacy pointer did; `canonicalBytes` is its byte length.  Segmented bundles
+ * additionally carry the manifest hash and segment count.
+ */
+export interface SerializedSnapshotBundleV1 {
+  readonly kind: 'serialized-snapshot-bundle';
+  readonly memoryVersion: typeof DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3 | typeof DISTRIBUTED_MEMORY_V4_VERSION;
+  readonly revision: string;
+  readonly filename: string;
+  readonly format: 'single-file' | 'segmented';
+  readonly canonicalBytes: number; readonly sha256: string;
+  readonly manifestSha256?: string; readonly segmentCount?: number;
+  readonly eventCount: number; readonly writes: number; readonly serializeMs: number;
+  readonly mediaStatistics: SnapshotMediaStatisticsV1 | null;
+  readonly timescaleLawIdentitySha256?: string;
+}
+/** Test-only seam: an injected retired backend reports itself explicitly. */
+export interface RetiredSnapshotBundleV1 {
+  readonly kind: 'retired-snapshot-bundle'; readonly snapshot: unknown;
+}
+export type SnapshotBundleResultV1 = SerializedSnapshotBundleV1 | RetiredSnapshotBundleV1;
+export interface MediaPageRequestV1 {
+  readonly medium: 'r1' | 'r2' | 'r2a'; readonly offset: number; readonly limit: number;
+}
+export interface MediaPageSiteV1 {
+  readonly siteId: number; readonly coordinate: readonly [number, number, number];
+  readonly activation: number; readonly potentialDepth: number;
+}
+/** A bounded, revision-labelled slice of the last saved snapshot's medium. */
+export interface MediaPageResultV1 {
+  readonly revision: string | null; readonly medium: 'r1' | 'r2' | 'r2a';
+  readonly totalSites: number; readonly offset: number; readonly limit: number;
+  readonly sites: readonly MediaPageSiteV1[];
+}
 
 /** The only compute worker is a physical-model owner, never another agent. */
 export class Compute {
@@ -65,6 +131,7 @@ export class Compute {
     if (this.#closed) return Promise.reject(new Error('physical-worker-closed'));
     return new Promise((resolve, reject) => { const id = ++this.#id;
       const background = method === 'predict' || method === 'predictCandidate'
+        || method === 'predictShortChain'
         || method === 'predictContinuation' || method === 'probe';
       this.#pending.set(id, { resolve: resolve as (value: unknown) => void, reject });
       this.#queue.push({ id, method, args, background, enqueuedAt: performance.now() });
@@ -101,6 +168,15 @@ export class Compute {
   }
   async restoreV4(snapshot: KairosV5DistributedPhysicalMemoryV4): Promise<void> {
     await this.call('restoreV4', snapshot);
+  }
+  /** Serialize and persist the current memory snapshot inside the worker
+   * (PLAN-005 1.2, PLAN-008 streaming). */
+  async snapshotBundle(request: SnapshotBundleRequestV1): Promise<SnapshotBundleResultV1> {
+    return this.call<SnapshotBundleResultV1>('snapshotBundle', request);
+  }
+  /** Bounded media page from the worker-retained last saved snapshot (PLAN-005 1.1). */
+  async mediaPage(request: MediaPageRequestV1): Promise<MediaPageResultV1> {
+    return this.call<MediaPageResultV1>('mediaPage', request);
   }
   async recordRuntimeMeasurement(input: TrustedRuntimeMeasurementContextV1): Promise<void> {
     await this.call('recordRuntimeMeasurement', input);

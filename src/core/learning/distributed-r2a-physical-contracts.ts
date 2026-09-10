@@ -27,6 +27,8 @@ export interface DistributedR2APhysicalCorridorV2 {
 export interface DistributedR2APhysicalPatternV2 {
   readonly version: 'DistributedR2APhysicalPatternV2';
   readonly patternId: string;
+  /** A terminal basin can be reached by several distinct ordered roads. */
+  readonly physicalBranchId?: string;
   readonly memberR2EventIds: readonly string[];
   readonly contextIds: readonly string[];
   readonly physicalTraceIds: readonly string[];
@@ -191,6 +193,8 @@ export interface DistributedR2AEventPhysicalInputV2 {
   readonly projectedPulseSiteIds: readonly (readonly number[])[];
   /** Exact amplitudes emitted by the R2→R2A sparse projection. */
   readonly projectedPulseDrives?: readonly (readonly DistributedSiteDriveV1[])[];
+  /** Actual R1 command pulses; derived from source atom boundaries on restore. */
+  readonly projectedCommandPulseIndices?: readonly number[];
   /** Real R2 populations observed before the final candidate action began.
    * This is captured at deposition time from atomPulseRanges so later physical
    * rediscovery never has to mistake an incoming condition/eligibility channel

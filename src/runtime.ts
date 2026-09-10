@@ -1,4 +1,5 @@
-import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
+import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';import { createHash } from 'node:crypto';
+
 import { access, readFile } from 'node:fs/promises';
 import type { ActionCue, Observation, RealEvent, VerifiedInternalChannelV1 } from './contracts.js';
 import type { Configuration } from './services.js';
@@ -9,6 +10,8 @@ import type { PredictionViolationMeasurementV1 } from './attention/prediction-de
 import { actionObservationTrackedIdsV1, eventRows, cueIdentity, realEventHierarchyContinuityV1,
   validateEvent } from './events.js';
 import { assert, saveJson, sha } from './util.js';
+import { canonicalStreamMetrics, SEGMENTED_SNAPSHOT_FORMAT_V1,
+  type CanonicalPagedNodeV1, type SegmentedCanonicalManifestV1 } from './util-stream.js';
 import { DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3, DISTRIBUTED_HIERARCHY_SEMANTICS_V2,
   type DistributedMemoryObservationReceiptV1 as MemoryObservationReceipt,
   type DistributedMemorySnapshotV3 as MemorySnapshot,
@@ -16,7 +19,7 @@ import { DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3, DISTRIBUTED_HIERARCHY_SEMAN
 import { PUBLIC_LAYOUT_SEMANTICS } from './public-context.js';
 import type { ActionObservationScopeV1, ActionOfferV1, BranchPredictionV1, ConditionApplicabilityV1, EffectRecallCandidateV1,
   GroundedGoalV1, GoalEvaluationV1, HypotheticalPublicStateV1, OpaqueFactorTransitionTraceV1,
-  PhysicalReasoningPortV2, ContinuationPredictionV2, ContinuousPatternRecallV2 } from './control/contracts.js';
+  PhysicalReasoningPortV3, PhysicalPredictionBindingV1, PhysicalShortChainV1, ContinuationPredictionV2, ContinuousPatternRecallV2 } from './control/contracts.js';
 import { PhysicalControlManagerV2, type PhysicalControlEnvironmentV2, type PhysicalControlResultV2,
   type PhysicalControlSnapshotV2 } from './control/controller.js';
 import { ControlHabitWeightsV1, type ControlHabitCheckpointV1, type TrustedRealActionOutcomeV1 } from './control/habit.js';
@@ -36,14 +39,18 @@ import type { DistributedNoveltyRecordV1 }
 import type { TrustedRuntimeMeasurementContextV1 }
   from './core/physics/runtime-measured-salience-bridge-v1.js';
 import { KAIROS_V5_RUNTIME_VERSION } from './core/compatibility.js';
-
-const DISTRIBUTED_MEMORY_V4_VERSION = 'KairosV5DistributedPhysicalMemoryV4' as const;
+import { assertDistributedMemorySnapshotV3, assertDistributedMemorySnapshotV4, v3SnapshotFromV4,
+  DISTRIBUTED_MEMORY_V4_VERSION } from './experience-snapshot-contract.js';
+import type { MediaPageRequestV1, MediaPageResultV1, SnapshotBundleResultV1,
+  SnapshotMediaStatisticsV1 } from './compute.js';
 
 export interface ExperiencePointer {
   /** Untrusted on-disk discriminator. Production validates the exact V2 value before use. */
   readonly runtimeVersion: string;
   readonly sourceContextVersion: typeof PUBLIC_LAYOUT_SEMANTICS;
   readonly filename: string; readonly sha256: string;
+  /** Present when the snapshot is stored as a segmented manifest bundle (PLAN-008). */
+  readonly manifestSha256?: string;
   /** Optional so every legacy V1 pointer remains a valid zero-habit checkpoint. */
   readonly habitFilename?: string; readonly habitSha256?: string;
   /**
@@ -159,38 +166,6 @@ export interface ExperienceBundleMetadataV1 {
   readonly distributedG6Provenance?: DistributedG6ExperienceProvenanceV1;
 }
 
-function assertDistributedMemorySnapshotV3(value: unknown): asserts value is MemorySnapshot {
-  assert(typeof value === 'object' && value !== null
-    && (value as { readonly version?: unknown }).version === DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3
-    && (value as { readonly hierarchy?: unknown }).hierarchy === DISTRIBUTED_HIERARCHY_SEMANTICS_V2,
-  'legacy-experience-snapshot-is-audit-only');
-}
-
-function assertDistributedMemorySnapshotV4(value: unknown): asserts value is MemorySnapshotV4 {
-  assert(typeof value === 'object' && value !== null
-    && (value as { readonly version?: unknown }).version === DISTRIBUTED_MEMORY_V4_VERSION
-    && (value as { readonly hierarchy?: unknown }).hierarchy === DISTRIBUTED_HIERARCHY_SEMANTICS_V2
-    && typeof (value as { readonly timescales?: unknown }).timescales === 'object'
-    && (value as { readonly timescales?: { readonly version?: unknown } }).timescales?.version
-      === 'DistributedHierarchicalTimescaleSnapshotV1',
-  'invalid-distributed-timescale-snapshot');
-  const timescales = (value as MemorySnapshotV4).timescales;
-  for (const layer of [timescales.r1, timescales.r2, timescales.r2a]) {
-    assert(layer.version === 'DistributedMediumProtocolSnapshotV2'
-      && layer.protocol === 'distributed-medium-timescales-v2'
-      && /^[a-f0-9]{64}$/.test(layer.lawIdentitySha256),
-    'invalid-distributed-timescale-layer');
-  }
-  assert(timescales.r1.lawIdentitySha256 === timescales.r2.lawIdentitySha256
-    && timescales.r1.lawIdentitySha256 === timescales.r2a.lawIdentitySha256,
-  'distributed-timescale-law-identity-diverged');
-}
-
-function v3SnapshotFromV4(value: MemorySnapshotV4): MemorySnapshot {
-  const { timescales: _timescales, ...base } = value;
-  return { ...base, version: DISTRIBUTED_HIERARCHICAL_MEMORY_VERSION_V3 } as MemorySnapshot;
-}
-
 /** A V4 bundle may only update a directory already owned by V4. */
 async function assertCurrentBundleProtocol(directory: string, expected: 'v3' | 'v4'): Promise<void> {
   const current = resolve(directory, 'EXPERIENCE_LATEST.json');
@@ -289,6 +264,22 @@ async function saveRetiredMemoryAuditBundleV1(directory: string, snapshot: unkno
   });
 }
 
+/**
+ * Lossless evidence reference for a queued passive event (PLAN-005 1.3).  The
+ * full frames already live in frames.jsonl under the same session; this record
+ * keeps every event field except the duplicated frame array and binds the
+ * referenced sequence range with a hash of the complete event.
+ */
+export function passiveEventReferenceV1(event: RealEvent, sessionId: string) {
+  assert(event.frames.length > 0, 'passive-event-without-frames');
+  const first = event.frames[0]!, last = event.frames.at(-1)!;
+  const { frames: _frames, ...metadata } = event;
+  return { ...metadata, sessionId, frameCount: event.frames.length,
+    frameSequenceStart: first.sequence, frameSequenceEnd: last.sequence,
+    frameActiveSecondsStart: first.activeSeconds, frameActiveSecondsEnd: last.activeSeconds,
+    eventSha256: sha(event) };
+}
+
 function isRetiredMemorySnapshot(value: unknown): boolean {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
     && typeof (value as { readonly version?: unknown }).version === 'string'
@@ -302,6 +293,121 @@ export function assertNewExperienceOutput(pointerPath: string | null, outputDire
     'experience-source-directory-is-read-only');
 }
 
+/** Result of loading a snapshot bundle from disk, in either on-disk format. */
+interface LoadedSnapshotBundle {
+  readonly snapshot: unknown;
+  readonly segmented: boolean;
+  /** Hash of the manifest file's canonical text (segmented format only). */
+  readonly manifestSha256: string | null;
+}
+
+/**
+ * PLAN-008 1.2: load a snapshot file in either format.  A single-file
+ * snapshot parses directly (old checkpoints stay read-only restorable
+ * forever).  A segmented bundle parses its small manifest, then reads each
+ * canonical segment, verifying the per-segment byte/hash chain before the
+ * reassembled object is handed back; the caller re-verifies the full
+ * canonical hash against the pointer exactly as for a single file.
+ */
+export async function loadSnapshotFromDisk(snapshotPath: string): Promise<LoadedSnapshotBundle> {
+  const raw = await readFile(snapshotPath);
+  const parsed: unknown = JSON.parse(raw.toString('utf8'));
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)
+    || (parsed as { readonly format?: unknown }).format !== SEGMENTED_SNAPSHOT_FORMAT_V1)
+    return { snapshot: parsed, segmented: false, manifestSha256: null };
+  const manifest = parsed as SegmentedCanonicalManifestV1;
+  assert(typeof manifest.snapshotVersion === 'string' && manifest.snapshotVersion.length > 0
+    && Array.isArray(manifest.segments) && manifest.segments.length > 0
+    && /^[a-f0-9]{64}$/.test(manifest.sha256)
+    && Number.isSafeInteger(manifest.canonicalBytes) && manifest.canonicalBytes > 0
+    && Number.isSafeInteger(manifest.eventCount) && manifest.eventCount >= 0
+    && Number.isSafeInteger(manifest.writes) && manifest.writes >= 0,
+  'invalid-snapshot-manifest');
+  const stem = basename(snapshotPath).replace(/\.json$/, '');
+  assert(stem !== basename(snapshotPath), 'invalid-snapshot-manifest');
+  const segmentsDirectory = resolve(dirname(snapshotPath), `${stem}.segments`);
+  const snapshot: Record<string, unknown> = {};
+  const seen = new Set<string>();
+  for (const segment of manifest.segments) {
+    assert(typeof segment.name === 'string' && /^[A-Za-z0-9]+$/.test(segment.name)
+      && segment.filename === `${segment.name}.json`
+      && /^[a-f0-9]{64}$/.test(segment.sha256)
+      && Number.isSafeInteger(segment.bytes) && segment.bytes > 1,
+    'invalid-snapshot-segment-entry');
+    assert(!seen.has(segment.name), 'duplicate-snapshot-segment');
+    seen.add(segment.name);
+    // PLAN-008b: a paged segment has no single file; reassemble its value from
+    // the recursive leaf tree, then verify the section hash by streaming the
+    // reassembled value (no oversized string is ever materialized).
+    if (segment.paged !== undefined) {
+      const readPagedNode = async (node: CanonicalPagedNodeV1, depth: number): Promise<unknown> => {
+        assert(depth <= 64, 'snapshot-paged-node-too-deep');
+        if (node.kind === 'leaf') {
+          assert(new RegExp(`^${segment.name}\\.p-\\d{6}\\.json$`).test(node.filename)
+            && /^[a-f0-9]{64}$/.test(node.sha256)
+            && Number.isSafeInteger(node.bytes) && node.bytes > 1, 'invalid-snapshot-page-entry');
+          const pageRaw = await readFile(resolve(segmentsDirectory, node.filename));
+          assert(pageRaw.length === node.bytes && pageRaw.at(-1) === 0x0a
+            && createHash('sha256').update(pageRaw.subarray(0, -1)).digest('hex') === node.sha256,
+          'snapshot-page-invalid');
+          return JSON.parse(pageRaw.subarray(0, -1).toString('utf8'));
+        }
+        if (node.kind === 'array') {
+          const merged: unknown[] = [];
+          assert(Array.isArray(node.children), 'invalid-snapshot-page-entry');
+          for (const { count, child } of node.children) {
+            assert(Number.isSafeInteger(count) && count >= 1, 'invalid-snapshot-page-entry');
+            const value = await readPagedNode(child, depth + 1);
+            if (child.kind === 'leaf') {
+              assert(Array.isArray(value) && value.length === count, 'snapshot-page-count-mismatch');
+              merged.push(...value);
+            } else {
+              assert(count === 1, 'snapshot-page-count-mismatch');
+              merged.push(value);
+            }
+          }
+          return merged;
+        }
+        assert(node.kind === 'object' && Array.isArray(node.children), 'invalid-snapshot-page-entry');
+        const merged: Record<string, unknown> = {};
+        for (const { keys, child } of node.children) {
+          assert(Array.isArray(keys) && keys.length >= 1, 'invalid-snapshot-page-entry');
+          const value = await readPagedNode(child, depth + 1);
+          if (child.kind === 'leaf') {
+            assert(typeof value === 'object' && value !== null && !Array.isArray(value),
+              'snapshot-page-kind-mismatch');
+            const leafKeys = Object.keys(value as Record<string, unknown>);
+            assert(leafKeys.length === keys.length
+              && leafKeys.slice().sort((left, right) => left.localeCompare(right, 'en'))
+                .every((key, index) => key === keys[index]), 'snapshot-page-keys-mismatch');
+            for (const [key, entryValue] of Object.entries(value as Record<string, unknown>)) {
+              assert(!(key in merged), 'snapshot-page-duplicate-key');
+              merged[key] = entryValue;
+            }
+          } else {
+            assert(keys.length === 1, 'snapshot-page-keys-mismatch');
+            assert(!(keys[0]! in merged), 'snapshot-page-duplicate-key');
+            merged[keys[0]!] = value;
+          }
+        }
+        return merged;
+      };
+      const value = await readPagedNode(segment.paged, 0);
+      assert(canonicalStreamMetrics(value).sha256 === segment.sha256, 'snapshot-segment-invalid');
+      snapshot[segment.name] = value;
+      continue;
+    }
+    const segmentRaw = await readFile(resolve(segmentsDirectory, segment.filename));
+    assert(segmentRaw.length === segment.bytes && segmentRaw.at(-1) === 0x0a
+      && createHash('sha256').update(segmentRaw.subarray(0, -1)).digest('hex') === segment.sha256,
+    'snapshot-segment-invalid');
+    snapshot[segment.name] = JSON.parse(segmentRaw.toString('utf8'));
+  }
+  const manifestSha256 = raw.at(-1) === 0x0a
+    ? createHash('sha256').update(raw.subarray(0, -1)).digest('hex')
+    : createHash('sha256').update(raw).digest('hex');
+  return { snapshot, segmented: true, manifestSha256 };
+}
 /** Only a checkpoint written by this physical-control runtime can be resumed explicitly. */
 export async function restoreExperience(compute: Compute, pointerPath: string | null):
 Promise<RestoredDistributedExperienceV2 | null> {
@@ -314,9 +420,13 @@ Promise<RestoredDistributedExperienceV2 | null> {
   assert(typeof pointer.filename === 'string' && basename(pointer.filename) === pointer.filename
     && /^experience-\d+\.json$/.test(pointer.filename), 'invalid-experience-snapshot-filename');
   const snapshotPath = resolve(dirname(pointerPath), pointer.filename);
-  const snapshot: unknown = JSON.parse(await readFile(snapshotPath, 'utf8'));
+  const loaded = await loadSnapshotFromDisk(snapshotPath);
+  const snapshot = loaded.snapshot;
+  assert(loaded.segmented === (pointer.manifestSha256 !== undefined), 'experience-manifest-mismatch');
+  if (loaded.segmented)
+    assert(pointer.manifestSha256 === loaded.manifestSha256, 'experience-manifest-invalid');
   assertDistributedMemorySnapshotV3(snapshot);
-  assert(sha(snapshot) === pointer.sha256, 'experience-snapshot-invalid');
+  assert(canonicalStreamMetrics(snapshot).sha256 === pointer.sha256, 'experience-snapshot-invalid');
   assert(snapshot.writes === pointer.writes && snapshot.seenEventIds.length === pointer.eventCount,
     'experience-pointer-count-mismatch');
   const hasHabitFilename = Object.hasOwn(pointer, 'habitFilename');
@@ -356,9 +466,13 @@ Promise<RestoredDistributedExperienceV4 | null> {
   assert(typeof pointer.filename === 'string' && basename(pointer.filename) === pointer.filename
     && /^experience-\d+\.json$/.test(pointer.filename), 'invalid-experience-snapshot-filename');
   const snapshotPath = resolve(dirname(pointerPath), pointer.filename);
-  const snapshot: unknown = JSON.parse(await readFile(snapshotPath, 'utf8'));
+  const loaded = await loadSnapshotFromDisk(snapshotPath);
+  const snapshot = loaded.snapshot;
+  assert(loaded.segmented === (pointer.manifestSha256 !== undefined), 'experience-manifest-mismatch');
+  if (loaded.segmented)
+    assert(pointer.manifestSha256 === loaded.manifestSha256, 'experience-manifest-invalid');
   assertDistributedMemorySnapshotV4(snapshot);
-  assert(sha(snapshot) === pointer.sha256, 'experience-snapshot-invalid');
+  assert(canonicalStreamMetrics(snapshot).sha256 === pointer.sha256, 'experience-snapshot-invalid');
   assert(snapshot.timescales.r1.lawIdentitySha256 === pointer.timescaleLawIdentitySha256,
     'timescale-law-identity-mismatch');
   assert(snapshot.writes === pointer.writes && snapshot.seenEventIds.length === pointer.eventCount,
@@ -384,16 +498,29 @@ Promise<RestoredDistributedExperienceV4 | null> {
     pointer: pointer as DistributedExperiencePointerV4, snapshot, habit };
 }
 
-export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnvironmentV2 {
+export class V5Runtime implements PhysicalReasoningPortV3, PhysicalControlEnvironmentV2 {
   readonly compute: Compute;
   readonly attention: AttentionMonitor;
   readonly controller: PhysicalControlManagerV2;
   readonly #habit: ControlHabitWeightsV1;
   #timescaleV4Enabled = false;
   #recent: unknown[] = [];
-  #actions = 0; #events = 0; #newEvents = 0; #writes = 0; #buffered = 0; #noveltySignals = 0;
+  #actions = 0; #events = 0; #newEvents = 0; #writes = 0; #buffered = 0; #noveltySignals = 0; #restoredActionBase = 0;
   #map: string | null = null;
   #lastSnapshot: MemorySnapshot | null = null;
+  // The revision/media statistics of the last worker-serialized checkpoint, for the bounded dashboard.
+  #lastSnapshotRevision: string | null = null;
+  #lastMediaStatistics: SnapshotMediaStatisticsV1 | null = null;
+  readonly #snapshotEveryEvents: number;
+  readonly #segmentThresholdBytes: number;
+  readonly #mediaStatisticsWanted: boolean;
+  // Checkpoint writes are serialized so a watchdog-initiated protective
+  // checkpoint can never interleave with an in-flight periodic or final one.
+  #saveChain: Promise<void> = Promise.resolve();
+  // Passive flush/commit/advance form one critical section: concurrent reasoning
+  // calls (e.g. Promise.all'ed recalls) must never advance memory time past a
+  // passive event whose commit is still in flight.  (Found by the PLAN-005 soak.)
+  #physicalIngress: Promise<void> = Promise.resolve();
   #pendingPassive: RealEvent[] = [];
   #eventPredictionDeviations = new Map<string, PredictionViolationMeasurementV1 | null>();
   #runtimeMeasuredEventIds = new Set<string>();
@@ -406,8 +533,15 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     readonly record: (kind: string, value: unknown) => void, dependencies: { compute?: Compute;
       beforeObserve?: (completedEvents: number, event: RealEvent) => void; restoredExperience?: RestoredExperience | null;
       habit?: ControlHabitWeightsV1;
-      controlOptions?: { readonly requirePredictionProgress?: boolean } } = {}) {
+      controlOptions?: { readonly requirePredictionProgress?: boolean };
+      /** Set when a dashboard will poll this run; worker then adds per-medium statistics at save time. */
+      mediaStatistics?: boolean } = {}) {
     this.compute = dependencies.compute ?? new Compute(); this.#beforeObserve = dependencies.beforeObserve;
+    this.#snapshotEveryEvents = config.evidence?.snapshotEveryEvents ?? 32;
+    this.#segmentThresholdBytes = config.evidence?.segmentThresholdBytes ?? 256 * 1024 * 1024;
+    this.#mediaStatisticsWanted = dependencies.mediaStatistics ?? true;
+    assert(Number.isSafeInteger(this.#snapshotEveryEvents) && this.#snapshotEveryEvents > 0,
+      'invalid-snapshot-interval');
     this.#habit = dependencies.restoredExperience?.habit ?? dependencies.habit ?? new ControlHabitWeightsV1();
     if (dependencies.restoredExperience) {
       assertNewExperienceOutput(dependencies.restoredExperience.pointerPath, evidence);
@@ -422,28 +556,63 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       } else assertDistributedMemorySnapshotV3(snapshot);
       const baseSnapshot: MemorySnapshot = isV4 ? v3SnapshotFromV4(snapshot as MemorySnapshotV4)
         : snapshot as MemorySnapshot;
-      this.#actions = pointer.actions;
+      this.#actions = pointer.actions; this.#restoredActionBase = pointer.actions;
       this.#events = baseSnapshot.seenEventIds.length; this.#writes = baseSnapshot.writes;
       this.#buffered = Math.min(baseSnapshot.seenEventIds.length, 128);
       this.#map = baseSnapshot.seenEventIds.length >= 128 ? sha(baseSnapshot.r1.projection) : null;
       this.#lastSnapshot = baseSnapshot;
+      this.#lastSnapshotRevision = `${baseSnapshot.seenEventIds.length}:${baseSnapshot.writes}`;
       this.#habitObservationTime = baseSnapshot.activeSeconds;
     }
     let controller: PhysicalControlManagerV2 | null = null;
     this.attention = new AttentionMonitor(this.compute, record, notice => controller?.interrupt(notice),
-      event => { this.#pendingPassive.push(event); this.record('passive-event-queued', event); }, body.session.id);
+      event => { this.#pendingPassive.push(event);
+        this.record('passive-event-queued', passiveEventReferenceV1(event, body.session.id)); }, body.session.id,
+      { recordEveryWindows: config.evidence?.attentionRecordEveryWindows ?? 20,
+        scoreEpsilon: config.evidence?.attentionScoreEpsilon ?? .1 });
     this.controller = controller = new PhysicalControlManagerV2(this, this, config.control, this.#habit,
       dependencies.controlOptions);
-    body.on('frame', frame => this.attention.accept(frame));
+    body.on('frame', frame => { this.controller.acceptPublicFeedback(frame); this.attention.accept(frame); });
   }
   get actions(): number { return this.#actions; }
-  get actionCount(): number { return this.#actions; }
+  get actionCount(): number { return this.#actions - this.#restoredActionBase; }
   get actionBudget(): number { return this.config.actionBudget; }
   get writes(): number { return this.#writes; }
   get eventCount(): number { return this.#events; }
   get newEventCount(): number { return this.#newEvents; }
   get snapshotForDisplay(): MemorySnapshot | null {
     return this.#lastSnapshot ? structuredClone(this.#lastSnapshot) : null;
+  }
+  /**
+   * Bounded dashboard projection (PLAN-005 1.1): runtime counters and small
+   * live views only.  It never clones media; unbounded snapshot-derived
+   * structures are reported as entry counts.
+   */
+  displaySummary(): unknown {
+    const attention = this.attention.controller.snapshot();
+    let publicObservation: Observation | null = null;
+    try { publicObservation = this.body.latest(); } catch { /* a disconnected body still serves counters */ }
+    return structuredClone({ publicObservation, physicalEvents: this.#events,
+      sessionPhysicalEvents: this.#newEvents,
+      depositedEvents: this.#writes, initializationBuffered: this.#buffered,
+      remainingActions: this.config.actionBudget - (this.#actions - this.#restoredActionBase),
+      noveltySignals: this.#noveltySignals,
+      physicalMap: this.#map, attention,
+      computeQueue: this.compute.performanceAudit(),
+      attractorDictionaryEntries: this.#lastSnapshot?.attractorDictionary?.entries.length ?? null,
+      interventionAgendaViolations: this.#lastSnapshot?.interventionAgenda?.violations.length ?? null,
+      interventionAgendaCells: this.#lastSnapshot?.interventionAgenda?.cells.length ?? null,
+      controlHabits: this.#habit.exportCheckpoint(), recentRealEvents: this.#recent });
+  }
+  /** Media statistics of the last worker-serialized checkpoint (bounded; revision-labelled). */
+  get mediaStatisticsForDisplay(): { readonly revision: string;
+    readonly media: SnapshotMediaStatisticsV1 } | null {
+    return this.#lastSnapshotRevision !== null && this.#lastMediaStatistics !== null
+      ? { revision: this.#lastSnapshotRevision, media: structuredClone(this.#lastMediaStatistics) } : null;
+  }
+  /** Bounded media slice from the worker-retained last saved snapshot. */
+  async mediaPageForDisplay(request: MediaPageRequestV1): Promise<MediaPageResultV1> {
+    return this.compute.mediaPage(request);
   }
   /** The controller and runtime share this exact instance; display uses only exportCheckpoint(). */
   get habitWeights(): ControlHabitWeightsV1 { return this.#habit; }
@@ -461,7 +630,7 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     const attention = this.attention.controller.snapshot();
     return structuredClone({ publicObservation: this.body.latest(), physicalEvents: this.#events,
       sessionPhysicalEvents: this.#newEvents,
-      depositedEvents: this.#writes, initializationBuffered: this.#buffered, remainingActions: this.config.actionBudget - this.#actions,
+      depositedEvents: this.#writes, initializationBuffered: this.#buffered, remainingActions: this.config.actionBudget - (this.#actions - this.#restoredActionBase),
       noveltySignals: this.#noveltySignals,
       physicalMap: this.#map, attention, controlField: this.controller.snapshot,
       computeQueue: this.compute.performanceAudit(),
@@ -484,9 +653,16 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
   async status(): Promise<{ ready: boolean; bufferedEvents: number; writes: number }> {
     return this.compute.call('status');
   }
+  #serializePhysicalIngress<T>(section: () => Promise<T>): Promise<T> {
+    const run = this.#physicalIngress.then(section);
+    this.#physicalIngress = run.then(() => {}, () => {});
+    return run;
+  }
   async #preparePhysical(observation: Observation): Promise<void> {
-    await this.#settleThrough(observation); this.#advanceHabitTo(observation.activeSeconds);
-    await this.compute.call('advance', observation.activeSeconds);
+    await this.#serializePhysicalIngress(async () => {
+      await this.#settleThrough(observation); this.#advanceHabitTo(observation.activeSeconds);
+      await this.compute.call('advance', observation.activeSeconds);
+    });
   }
   async recallByEffect(goal: GroundedGoalV1, evaluation: GoalEvaluationV1,
     observation: Observation): Promise<readonly EffectRecallCandidateV1[]> {
@@ -523,6 +699,12 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     if ('sequence' in state) await this.#preparePhysical(state);
     return this.compute.call('predictCandidate', candidate, state, goal, evaluation);
   }
+  async predictShortChain(candidates: readonly EffectRecallCandidateV1[], observation: Observation,
+    goal: GroundedGoalV1, evaluation: GoalEvaluationV1): Promise<PhysicalShortChainV1> {
+    await this.#preparePhysical(observation);
+    return this.compute.call('predictShortChain', candidates, observation, goal, evaluation);
+  }
+  async physicalVersion(): Promise<string> { return this.compute.call('physicalVersion'); }
   async recallFactorTransition(factorIds: readonly string[], state: Observation | HypotheticalPublicStateV1):
     Promise<readonly OpaqueFactorTransitionTraceV1[]> {
     if ('sequence' in state) await this.#preparePhysical(state);
@@ -588,12 +770,19 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
       predictionDeviationMagnitude: predictionDeviation?.magnitude ?? 0,
       goalResidualBefore, goalResidualAfter });
   }
-  async executeOffer(offer: ActionOfferV1, observationScope: ActionObservationScopeV1): Promise<{ executed: boolean; observation: Observation; eventId: string | null;
-    refusal?: 'action-budget-exhausted' | 'offer-stale' | 'target-unavailable' }> {
-    if (this.#actions >= this.config.actionBudget) return { executed: false, observation: this.body.latest(), eventId: null,
+  async executeOffer(offer: ActionOfferV1, observationScope: ActionObservationScopeV1,
+    predictionBinding?: PhysicalPredictionBindingV1): Promise<{ executed: boolean; observation: Observation; eventId: string | null;
+    refusal?: 'action-budget-exhausted' | 'offer-stale' | 'target-unavailable' | 'prediction-stale' }> {
+    if (this.#actions - this.#restoredActionBase >= this.config.actionBudget) return { executed: false, observation: this.body.latest(), eventId: null,
       refusal: 'action-budget-exhausted' };
-    this.body.check(); this.attention.check(); await this.#settleThrough(this.body.latest());
+    this.body.check(); this.attention.check();
+    await this.#serializePhysicalIngress(() => this.#settleThrough(this.body.latest()));
+    if (predictionBinding && predictionBinding.mediumVersion !== await this.physicalVersion())
+      return { executed: false, observation: structuredClone(this.body.latest()), eventId: null, refusal: 'prediction-stale' };
     const current = this.body.latest();
+    if (predictionBinding && predictionBinding.observationIdentity !== sha({ self: current.self,
+      objects: current.objects, targetId: current.targetId }))
+      return { executed: false, observation: structuredClone(current), eventId: null, refusal: 'prediction-stale' };
     const rebound = this.body.listActionOffers(current).find(value => cueIdentity(value.cue) === cueIdentity(offer.cue)
       && (offer.action.targetId === undefined || value.action.targetId === offer.action.targetId));
     if (!rebound) return { executed: false, observation: structuredClone(current), eventId: null,
@@ -617,8 +806,11 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
           execution.event.frames) };
       const event: RealEvent = { ...scopedEvent,
         hierarchyContinuity: realEventHierarchyContinuityV1(scopedEvent, this.body.session.id) };
-      await this.#flushPassive(first, true);
-      const written = await this.#commitEvent(event, frozenInternalChannels); eventId = event.id;
+      const written = await this.#serializePhysicalIngress(async () => {
+        await this.#flushPassive(first, true);
+        return this.#commitEvent(event, frozenInternalChannels);
+      });
+      eventId = event.id;
       const changes = eventRows(event).changes.flat().map(change => ({ ...change,
         observationSequence: event.frames[change.observationIndex]!.sequence,
         activeSeconds: event.frames[change.observationIndex]!.activeSeconds }));
@@ -722,7 +914,7 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     this.#buffered = written.buffered; this.#map = written.mapSha256;
     this.record('real-event-committed', { eventId: enrichedEvent.id, provenance: enrichedEvent.provenance,
       observationWindow: [start, end], eventCount: this.#events, novelty, learning: written });
-    if (this.#newEvents % 32 === 0) {
+    if (this.#newEvents % this.#snapshotEveryEvents === 0) {
       // An executed action's progress signal is computed by the controller after executeOffer returns.
       // Commit CURRENT only after that real result has updated the shared habit instance.
       if (event.provenance === 'executed-real-body') this.#periodicHabitSavePending = true;
@@ -754,17 +946,68 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
     this.#habit.advanceActiveTime(activeSeconds - this.#habitObservationTime); this.#habitObservationTime = activeSeconds;
   }
   async save(): Promise<void> {
-    const snapshotV4 = this.#timescaleV4Enabled ? await this.compute.snapshotV4() : null;
-    const snapshot = snapshotV4 ? v3SnapshotFromV4(snapshotV4)
-      : await this.compute.call<MemorySnapshot>('snapshot');
-    this.#lastSnapshot = snapshot;
+    const pending = this.#saveChain.then(() => this.#saveOnce());
+    this.#saveChain = pending.catch(() => {}); // a failed save must not poison the chain for the final checkpoint
+    return pending;
+  }
+  /**
+   * PLAN-005 1.2: canonical serialization and hashing run inside the compute
+   * worker; the main thread only awaits the envelope and writes its bytes.
+   * The fail-closed bundle assertions (event/write counts, protocol ownership,
+   * CURRENT committed last) are unchanged; they now bind the worker-serialized
+   * envelope instead of a main-thread snapshot copy.  #lastSnapshot keeps its
+   * established meaning: the latest full snapshot mirrored for display, still
+   * refreshed at restore and at every evidence-grade control write; the
+   * checkpoint path no longer pays a full cross-thread clone.
+   */
+  async #saveOnce(): Promise<void> {
+    const suffix = this.#events.toString().padStart(4, '0');
+    const filename = `experience-${suffix}.json`;
+    const bundle = await this.compute.call<SnapshotBundleResultV1>('snapshotBundle',
+      { directory: this.evidence, filename, includeMediaStatistics: this.#mediaStatisticsWanted,
+        segmentThresholdBytes: this.#segmentThresholdBytes,
+        ...(this.config.evidence?.segmentLimitBytes !== undefined
+          ? { segmentLimitBytes: this.config.evidence.segmentLimitBytes } : {}),
+        ...(this.config.evidence?.segmentPageLimitBytes !== undefined
+          ? { segmentPageLimitBytes: this.config.evidence.segmentPageLimitBytes } : {}) });
     const metadata = { actions: this.#actions, eventCount: this.#events, writes: this.#writes };
-    if (isRetiredMemorySnapshot(snapshot)) {
-      await saveRetiredMemoryAuditBundleV1(this.evidence, snapshot, metadata, this.#habit);
+    if (bundle.kind === 'retired-snapshot-bundle') {
+      assert(isRetiredMemorySnapshot(bundle.snapshot), 'invalid-retired-memory-audit-snapshot');
+      await saveRetiredMemoryAuditBundleV1(this.evidence, bundle.snapshot, metadata, this.#habit);
       return;
     }
-    if (snapshotV4) await saveExperienceBundleV4(this.evidence, snapshotV4, metadata, this.#habit);
-    else await saveExperienceBundleV1(this.evidence, snapshot, metadata, this.#habit);
+    assert(Number.isSafeInteger(metadata.actions) && metadata.actions >= 0, 'invalid-experience-actions');
+    assert(Number.isSafeInteger(metadata.eventCount) && metadata.eventCount >= 0
+      && metadata.eventCount === bundle.eventCount, 'experience-event-count-mismatch');
+    assert(Number.isSafeInteger(metadata.writes) && metadata.writes >= 0
+      && metadata.writes === bundle.writes, 'experience-write-count-mismatch');
+    assert((bundle.memoryVersion === DISTRIBUTED_MEMORY_V4_VERSION) === this.#timescaleV4Enabled,
+      'experience-bundle-version-mismatch');
+    if (bundle.memoryVersion === DISTRIBUTED_MEMORY_V4_VERSION)
+      assert(typeof bundle.timescaleLawIdentitySha256 === 'string'
+        && /^[a-f0-9]{64}$/.test(bundle.timescaleLawIdentitySha256),
+      'invalid-timescale-law-identity');
+    await assertCurrentBundleProtocol(this.evidence, this.#timescaleV4Enabled ? 'v4' : 'v3');
+    const habitFilename = `control-habit-${suffix}.json`;
+    const habitCheckpoint = this.#habit.exportCheckpoint();
+    await saveJson(resolve(this.evidence, habitFilename), habitCheckpoint);
+    const pointer: ExperiencePointer = { runtimeVersion: KAIROS_V5_RUNTIME_VERSION,
+      sourceContextVersion: PUBLIC_LAYOUT_SEMANTICS, filename, sha256: bundle.sha256,
+      habitFilename, habitSha256: sha(habitCheckpoint), ...metadata,
+      ...(bundle.manifestSha256 !== undefined ? { manifestSha256: bundle.manifestSha256 } : {}),
+      ...(bundle.memoryVersion === DISTRIBUTED_MEMORY_V4_VERSION
+        ? { memoryVersion: bundle.memoryVersion,
+          timescaleLawIdentitySha256: bundle.timescaleLawIdentitySha256! } : {}) };
+    // CURRENT is committed last, so it never names only one half of a bundle.
+    await saveJson(resolve(this.evidence, 'EXPERIENCE_LATEST.json'), pointer);
+    this.#lastSnapshotRevision = bundle.revision;
+    this.#lastMediaStatistics = bundle.mediaStatistics;
+    this.record('experience-snapshot-serialized', { eventCount: metadata.eventCount,
+      writes: metadata.writes, revision: bundle.revision, sha256: bundle.sha256,
+      canonicalBytes: bundle.canonicalBytes, serializeMs: bundle.serializeMs,
+      format: bundle.format, ...(bundle.segmentCount !== undefined
+        ? { manifestSha256: bundle.manifestSha256, segmentCount: bundle.segmentCount } : {}),
+      mediaStatistics: bundle.mediaStatistics !== null });
   }
   async initializeFromRealExploration(): Promise<PhysicalControlResultV2> { return this.controller.initializeFromRealExploration(); }
   async exploreUntil(stopCondition: (observation: Observation) => boolean): Promise<PhysicalControlResultV2> {
@@ -778,10 +1021,22 @@ export class V5Runtime implements PhysicalReasoningPortV2, PhysicalControlEnviro
   }
   async #closeOnce(): Promise<void> {
     try {
-      const observation = this.body.latest();
-      await this.#settleThrough(observation);
-      await this.compute.call('closeContinuity', { version: 'R2EventBoundaryV1',
-        completion: 'censored', reason: 'session-ended' });
+      // PLAN-005 1.5: a disconnected body must not cost the run its passive
+      // flush or final checkpoint.  latest() throws after a connection fault,
+      // but the last received frame is still a valid seal boundary.
+      let observation: Observation | null = null;
+      try { observation = this.body.latest(); }
+      catch (error) {
+        const frames = (this.body as { readonly frames?: readonly Observation[] }).frames;
+        observation = frames?.at(-1) ?? null;
+        if (observation === null) throw error;
+        this.record('close-uses-retained-frame', { message: (error as Error).message });
+      }
+      await this.#serializePhysicalIngress(async () => {
+        await this.#settleThrough(observation);
+        await this.compute.call('closeContinuity', { version: 'R2EventBoundaryV1',
+          completion: 'censored', reason: 'session-ended' });
+      });
       // The final checkpoint must include passive facts sealed at shutdown and
       // the explicit R2 session boundary while the memory worker is still live.
       await this.save();

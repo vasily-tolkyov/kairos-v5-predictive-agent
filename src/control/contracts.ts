@@ -142,6 +142,8 @@ export interface OpaqueFactorTransitionTraceV1<Evidence = PhysicalEvidenceRefere
 }
 
 export interface SingleConditionApplicabilityV1 {
+  /** A retained branch may outlive the physical relation it once referenced. */
+  readonly unavailableRelationIds?: readonly string[];
   readonly matchedFactorIds: readonly string[];
   readonly contradictedFactorIds: readonly string[];
   readonly unknownFactorIds: readonly string[];
@@ -167,6 +169,50 @@ export interface HypotheticalPublicStateV1 {
   readonly knownInactiveFactorIds: readonly string[];
   readonly unknownFactorIds: readonly string[];
   readonly unobserved: 'unknown';
+  /** Opaque reference to a real stochastic terminal in the query owner.
+   * Merely filling knownChanges/factor arrays does not create a future input. */
+  readonly physicalReadout?: PhysicalReadoutReferenceV1;
+  /** Post-readout evaluation; it is never an input to the physical simulation. */
+  readonly goalEvaluation?: GoalEvaluationV1;
+}
+
+export interface PhysicalReadoutReferenceV1 {
+  readonly readoutId: string;
+  readonly mediumVersion: string;
+  readonly sourceSeed: number;
+  readonly observationSequence: number;
+  readonly actionPrefix: readonly string[];
+  readonly horizonObservationSteps: number;
+}
+
+export interface PhysicalPredictionBindingV1 {
+  readonly mediumVersion: string;
+  readonly observationSequence: number;
+  readonly observationIdentity: string;
+  readonly actionPrefix: readonly string[];
+}
+
+export interface PhysicalShortChainV1 {
+  readonly version: 'PhysicalShortChainV1';
+  readonly candidatePath: readonly string[];
+  readonly binding: PhysicalPredictionBindingV1 | null;
+  readonly lanes: readonly {
+    readonly seed: number;
+    readonly status: 'goal-reached' | 'partial' | 'unknown';
+    readonly steps: readonly {
+      readonly candidateId: string;
+      readonly actionCue: ActionCue;
+      readonly inputReadoutId: string | null;
+      readonly output: HypotheticalPublicStateV1;
+      readonly sample: DistributedPredictionSampleV3;
+      readonly evidence: PhysicalEvidenceReferenceV1;
+    }[];
+    readonly reason: string;
+  }[];
+  readonly progressSampleCount: number;
+  readonly totalSampleCount: number;
+  readonly horizonObservationSteps: number;
+  readonly unknown: readonly string[];
 }
 
 export interface BranchReadoutDiagnosticsV1 {
@@ -193,6 +239,8 @@ export interface SingleBranchPredictionV1<Evidence = PhysicalEvidenceReferenceV1
   /** Read-only physical readout diagnostics. Older non-hierarchical producers
    * may omit it; the hierarchical production path always supplies it. */
   readonly readoutDiagnostics?: BranchReadoutDiagnosticsV1;
+  readonly binding?: PhysicalPredictionBindingV1;
+  readonly shortChain?: PhysicalShortChainV1;
 }
 
 export interface BranchPredictionV1<Evidence = PhysicalEvidenceReferenceV1,
@@ -348,4 +396,11 @@ export interface PhysicalReasoningPortV2 extends PhysicalReasoningPortV1 {
     Promise<readonly ProjectedParentRelationApplicabilityV1[]> | readonly ProjectedParentRelationApplicabilityV1[];
   predictContinuation(patternId: string, exactActionCue: ActionCue, observation: Observation):
     Promise<ContinuationPredictionV2> | ContinuationPredictionV2;
+}
+
+/** Additive short-chain capability. The query cannot execute its suffix. */
+export interface PhysicalReasoningPortV3 extends PhysicalReasoningPortV2 {
+  predictShortChain(candidates: readonly EffectRecallCandidateV1[], observation: Observation,
+    goal: GroundedGoalV1, evaluation: GoalEvaluationV1): Promise<PhysicalShortChainV1> | PhysicalShortChainV1;
+  physicalVersion(): Promise<string> | string;
 }

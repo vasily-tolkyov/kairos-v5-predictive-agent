@@ -5,6 +5,7 @@ import type {
   SparseFieldDriveV1,
 } from "../physics/distributed-physical-contracts.js";
 import { DistributedPhysicalMedium3DV1 } from "../physics/distributed-physical-medium.js";
+import { isDeepStrictEqual } from 'node:util';
 
 export interface DistributedReadoutAssemblyV1 {
   readonly assemblyId: string;
@@ -253,6 +254,13 @@ function samePopulation(left: readonly number[], right: readonly number[]): bool
   return left.length === right.length && left.every((siteId, index) => siteId === right[index]);
 }
 
+function freezePhysicalResult<T>(value: T, seen = new Set<object>()): T {
+  if (value === null || typeof value !== 'object' || seen.has(value)) return value;
+  seen.add(value);
+  for (const child of Object.values(value)) freezePhysicalResult(child, seen);
+  return Object.freeze(value);
+}
+
 /**
  * A strictly read-only prediction replica.  The source snapshot supplies the
  * potential and bonds; every run constructs its own transient activation.
@@ -260,21 +268,35 @@ function samePopulation(left: readonly number[], right: readonly number[]): bool
  */
 export class DistributedPredictionCloneV2 {
   readonly #snapshot: DistributedMediumSnapshotV1;
-  readonly #source: DistributedPhysicalMedium3DV1;
+  #source: DistributedPhysicalMedium3DV1 | null = null;
+  readonly #prescribedActionSiteIds: readonly number[];
   #assemblyValidationCache: {
     readonly source: readonly DistributedReadoutAssemblyV1[];
     readonly assemblies: readonly ReturnType<typeof validateAssembly>[];
     readonly readoutUniverseSiteIds: readonly number[];
   } | null = null;
+  // One immutable substrate, four exact experiments. Adjacent short-chain
+  // steps must not evict each other. This is a bounded allocation cache, not
+  // candidate grouping: every input, mask and seed still compares exactly.
+  readonly #batches: Array<{ readonly request: Omit<DistributedPredictionCloneRequestV2, 'seed'> & {
+    readonly seeds: readonly bigint[] }; readonly results: readonly DistributedPredictionCloneResultV2[] }> = [];
 
-  constructor(snapshot: DistributedMediumSnapshotV1) {
+  constructor(snapshot: DistributedMediumSnapshotV1, prescribedActionSiteIds: readonly number[] = [],
+    readonly runSeedBatch?: (request: Omit<DistributedPredictionCloneRequestV2, 'seed'> & {
+      readonly seeds: readonly bigint[] }) => readonly DistributedPredictionCloneResultV2[],
+    snapshotOwnership: 'copy' | 'transferred' = 'copy') {
     // Persistent potential and bonds are copied once into the read-only clone.
     // Training-time fast activation is explicitly excluded.  Individual
     // stochastic seeds then allocate only their transient activation vector
     // inside `probe`; they do not rebuild the 32^3 substrate.
-    this.#snapshot = structuredClone({ ...snapshot,
-      sites: snapshot.sites.map(site => ({ ...site, activation: 0 })) }) as DistributedMediumSnapshotV1;
-    this.#source = DistributedPhysicalMedium3DV1.fromSnapshot(this.#snapshot);
+    const resting = { ...snapshot,
+      sites: snapshot.sites.map(site => ({ ...site, activation: 0 })) };
+    // Worker deserialization already owns every nested object. Copying that
+    // entire graph again adds no isolation; normal caller-owned inputs keep
+    // the original defensive copy and snapshot() still returns an owned copy.
+    this.#snapshot = snapshotOwnership === 'transferred' ? resting
+      : structuredClone(resting) as DistributedMediumSnapshotV1;
+    this.#prescribedActionSiteIds = [...prescribedActionSiteIds];
   }
 
   snapshot(): DistributedMediumSnapshotV1 {
@@ -285,7 +307,7 @@ export class DistributedPredictionCloneV2 {
     readonly assemblies: readonly ReturnType<typeof validateAssembly>[];
     readonly readoutUniverseSiteIds: readonly number[];
   } {
-    if (this.#assemblyValidationCache?.source === readoutAssemblies)
+    if (this.#assemblyValidationCache && isDeepStrictEqual(this.#assemblyValidationCache.source, readoutAssemblies))
       return this.#assemblyValidationCache;
     const defaultDomainSiteIds = [...new Set(readoutAssemblies
       .flatMap(assembly => assembly.siteIds))].sort((left, right) => left - right);
@@ -296,7 +318,7 @@ export class DistributedPredictionCloneV2 {
     }
     const readoutUniverseSiteIds = [...new Set(assemblies.flatMap(assembly =>
       assembly.enclosingDomainSiteIds))].sort((left, right) => left - right);
-    const value = { source: readoutAssemblies, assemblies, readoutUniverseSiteIds } as const;
+    const value = { source: structuredClone(readoutAssemblies), assemblies, readoutUniverseSiteIds } as const;
     this.#assemblyValidationCache = value;
     return value;
   }
@@ -360,10 +382,12 @@ export class DistributedPredictionCloneV2 {
     // The field is simulated exactly once. Candidate assemblies never enter
     // the seed; after the run they are only passive masks over the terminal
     // physical residence core.
+    const source = this.#source ??= DistributedPhysicalMedium3DV1.fromSnapshot(
+      this.#snapshot, this.#prescribedActionSiteIds);
     const attractorReadout = request.currentPerceptionMode === 'held-boundary'
-      ? this.#source.probeConditionedSequence(currentPerceptionDrives, sequentialInputs,
+      ? source.probeConditionedSequence(currentPerceptionDrives, sequentialInputs,
         request.seed, steps)
-      : this.#source.probeSequential(sequentialInputs, request.seed, steps);
+      : source.probeSequential(sequentialInputs, request.seed, steps);
     const reaches: DistributedPredictionAssemblyReachV1[] = [];
     for (let index = 0; index < assemblies.length; index += 1) {
       const assembly = assemblies[index]!;
@@ -374,6 +398,11 @@ export class DistributedPredictionCloneV2 {
       });
       if (attractorReadout.evidenceLevel === 'none'
         || physicalMembers.length / assembly.siteIds.length < assembly.minimumCoverage) continue;
+      const visitedSiteIds = attractorReadout.coreSiteIds.filter(siteId => assembly.siteIds.includes(siteId));
+      // A profile can describe the shape of a reached field, but cannot
+      // replace arrival. Apply the same existing coverage requirement to
+      // weighted and unweighted readers alike.
+      if (visitedSiteIds.length / assembly.siteIds.length < assembly.minimumCoverage) continue;
       const measured = assembly.referenceActivations.length > 0
         && (attractorReadout.terminalActivations?.length ?? 0) > 0
         ? physicalActivationResidenceMatchV1(attractorReadout.terminalActivations!,
@@ -393,8 +422,7 @@ export class DistributedPredictionCloneV2 {
       reaches.push({ assemblyId: assembly.assemblyId,
         reachedFraction: measured.domainMassFraction, purity: measured.profileOverlap,
         residenceScore: measured.score,
-        visitedSiteIds: attractorReadout.coreSiteIds.filter(siteId =>
-          assembly.siteIds.includes(siteId)) });
+        visitedSiteIds });
     }
     reaches.sort((left, right) => right.residenceScore - left.residenceScore
       || left.assemblyId.localeCompare(right.assemblyId, "en"));
@@ -449,7 +477,22 @@ export class DistributedPredictionCloneV2 {
   runMany(
     request: Omit<DistributedPredictionCloneRequestV2, "seed"> & { readonly seeds: readonly bigint[] },
   ): readonly DistributedPredictionCloneResultV2[] {
-    return request.seeds.map((seed) => this.run({
+    return structuredClone(this.runManyReadOnly(request));
+  }
+
+  /** Internal readout may borrow an immutable batch instead of copying every
+   * transient lattice activation for each historical evidence member. Public
+   * callers needing owned data retain runMany(). Neither path changes a step. */
+  runManyReadOnly(
+    request: Omit<DistributedPredictionCloneRequestV2, "seed"> & { readonly seeds: readonly bigint[] },
+  ): readonly DistributedPredictionCloneResultV2[] {
+    const cachedIndex = this.#batches.findIndex(batch => isDeepStrictEqual(batch.request, request));
+    if (cachedIndex >= 0) {
+      const cached = this.#batches.splice(cachedIndex, 1)[0]!;
+      this.#batches.push(cached);
+      return cached.results;
+    }
+    const results = this.runSeedBatch ? this.runSeedBatch(request) : request.seeds.map((seed) => this.run({
       currentPerceptionSeedSiteIds: request.currentPerceptionSeedSiteIds,
       ...(request.currentPerceptionSeedDrives === undefined ? {} : {
         currentPerceptionSeedDrives: request.currentPerceptionSeedDrives,
@@ -467,6 +510,10 @@ export class DistributedPredictionCloneV2 {
       steps: request.steps,
       seed,
     }));
+    const batch = { request: structuredClone(request), results: freezePhysicalResult(results) };
+    this.#batches.push(batch);
+    if (this.#batches.length > 4) this.#batches.shift();
+    return batch.results;
   }
 }
 

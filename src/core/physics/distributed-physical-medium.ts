@@ -430,6 +430,9 @@ export class MediumCapacityExhaustedError extends Error {
 }
 
 export class DistributedPhysicalMedium3DV1 {
+  /** Transient do(action) boundary. Learned motor associations remain stored,
+   * but cannot supply another command during a prescribed-action query. */
+  readonly #prescribedActionSites = new Set<number>();
   readonly #config: DistributedMediumConfigV1;
   readonly #tiles: DistributedTileSnapshotV1[] = [];
   readonly #tileIndices = new Map<string, number>();
@@ -439,6 +442,10 @@ export class DistributedPhysicalMedium3DV1 {
   #supportMass: Float64Array<ArrayBufferLike> = new Float64Array(0);
   #lastUpdatedAt: Float64Array<ArrayBufferLike> = new Float64Array(0);
   #bindings: (string | null)[] = [];
+  // Rank index over unbound sites. Derived from bindings, never persisted as
+  // physical state; the ascending rank and allocator's random stream stay exact.
+  readonly #unboundRanks: Int32Array;
+  #unboundTotal = 0;
   readonly #bindingSites = new Map<string, readonly number[]>();
   readonly #localEnhancements = new Map<string, MutableBond>();
   #localEnhancementAdjacency: (Map<number, MutableBond> | undefined)[] = [];
@@ -448,6 +455,14 @@ export class DistributedPhysicalMedium3DV1 {
   #directedOutgoingAdjacency: (Map<number, MutableBond> | undefined)[] = [];
   #directedIncomingAdjacency: (Map<number, MutableBond> | undefined)[] = [];
   #directedOutgoingConductance: Float64Array<ArrayBufferLike> = new Float64Array(0);
+  /** Numerical work buffers only, never a part of the medium or a checkpoint.
+   * Touched-order vectors preserve the old Map insertion/reduction order. */
+  #transportScratch: {
+    source: Int32Array; target: Int32Array; amount: Float64Array;
+    incoming: Float64Array; scale: Float64Array; delta: Float64Array;
+    incomingSeen: Uint8Array; deltaSeen: Uint8Array;
+    incomingOrder: Int32Array; deltaOrder: Int32Array;
+  } | null = null;
   readonly #footprints = new Map<string, MutableFootprint>();
   readonly #coactivationAssemblies = new Map<string, MutableCoactivationAssembly>();
   #localNeighborTable = new Int32Array(0);
@@ -461,10 +476,12 @@ export class DistributedPhysicalMedium3DV1 {
 
   constructor(input: DistributedMediumConfigInputV1) {
     this.#config = resolveConfig(input);
+    this.#unboundRanks = new Int32Array(this.#config.maxTiles * TILE_VOLUME + 1);
     this.#expandTile([0, 0, 0]);
   }
 
-  static fromSnapshot(snapshot: DistributedMediumSnapshotV1): DistributedPhysicalMedium3DV1 {
+  static fromSnapshot(snapshot: DistributedMediumSnapshotV1,
+    prescribedActionSiteIds: readonly number[] = []): DistributedPhysicalMedium3DV1 {
     if (snapshot.version !== "DistributedMediumSnapshotV1") throw new Error("unsupported distributed medium snapshot");
     validateConfig(snapshot.config);
     const medium = new DistributedPhysicalMedium3DV1(snapshot.config);
@@ -524,7 +541,15 @@ export class DistributedPhysicalMedium3DV1 {
     medium.#logicalTime = snapshot.logicalTime;
     medium.#allocationSequence = snapshot.allocationSequence;
     medium.#metropolisSequence = snapshot.metropolisSequence;
+    for (const siteId of prescribedActionSiteIds) {
+      medium.#assertSiteId(siteId);
+      medium.#prescribedActionSites.add(siteId);
+    }
     return medium;
+  }
+
+  get prescribedActionSiteIds(): readonly number[] {
+    return [...this.#prescribedActionSites].sort((a, b) => a - b);
   }
 
   get config(): DistributedMediumConfigV1 {
@@ -546,11 +571,7 @@ export class DistributedPhysicalMedium3DV1 {
   allocateSites(count: number, random: RandomDrawV1): readonly number[] {
     if (!Number.isInteger(count) || count < 1) throw new RangeError("site candidate count must be positive");
     while (this.#unboundCount() < count) this.#expandNextTile();
-    const unbound: number[] = [];
-    for (let siteId = 0; siteId < this.siteCount; siteId += 1) {
-      if (this.#bindings[siteId] === null) unbound.push(siteId);
-    }
-    const seed = unbound[Math.floor(uniform(random) * unbound.length)]!;
+    const seed = this.#unboundAtRank(Math.floor(uniform(random) * this.#unboundTotal));
     const candidates: number[] = [];
     const seen = new Set<number>([seed]);
     const queue = [seed];
@@ -570,6 +591,9 @@ export class DistributedPhysicalMedium3DV1 {
       }
     }
     if (candidates.length < count) {
+      const unbound: number[] = [];
+      for (let siteId = 0; siteId < this.siteCount; siteId++)
+        if (this.#bindings[siteId] === null) unbound.push(siteId);
       const remaining = unbound.filter((siteId) => !seen.has(siteId));
       while (candidates.length < count) {
         const index = Math.floor(uniform(random) * remaining.length);
@@ -623,7 +647,8 @@ export class DistributedPhysicalMedium3DV1 {
     return candidates;
   }
 
-  competeForSites(candidateSiteIds: readonly number[], winnerCount: number, random: RandomDrawV1): readonly number[] {
+  competeForSites(candidateSiteIds: readonly number[], winnerCount: number, random: RandomDrawV1,
+    coactiveAnchorSiteIds: readonly number[] = []): readonly number[] {
     if (!Number.isInteger(winnerCount) || winnerCount < 1 || winnerCount > candidateSiteIds.length) {
       throw new RangeError("winnerCount must fit the candidate set");
     }
@@ -635,7 +660,8 @@ export class DistributedPhysicalMedium3DV1 {
     }
     const tie = new Map(candidates.map((siteId) => [siteId, uniform(random)]));
     const score = (siteId: number, selected: readonly number[]): number => {
-      const localSelected = this.#localNeighbors(siteId).filter((neighbor) => selected.includes(neighbor)).length;
+      const localSelected = this.#localNeighbors(siteId).filter((neighbor) =>
+        selected.includes(neighbor) || coactiveAnchorSiteIds.includes(neighbor)).length;
       const localBound = this.#localNeighbors(siteId).filter((neighbor) => this.#bindings[neighbor] !== null).length;
       return this.#activation[siteId]! + 0.25 * this.#potentialDepth[siteId]!
         + 0.05 * this.#supportMass[siteId]! + 0.35 * localSelected - 0.1 * localBound
@@ -663,7 +689,10 @@ export class DistributedPhysicalMedium3DV1 {
       this.#assertSiteId(siteId);
       if (this.#bindings[siteId] !== null) throw new Error(`site ${siteId} is already bound`);
     }
-    for (const siteId of unique) this.#bindings[siteId] = bindingId;
+    for (const siteId of unique) {
+      this.#bindings[siteId] = bindingId;
+      this.#updateUnboundRank(siteId, -1);
+    }
     this.#bindingSites.set(bindingId, unique);
   }
 
@@ -799,7 +828,7 @@ export class DistributedPhysicalMedium3DV1 {
       this.#assertSiteId(siteId);
       activation[siteId] = Math.max(1, activation[siteId]!);
     }
-    const terminalField = this.#newTerminalFieldStatistics(steps, [], seedSiteIds);
+    const terminalField = this.#newTerminalFieldStatistics(steps, [], seedSiteIds, true);
     const result = this.#simulate(activation, asRandom(seed), steps, terminalField, 0);
     return this.#readAttractor(result.run, terminalField);
   }
@@ -962,6 +991,11 @@ export class DistributedPhysicalMedium3DV1 {
       candidateSiteIds: candidate,
       enclosingDomainSiteIds: domain,
     }], steps);
+    // A measurement mask is not a different simulator. Retain the same
+    // known-input resonance and field evolution as the unmasked entry point.
+    const terminalField = this.#newTerminalFieldStatistics(steps,
+      holdCondition ? conditionDrives.map(drive => drive.siteId) : [],
+      normalized.at(-1)!.map(drive => drive.siteId), true);
     let activation: Float64Array = new Float64Array(this.#activation);
     if (holdCondition) this.#seedProbeDrives(activation, conditionDrives);
     const random = asRandom(seed);
@@ -972,7 +1006,7 @@ export class DistributedPhysicalMedium3DV1 {
     normalized.forEach((pulse, pulseIndex) => {
       this.#seedProbeDrives(activation, pulse);
       const phaseSteps = pulseIndex + 1 < normalized.length ? 1 : steps - pulseIndex;
-      const phase = this.#simulate(activation, random, phaseSteps, undefined,
+      const phase = this.#simulate(activation, random, phaseSteps, terminalField,
         globalStepOffset, holdCondition ? conditionDrives : [], fields);
       activation = phase.activation;
       acceptedSteps += phase.run.acceptedSteps;
@@ -1238,37 +1272,22 @@ export class DistributedPhysicalMedium3DV1 {
       return siteIds.filter(siteId => terminalField.integratedSiteActivation[siteId]!
         >= Math.max(this.#config.minimumActiveMagnitude, maximumSiteMass * .25));
     }).sort((left, right) => left - right);
-    // A same-time population is a higher-order assembly only when that exact
-    // population has been observed in at least two trusted episodes and every
-    // basin selected by the terminal field is seeded by it.  This preserves
-    // ambiguity for an unseeded residual/alternative basin and for synthetic
-    // queries that merely happen to stimulate two separate basins.  No result
-    // label, distance, or threshold change is involved.
+    // A seeded assembly can span disconnected basins, but it may explain
+    // only a core actually contained in that assembly. Never unite a reached
+    // alternative basin with residual seed members and name the mixture.
     const coactivationResonance = terminalField.coactivationSamples === 0 ? 0
       : terminalField.coactivationJointSamples / terminalField.coactivationSamples;
-    // A repeated terminal population is allowed to span several disconnected
-    // local lattice basins.  Requiring the ordinary winner to be one of the
-    // seeded basins would make the unrelated background basin veto a valid
-    // higher-order assembly.  The assembly still needs live repeated physical
-    // evidence and a measured terminal quorum below; no metadata alone can
-    // clear ambiguity.
-    const coactivationCandidate = terminalField.coactivationAssembly !== null
-      && coactivationResonance > 0;
+    const nominatedAssembly = terminalField.coactivationAssembly;
     let coactivationAssembly = false;
-    if (coactivationCandidate) {
-      // The terminal population itself is the readout object when its
-      // repeated members have real measured activation.  Do not infer this
-      // from the audit index: require a three-quarter quorum in the terminal
-      // samples, matching the existing physical assembly-residence gate.
-      const assemblySites = terminalField.coactivationAssembly.terminalPulseSiteIds;
-      const measuredAssemblySites = assemblySites.filter(siteId =>
-        terminalField.integratedSiteActivation[siteId]!
-          / Math.max(1, terminalField.sampleCount)
+    if (nominatedAssembly !== null && coactivationResonance > 0
+      && coreSiteIds.length > 0
+      && coreSiteIds.every(siteId => nominatedAssembly.terminalPulseSiteIds.includes(siteId))) {
+      const measuredAssemblySites = nominatedAssembly.terminalPulseSiteIds.filter(siteId =>
+        terminalField.integratedSiteActivation[siteId]! / Math.max(1, terminalField.sampleCount)
           >= this.#config.minimumActiveMagnitude);
-      if (measuredAssemblySites.length / assemblySites.length >= .75) {
+      if (measuredAssemblySites.length / nominatedAssembly.terminalPulseSiteIds.length >= .75) {
         coactivationAssembly = true;
-        coreSiteIds = [...new Set([...coreSiteIds, ...measuredAssemblySites])]
-          .sort((left, right) => left - right);
+        coreSiteIds = measuredAssemblySites.slice().sort((left, right) => left - right);
       }
     }
     if (coreSiteIds.length === 0) {
@@ -1335,20 +1354,10 @@ export class DistributedPhysicalMedium3DV1 {
         coreSiteIds = measuredSiteIds;
       }
     }
-    // A distributed coactivation assembly is one physical terminal event even
-    // when its members occupy several disconnected local basins.  Measure its
-    // residence over the union of the selected basins; counting only the
-    // primary basin would turn ordinary switching between co-active members
-    // into a false escape signal.  Non-assembly readouts retain the historical
-    // primary-basin metric exactly.
     let dwellSteps = effectivePrimary.dwell;
     let returns = 0;
     let exits = 0;
     if (coactivationAssembly) {
-      // Use member-level residence collected during the same stochastic
-      // rollout.  A union of local basin ids would still mistake switching
-      // or an unrelated basin for an assembly; these counters require the
-      // actual repeated population's activation quorum at each sample.
       dwellSteps = terminalField.coactivationResidentDwellSteps;
       returns = terminalField.coactivationResidenceReturns;
       exits = terminalField.coactivationResidenceExits;
@@ -1371,9 +1380,10 @@ export class DistributedPhysicalMedium3DV1 {
       ambiguous: (selectedBasins.length > 1 && !coactivationAssembly)
         || (passiveAssembly.kind === "ambiguous" && !passiveResolvedByTerminalTail)
         || (materiallySeededBasins.length > 1 && !coactivationAssembly),
-      terminalActivations,
+      terminalActivations: coactivationAssembly
+        ? terminalActivations.filter(value => coreSiteIds.includes(value.siteId)) : terminalActivations,
       ...(coactivationAssembly ? {
-        coactivationAssemblyId: terminalField.coactivationAssembly!.assemblyId,
+        coactivationAssemblyId: nominatedAssembly!.assemblyId,
         coactivationCoverage: terminalField.coactivationCoverage,
         coactivationResonance,
       } : {}),
@@ -1768,6 +1778,11 @@ export class DistributedPhysicalMedium3DV1 {
     populationWidth = NEW_DIRECTED_FIBRE_WIDTH,
   ): void {
     const targets = [...after.drives].sort((left, right) => left.siteId - right.siteId);
+    // Bond strengthening does not change target activation, potential or site
+    // support. Reuse the same physical score across sources; only each
+    // source's seeded noise differs. No random draw is skipped or reordered.
+    const targetScores = targets.map(target => ({ target,
+      baseScore: this.#directedRecruitmentScore(target.siteId, target.intensity) }));
     for (const source of [...before.drives].sort((left, right) => left.siteId - right.siteId)) {
       const outgoing = this.#directedOut.get(source.siteId) ?? new Set<number>();
       const represented = targets.filter((target) => outgoing.has(target.siteId));
@@ -1788,14 +1803,21 @@ export class DistributedPhysicalMedium3DV1 {
       if (recruitCount === 0) continue;
 
       const random = this.#plasticCompetitionRandom(source.siteId, pulseIndex);
-      const scored = targets
-        .filter((target) => !outgoing.has(target.siteId))
-        .map((target) => ({
-          target,
-          score: this.#directedRecruitmentScore(target.siteId, target.intensity) + random.uniform() * 0.02,
-        }))
-        .sort((left, right) => right.score - left.score || left.target.siteId - right.target.siteId)
-        .slice(0, recruitCount);
+      // The frozen out-degree is at most eight. Maintain precisely the same
+      // leading K rather than sorting every candidate for every source.
+      const scored: { readonly target: SparseFieldDriveV1; readonly score: number }[] = [];
+      for (const { target, baseScore } of targetScores) {
+        if (outgoing.has(target.siteId)) continue;
+        const candidate = { target, score: baseScore + random.uniform() * 0.02 };
+        let insertion = 0;
+        while (insertion < scored.length && (scored[insertion]!.score > candidate.score
+          || (scored[insertion]!.score === candidate.score
+            && scored[insertion]!.target.siteId < candidate.target.siteId))) insertion++;
+        if (insertion < recruitCount) {
+          scored.splice(insertion, 0, candidate);
+          if (scored.length > recruitCount) scored.pop();
+        }
+      }
       for (const { target } of scored) {
         const reference = this.#strengthenDirectedBond(
           source.siteId,
@@ -1907,6 +1929,11 @@ export class DistributedPhysicalMedium3DV1 {
     // preserves that exact order for the seeded sweep without paying O(F log F)
     // each time.
     const frontierOrder: number[] = [];
+    // A source needs expansion again only if itself or one of the locations
+    // it adds was removed. Topology is immutable inside this query. Invalidating
+    // just those reverse neighbours avoids globally rewalking the frontier
+    // whenever one unrelated inactive site disappears, with identical order.
+    const expanded = new Uint8Array(activation.length);
     const insertFrontierId = (siteId: number): void => {
       if (frontier.has(siteId)) return;
       frontier.add(siteId);
@@ -1919,14 +1946,27 @@ export class DistributedPhysicalMedium3DV1 {
       frontierOrder.splice(low, 0, siteId);
     };
     const addFrontier = (siteId: number): void => {
-      if (frontier.size === this.siteCount) return;
+      if (frontier.size === this.siteCount || expanded[siteId] === 1) return;
       insertFrontierId(siteId);
       if (frontier.size === this.siteCount) return;
-      for (const neighbor of this.#localNeighbors(siteId)) insertFrontierId(neighbor);
-      for (const target of this.#directedOut.get(siteId) ?? []) insertFrontierId(target);
+      // This hot path runs for every transported population. The topology is
+      // already stored in this exact order; do not allocate a six-item array
+      // on every visit merely to traverse the same immutable neighbours.
+      const offset = siteId * 6;
+      for (let index = 0; index < this.#localNeighborCounts[siteId]!; index += 1)
+        insertFrontierId(this.#localNeighborTable[offset + index]!);
+      for (const target of this.#directedOut.get(siteId) ?? [])
+        if (!this.#prescribedActionSites.has(target)) insertFrontierId(target);
+      expanded[siteId] = 1;
     };
     const removeFrontier = (siteId: number): void => {
       if (!frontier.delete(siteId)) return;
+      expanded[siteId] = 0;
+      const offset = siteId * 6;
+      for (let index = 0; index < this.#localNeighborCounts[siteId]!; index += 1)
+        expanded[this.#localNeighborTable[offset + index]!] = 0;
+      if (!this.#prescribedActionSites.has(siteId))
+        for (const source of this.#directedIn.get(siteId) ?? []) expanded[source] = 0;
       let low = 0, high = frontierOrder.length - 1;
       while (low <= high) {
         const middle = (low + high) >>> 1;
@@ -1944,6 +1984,7 @@ export class DistributedPhysicalMedium3DV1 {
     let rejectedSteps = 0;
     let directedTransportMass = 0;
     const leaderSiteIds: number[] = [];
+    const collectiveChannels = this.#activeCoactivationAssemblies();
     const decay = Math.exp(-this.#config.activationDissipation * this.#config.dt);
     const proposalSigma = Math.sqrt(2 * this.#config.diffusion * this.#config.dt);
     for (let step = 0; step < steps; step += 1) {
@@ -1965,14 +2006,11 @@ export class DistributedPhysicalMedium3DV1 {
         if (activation[siteId]! < this.#config.minimumActiveMagnitude) activation[siteId] = 0;
         phiActivation[siteId] = phi(activation[siteId]!);
       }
-      // A repeated same-time population has a higher-order assembly channel
-      // in addition to the lattice's six-neighbour bonds.  This is a
-      // transient, finite-conductance exchange over the queried members: it
-      // conserves their total excitation and only reduces within-assembly
-      // variance.  It never mutates persistent sites/bonds and is absent when
-      // no live repeated assembly was found.
-      if (terminalField !== undefined) this.#applyTransientCoactivationResonance(
-        activation, phiActivation, terminalField, addFrontier);
+      // Learned collective channels belong to the substrate, not the reader.
+      // Ordinary settling, calibration and continuation therefore use the
+      // same live channels. Only the actual excitation can drive an exchange.
+      this.#applyTransientCoactivationResonance(
+        activation, phiActivation, collectiveChannels, addFrontier);
       // `steps` denotes physical field ticks, not a number of globally shared
       // lottery tickets.  During one tick every site in the active frontier
       // receives one local Metropolis micro-proposal, in a seeded random
@@ -2128,47 +2166,51 @@ export class DistributedPhysicalMedium3DV1 {
     };
   }
 
+  #activeCoactivationAssemblies(): DistributedCoactivationAssemblyEvidenceV1[] {
+    return [...this.#coactivationAssemblies.values()]
+      .flatMap(assembly => {
+        if (assembly.terminalPulseSiteIds.length < 2
+          || assembly.supportMass < this.#config.minimumActiveMagnitude) return [];
+        const active = [...assembly.memberTraceIds].filter(traceId => {
+          const footprint = this.#footprints.get(traceId);
+          return footprint !== undefined && this.#isFootprintActiveInternal(footprint);
+        });
+        return active.length < 2 ? [] : [this.#snapshotCoactivationAssembly({
+          ...assembly, memberTraceIds: new Set(active) })];
+      })
+      .sort((left, right) => left.assemblyId.localeCompare(right.assemblyId, 'en'));
+  }
+
   #applyTransientCoactivationResonance(activation: Float64Array,
-    phiActivation: Float64Array, terminalField: TerminalFieldStatisticsV1,
+    phiActivation: Float64Array, assemblies: readonly DistributedCoactivationAssemblyEvidenceV1[],
     addFrontier: (siteId: number) => void): void {
-    const strength = terminalField.coactivationResonanceStrength;
-    if (strength <= 0 || terminalField.coactivationAssembly === null
-      || terminalField.coactivationSeedSiteIds.size < 2) return;
-    // The query may deliberately omit a quarter of the population during a
-    // robustness probe.  Resonance therefore acts on the complete, already
-    // learned terminal population, not only on the members that happened to
-    // be supplied by this query.  Otherwise an omitted member can never be
-    // restored and a distributed assembly is reduced to a set of unrelated
-    // local wells.  The population is still selected solely by the live
-    // repeated physical assembly above; an arbitrary query cannot create it.
-    const sites = [...terminalField.coactivationAssembly.terminalPulseSiteIds]
-      .sort((left, right) => left - right);
-    // The collective conductance is learned from the assembly's own repeated
-    // support mass and the frozen symmetric-learning coefficient.  Applying
-    // it for one physical dt yields a finite, mass-conserving transport over
-    // the observed population; it is neither a new persistent bond nor a
-    // threshold adjustment.  A partial query is proportionally weaker.
-    const learnedConductance = Math.min(1,
-      terminalField.coactivationAssembly.supportMass * this.#config.symmetricLearningRate);
-    const rate = Math.min(.25,
-      learnedConductance * this.#config.dt * terminalField.coactivationCoverage);
-    if (rate <= 0) return;
-    let total = 0;
-    for (const siteId of sites) total += activation[siteId]!;
-    const mean = total / sites.length;
-    const deltas = sites.map(siteId => rate * (mean - activation[siteId]!));
-    // Correct floating-point drift so this higher-order exchange is exactly
-    // mass-conserving to the precision of the stored field.
-    const correction = deltas.reduce((sum, value) => sum + value, 0) / sites.length;
-    for (let index = 0; index < sites.length; index += 1) {
-      const siteId = sites[index]!;
-      const next = activation[siteId]! + deltas[index]! - correction;
-      if (next < -EPSILON || next > this.#config.maximumActivation + EPSILON)
-        throw new Error('coactivation resonance violated finite excitation bounds');
-      activation[siteId] = clamp(next, 0, this.#config.maximumActivation);
-      phiActivation[siteId] = phi(activation[siteId]!);
-      if (activation[siteId]! >= this.#config.minimumActiveMagnitude)
-        addFrontier(siteId);
+    for (const assembly of assemblies) {
+      const sites = [...assembly.terminalPulseSiteIds]
+        .sort((left, right) => left - right);
+      // Existing learned conductance exchanges finite excitation. Its input
+      // is actual activation, never the population named by the observer.
+      const learnedConductance = Math.min(1,
+        assembly.supportMass * this.#config.symmetricLearningRate);
+      const coverage = sites.filter(siteId => activation[siteId]!
+        >= this.#config.minimumActiveMagnitude).length / sites.length;
+      const rate = Math.min(.25,
+        learnedConductance * this.#config.dt * coverage);
+      if (rate <= 0) continue;
+      let total = 0;
+      for (const siteId of sites) total += activation[siteId]!;
+      const mean = total / sites.length;
+      const deltas = sites.map(siteId => rate * (mean - activation[siteId]!));
+      const correction = deltas.reduce((sum, value) => sum + value, 0) / sites.length;
+      for (let index = 0; index < sites.length; index += 1) {
+        const siteId = sites[index]!;
+        const next = activation[siteId]! + deltas[index]! - correction;
+        if (next < -EPSILON || next > this.#config.maximumActivation + EPSILON)
+          throw new Error('coactivation resonance violated finite excitation bounds');
+        activation[siteId] = clamp(next, 0, this.#config.maximumActivation);
+        phiActivation[siteId] = phi(activation[siteId]!);
+        if (activation[siteId]! >= this.#config.minimumActiveMagnitude)
+          addFrontier(siteId);
+      }
     }
   }
 
@@ -2202,66 +2244,102 @@ export class DistributedPhysicalMedium3DV1 {
   #applyDirectedTransport(activation: Float64Array, phiActivation: Float64Array,
     frontierIds: readonly number[], frontier: Set<number>,
     addFrontier: (siteId: number) => void): number {
-    const requested: Array<{ source: number; target: number; amount: number }> = [];
-    const incoming = new Map<number, number>();
+    const edgeCapacity = Math.max(1, this.#directedBonds.size);
+    let scratch = this.#transportScratch;
+    if (scratch === null || scratch.incoming.length !== activation.length
+      || scratch.source.length < edgeCapacity) {
+      scratch = this.#transportScratch = {
+        source: new Int32Array(edgeCapacity), target: new Int32Array(edgeCapacity),
+        amount: new Float64Array(edgeCapacity),
+        incoming: new Float64Array(activation.length), scale: new Float64Array(activation.length),
+        delta: new Float64Array(activation.length), incomingSeen: new Uint8Array(activation.length),
+        deltaSeen: new Uint8Array(activation.length), incomingOrder: new Int32Array(activation.length),
+        deltaOrder: new Int32Array(activation.length),
+      };
+    }
+    const { source: sources, target: targets, amount: amounts, incoming, scale, delta,
+      incomingSeen, deltaSeen, incomingOrder, deltaOrder } = scratch;
+    let requestCount = 0, incomingCount = 0, deltaCount = 0;
     for (const source of frontierIds) {
       const sourceActivation = activation[source]!;
       if (sourceActivation < this.#config.minimumActiveMagnitude) continue;
       const outgoing = this.#directedOutgoingAdjacency[source];
       if (outgoing === undefined || outgoing.size === 0) continue;
-      const candidates: Array<{ target: number; amount: number }> = [];
+      const candidateStart = requestCount;
       let total = 0;
       for (const [target, bond] of outgoing) {
+        if (this.#prescribedActionSites.has(target)) continue;
         const targetCapacity = 1 - activation[target]! / this.#config.maximumActivation;
         if (targetCapacity <= 0) continue;
         const amount = this.#config.dt * bond.directedConductance
           * phiActivation[source]! * targetCapacity;
         if (amount <= 0) continue;
-        candidates.push({ target, amount });
+        sources[requestCount] = source;
+        targets[requestCount] = target;
+        amounts[requestCount++] = amount;
         total += amount;
       }
       const sourceScale = total <= sourceActivation || total === 0 ? 1 : sourceActivation / total;
-      for (const candidate of candidates) {
-        const amount = candidate.amount * sourceScale;
-        requested.push({ source, target: candidate.target, amount });
-        incoming.set(candidate.target, (incoming.get(candidate.target) ?? 0) + amount);
+      for (let index = candidateStart; index < requestCount; index++) {
+        const target = targets[index]!;
+        const amount = amounts[index]! * sourceScale;
+        amounts[index] = amount;
+        if (incomingSeen[target] === 0) {
+          incomingSeen[target] = 1;
+          incomingOrder[incomingCount++] = target;
+        }
+        incoming[target] = incoming[target]! + amount;
       }
     }
-    if (requested.length === 0) return 0;
-    const targetScale = new Map<number, number>();
-    for (const [target, amount] of incoming) {
+    if (requestCount === 0) return 0;
+    for (let index = 0; index < incomingCount; index++) {
+      const target = incomingOrder[index]!, amount = incoming[target]!;
       const capacity = this.#config.maximumActivation - activation[target]!;
-      targetScale.set(target, amount <= capacity || amount === 0 ? 1 : capacity / amount);
+      scale[target] = amount <= capacity || amount === 0 ? 1 : capacity / amount;
     }
-    const deltas = new Map<number, number>();
-    for (const transfer of requested) {
-      const amount = transfer.amount * targetScale.get(transfer.target)!;
-      deltas.set(transfer.source, (deltas.get(transfer.source) ?? 0) - amount);
-      deltas.set(transfer.target, (deltas.get(transfer.target) ?? 0) + amount);
+    for (let index = 0; index < requestCount; index++) {
+      const source = sources[index]!, target = targets[index]!;
+      const amount = amounts[index]! * scale[target]!;
+      if (deltaSeen[source] === 0) {
+        deltaSeen[source] = 1; deltaOrder[deltaCount++] = source;
+      }
+      delta[source] = delta[source]! - amount;
+      if (deltaSeen[target] === 0) {
+        deltaSeen[target] = 1; deltaOrder[deltaCount++] = target;
+      }
+      delta[target] = delta[target]! + amount;
     }
     let transportedMass = 0;
-    for (const [siteId, delta] of deltas) {
-      const next = activation[siteId]! + delta;
+    for (let index = 0; index < deltaCount; index++) {
+      const siteId = deltaOrder[index]!;
+      const next = activation[siteId]! + delta[siteId]!;
       if (next < -EPSILON || next > this.#config.maximumActivation + EPSILON) {
         throw new Error("directed transport violated finite excitation bounds");
       }
       activation[siteId] = clamp(next, 0, this.#config.maximumActivation);
       phiActivation[siteId] = phi(activation[siteId]!);
       if (activation[siteId]! >= this.#config.minimumActiveMagnitude) addFrontier(siteId);
+      delta[siteId] = 0; deltaSeen[siteId] = 0;
     }
-    for (const transfer of requested) {
-      transportedMass += transfer.amount * targetScale.get(transfer.target)!;
+    for (let index = 0; index < requestCount; index++) {
+      transportedMass += amounts[index]! * scale[targets[index]!]!;
+    }
+    for (let index = 0; index < incomingCount; index++) {
+      const siteId = incomingOrder[index]!;
+      incoming[siteId] = 0; incomingSeen[siteId] = 0;
     }
     return transportedMass;
   }
 
   #allInfluencesInactive(siteId: number, activation: Float64Array): boolean {
-    if (this.#localNeighbors(siteId).some((neighbor) => activation[neighbor]! >= this.#config.minimumActiveMagnitude)) {
-      return false;
-    }
-    for (const source of this.#directedIn.get(siteId) ?? []) {
-      if (activation[source]! >= this.#config.minimumActiveMagnitude) return false;
-    }
+    const offset = siteId * 6;
+    for (let index = 0; index < this.#localNeighborCounts[siteId]!; index += 1)
+      if (activation[this.#localNeighborTable[offset + index]!]! >= this.#config.minimumActiveMagnitude)
+        return false;
+    if (!this.#prescribedActionSites.has(siteId))
+      for (const source of this.#directedIn.get(siteId) ?? []) {
+        if (activation[source]! >= this.#config.minimumActiveMagnitude) return false;
+      }
     return true;
   }
 
@@ -2346,8 +2424,11 @@ export class DistributedPhysicalMedium3DV1 {
     const coactivationResonanceStrength = coactivation === null ? 0
       : clamp((coactivation.assembly.independentEpisodeCount / 8)
         * coactivation.coverage, 0, 1);
+    // A seeded, previously learned population can propagate into another
+    // population. Its input identity must not suppress measurements of the
+    // actual terminal field. These masks are passive and do not change the
+    // simulation, its resonance input, or its random stream.
     const passiveAssemblyMeasurements = allowPassiveAssemblyReadout
-      && coactivation === null
       ? [...this.#coactivationAssemblies.values()]
         // A passive candidate must already have repeated physical support.
         // Active footprint checks mirror #findCoactivationAssembly and keep
@@ -2842,9 +2923,25 @@ export class DistributedPhysicalMedium3DV1 {
   }
 
   #unboundCount(): number {
-    let count = 0;
-    for (const binding of this.#bindings) if (binding === null) count += 1;
-    return count;
+    return this.#unboundTotal;
+  }
+
+  #updateUnboundRank(siteId: number, delta: number): void {
+    this.#unboundTotal += delta;
+    for (let index = siteId + 1; index < this.#unboundRanks.length; index += index & -index)
+      this.#unboundRanks[index] = this.#unboundRanks[index]! + delta;
+  }
+
+  #unboundAtRank(rank: number): number {
+    let index = 0;
+    for (let bit = 2 ** Math.floor(Math.log2(this.#unboundRanks.length - 1)); bit > 0; bit >>>= 1) {
+      const next = index + bit;
+      if (next < this.#unboundRanks.length && this.#unboundRanks[next]! <= rank) {
+        rank -= this.#unboundRanks[next]!;
+        index = next;
+      }
+    }
+    return index;
   }
 
   #expandNextTile(): void {
@@ -2892,6 +2989,7 @@ export class DistributedPhysicalMedium3DV1 {
     this.#supportMass = this.#extendFloat(this.#supportMass, nextLength);
     this.#lastUpdatedAt = this.#extendFloat(this.#lastUpdatedAt, nextLength);
     while (this.#bindings.length < nextLength) this.#bindings.push(null);
+    for (let siteId = firstSiteId; siteId < nextLength; siteId++) this.#updateUnboundRank(siteId, 1);
     this.#localEnhancementAdjacency.length = nextLength;
     this.#directedOutgoingAdjacency.length = nextLength;
     this.#directedIncomingAdjacency.length = nextLength;
