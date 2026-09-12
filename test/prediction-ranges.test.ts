@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Action, Observation, RealEvent } from '../src/contracts.js';
 import type { ActionOfferV1, GroundedGoalV1 } from '../src/control/contracts.js';
-import { ExperienceMedium } from '../src/experience-medium.js';
+import { ExperienceMedium, experienceInputs, motorIdentity } from '../src/experience-medium.js';
+import { ContextualReadout } from '../src/contextual-readout.js';
 import { ExperienceAgent, compareExperiencePrediction } from '../src/experience-agent.js';
 import { GroundedGoalEvaluatorV1 } from '../src/control/goal.js';
 import { LearnedAffordances } from '../src/learned-affordances.js';
@@ -107,4 +108,95 @@ test('imagined numeric envelopes cannot be learned as additional physical eviden
   const medium = new ExperienceMedium(41);
   assert.throws(() => medium.observe(measured(frame(1), { ...frame(2), predictionBounds: {} })), /imagined/);
   assert.equal(medium.writes, 0);
+});
+
+// These are synthetic measured mechanisms, not native Minecraft trials. The
+// learner receives only the before/after windows, never this response function.
+function calibrationMechanism() {
+  const medium = new ExperienceMedium(41); let sequence = 0;
+  const observe = (signal: number, nuisance: number, z = 0): Observation => ({ ...frame(++sequence, z),
+    self: { ...frame(sequence, z).self, properties: { signal, nuisance } } });
+  const learn = (signal: number, displacement: number, nuisance = 0) => {
+    const before = observe(signal, nuisance), after = observe(signal, nuisance, displacement);
+    medium.observe(measured(before, after));
+  };
+  const local = (observation: Observation) => ContextualReadout.restore(medium.snapshot().contexts!)
+    .read(motorIdentity(cueFor(action, observation)) + '/self', 'motion/0', experienceInputs(observation));
+  return { medium, observe, learn, local };
+}
+
+test('a sparse local response cannot borrow global regression calibration and can become supported through learning', () => {
+  const model = calibrationMechanism();
+  const train = (signal: number, count: number) => {
+    for (let i = 0; i < count; i++) model.learn(signal, signal ? -1.2 : -.8, i % 3);
+  };
+  train(0, 128); train(1, 6); train(0, 32);
+  const query = model.observe(1, 99), local = model.local(query)!;
+  assert.equal(local.samples, 6); assert.equal(local.supported, false);
+  assert(local.externalCalibrated < 8);
+  const digest = JSON.stringify(model.medium.snapshot());
+  const prediction = model.medium.predict(offer(query).cue, query);
+  assert(!prediction.supportedFields.includes('self/position.2'),
+    'six local calibration windows cannot inherit the frequent region\'s global score');
+  assert.equal(new ExperienceAgent(model.medium).plan(goal, query, [offer(query)], { depth: 1 }).steps.length, 0);
+  const familiar = model.observe(0, 99);
+  assert(model.medium.predict(offer(familiar).cue, familiar).supportedFields.includes('self/position.2'));
+  const probe = model.medium.predict(offer(query).cue, query, { probe: true });
+  assert.equal(probe.accepted, false); assert.deepEqual(probe.supportedFields, []);
+  assert(probe.hypothesizedFields!.includes('self/position.2'));
+  assert.equal(JSON.stringify(model.medium.snapshot()), digest, 'frozen queries never add calibration');
+
+  train(1, 48); train(0, 512);
+  const retained = model.medium.predict(offer(query).cue, query);
+  assert(retained.supportedFields.includes('self/position.2'), 'actual local learning earns support that survives unrelated updates');
+  assert(compareExperiencePrediction(retained, { ...query, self: { ...query.self, position: [0, 0, -1.2] } })
+    .errors.find(error => error.field === 'self/position.2')!.matched);
+  const snapshot = model.medium.snapshot(), restored = ExperienceMedium.restore(snapshot);
+  assert(snapshot.contexts!.circuits.every(([, circuit]) => circuit.samples.length <= snapshot.contexts!.capacity));
+  assert.deepEqual(restored.predict(offer(query).cue, query), retained);
+});
+
+test('regression cannot bypass the observed context range, including an uncertain future input', () => {
+  const model = calibrationMechanism();
+  for (let i = 0; i < 256; i++) model.learn(i % 2, i % 2 ? -1.2 : -.8, i % 3);
+  const familiar = model.observe(1, 3);
+  assert(model.medium.predict(offer(familiar).cue, familiar).supportedFields.includes('self/position.2'));
+  const outside = model.observe(2, 3);
+  assert.equal(model.local(outside)!.supported, false);
+  assert(model.local(outside)!.externalAccuracy >= .8, 'calibration alone does not cover an unobserved input');
+  assert(!model.medium.predict(offer(outside).cue, outside).supportedFields.includes('self/position.2'));
+  const uncertain: Observation = { ...familiar, predictionBounds: { 'self/properties.signal': [1, 2] } };
+  assert(!model.medium.predict(offer(uncertain).cue, uncertain).supportedFields.includes('self/position.2'));
+});
+
+function continuousCalibration(scale: number) {
+  const model = calibrationMechanism(); let random = 123;
+  for (let i = 0; i < 320; i++) {
+    random = (Math.imul(random, 1664525) + 1013904223) >>> 0;
+    const signal = random / 2 ** 32;
+    model.learn(signal, -1 - scale * signal);
+  }
+  return model;
+}
+
+test('supported numeric ranges include measured pre-update residuals on a smooth held-out response', () => {
+  const model = continuousCalibration(.2), digest = JSON.stringify(model.medium.snapshot());
+  const query = model.observe(.2, 0), prediction = model.medium.predict(offer(query).cue, query);
+  assert(prediction.supportedFields.includes('self/position.2'), 'abstaining cannot pass the coverage check');
+  const actual: Observation = { ...query, self: { ...query.self, position: [0, 0, -1.04] } };
+  assert(compareExperiencePrediction(prediction, actual).errors.find(error => error.field === 'self/position.2')!.matched,
+    'a small point error does not justify a narrower empirical range that excludes the actual outcome');
+  const bounds = prediction.observation!.predictionBounds!['self/position.2']!;
+  assert(bounds[1] < 0, 'measured residuals still permit useful directional progress');
+  assert.equal(JSON.stringify(model.medium.snapshot()), digest, 'held-out outcomes do not train the model');
+});
+
+test('a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response', () => {
+  const model = continuousCalibration(4), query = model.observe(.2, 0), local = model.local(query)!;
+  assert.equal(local.supported, false); assert(local.externalCalibrated >= 8); assert(local.externalAccuracy >= .8);
+  const prediction = model.medium.predict(offer(query).cue, query);
+  assert(prediction.supportedFields.includes('self/position.2'));
+  const actual: Observation = { ...query, self: { ...query.self, position: [0, 0, -1.8] } };
+  assert(compareExperiencePrediction(prediction, actual).errors.find(error => error.field === 'self/position.2')!.matched);
+  assert(prediction.observation!.predictionBounds!['self/position.2']![1] < 0);
 });

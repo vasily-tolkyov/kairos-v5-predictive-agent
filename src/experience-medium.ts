@@ -526,6 +526,16 @@ export class ExperienceMedium {
         const value = conditional?.supported ? { value: conditional.value, absolute: conditional.absolute,
           range: conditional.bounds?.[conditional.absolute ? 'absolute' : 'delta'],
           margin: 1, supported: true } : this.#read(head, field, bounds);
+        if (!conditional?.supported) {
+          // A global score cannot certify a sparse, locally unreliable or
+          // out-of-range response. Keep regression available where actual
+          // pre-update predictions have been calibrated in this region.
+          value.supported &&= conditional?.externalSupported === true;
+          if (value.range && conditional?.externalErrorRadius != null) {
+            const residual = conditional.externalErrorRadius;
+            value.range = [value.range[0] - residual, value.range[1] + residual];
+          }
+        }
         // A calibrated mean does not erase observed no-effect outcomes. Use
         // the retained conditional envelope even for a regression readout.
         if (value.range && conditional?.bounds) value.range = hull([value.range,

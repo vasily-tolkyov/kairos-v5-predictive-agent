@@ -177,3 +177,20 @@ the separate R6 retention registry. The enclosure-only inspector also rejected
 the natural-world checkpoint as out of scope; the applicable continuing-run
 auditor confirms the peaceful saved world, player, windows and model digest.
 These failed operations are retained and do not become successful evidence.
+
+## Subsequent prediction calibration work
+
+The [readout follow-up](prediction-calibration-followup.md) closes two regression
+support bypasses and adds empirical pre-update residual margins to numeric
+ranges. The active integration set passes 135/135, with four new tests that
+failed on the prior implementation. A first candidate failed the existing
+three-stage composition check; its log is preserved. The final candidate keeps
+that assertion and all original native budgets unchanged.
+
+This continuation adds no native trials or checkpoint changes. Its synthetic
+smooth-response comparison has identical learned state: the prior readout
+supports 76/76 queries with 68 interval matches; the candidate supports 64/76,
+all matching, with wider ranges. Lower coverage and fewer total matches prevent
+a claim of increased usable prediction coverage. The R6 native failure above
+remains the latest physical retention outcome. Next work still requires the
+exact original frame, before/after models and simple peaceful world comparison.

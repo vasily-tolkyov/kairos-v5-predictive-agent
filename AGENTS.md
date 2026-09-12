@@ -7,6 +7,15 @@ generator/critic loops, custom routing or phase-stage autorun protocols. Archive
 workflow artifacts are historical evidence only. Current engineering progress is
 recorded in `docs/native-continuation-2026-09-13.md`.
 
+Read `docs/prediction-calibration-followup.md` for the subsequent readout repair
+from PR #2 head 309c4ea. Its complete active integration set passes 135/135.
+Four new synthetic regressions fail on that baseline. The repair requires local
+calibration and observed context for regression support, and adds measured
+residual margins to numeric ranges. It adds zero native trials and does not
+establish improved native retention. The failed first candidate and all earlier
+evidence remain preserved; obtaining the draft raw packages and running the
+same peaceful model/world comparison is still required.
+
 Start at `START_HERE.md`, `docs/codex-rescue/README.zh-CN.md`, and
 `docs/codex-rescue/TASK_STATE.json`. Also read `docs/codex-handoff/README.zh-CN.md`,
 `docs/codex-handoff/evidence/next-stage-checkpoint13.json`, and
