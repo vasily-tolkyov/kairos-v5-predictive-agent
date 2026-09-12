@@ -38,8 +38,14 @@ native 100/50 ms planning deadlines are unchanged. Failed logs are retained.
 The R5 candidate credits actual action-window progress while recovering from
 a setback, independently of the historical best. It preserves that best and
 still rejects no effect, numerical drift and unrelated sliding. The regression
-failed on the prior actor and passes with frozen dynamics. Native R5 validation
-is pending; do not change running immutable R3/R4 actors in place.
+failed on the prior actor and passes with frozen dynamics. A 128-action native
+R5 continuation independently confirms all nine actual task advances, with zero
+false credits, but no task success. The matched controller comparison is stopped: R3 93 actions, R5 95 actions,
+both goals pending; R5 credits all 18 actual advances without false credits.
+The one-hour R3 run and retention test are also stopped and audited. After the
+one-hour updates, the earlier 40-action task failed at 191 actions under the same
+actor, world, goal, sampling state and budget. Current claims and exact hashes
+are in docs/native-evidence-2026-09-13. Do not overwrite immutable actors.
 
 The user's current direction is peaceful mode first, then more complex
 scenarios. Natural evaluation now accepts explicit --difficulty peaceful and

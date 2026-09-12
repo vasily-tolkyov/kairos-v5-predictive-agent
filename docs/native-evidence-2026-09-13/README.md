@@ -72,3 +72,10 @@ definitions, engine identities, imagined outcomes, audit data and success labels
 are not learner training inputs. Counts of learning writes, exploratory block
 removal, hypothetical plans and supported predicted causal execution are separate
 measurements.
+
+When continuing a custom task, pass its exact existing goal file with `--goal`.
+Omitting it is rejected by the current harness before engine startup; historical
+actor copies may instead add a default task. See the preserved launch deviation.
+The retention protocol separately replaces only learned state in an unused
+initial-world copy, preserving all nonlearning fields and world bytes. Its
+preparation record is not a new physical trial.

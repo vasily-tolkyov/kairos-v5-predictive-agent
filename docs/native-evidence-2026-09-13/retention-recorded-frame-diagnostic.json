@@ -1,0 +1,124 @@
+{
+  "version": "RecordedRetentionPredictionComparison1",
+  "scope": "Identical previously recorded frame and goal baseline; frozen models with equal initial choice counters, zero new physical trials. This diagnostic cannot replace native task outcomes.",
+  "eventSha256": "d36d9a8209dba5a680807fe4c15225622ea63e0e8cf67f41c4895dedfd9bf041",
+  "goal": {
+    "version": "GroundedGoalV1",
+    "id": "peaceful-heldout-reach-20260913",
+    "expression": {
+      "kind": "predicate",
+      "predicate": {
+        "version": "GoalPredicateV1",
+        "id": "terminal-coordinate",
+        "subject": {
+          "kind": "self"
+        },
+        "observable": "position.2",
+        "comparator": "less-than",
+        "target": -14.5
+      }
+    }
+  },
+  "beforeModelSha256": "8cfdd33cc6ce4467a972483c28449d79899aaee83bafd3b2ed741ba3f4a6e833",
+  "afterModelSha256": "6e71f4f4f4059f4ca22a76b7d9b84955f3d86b6f892db99877e86999b243e574",
+  "beforePlans": [
+    {
+      "exploratory": false,
+      "budgetMilliseconds": 100,
+      "elapsedMilliseconds": 102.34579999999914,
+      "expanded": 1,
+      "reason": "predicted-progress",
+      "length": 1
+    },
+    {
+      "exploratory": false,
+      "budgetMilliseconds": 500,
+      "elapsedMilliseconds": 508.85069999999996,
+      "expanded": 7,
+      "reason": "predicted-progress",
+      "length": 1
+    },
+    {
+      "exploratory": false,
+      "budgetMilliseconds": 2000,
+      "elapsedMilliseconds": 2002.5960000000005,
+      "expanded": 25,
+      "reason": "predicted-progress",
+      "length": 1
+    },
+    {
+      "exploratory": true,
+      "budgetMilliseconds": 100,
+      "elapsedMilliseconds": 111.48049999999967,
+      "expanded": 1,
+      "reason": "hypothetical-progress",
+      "length": 1
+    },
+    {
+      "exploratory": true,
+      "budgetMilliseconds": 500,
+      "elapsedMilliseconds": 502.5038999999997,
+      "expanded": 5,
+      "reason": "hypothetical-progress",
+      "length": 5
+    },
+    {
+      "exploratory": true,
+      "budgetMilliseconds": 2000,
+      "elapsedMilliseconds": 1320.7780000000002,
+      "expanded": 27,
+      "reason": "hypothetical-goal",
+      "length": 6
+    }
+  ],
+  "afterPlans": [
+    {
+      "exploratory": false,
+      "budgetMilliseconds": 100,
+      "elapsedMilliseconds": 105.84860000000026,
+      "expanded": 1,
+      "reason": "search-budget",
+      "length": 0
+    },
+    {
+      "exploratory": false,
+      "budgetMilliseconds": 500,
+      "elapsedMilliseconds": 506.2541000000001,
+      "expanded": 20,
+      "reason": "search-budget",
+      "length": 0
+    },
+    {
+      "exploratory": false,
+      "budgetMilliseconds": 2000,
+      "elapsedMilliseconds": 2000.8719,
+      "expanded": 31,
+      "reason": "search-budget",
+      "length": 0
+    },
+    {
+      "exploratory": true,
+      "budgetMilliseconds": 100,
+      "elapsedMilliseconds": 106.73480000000018,
+      "expanded": 1,
+      "reason": "hypothetical-progress",
+      "length": 1
+    },
+    {
+      "exploratory": true,
+      "budgetMilliseconds": 500,
+      "elapsedMilliseconds": 491.91350000000057,
+      "expanded": 2,
+      "reason": "hypothetical-goal",
+      "length": 2
+    },
+    {
+      "exploratory": true,
+      "budgetMilliseconds": 2000,
+      "elapsedMilliseconds": 482.0105000000003,
+      "expanded": 2,
+      "reason": "hypothetical-goal",
+      "length": 2
+    }
+  ]
+}

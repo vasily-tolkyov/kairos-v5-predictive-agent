@@ -1,0 +1,86 @@
+{
+  "version": "PeacefulNativeProgressControllerPair1",
+  "initialStates": {
+    "version": "MatchedProgressRecoveryInitialStates1",
+    "sessionSha256": "1fb7c1ca445c8fad761274f5cb75a6c2c382874c69e270f8cb2684b2084da635",
+    "worldTreeSha256": "f613e6355458545602a979d4876d8b7f9728e2b1057b77e6e3f185760af1c337",
+    "sourceReportSha256": "a3aea6a61627fd453487cc8b6059a8fec81b64ee6d7b51f3ec297d3435354775",
+    "worldArchiveSha256": "edd26f33c8c4dc5a496f433230809a8d7159503d0f4f24d2d91bed27c600559f",
+    "worldFilesEqual": true,
+    "newPhysicalTrials": 0,
+    "scope": "Exact copies of the one-hour stopped world and model, pending goal preserved"
+  },
+  "validControlStart": "peaceful-progress-control-valid-start",
+  "excludedAttempt": "peaceful-progress-control-frozen (additional default task)",
+  "results": [
+    {
+      "run": "peaceful-progress-control-valid",
+      "actor": "peaceful-r3",
+      "decisions": 96,
+      "actualActions": 93,
+      "seconds": 201.925,
+      "goalStatus": "pending",
+      "newWrites": 0,
+      "learningDigest": "06e3041b2710456ef545d91797e066e748436000914d0499808a76f109c94bcd",
+      "learningDigestUnchanged": true,
+      "initialPosition": [
+        8.3,
+        61.875,
+        46.01216825431156
+      ],
+      "finalPosition": [
+        9.087020370697134,
+        62.875,
+        47.65757827454995
+      ],
+      "initialResidual": 0.6389059544263667,
+      "finalResidual": 0.6450720263791339,
+      "advances": 16,
+      "creditedAdvances": 0,
+      "falseCredits": 0,
+      "deferredTaskWindows": 0,
+      "supportedTaskPlans": 0,
+      "hypotheses": 22,
+      "worldArchiveSha256": "d9ec01994582b64f89751294528579b171b3db1efa5b73761183360af435bbd1",
+      "deaths": {
+        "reported": 0,
+        "serverMessages": []
+      }
+    },
+    {
+      "run": "peaceful-progress-candidate-valid",
+      "actor": "peaceful-r5-progress",
+      "decisions": 96,
+      "actualActions": 95,
+      "seconds": 206.434,
+      "goalStatus": "pending",
+      "newWrites": 0,
+      "learningDigest": "06e3041b2710456ef545d91797e066e748436000914d0499808a76f109c94bcd",
+      "learningDigestUnchanged": true,
+      "initialPosition": [
+        8.3,
+        61.875,
+        46.01216825431156
+      ],
+      "finalPosition": [
+        9.34834668744737,
+        63,
+        48.595532270560454
+      ],
+      "initialResidual": 0.6389059544263667,
+      "finalResidual": 0.6484936234800969,
+      "advances": 18,
+      "creditedAdvances": 18,
+      "falseCredits": 0,
+      "deferredTaskWindows": 0,
+      "supportedTaskPlans": 0,
+      "hypotheses": 17,
+      "worldArchiveSha256": "89696d3096e422efa76a7937452479f2ca5f9f59864ac170af9a9e3290557ded",
+      "deaths": {
+        "reported": 0,
+        "serverMessages": []
+      }
+    }
+  ],
+  "conclusion": "R5 credits all 18 actual advances without false credits. Neither actor completes the task; both finish farther from the goal. Neither enters a task cooldown in this short pair, so improved task performance from the recovery repair is not established. One matched pair with native timing/physics variability and ordinary shared-host work; not an exact replay or effect estimate."
+}

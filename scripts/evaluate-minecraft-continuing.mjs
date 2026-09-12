@@ -83,6 +83,10 @@ const learningDigest = () => createHash('sha256').update(JSON.stringify([
 const goalBytes = values.goal ? await readFile(resolve(values.goal)) : null;
 const goalInput = goalBytes ? JSON.parse(goalBytes.toString('utf8')) : null;
 const requestedGoals = goalInput ? (Array.isArray(goalInput) ? goalInput : [goalInput]) : null;
+// The default enclosure goal is a fixture convenience, not permission to add
+// a second task to a preserved custom-goal experiment. Reject before booting.
+if (predecessor && !requestedGoals && session.tasks.some(task => task.status === 'pending' && task.goal.id !== 'reach-other-side'))
+  throw new Error('continuing-custom-tasks-requires-explicit-goal-file');
 if (requestedGoals && (!requestedGoals.length || requestedGoals.length > 32
   || new Set(requestedGoals.map(goal => goal.id)).size !== requestedGoals.length)) throw new Error('invalid-native-goal-set');
 if (requestedGoals?.some(goal => session.tasks.some(task => task.goal.id === goal.id
