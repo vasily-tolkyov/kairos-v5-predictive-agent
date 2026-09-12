@@ -145,3 +145,35 @@ not performed. Historical native runs did not record exact control release,
 so this pair cannot determine how often overshoot occurred in them or how much
 of their retention failure it explains. Improved long-term learning remains
 a hypothesis requiring fresh physical learning and matched retention tests.
+
+## R6 frozen candidate check
+
+The valid R6 follow-up is stopped and independently audited. Its prepared
+input is byte-identical to the earlier R3 post-learning test
+(`6e71f4f4f4059f4ca22a76b7d9b84955f3d86b6f892db99877e86999b243e574`),
+with all 23 initial world files checked before launch. It uses the same goal,
+192-decision / 480-second budget and initial nonlearning state. R6 completes
+192 decisions and 191 actions in 396.926 seconds, with zero deaths and zero
+learning writes; all 498 passive windows and active windows are retained.
+The goal remains pending, with zero supported task plans and 61 hypotheses.
+The final saved player agrees with `[5.7,63,-9.7]`, and the frozen learned digest
+is unchanged. The archive SHA256 is
+`3f18f1ff9a978ee3c1206855ac473f8d0ba0d438fe9e073fba03454abf4d58b2`.
+
+This composite candidate includes the R5 recovery change as well as the R6
+actuator fix. Its endpoint is closer than the R3 reference, but both fail;
+one such comparison cannot establish a reliable task benefit or attribute
+an effect to one change. It provides no new learning episode. The older R6
+harness filtered release diagnostics, so exact per-action release receipts
+are available in the separate calibration, not this task run. Current source
+now journals them and optionally pins exact input bytes with
+`--expected-session-sha256`; its CLI rejection/acceptance test passes.
+
+One premature launch loaded the earlier 5098-write model before preparation
+finished and executed ten actions. It was paused, archived and audited, and
+is explicitly excluded from the comparison. The valid replacement used a new
+world fork and completed model/world verification. Both originals are kept in
+the separate R6 retention registry. The enclosure-only inspector also rejected
+the natural-world checkpoint as out of scope; the applicable continuing-run
+auditor confirms the peaceful saved world, player, windows and model digest.
+These failed operations are retained and do not become successful evidence.

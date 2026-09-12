@@ -69,6 +69,10 @@ receipts. Immutable R6 copies predate those harness additions. One premature R6
 launch loaded the old model and executed ten actions; it is stopped, audited
 and explicitly excluded in retention-r6-launch-deviation.json. Never overwrite
 that deviation or substitute it for the valid model-matched candidate.
+The valid R6 comparison has also stopped: 192 decisions, 191 actions, zero
+writes/deaths, unchanged learned digest, goal pending, zero supported plans.
+Its saved world/player and original windows pass the continuing-run audit.
+Read retention-r6-comparison.json and its separate registry before continuing.
 
 The rescue release provides 5,928 complete files, including verified V47/V50/V51
 sessions and stopped worlds. Prefer V51 as the latest recovered stopped state.

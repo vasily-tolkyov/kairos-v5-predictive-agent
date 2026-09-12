@@ -103,3 +103,12 @@ digest alone cannot protect a concurrently changing world. The immutable R6
 harness predates this guard and motor-release journal forwarding. Its isolated
 calibration records releases directly, while the later task check relies on
 its completed external preflight and exact frozen actor hashes.
+
+The [R6 frozen comparison](retention-r6-comparison.json) is now stopped: 191
+actions, zero writes/deaths, unchanged learned digest, goal still pending and
+zero supported task plans. Its separate registry includes the valid candidate
+and one excluded premature launch. These are two additional stopped entries
+of the same initial scene, not two new independent worlds. The R6 retention
+package overlays the primary and motor packages and keeps the two main
+manifests; preserve or rename an existing root `EVIDENCE-MANIFEST.json` before
+extracting a later package with its own manifest.

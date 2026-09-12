@@ -1,0 +1,70 @@
+{
+  "version": "ExploratoryR6RetentionComparison1",
+  "scope": "Composite R6 candidate with R5 progress and actuator fixes. Same initial world, learned model, nonlearning state, goal and budget; not an isolated actuator-effect estimate.",
+  "initialSessionSha256": "6e71f4f4f4059f4ca22a76b7d9b84955f3d86b6f892db99877e86999b243e574",
+  "initialWorldTreeSha256": "e9eab215b68c7e0dbdb2399217ef799cceb37a5e84f0da4a323910298044416b",
+  "runs": [
+    {
+      "run": "peaceful-retention-after-learning",
+      "actor": "peaceful-r3",
+      "status": "budget-paused",
+      "stoppedAt": "2026-09-12T19:54:55.720Z",
+      "seconds": 351.602,
+      "decisions": 192,
+      "actions": 191,
+      "learningWrites": 0,
+      "passiveWindows": 470,
+      "deaths": {
+        "reported": 0,
+        "serverMessages": []
+      },
+      "goalStatus": "pending",
+      "supportedTaskPlans": 0,
+      "hypotheses": 63,
+      "finalPosition": [
+        9.732385107196716,
+        60.875,
+        3.638440234311854
+      ],
+      "unchangedLearningDigest": "06e3041b2710456ef545d91797e066e748436000914d0499808a76f109c94bcd",
+      "reportSha256": "883c0a50d16601da2793eed3df1c3b25cc38132769fcc4885d46643e9174aff5",
+      "auditSha256": "978a9806ec6e230b8f45e38be20bf740730649106f367d32c5a48c9ac55ce99e",
+      "worldArchiveSha256": "87f2d609978cf970199547e746be7e64d87cc0a78aae3f05ca6e1645a75823e8",
+      "finalSavedPlayerMatches": true
+    },
+    {
+      "run": "peaceful-retention-r6-valid",
+      "actor": "peaceful-r6-motor",
+      "status": "budget-paused",
+      "stoppedAt": "2026-09-12T20:31:40.127Z",
+      "seconds": 396.926,
+      "decisions": 192,
+      "actions": 191,
+      "learningWrites": 0,
+      "passiveWindows": 498,
+      "deaths": {
+        "reported": 0,
+        "serverMessages": []
+      },
+      "goalStatus": "pending",
+      "supportedTaskPlans": 0,
+      "hypotheses": 61,
+      "finalPosition": [
+        5.7,
+        63,
+        -9.7
+      ],
+      "unchangedLearningDigest": "06e3041b2710456ef545d91797e066e748436000914d0499808a76f109c94bcd",
+      "reportSha256": "2319c3d8a6c667c713137612112fd0a53b99f501ff3635662effd0091f71eab4",
+      "auditSha256": "740568250db77edd158a9e5debd98aac3c3af512dda0f8a73c6f84a4f00ee24e",
+      "worldArchiveSha256": "3f18f1ff9a978ee3c1206855ac473f8d0ba0d438fe9e073fba03454abf4d58b2",
+      "finalSavedPlayerMatches": true
+    }
+  ],
+  "excludedLaunch": "retention-r6-launch-deviation.json",
+  "limitations": [
+    "Both goals remain pending; no restored task success or long-term learning benefit is established.",
+    "Frozen R6 harness did not journal per-action release receipts; exact-release evidence is from the separate native calibration, and the current harness now forwards them.",
+    "The enclosure-only inspector rejects this natural-world checkpoint; its failure log is retained. The applicable continuing-run auditor verifies the saved player, peaceful world, model digest and raw windows."
+  ]
+}
