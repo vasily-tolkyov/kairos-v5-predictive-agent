@@ -15,7 +15,7 @@ the supplement contains the later R6 actor and diagnosis. The current source
 passes 131 integrated checks.
 
 Verified downloads are attached to the repository's
-[draft evidence Release](https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/untagged-058e772adc21382f71bc).
+[draft evidence Release](https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/untagged-9e21a6982b1b0305ec71).
 [artifact.json](artifact.json) records exact sizes, local SHA256 and matching
 GitHub asset digests. Draft access requires the repository owner's access.
 The original 2,073,229,124-byte package contains 42,651 verified files; the

@@ -2,11 +2,11 @@
   "version": "NativeEvidencePublication1",
   "release": {
     "id": 387688738,
-    "url": "https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/untagged-058e772adc21382f71bc",
+    "url": "https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/untagged-9e21a6982b1b0305ec71",
     "tag": "native-evidence-2026-09-13",
     "isDraft": true
   },
-  "verifiedAt": "2026-09-12T20:37:48.755Z",
+  "verifiedAt": "2026-09-12T20:38:51.540Z",
   "artifacts": [
     {
       "version": "VerifiedNativeEvidencePackage1",
