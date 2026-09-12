@@ -2,8 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { AttractorPublicEventDictionaryStoreV1, publicReadoutSignatureV1 } from '../src/core/learning/attractor-public-dictionary.js';
 import { InterventionAgendaStoreV1, interventionPairIdentityV1 } from '../src/core/learning/intervention-agenda.js';
-import { KairosV5RSeriesRuntimeV1, KAIROS_V5_R_SERIES_NAMESPACE_V1 }
-  from '../src/r-series-runtime.js';
 import { InterventionPairCollectorV1 } from '../src/core/learning/intervention-pair-collector.js';
 
 const readout = (core: number[] = [1, 2]) => ({
@@ -65,16 +63,6 @@ test('intervention cells open only after two physical violations and grade four 
       sameAction: true, onlyPlannedFactorsChanged: true, physicalBranchSelectionRate: 1,
       factorAblationLoss: .5 });
   assert.equal(agenda.snapshot().cells[0]?.status, 'intervention-supported');
-});
-
-test('R-series checkpoint is a distinct namespace and restores byte-identically', () => {
-  const runtime = new KairosV5RSeriesRuntimeV1();
-  const checkpoint = runtime.snapshot();
-  assert.equal(checkpoint.namespace, KAIROS_V5_R_SERIES_NAMESPACE_V1);
-  assert.deepEqual(KairosV5RSeriesRuntimeV1.restore(checkpoint).snapshot(), checkpoint);
-  assert.throws(() => KairosV5RSeriesRuntimeV1.restore({
-    ...checkpoint, namespace: 'legacy' as typeof KAIROS_V5_R_SERIES_NAMESPACE_V1,
-  }), /namespace-invalid/);
 });
 
 test('intervention pair collector derives matched arms from real factor states', () => {

@@ -1,0 +1,159 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> kairos-v5-physical-control-agent@0.4.0 test:next-stage
+> npm run build --silent && node scripts/run-next-stage-tests.mjs
+
+✔ liquid visual interfaces exist without collision and do not bind the solid behind them (310.658534ms)
+✔ a submerged ray meets the external liquid surface, not a fabricated face at the eye or a voxel seam (0.641516ms)
+✔ noncolliding crossed plant models retain both visible texels and transparent gaps (5.482003ms)
+✔ ordinary rotated and multipart assets remain visible and opaque blocks occlude entity silhouettes (2.493657ms)
+✔ target-free primitives expose satisfied body facts without an action suggestion (4.066122ms)
+✔ target primitives report missing public crosshair facts without saying how to satisfy them (6.575313ms)
+✔ requirements bind the exact current public target and reject the wrong public kind (2.396332ms)
+✔ place requires both an exact public block and a currently public held item (0.249332ms)
+✔ unsupported entity targets cannot offer an attack (1.399366ms)
+✔ a stalled real sensor archives only the incomplete measured motor window and releases its controls (31.871815ms)
+✔ a held motor keeps its requested duration and returns ongoing motion without waiting for rest (14.082935ms)
+✔ the passive port returns exactly its measured interval without motor output or waiting for stability (10.030062ms)
+✔ death during a passive choice retains the short actual interval without completing its requested duration (5.100134ms)
+✔ breathing comes only from owned metadata and becomes unknown at a body replacement (8.262358ms)
+✔ death exposes an explicit restart action and no SDK restart runs before it is chosen (4.642692ms)
+✔ a death packet ends a physical window even when the SDK stops all subsequent physics ticks (9.987499ms)
+✔ using the held item is a measured button window, with no supplied item effect or consumption helper (17.116458ms)
+✔ readiness acknowledges captured client loading and repeats after a new spawn (24.272106ms)
+✔ an infinite client dig time still yields a bounded actual no-effect window without an optimistic disappearance (142.116071ms)
+✔ only the server-observed target change completes a dig and no old waiter survives (49.24156ms)
+✔ an unrelated server block update cannot certify a change to the attempted target (80.973167ms)
+✔ a real frame fault remains fatal and releases the active input and observers (8.16289ms)
+✔ start and cancellation transport failures cannot become successful action receipts (56.548023ms)
+✔ missing or unreachable targets do not emit a dig, retarget, or create experience (1.638172ms)
+✔ entity silhouettes obey ray distance and occlusion; absent visual assets have no identity color (313.890292ms)
+✔ dropped objects use their measured item appearance and remain unknown before stack metadata arrives (0.826152ms)
+✔ an entity action binds only to the actual retinal surface, without exposing engine identity (17.147684ms)
+✔ block interaction preserves the real public ray face and cursor instead of inventing a center hit (1.638042ms)
+✔ public block interaction uses the real hit and a positive monotonic protocol sequence (0.353757ms)
+✔ independent measured planes identify motion without inventing unobserved components (258.118851ms)
+✔ chosen attention learns the selected measurement and rejects an outcome-only subject (50.668491ms)
+✔ learns a nonlinear conditional response from real transitions (4.648959ms)
+✔ goals, queries, chronology labels and snapshots do not train the medium (54.208852ms)
+✔ without a motor input or any learned readout there is no executable prediction (15.096277ms)
+✔ goal-directed probes stay untrusted and require actual feedback to verify a goal (78.268999ms)
+✔ retains learned weights across a mechanism change and repairs predictions from new feedback (934.865856ms)
+✔ restore preserves the exact subsequent learning update and replay randomness (68.173576ms)
+✔ learning another motor response retains an unrehearsed earlier capability (850.867137ms)
+✔ rejects gaps, non-real windows and corrupt conductances without changing memory (61.543116ms)
+✔ missing objects mask their channels without discarding measurable self channels (1.12365ms)
+✔ renaming objects and translating the world preserves learned local predictions (0.539967ms)
+✔ an unsupported copied value cannot become an input to the next imagined action (4.101241ms)
+✔ real later observations verify a goal even with no motor budget (14.92527ms)
+✔ a transient or stale terminal observation cannot certify success (14.031584ms)
+✔ plans and verifies three numeric stages learned only as isolated transitions (323.029582ms)
+✔ numeric receptors preserve distinguishable values above sixteen (652.018108ms)
+✔ grounded goals freeze their baseline and missing or ambiguous public subjects remain unknown (1.952931ms)
+✔ crosshair target type is a public, verifiable body-affordance goal (0.265145ms)
+✔ translating a goal and its measured trajectory cannot change progress estimates (1.736709ms)
+✔ measured approach to a distant narrow region remains visible before reaching its boundary (0.248811ms)
+✔ approach after a setback remains measurable beyond the original goal baseline (0.632403ms)
+✔ run-004 ordering stays inside one interact event until the scoped delayed result is stable (73.594672ms)
+✔ an interact with no scoped result completes its bounded no-effect window and remains learnable (40.613969ms)
+✔ a briefly observable interaction effect is returned before it disappears (10.104474ms)
+✔ offer observations retain their actual frame while a later action starts from a different physical frame (14.84416ms)
+✔ experience adapter forwards real body feedback and observes remote public subjects (1.176705ms)
+✔ a block-only retina cannot bind an entity action to the surface behind it (0.794735ms)
+✔ an exact cursor offer remains usable among identical blocks without guessing another target (3.066411ms)
+✔ a plan can cross successively revealed unfamiliar surfaces without borrowing their future identities (872.494416ms)
+✔ one measured motor effect may inspire an explicitly untrusted probe, without certifying it (8.016744ms)
+✔ an early measured response can propose a partial probe beyond the imagination horizon without certifying it (21.299489ms)
+✔ an early probe recalls a joint measured response instead of combining averages into an unobserved outcome (25.098057ms)
+✔ a coarse surface hypothesis cannot erase the actual visual sample at the actuator (311.6564ms)
+✔ unowned native physiology cannot enter learning or return through an old model checkpoint (29.808198ms)
+✔ a recalled unchanged scene cannot replace a different current scene or invent a newly visible object (28.657528ms)
+✔ bounded contextual learning retains opposing unrehearsed mechanisms and rejects missing context (76.952102ms)
+✔ irreducible sensory noise does not become supported prediction or persistent learning progress (28.155105ms)
+✔ incremental context fitting resumes exactly between split updates and immediately retains a contradiction (30.569884ms)
+✔ a bounded repeated search eventually checks a useful measured response beyond its first action prefix (86.568823ms)
+✔ a question recalls a jointly measured response without choosing its desired outcome (0.487178ms)
+✔ a newly measured channel can guide an untrusted probe despite closer episodes that never measured it (22.716577ms)
+✔ numeric context boundaries tolerate ordinary roundoff in a predicted familiar measurement (17.913527ms)
+✔ global accuracy cannot certify a rare unpredictable context with the same mean response (999.599526ms)
+✔ retired event identities cannot be learned again after exact audit compaction (29.867547ms)
+✔ re-reading one offer frame cannot manufacture confidence (1.767873ms)
+✔ intrinsic exploration revisits a less favored learned motor without learning from its own choices (64.638182ms)
+✔ a matching physical counterexample immediately withdraws an old confident effect (43.227563ms)
+✔ more parameter choices for one unlearned actuator do not multiply its exploration prior (22.875425ms)
+✔ a stationary continuing session does not replace exploration with repeated highest-score actions (42.47331ms)
+✔ uncertainty orthogonal to a measured displacement does not erase that direction or become zero (34.543746ms)
+✔ a supported approach can execute beyond the search horizon without claiming a complete plan (37.959823ms)
+✔ frozen execution withdraws a disproved local hypothesis across restart without changing transferable experience (51.576207ms)
+✔ irrelevant sliding cannot give an unsupported goal hypothesis an unlimited execution budget (58.324273ms)
+✔ body conditions interrupt and resume an external task using learned, permuted motor effects (162.195733ms)
+✔ a frozen learner can become locally familiar with a newly available motor without starving other choices (117.82699ms)
+✔ a tiny supported forecast cannot perpetually count as goal progress when the body stays still (28.83329ms)
+✔ an older progress metric is rebased without crediting software changes and still recognizes later physical progress (2.135783ms)
+✔ twenty thousand repetitive updates stay numerically finite and retain bounded audit state (15674.57944ms)
+✔ world memory survives occlusion and restart without forging a visible object (1.24427ms)
+✔ a sequence jump cannot masquerade as multiple observed goal confirmations (0.847847ms)
+✔ learned sparse measurements continue beyond the compact receptor layout (129.298792ms)
+✔ body consequences can depend on the anonymous surface actually under the cursor (299.920262ms)
+✔ a learned sensory change enables a later motor effect without a body-state shortcut (951.863296ms)
+✔ ten causal stages are composed from isolated experience with changing action availability (2182.540046ms)
+✔ passive capture excludes motor intervals, keeps actual boundaries and refuses observation gaps (2.378516ms)
+✔ passive evidence is learned before its following action, with separate counts and exact resume (88.162385ms)
+✔ frozen observation records passive exposure without changing learning, and rejects a mislabeled motor (5.43911ms)
+✖ isolated passive experience composes between two learned motor effects without a supplied task recipe (648.594421ms)
+✔ clutter cannot evict a small surface at the actual gaze from bounded perception (29.960045ms)
+✔ groups raw samples and preserves identity under measured observer motion (0.974002ms)
+✔ a checkpoint preserves temporal correspondence, attention and a shared boundary frame exactly (7.677786ms)
+✔ occlusion is unknown and reappearance refreshes actual properties (1.10053ms)
+✔ same appearance does not collapse separated surfaces to one identity (0.384033ms)
+✔ revealing another part of a surface does not move its tracked anchor (3.565425ms)
+✔ invalid sensations and backwards time are rejected (0.327408ms)
+✔ a boundaryless plane does not supply tangential motion evidence (0.926922ms)
+✔ repeated observer motion cannot integrate unmeasured plane sliding into a visible object position (97.418572ms)
+✔ occluding borders do not become the hidden surface own boundaries (3.631894ms)
+✔ an oblique plane does not identify separate coordinate components (1.547453ms)
+✔ observed stationary outcomes remain possible throughout a multistep forecast (97.90444ms)
+✔ small consistently measured motion can still compose a valid goal without an arbitrary dead zone (73.187502ms)
+✔ uncertain geometry obeys the measured coordinate transform and includes all possible yaw rotations (0.92945ms)
+✔ a future action cannot select the convenient side of an uncertain prerequisite (21.233891ms)
+✔ a globally accurate small mean cannot overrule a missing context with incompatible responses (100.880338ms)
+✔ grounded gaze goals use the predicted visible role and its numeric possibility range (0.443253ms)
+✔ imagined numeric envelopes cannot be learned as additional physical evidence (0.552015ms)
+✔ prototype public surface has no live Minecraft dependency (17.574455ms)
+✔ a missing public body precondition becomes a physical effect query and retains its parent branch (56.945603ms)
+✔ without recalled acquisition experience the controller does not forge an experienced method (53.824839ms)
+✔ multiple current targets with the same physical cue are rejected as ambiguous (35.159007ms)
+ℹ tests 120
+ℹ suites 0
+ℹ pass 119
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22159.316613
+
+✖ failing tests:
+
+test at dist/test/passive-experience.test.js:71:1
+✖ isolated passive experience composes between two learned motor effects without a supplied task recipe (648.594421ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'predicted-progress'
+  - 'predicted-goal'
+               ^
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/7173c9a8d69e/kairos-next/dist/test/passive-experience.test.js:100:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'predicted-progress',
+    expected: 'predicted-goal',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

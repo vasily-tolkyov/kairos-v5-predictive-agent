@@ -48,9 +48,11 @@ test('unbound rank index preserves ascending full-scan allocation and random sta
   }
 });
 
-/** Golden hashes are captured from the original full-sort implementation,
- * including nonuniform input, saturation, recovery, restore and V4 gain. */
-export function populationOptimizationFixture(): string[] {
+/** Persistent-state hashes from the original full-sort recruitment, including
+ * nonuniform input, saturation, recovery, restore and V4 gain. Transient
+ * readout semantics have separate behavioral regressions; they are not an
+ * invariant of recruitment and must not be frozen to an obsolete decoder. */
+function populationOptimizationFixture(): string[] {
   let medium = new DistributedPhysicalMedium3DV1({ name: 'population-equivalence', seedHex: '912' });
   const hashes: string[] = [];
   for (let round = 0; round < 10; round++) {
@@ -70,11 +72,10 @@ export function populationOptimizationFixture(): string[] {
     }
     hashes.push(sha(medium.snapshot()));
   }
-  hashes.push(sha(medium.readonlyClone().probe([0, 1, 2, 3], 121n, 12)));
   return hashes;
 }
 
-test('population recruitment preserves full-sort physical states and random readout', () => {
+test('population recruitment preserves full-sort physical states', () => {
   const actual = populationOptimizationFixture();
   assert.deepEqual(actual, GOLDEN);
 });
@@ -90,5 +91,4 @@ const GOLDEN: readonly string[] = [
   'f520d22427b736602e68dfd79c7e62359870b2cb2705b0880a30cc75276ccbf0',
   'f63e1126cf33001ed2cf73ede2d6d2ae4dc272a4fb3f15854c7f6f11fadba38f',
   '3bc2c34235bdf9a7b917957e136d43614ae231e61cf79d7002ba7718d2a04df8',
-  'ad964af0844d3295c2bf83aaface8c2bfcd4e7e566900d98318e2f6bc8b2f6c3',
 ];

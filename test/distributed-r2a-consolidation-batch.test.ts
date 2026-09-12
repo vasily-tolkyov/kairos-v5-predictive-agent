@@ -14,10 +14,10 @@ function event(index: number): DistributedR2ContinuousEventV1 {
   const pulses = [[10, 11], [20, 21], [30, 31]] as const;
   return {
     version: 'DistributedR2ContinuousEventV1', eventId,
-    atomIds: [`${eventId}:prefix`, `${eventId}:action`],
-    sourceEventIds: [`${eventId}:source-prefix`, `${eventId}:source-action`],
-    orderedExperienceIdentities: ['batch-prefix', 'batch-action'],
-    orderedEpisodePatternIds: ['batch-prefix-pattern', 'batch-action-pattern'],
+    atomIds: [`${eventId}:action`],
+    sourceEventIds: [`${eventId}:source-action`],
+    orderedExperienceIdentities: ['batch-action'],
+    orderedEpisodePatternIds: ['batch-action-pattern'],
     dependencyIds: ['batch-process'], contextIds: [`batch-context-${index % 8}`],
     completion: 'complete', boundaryReason: 'public-process-resolved', learningEligible: true,
     physicalFootprint: {
@@ -38,8 +38,8 @@ function event(index: number): DistributedR2ContinuousEventV1 {
       pulseOrdinal: 0, channelOrdinal: 0, receptorOrdinal: 0 }]],
     physicalPulseSiteIds: pulses,
     atomPulseRanges: [
-      { atomId: `${eventId}:prefix`, startPulseIndex: 0, endPulseIndexExclusive: 1 },
-      { atomId: `${eventId}:action`, startPulseIndex: 1, endPulseIndexExclusive: 3 },
+      // One complete atom: observed before state, command, observed result.
+      { atomId: `${eventId}:action`, startPulseIndex: 0, endPulseIndexExclusive: 3 },
     ],
     patternSha256: sha({ version: 'batch-event', index }),
   };
@@ -48,6 +48,17 @@ function event(index: number): DistributedR2ContinuousEventV1 {
 function feed(learner: DistributedR2APhysicalPatternLearnerV2, count: number): void {
   for (let index = 0; index < count; index += 1) learner.observe(event(index));
 }
+
+test('early heterogeneous exploration deposits every event without impossible contrast probes', () => {
+  const learner = new DistributedR2APhysicalPatternLearnerV2(() => true);
+  for (let index = 0; index < 16; index++) {
+    learner.observe({ ...event(index), orderedExperienceIdentities: [`action-${index % 4}`] });
+  }
+  assert.equal(learner.medium.snapshot().footprints.length, 16,
+    'the eligibility bound must not postpone or discard real deposits');
+  assert.equal(learner.physicalQueryCachePerformanceAuditV1().restingSubstrateBuildCount, 0,
+    'four observations per command cannot provide two eight-member matched branches');
+});
 
 test('explicit R2A batch coalesces cadence consolidations without deferring event deposits', () => {
   const learner = new DistributedR2APhysicalPatternLearnerV2(() => true);

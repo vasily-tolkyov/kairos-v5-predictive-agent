@@ -165,16 +165,16 @@ function eventSignalPulses(event: RealEvent,
     if (!state.has(key)) state.set(key, { subject: change.subject, property: change.property,
       value: change.before });
   }
-  const targetId = event.bodyResult?.action.targetId;
-  const targetRole = targetId === undefined || targetId === null ? undefined : rows.roles[targetId];
-  // Preserve an actually learned outcome channel through a no-effect attempt.
-  // Never-changing object context belongs to current perception/R2A, not to
-  // every R1 terminal basin merely because it shares the action target.
-  if (targetRole !== undefined) {
-    for (const [property, value] of Object.entries(rows.measurementStates[0]?.[targetRole] ?? {})) {
-      const key = channelKey({ subject: targetRole, property });
+  // A body command can affect self or a remote public object without a direct
+  // targetId. Keep this exact cue's previously observed outcome channels in
+  // every subsequent attempt, including unchanged outcomes. Otherwise failed
+  // attempts lose the very channel whose condition the agent needs to learn.
+  // Unrelated, never-changing context still does not enter the result basin.
+  for (const [subject, properties] of Object.entries(rows.measurementStates[0] ?? {})) {
+    for (const [property, value] of Object.entries(properties)) {
+      const key = channelKey({ subject, property });
       if (!state.has(key) && previouslyObservedOutcomeChannels.has(key))
-        state.set(key, { subject: targetRole, property, value: value as PublicValue });
+        state.set(key, { subject, property, value: value as PublicValue });
     }
   }
   if (state.size === 0) state.set('event/change-within-observed-window', {
@@ -215,26 +215,6 @@ function eventSignalPulses(event: RealEvent,
     pulses.push({ signals: mergeSignalDrives(stateSignals(state)),
       dwellSeconds: Number(Math.max(physicalStep, nextAt - observedAt).toFixed(9)) });
   });
-  // A scoped property is still a real observation when its value does not
-  // change during the action window.  Keep the direct action target's
-  // terminal state in the final population so a stable false (or true)
-  // result remains physically decodable alongside any other changed field.
-  if (targetId !== undefined && targetId !== null) {
-    const terminal = rows.measurementStates.at(-1);
-    if (terminal !== undefined && targetRole !== undefined) {
-      for (const [property, value] of Object.entries(terminal[targetRole] ?? {})) {
-        const key = channelKey({ subject: targetRole, property });
-        if (!state.has(key) && previouslyObservedOutcomeChannels.has(key))
-          state.set(key, { subject: targetRole, property,
-          value: value as PublicValue });
-      }
-      const finalSignals = mergeSignalDrives(stateSignals(state));
-      const last = pulses.at(-1);
-      if (last !== undefined) {
-        pulses[pulses.length - 1] = { signals: finalSignals, dwellSeconds: last.dwellSeconds };
-      }
-    }
-  }
   return pulses;
 }
 

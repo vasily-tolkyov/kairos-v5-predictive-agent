@@ -1,0 +1,2695 @@
+{
+  "version": "KairosSavedSourceImport1",
+  "sourceSnapshotCommit": "ea097eb823eb28639c58639dd55f552fab08e98d",
+  "sourceZip": "kairos-next-stage-code-ea097eb.zip",
+  "sourceZipSha256": "a63fccbd619ce6d55bc012315adde4fded4f8cde16b22339f3d08468a418d67d",
+  "remoteParentCommit": "7fe4157dcac57daf9febf5f0d449ea938a081249",
+  "originalSourceFiles": 382,
+  "originalSourceFilesUnchanged": true,
+  "newDocumentationPaths": [
+    "AGENTS.md",
+    "docs/codex-handoff/"
+  ],
+  "recordedTargetedGate": {
+    "tests": 120,
+    "pass": 120,
+    "fail": 0,
+    "rerunForImport": false
+  },
+  "sourceFiles": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "bytes": 300,
+      "sha256": "0812ca9f55b8f6601c7cf8a5f3a21573b2aa6204c34aada813a0f7e04604fcc6",
+      "gitBlobSha": "ec34bc443b22342a1195a1b8d6f920fd2b41cbab"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "bytes": 7038,
+      "sha256": "3b1b37e011c875219fc37910e4c90fc54c5153a45a5454e2db9478ff009faf86",
+      "gitBlobSha": "95d72f9bbad372c822d902745a73850c9e3275df"
+    },
+    {
+      "path": "docs/capability-evaluation-2026-09-10.md",
+      "mode": "100644",
+      "bytes": 9538,
+      "sha256": "aa70d3519ab4029b1dedbf8fe20394773e4ebec8e3c7ddc92d85c2e3666a71fd",
+      "gitBlobSha": "66decc8a6f0763b9ec014e831c3b996af4767404"
+    },
+    {
+      "path": "docs/capability-repair-plan-2026-09-10.md",
+      "mode": "100644",
+      "bytes": 5289,
+      "sha256": "e22e0babe23abc2ccf5234923b76b662134bbda312d0aedad6f67557e46187b2",
+      "gitBlobSha": "91e0acca20711d320cb696c4e76de854f050ad7e"
+    },
+    {
+      "path": "docs/capability-validation-2026-09-10.json",
+      "mode": "100644",
+      "bytes": 8882,
+      "sha256": "cf0c451718127934d94a2b909d6f0b31e59c801db9406e2c0f7e3602d3f5df6b",
+      "gitBlobSha": "69470f82e12e732d104fdd0f2c781208ed14c26e"
+    },
+    {
+      "path": "docs/design-001-authority-oscillator-2026-09.md",
+      "mode": "100644",
+      "bytes": 1503,
+      "sha256": "d3c5cc3a6ebcb32912c1b5d79a43862d2b1b67d5f361259af947caf5454ea37d",
+      "gitBlobSha": "d6d177a78e29617956cee3fea29b190cc383feae"
+    },
+    {
+      "path": "docs/design-002-encoding-gain-ingress-2026-09.md",
+      "mode": "100644",
+      "bytes": 2772,
+      "sha256": "33a2684361073075111c4d021a52b55b3494112f26aaeb18451afc93a5ad939d",
+      "gitBlobSha": "61fc079230eeba3560289b8e1c663487825d678b"
+    },
+    {
+      "path": "docs/design-002-production-replay-wiring-2026-09.md",
+      "mode": "100644",
+      "bytes": 1993,
+      "sha256": "4ce3706a774f7557a615409174ce594be6b1b92aeb3fb2c74197baa05433d429",
+      "gitBlobSha": "37e59127fa818e703aa584c20b8e6d0701b63071"
+    },
+    {
+      "path": "docs/design-002-runtime-measurement-ingress-2026-09.md",
+      "mode": "100644",
+      "bytes": 1758,
+      "sha256": "3900b220bb9395f389bcfe6c040d9451f68e4392cf9df5d623580ad0fb70a4aa",
+      "gitBlobSha": "38f14b97f80ea58dd35d8399bb50c391144b6917"
+    },
+    {
+      "path": "docs/design-002-runtime-measurement-ingress-evidence-2026-09.md",
+      "mode": "100644",
+      "bytes": 2003,
+      "sha256": "97045429239596e9e341c08e7b8ffb120b8085927b902eee22f330109b6b0be7",
+      "gitBlobSha": "11342e3e5b187b53d5b9487cbefe256e5680c7c9"
+    },
+    {
+      "path": "docs/design-002-timescale-adapter-evidence-2026-09.md",
+      "mode": "100644",
+      "bytes": 5879,
+      "sha256": "0c893e641b90db10772fb49eacc4b1cc01bb8026b3297fc7a43a6343ff8bf6a8",
+      "gitBlobSha": "1472279695eb55b63081bb0537a2c702a0437a91"
+    },
+    {
+      "path": "docs/design-002-timescale-law-tranche-2026-09.md",
+      "mode": "100644",
+      "bytes": 5883,
+      "sha256": "69d14f6676f2574db66269a3eaff246955d7417d52c944c67549ab90a326c2a3",
+      "gitBlobSha": "f5e17620bd8ab26eeeab7443fbea581adb3b8a82"
+    },
+    {
+      "path": "docs/design-002-timescale-owner-v4-evidence-2026-09.md",
+      "mode": "100644",
+      "bytes": 3187,
+      "sha256": "603a48ddedad7fe4f57485e13b85ddf3a3befc60e784218db968a3610dfcbc6a",
+      "gitBlobSha": "e6321c16bc6d653df46eb72adfaa62c108e8574b"
+    },
+    {
+      "path": "docs/distributed-physical-hierarchy-contract-v1.md",
+      "mode": "100644",
+      "bytes": 5112,
+      "sha256": "904e4a92a0d30dabaac634aeed94537130d0d7a154bddf1838a4778e5dcf4cf4",
+      "gitBlobSha": "83abd381f8aa96a411038d0877022cda23de9b02"
+    },
+    {
+      "path": "docs/distributed-r2a-physical-v2-red-test-summary.md",
+      "mode": "100644",
+      "bytes": 5260,
+      "sha256": "58affa93aa704c7792b48a5fafc465c6952f63d397897b5248281c03287ad69c",
+      "gitBlobSha": "33fa3c7daf567d2789c5fb716932c0209fb0934a"
+    },
+    {
+      "path": "docs/experience-capability-evaluation-2026-09-10.md",
+      "mode": "100644",
+      "bytes": 8232,
+      "sha256": "652cfe882970ce1dc8f56da3769c8ec2d4dfaff0caf7c9ee9c56ef9ead988989",
+      "gitBlobSha": "c9321ca40d2557418ba2c0ee1c8654e429788f74"
+    },
+    {
+      "path": "docs/experience-capability-results-2026-09-10.json",
+      "mode": "100644",
+      "bytes": 38633,
+      "sha256": "b46a7ab211db5d620f815a9b7bfc90c4874c58b947b56c8ba0da54f301cb0a7e",
+      "gitBlobSha": "02132e71dc2d2e93ba254543ac11e89723456feb"
+    },
+    {
+      "path": "docs/experience-capability-validation-2026-09-10.json",
+      "mode": "100644",
+      "bytes": 3924,
+      "sha256": "69904afdce05d703e999a6b0e28c3d810807ff4e942340b38ca9547e41858a84",
+      "gitBlobSha": "b4a3a745a3b7ad93f8ecd7e45ba54063ceb08ed3"
+    },
+    {
+      "path": "docs/final-code-review-2026-09-06.md",
+      "mode": "100644",
+      "bytes": 2520,
+      "sha256": "f7f47c703b0bf2707582ce62355a02a4b6aea59240e7bfd6d951dec15e5c4ff2",
+      "gitBlobSha": "aa682fa986b324663a89c44cc4dc87574e88dadd"
+    },
+    {
+      "path": "docs/first-principles-review-2026-09-10.md",
+      "mode": "100644",
+      "bytes": 13507,
+      "sha256": "de5e19fcda6fc98fca2860b744126a3f8052118dfa4910fdf0be06e91a776375",
+      "gitBlobSha": "9b906ae8c9555a6dbe4050a6efe042973c0dfb94"
+    },
+    {
+      "path": "docs/first-principles-validation-2026-09-10.json",
+      "mode": "100644",
+      "bytes": 10596,
+      "sha256": "14a1201dff5ba3d4a3a6e0421db9cf96356eb0a0048c0cecbd1dad46daff6bd9",
+      "gitBlobSha": "e0b7be4a8ee5733807548173d003ae617cbe7325"
+    },
+    {
+      "path": "docs/full-regression-2026-09-05.md",
+      "mode": "100644",
+      "bytes": 1950,
+      "sha256": "44fd36769cb28942d2a78163a29e5320f2c8cbc422004feab3cc5496798db8ea",
+      "gitBlobSha": "29b56d0f8ddb0ebd797946448ae7dc014642ed84"
+    },
+    {
+      "path": "docs/guided-affordance-test-v1.md",
+      "mode": "100644",
+      "bytes": 1251,
+      "sha256": "67c0a57bd9ab855ecbfb793a92ac4ca8a5b593f13aa36cb85a3aa2a2526f862a",
+      "gitBlobSha": "8fae4a20c58deb87dc80c30e75056464f66a36e6"
+    },
+    {
+      "path": "docs/lingbot-adaptation-v1.md",
+      "mode": "100644",
+      "bytes": 3773,
+      "sha256": "6555bba84955f6b4d3edace4eb3836bb8e83a50288dc78cb9406e54eed752c2f",
+      "gitBlobSha": "e7c434a8ff1391b573cbe680aa71533b32b8f4d5"
+    },
+    {
+      "path": "docs/minecraft-demo-v1.md",
+      "mode": "100644",
+      "bytes": 1382,
+      "sha256": "33d9cf51b617339ec56026bc6ea6917615eb553816fcb9ecda83b75755d479a1",
+      "gitBlobSha": "3870e4cbdf72a5a9e5e15fd226c785979b601613"
+    },
+    {
+      "path": "docs/minecraft-experience-evaluation-2026-09-10.md",
+      "mode": "100644",
+      "bytes": 8702,
+      "sha256": "e73661ff3f45cf97343565f80df1d82e8fbe664679f9feed052959ae79a5c0fc",
+      "gitBlobSha": "3f0223aa843f1a88c5308e2d5737415f2bf508ab"
+    },
+    {
+      "path": "docs/minecraft-experience-results-2026-09-10.json",
+      "mode": "100644",
+      "bytes": 8592,
+      "sha256": "d44437e65c7aba469f89cf500b48df2621bf0564b02342ce65f0d4a60cdf8a22",
+      "gitBlobSha": "6c5966f62d28e6e3d7727d2d2f16c96f55ae8541"
+    },
+    {
+      "path": "docs/minecraft-experience-validation-2026-09-10.json",
+      "mode": "100644",
+      "bytes": 7938,
+      "sha256": "d9b678d43a573dc8a73895287e7b90210afe0d3c934dd48f2bf590359c6bc3c2",
+      "gitBlobSha": "518dcf907f4fa54f258fd172edba51952ee244e7"
+    },
+    {
+      "path": "docs/next-stage-engineering.md",
+      "mode": "100644",
+      "bytes": 56742,
+      "sha256": "cc55ff35a68f3836966ec1940e10685129da087a78d428f97bf206c0bdb03b90",
+      "gitBlobSha": "218cebdf56a215a7939ebea9b59cafa18acbe674"
+    },
+    {
+      "path": "docs/perception-repair-2026-09-10.md",
+      "mode": "100644",
+      "bytes": 18524,
+      "sha256": "ae6373c8e9ed4aa1eb9effbeff815036f217c792b2ec47697c002355a2968bf5",
+      "gitBlobSha": "e9e1000ef04108334e3ff27e19cedff7e7c1969a"
+    },
+    {
+      "path": "docs/physical-control-field-v1.md",
+      "mode": "100644",
+      "bytes": 2994,
+      "sha256": "b85f474725629b3f65bb621075acb9a08f94af2aa8a1f50fb387dcb638aef745",
+      "gitBlobSha": "5301c46352d9a6d45f21429a287589fe92aad46c"
+    },
+    {
+      "path": "docs/plan-002-performance-v1.md",
+      "mode": "100644",
+      "bytes": 1581,
+      "sha256": "4d7cace1cbe8193a883075e8c30bb5c92a9b223ae23bb8f1a8ce2b5ab49f44db",
+      "gitBlobSha": "d79968264db3d5a436699c27665708e57d677d41"
+    },
+    {
+      "path": "docs/prototype-demonstration-v1.md",
+      "mode": "100644",
+      "bytes": 6290,
+      "sha256": "d860b6cf8e7cbc2db6058bc869c4aef94c7871a3b1c12fbce60a014ab9e6b5c0",
+      "gitBlobSha": "7e38b4dba6488fb9b22c148f4a5c2d7d240808c6"
+    },
+    {
+      "path": "docs/r-series-complete-prototype-v1.md",
+      "mode": "100644",
+      "bytes": 1786,
+      "sha256": "19896f6f052caa64ed8bdc037339219041d7632d93d0f9374dc01dbd3d22655b",
+      "gitBlobSha": "9a036831c0a03562ee9b8e9767ee183e39a84c37"
+    },
+    {
+      "path": "docs/r-series-engineering-audit-2026-09.md",
+      "mode": "100644",
+      "bytes": 7273,
+      "sha256": "efb1c239ac77ce2bad1ed8f457c36f9f12f6d127954c6f66eb0f744db5a77649",
+      "gitBlobSha": "188abfd582f3df3ee9d25657c7ecdcd44d48ed69"
+    },
+    {
+      "path": "docs/r-series-tranche-evidence-2026-09.md",
+      "mode": "100644",
+      "bytes": 4693,
+      "sha256": "5a43e08d0dc33914777de01fae4dcd47011e3137e26fd40d6be0cb894ae8dea7",
+      "gitBlobSha": "66f48205d7ddaf6ee2810f07d03a46df270aea4c"
+    },
+    {
+      "path": "docs/recorded-prototype-demo-template.html",
+      "mode": "100644",
+      "bytes": 6579,
+      "sha256": "2b9e18e92e5b127e00044d163d33bb9518471b2e7394dd1403bc797d72658583",
+      "gitBlobSha": "5d4ef44ddb54f5b5aa5b41498dae098a82d7836b"
+    },
+    {
+      "path": "docs/three-stage-test-status-2026-09-10.md",
+      "mode": "100644",
+      "bytes": 4310,
+      "sha256": "9b4af8aedd3e962daccb8a260b9747fc3457085f732c389d77eb08b3145525f2",
+      "gitBlobSha": "06289ed0665e4e6b8f92820ab89ad0f7785634a7"
+    },
+    {
+      "path": "kairos.config.json",
+      "mode": "100644",
+      "bytes": 1065,
+      "sha256": "c14ed2cd3dc2919133b129aa17d26fb05b3e1443959ee213145176a5d5d34a2f",
+      "gitBlobSha": "aaaf6357aff68a8fcfb479240ffa4be952ac1047"
+    },
+    {
+      "path": "package-lock.json",
+      "mode": "100644",
+      "bytes": 81290,
+      "sha256": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b",
+      "gitBlobSha": "aee76007fcf596d41451f8d2e4fd4fa64093e061"
+    },
+    {
+      "path": "package.json",
+      "mode": "100644",
+      "bytes": 2026,
+      "sha256": "3d51bed3b0e5d4ccf6e75faa40d8fc2270564a255ac23abdfe016462ae80aa14",
+      "gitBlobSha": "e5edb851ad361123e3bd8da5cedcca10e51f8556"
+    },
+    {
+      "path": "scripts/archive-stopped-world.py",
+      "mode": "100644",
+      "bytes": 2286,
+      "sha256": "132c062791f333515204fd6d4a86a4e74c3071222547969c740df5f9add9bc3c",
+      "gitBlobSha": "7821eab60b5a4a82ece4a0c8c82302a831822871"
+    },
+    {
+      "path": "scripts/assess-guided-note-foundation-v1.mjs",
+      "mode": "100644",
+      "bytes": 6354,
+      "sha256": "a88a762c6424559e150fd7b07c743b15f34cdca5a75918d73588c8a8dd55f853",
+      "gitBlobSha": "9c2f471c850739fa5cbfe29f3ab82bf3d0538eaa"
+    },
+    {
+      "path": "scripts/assess-merged-note-foundation-v1.mjs",
+      "mode": "100644",
+      "bytes": 8692,
+      "sha256": "fc6ffec3b03cf489c0f830b0ea0c9d6e9c097bb8acfaa28496f311d24a838761",
+      "gitBlobSha": "1339df926cda7af55ee5bd8c0bed04113bd9ddaf"
+    },
+    {
+      "path": "scripts/audit-current-goal-readout-bridge-v1.mjs",
+      "mode": "100644",
+      "bytes": 2408,
+      "sha256": "4e8c664543874ed82feabf98183761ca90cb22746e0e589d8082ea6a9c2d0f56",
+      "gitBlobSha": "118938257c96b54eb0e81a860daac9b908ef8e89"
+    },
+    {
+      "path": "scripts/audit-current-grounded-minecraft-note-v1.mjs",
+      "mode": "100644",
+      "bytes": 7599,
+      "sha256": "922e6a31c38ca5dabe745bf468a91167ee1802a3853fafa4bf4c42f50c2dc173",
+      "gitBlobSha": "d4b3bd3e78ee08ea965161f0e4e18d80f827947d"
+    },
+    {
+      "path": "scripts/audit-guided-note-capture-v1.mjs",
+      "mode": "100644",
+      "bytes": 3760,
+      "sha256": "46020acb8797a4efd4469d63cef711c4daf703e97a95eb01aeb1778311603e4d",
+      "gitBlobSha": "890e18dcc14e1ed97cfa673de19d69ba788960a3"
+    },
+    {
+      "path": "scripts/audit-multistage-note-decomposition-v1.mjs",
+      "mode": "100644",
+      "bytes": 9855,
+      "sha256": "999a62d5cef5dad0196456db3fa4142ca1fbccbb768a6271007dc827af3358f5",
+      "gitBlobSha": "e179fc85df84b4646edbc31467e10ddab0418779"
+    },
+    {
+      "path": "scripts/audit-multistage-note-decomposition-v2.mjs",
+      "mode": "100644",
+      "bytes": 10619,
+      "sha256": "da731efc4af3df668d55c5d721e638e21623323fbc3bf9e307fd615d61fff426",
+      "gitBlobSha": "c681ee66626ba1a31c289092af50bb8900676d8c"
+    },
+    {
+      "path": "scripts/audit-native-continuing.mjs",
+      "mode": "100644",
+      "bytes": 10129,
+      "sha256": "4d682b7206decf8d0b82fb1fa4e16b5fb13add8c83ca88571acacd9e3e4493db",
+      "gitBlobSha": "95836ba3e0db0520333750aa6de065916c3c51c9"
+    },
+    {
+      "path": "scripts/audit-real-rollout-duplication-v1.mjs",
+      "mode": "100644",
+      "bytes": 3044,
+      "sha256": "7da6701a5c11004db345983bb79fe20422ebc1eca0f60af254db9faaa18e3148",
+      "gitBlobSha": "414ae39b4d02d025abea9c33687d9df2da3956f2"
+    },
+    {
+      "path": "scripts/audit-recorded-runtime-continuity-v1.mjs",
+      "mode": "100644",
+      "bytes": 5452,
+      "sha256": "edf233f9d6985bc1b1f2118238548f33f28ee10e2d003c3ffc77ab6e0e558c4a",
+      "gitBlobSha": "dd7eb5330747bec1511de45f0bfb5e8c00dcdd9f"
+    },
+    {
+      "path": "scripts/audit-stopped-minecraft-enclosure.mjs",
+      "mode": "100644",
+      "bytes": 7668,
+      "sha256": "9c3a186af59a72ee232875cdf85a2fe5fdeffcd710b2543100c6f58ee5b0d3eb",
+      "gitBlobSha": "7ad6049875247dbf57bd86e47be4d2e6fe9e22aa"
+    },
+    {
+      "path": "scripts/benchmark-distributed-exact-sweep.mjs",
+      "mode": "100644",
+      "bytes": 3410,
+      "sha256": "4314eeaa7118efc23fadb02298d43f9f476ae680f9b1f612ae0b4852978babba",
+      "gitBlobSha": "4786ba4233ca1b5a07784f0e7b0bc867861d4afa"
+    },
+    {
+      "path": "scripts/benchmark-native-attention.mjs",
+      "mode": "100644",
+      "bytes": 3095,
+      "sha256": "f4543db5bad3747d3472498fa26219ab01a90f12195339353731e15111d0178c",
+      "gitBlobSha": "e5547603063f6e869411b82b63ed0ca21cdbc276"
+    },
+    {
+      "path": "scripts/benchmark-native-learning.mjs",
+      "mode": "100644",
+      "bytes": 3325,
+      "sha256": "bfa3f7df722c39d3ace81515c02aa707978478c774c2909d569ed401bf2f7a12",
+      "gitBlobSha": "59f89a2f82fd7f4f33d6130aa14d5a083528061e"
+    },
+    {
+      "path": "scripts/build-multistage-evidence-demo-v1.mjs",
+      "mode": "100644",
+      "bytes": 7239,
+      "sha256": "8ab47d1a8e579b46b9f9b5b914749cd15cf9f79cfe31fa3f21853ed1cd89b176",
+      "gitBlobSha": "e8410d6d95b0076fd9d24d5fd95105f12a2918cc"
+    },
+    {
+      "path": "scripts/build-recorded-prototype-demo-v1.mjs",
+      "mode": "100644",
+      "bytes": 5154,
+      "sha256": "13f0dbddd43ec1b0face882dd67adf897b89fd964fa9689e52451b7e5457e8d9",
+      "gitBlobSha": "18b71779ace03965700ff309332fc8e5e61edc68"
+    },
+    {
+      "path": "scripts/capture-clean-note-progression-live-v1.mjs",
+      "mode": "100644",
+      "bytes": 11514,
+      "sha256": "bfad54bfc564c7faac5ef500306c55d1e11538720a65774fb291593046f3ff62",
+      "gitBlobSha": "7974640fd7870e5eee07dc3a16301b3b594818a4"
+    },
+    {
+      "path": "scripts/capture-guided-note-events-v1.mjs",
+      "mode": "100644",
+      "bytes": 9333,
+      "sha256": "775b154b1fa55fcf82e7cc81659257097d6a226846ca35adbe699c24e51f2ce1",
+      "gitBlobSha": "8665f77009d33da1bf9464dfbeae8f4f91837588"
+    },
+    {
+      "path": "scripts/capture-two-stage-note-live-v1.mjs",
+      "mode": "100644",
+      "bytes": 4635,
+      "sha256": "90e4150e77196bba1fa153dfaeca2bf776d9abe7541c0324c7539da308a58fb7",
+      "gitBlobSha": "987499082270a078a2845160cb0dc5ea733a6cad"
+    },
+    {
+      "path": "scripts/check-minecraft-dig-port.mjs",
+      "mode": "100644",
+      "bytes": 3389,
+      "sha256": "0a2c1ae980995a6825789e7c45c005193b2547f73afab2919886e75d6fb38496",
+      "gitBlobSha": "e84ce2a1f97fb87df5a5e4400cd3cc90aa32e1e5"
+    },
+    {
+      "path": "scripts/check-minecraft-fluid-vision.mjs",
+      "mode": "100644",
+      "bytes": 4538,
+      "sha256": "ab04f9c756738af9950ba53d4e6eb062fde2b7a3cfc14f60497c88944e36b6d3",
+      "gitBlobSha": "ad3f6beae2ef7929f9bc4761551ad6d78f8491fa"
+    },
+    {
+      "path": "scripts/check-minecraft-owned-physiology.mjs",
+      "mode": "100644",
+      "bytes": 6244,
+      "sha256": "b43b4cbe4f01858cada1f762c86c313b5356d4d6f90f9424295071d1663a4311",
+      "gitBlobSha": "89b5ab5befb1f936302d6c15faa6ddd450694db7"
+    },
+    {
+      "path": "scripts/check-minecraft-passive-experience.mjs",
+      "mode": "100644",
+      "bytes": 6859,
+      "sha256": "13d4a3accd476f83e8f796f4a9354a506871339c38f6a1498ec331568c8865ba",
+      "gitBlobSha": "211e92351a66782c825ce2e21a3bb1bc4f3cb7f2"
+    },
+    {
+      "path": "scripts/check-minecraft-sensory-body.mjs",
+      "mode": "100644",
+      "bytes": 5893,
+      "sha256": "b196cd95da297e9e6063b602b0bc9635f26ee073ab441660d5e3228c98980aa7",
+      "gitBlobSha": "154af740c4afe7bb244df6a9327035d0dcdbdde9"
+    },
+    {
+      "path": "scripts/check-minecraft-swim-port.mjs",
+      "mode": "100644",
+      "bytes": 5763,
+      "sha256": "f8ec15444db2b9ccde432d68e25bb26f01244441567f111f0d8629e7a3fada0d",
+      "gitBlobSha": "4cde5731e9d7b08ad6781755e01bd45fbcb79d16"
+    },
+    {
+      "path": "scripts/check-minecraft-visible-pickup.mjs",
+      "mode": "100644",
+      "bytes": 5636,
+      "sha256": "5576bb6570f2a5a7334b8bf904bf990e08a1be6acbec315bebdb8498de840b48",
+      "gitBlobSha": "7df25ad7f6cdc6e815cb702f6b3da37f09db2dba"
+    },
+    {
+      "path": "scripts/diagnose-conditioned-action-production-v1.mjs",
+      "mode": "100644",
+      "bytes": 4873,
+      "sha256": "1471ebf1c577c86f1254f24daa926e83bac406ed23f455316b9b68e0c5185f13",
+      "gitBlobSha": "78ae81894eb02a396d4fcf167301453e5de01458"
+    },
+    {
+      "path": "scripts/diagnose-counterbalanced-r1-commands-v1.mjs",
+      "mode": "100644",
+      "bytes": 4713,
+      "sha256": "bf1eb1028de74abccfe7b62d286bc05e48192b2c57d9db5314c64994ea7b0aec",
+      "gitBlobSha": "9695e986ec359fbf7371f20d06fc9c6ded909b7b"
+    },
+    {
+      "path": "scripts/diagnose-current-action-query-reuse-v1.mjs",
+      "mode": "100644",
+      "bytes": 2790,
+      "sha256": "cd912585a5b35ab7f490dc149669ef403a60b62e537a32a35a9034563ca16d07",
+      "gitBlobSha": "bc784730f1f5e9dd63bfcdaa03df4db29a2854e7"
+    },
+    {
+      "path": "scripts/diagnose-current-action-r2a-v1.mjs",
+      "mode": "100644",
+      "bytes": 2582,
+      "sha256": "9a7285ebbf382a5eb29d63fdc5afc5f17fe349dec47add1460b20a7ce977c21b",
+      "gitBlobSha": "d2e7d95a95490fc194497098cdb067318c320d0c"
+    },
+    {
+      "path": "scripts/diagnose-current-action-r3-alignment-v1.mjs",
+      "mode": "100644",
+      "bytes": 3983,
+      "sha256": "4a5dff90b0332c3b459d196a755cf9b4902956258a91731d5f346ab2f52410b7",
+      "gitBlobSha": "40d7d68c19c267300759a6047fe02d600a16fd44"
+    },
+    {
+      "path": "scripts/diagnose-distributed-r2a-formation-v1.mjs",
+      "mode": "100644",
+      "bytes": 8910,
+      "sha256": "8157ae8223c0d65d305eba5bc616ef0e75e7babbbbc9b3c97926a9c8fe27e1c4",
+      "gitBlobSha": "7da0384b873432030a9bc1585d7b5f4018b69b2a"
+    },
+    {
+      "path": "scripts/diagnose-distributed-r2a-v2.mjs",
+      "mode": "100644",
+      "bytes": 4538,
+      "sha256": "d8cd642b3dc3d849a1fbda70182384573a00d310fb4ea7ca793060c5c5c27099",
+      "gitBlobSha": "1a525e6b403bf01a547f64f3fd4fde3b0ab34174"
+    },
+    {
+      "path": "scripts/diagnose-merged-note-interventions-v1.mjs",
+      "mode": "100644",
+      "bytes": 1546,
+      "sha256": "ebfcc3f4f263519e6580f736238e60ad0560009b176cf0c72dffb79cbb1c5515",
+      "gitBlobSha": "afb7e51e5ab75b12b296d88740699d7346f1f7c2"
+    },
+    {
+      "path": "scripts/diagnose-note-condition-readout-v1.mjs",
+      "mode": "100644",
+      "bytes": 6355,
+      "sha256": "a3bd31b14b01579dc57caf941109f1e82d679d69173cfc02a36bbcdc9d9206dc",
+      "gitBlobSha": "1dfcfa7268d522ef1f4dbfe3ca601f4182737fb3"
+    },
+    {
+      "path": "scripts/diagnose-perception.mjs",
+      "mode": "100644",
+      "bytes": 12939,
+      "sha256": "6a9b5a8d5a7cad18941eaf110f17685710ef986e8268fa8def3027d88d09cd1f",
+      "gitBlobSha": "cde31d37c02eee5cdf402bf98bd428bc86ff1ede"
+    },
+    {
+      "path": "scripts/diagnose-physical-short-chain-v1.mjs",
+      "mode": "100644",
+      "bytes": 2743,
+      "sha256": "4112cec5542d96a66198363971ba87a9d76c6928fc74530cf539161d6ea966e7",
+      "gitBlobSha": "48d8d408ba90000780cfccdc7b68e0f40696e77b"
+    },
+    {
+      "path": "scripts/diagnose-physical-terminal-sources-v1.mjs",
+      "mode": "100644",
+      "bytes": 4870,
+      "sha256": "3c043e503aafd221476f34aed67cf573453df837e72778f7f2df4fc8e36b144b",
+      "gitBlobSha": "20f4cebae742387cb248ad67970ae52170b6c186"
+    },
+    {
+      "path": "scripts/diagnose-r2a-action-boundary-v1.mjs",
+      "mode": "100644",
+      "bytes": 4433,
+      "sha256": "07b802dbe95ce7b1422ab858f65721d341c3d25cc175b59593313dd746c9fbcd",
+      "gitBlobSha": "636edba0ef023b78c7175d382efffe9939076ad2"
+    },
+    {
+      "path": "scripts/diagnose-r2a-terminal-only.mjs",
+      "mode": "100644",
+      "bytes": 3432,
+      "sha256": "5f50109f93e4c606d463cdd70bc2bca3c6494719c3a31fa5416abfc01272d51d",
+      "gitBlobSha": "9ebcee20d358a6533f6cd6c03963dc6f08e58ced"
+    },
+    {
+      "path": "scripts/diagnose-single-action-boundary-v1.mjs",
+      "mode": "100644",
+      "bytes": 3808,
+      "sha256": "cfc152da273d27dd8c1ddc674b6d02cf89bb3884a833b8c1b4d9e4900ecf08be",
+      "gitBlobSha": "82fc83def978d76d23f578851d3d9307ecd20de3"
+    },
+    {
+      "path": "scripts/erase-forked-native-experience.mjs",
+      "mode": "100644",
+      "bytes": 3876,
+      "sha256": "3c893618a57dab9f102d8addf5c05314eb13cbe3620556224bc98d8ca4c5c7d6",
+      "gitBlobSha": "ab4134f8c6ceccf28453050b5fd3b692e0a16492"
+    },
+    {
+      "path": "scripts/evaluate-capabilities.mjs",
+      "mode": "100644",
+      "bytes": 15213,
+      "sha256": "16748ca5f365be60c2264500f5af3bc2a2006f9a181f3f3a6735545ea85d72a8",
+      "gitBlobSha": "e5e3a045868d071be85a3e415efba1f7cfa75e04"
+    },
+    {
+      "path": "scripts/evaluate-experience.mjs",
+      "mode": "100644",
+      "bytes": 13033,
+      "sha256": "6f8b5af6e3a0204f859aeb416366db2051f5fa71f8232eb4b2432a35586a1d1f",
+      "gitBlobSha": "77802c3c6cd11ed188f4fad1f31d4ff1a6fd568b"
+    },
+    {
+      "path": "scripts/evaluate-minecraft-continuing.mjs",
+      "mode": "100644",
+      "bytes": 18636,
+      "sha256": "98e49c3ac16b257e80beeb76a30a429b6d0ddf17d13c16a6dc740c057ebfdf29",
+      "gitBlobSha": "e8b69aa1a0fd8a5e80a84b1c8dd439555ec95e9d"
+    },
+    {
+      "path": "scripts/evaluate-minecraft-experience.mjs",
+      "mode": "100644",
+      "bytes": 99,
+      "sha256": "e788712fafbf1edd83ecfb187eeac5a178e8816a44a57b6f44947bcc9d462e5c",
+      "gitBlobSha": "00777b1d450859af82cc1395dfa415e8c30f61aa"
+    },
+    {
+      "path": "scripts/evaluate-minecraft-perception.mjs",
+      "mode": "100644",
+      "bytes": 21161,
+      "sha256": "88d27605e283ad16a75916f2e0f8e47a59fb408d55dc3c1a69d694fa4858eb00",
+      "gitBlobSha": "3b6ecab448924efd023998e43807c0d8f0738d4d"
+    },
+    {
+      "path": "scripts/evaluate-recorded-predictions.mjs",
+      "mode": "100644",
+      "bytes": 4832,
+      "sha256": "97c20128fbf1e4ec7f7be34901bffaa1b23f6f962e679da4903d57a647ac5fc7",
+      "gitBlobSha": "1f69698402c234ffca3b3f3f858f7374ea5f31e5"
+    },
+    {
+      "path": "scripts/evidence-journal.mjs",
+      "mode": "100644",
+      "bytes": 1396,
+      "sha256": "b5d7acd7899f51b97db5b2504ad9e870beaa48b9f75c571a71082ce330bee7fb",
+      "gitBlobSha": "7dd1881e4acfaff653d871c4c3859b8c45756ac0"
+    },
+    {
+      "path": "scripts/extend-measured-experience.mjs",
+      "mode": "100644",
+      "bytes": 4711,
+      "sha256": "dea58291a2c3e9b2a421478862cbb43b52ecacaa0bf30ca4c034ff230b793897",
+      "gitBlobSha": "84c4d91dcf56430a10e4e9a78a97ee68fc48351b"
+    },
+    {
+      "path": "scripts/finalize-current-prototype-demo-v1.mjs",
+      "mode": "100644",
+      "bytes": 7634,
+      "sha256": "c5e4f1eac8aea9dd20237754da43eef2bed28f1be58578fd6b8d3f5f201376a7",
+      "gitBlobSha": "9bbb55fb7ce6dd2ce482137fccbdfd6b1cb0b908"
+    },
+    {
+      "path": "scripts/finalize-two-stage-rebuild-v1.mjs",
+      "mode": "100644",
+      "bytes": 1598,
+      "sha256": "3ca9213321185b307c32dac17d7c251e84a0ecd0d412a921f54e940db2308332",
+      "gitBlobSha": "63c0286b5199cb3ff2a306d36c13bb2e796ec528"
+    },
+    {
+      "path": "scripts/fork-stopped-native-checkpoint.py",
+      "mode": "100644",
+      "bytes": 2934,
+      "sha256": "32c5fe8f52160a1fdf3ec3aa0253472015b79ed945210b07e156ddde196b0fb6",
+      "gitBlobSha": "d0520e72f147f081aff83e42c86a08c8b66a3bf1"
+    },
+    {
+      "path": "scripts/freeze-current-development-source-v1.mjs",
+      "mode": "100644",
+      "bytes": 1356,
+      "sha256": "576c8f25c9d0fa19c89934497c3fa5b3489d613108886ab8a0612264a83c3f77",
+      "gitBlobSha": "475db68f762586f365ed3752b21a02d2f1aff4c4"
+    },
+    {
+      "path": "scripts/inspect-current-control-evidence-v1.mjs",
+      "mode": "100644",
+      "bytes": 1909,
+      "sha256": "cd17ff1881bad4eef80b3f9bc00796cb311f12cc8cea7c5d13ec329656c9dc8c",
+      "gitBlobSha": "c539ba37a74d6691b2ab730c1ec945199a69a2ee"
+    },
+    {
+      "path": "scripts/inspect-factor-reentry-v1.mjs",
+      "mode": "100644",
+      "bytes": 3283,
+      "sha256": "cc31472c3bf7004412fbb92781ae1fbce48732126d83197b5ba945e1494de9c9",
+      "gitBlobSha": "aa962d14255b1a1be21655819c8c7b3f8ede9cd5"
+    },
+    {
+      "path": "scripts/inspect-neutral-physical-selection-v1.mjs",
+      "mode": "100644",
+      "bytes": 8741,
+      "sha256": "11a6b1d89084d4ea6b9f54342aaef12805184b09f9d379190f2cccd2e4415c37",
+      "gitBlobSha": "9ca82cb963db0366ae280b0393b41e14c2eea4c6"
+    },
+    {
+      "path": "scripts/inspect-neutral-r1-readout-v1.mjs",
+      "mode": "100644",
+      "bytes": 5055,
+      "sha256": "a2a8aeb181e73de00381d54b82b389ca5831a5f3a8fc78af638a975f87492295",
+      "gitBlobSha": "94b044defd641008274824889575d6d8d08fb258"
+    },
+    {
+      "path": "scripts/inspect-observed-terminal-identity-v1.mjs",
+      "mode": "100644",
+      "bytes": 1562,
+      "sha256": "a15e43ad4094e77934d872e118da462d08bc4b83c61d1f8499788a205048908a",
+      "gitBlobSha": "8176a75e27d4640a4441f4ff812239629777e189"
+    },
+    {
+      "path": "scripts/inspect-owned-control-progress-v1.mjs",
+      "mode": "100644",
+      "bytes": 3560,
+      "sha256": "8e5c523fd915edca111256fac4f350053762b68a50a899d71fbe8f69ea404e1f",
+      "gitBlobSha": "baf7f32b3bf7b129bbecab9b29316e0d5fd075ae"
+    },
+    {
+      "path": "scripts/inspect-real-condition-connectivity-v1.mjs",
+      "mode": "100644",
+      "bytes": 3691,
+      "sha256": "da77746c0a6da2d6d3ce0bf7671ec14b40466084fc5da2a22eaf5e7241b1cadb",
+      "gitBlobSha": "9f7a672dbc6b1197b6709cae4ffd6c78997988f7"
+    },
+    {
+      "path": "scripts/inspect-real-look-rollout-v1.mjs",
+      "mode": "100644",
+      "bytes": 4361,
+      "sha256": "63e3022d338ef6836805e0ca1889f4aa243446faa8ffe33d447ed584131fb05d",
+      "gitBlobSha": "6bd2e38a825fb08adca583fc1b39b0a680e2a74e"
+    },
+    {
+      "path": "scripts/inspect-real-note-r1-v1.mjs",
+      "mode": "100644",
+      "bytes": 4394,
+      "sha256": "4317c2db798edc5d82417138acfa33f5a68924185fe2e2f39fe50c95ef3e9283",
+      "gitBlobSha": "d960e9ec6efdb7db4458dbfe8baafd4e8e8a61c2"
+    },
+    {
+      "path": "scripts/measure-dashboard-state-p99.mjs",
+      "mode": "100644",
+      "bytes": 1162,
+      "sha256": "0d45a9053af5c85de294b94176eefd1ad2943d3d76dd4d177a5645e277be2409",
+      "gitBlobSha": "6b1e3a53aeb12dcc925ce74d4b0b45213aca2332"
+    },
+    {
+      "path": "scripts/measure-directed-transport-oracle-v1.mjs",
+      "mode": "100644",
+      "bytes": 1888,
+      "sha256": "364c58d8139b443ac68add0fd9cf82a1a050acc3d5c8117ae4f4c5cc88eacd87",
+      "gitBlobSha": "17a3f12008b5a49c2f1febfa6914bdf99fa7c968"
+    },
+    {
+      "path": "scripts/measure-r1-qualification-reuse-v1.mjs",
+      "mode": "100644",
+      "bytes": 2514,
+      "sha256": "5be01835828a92e80de9bcc7bf16236325f0e0bfcf3ddee1f76d84a43d87bd95",
+      "gitBlobSha": "91a3a6a3f7418140cb264f9de2dbd5fecf69ccb3"
+    },
+    {
+      "path": "scripts/migrate-stopped-native-session.mjs",
+      "mode": "100644",
+      "bytes": 3964,
+      "sha256": "5d270461556d510cdf3374b5ff14754c0a7844ac660f3a62f4c3c396266994a4",
+      "gitBlobSha": "f82bf9e37ad3f9c66c85f8d26cacd2dd241e99d4"
+    },
+    {
+      "path": "scripts/minecraft-body-connection.mjs",
+      "mode": "100644",
+      "bytes": 3576,
+      "sha256": "fdcd2e2626a563f3e91f5b3417107b0a4f794b1cf390af842196146c7be8ecdd",
+      "gitBlobSha": "bd1d670c72b9b450e906de00875971771240f7ef"
+    },
+    {
+      "path": "scripts/prepare-assessed-runtime-bundle-v1.mjs",
+      "mode": "100644",
+      "bytes": 1807,
+      "sha256": "8321deafd0a40e889cbf3ef4d6bc49177fffca764d2455f198d975572a32be9b",
+      "gitBlobSha": "473d709d6422942f1e80c42b7a7688eab09988b8"
+    },
+    {
+      "path": "scripts/profile-current-physical-query-v1.mjs",
+      "mode": "100644",
+      "bytes": 2397,
+      "sha256": "7e09966956cd4f2581c7ac82a9545ecaf5581f0f921cc73c27a14a8bded9ed3a",
+      "gitBlobSha": "676158be18b21bf80eaa6d06026e20ee16badd7c"
+    },
+    {
+      "path": "scripts/profile-owned-node-v1.mjs",
+      "mode": "100644",
+      "bytes": 1921,
+      "sha256": "2ad57c8eccf5e59ca1256c0db9d09593eb6af68cfafa53ece4cc1d8205759c0b",
+      "gitBlobSha": "8f6ce12e279a00a5af76cacf7dc1f2008154f85c"
+    },
+    {
+      "path": "scripts/profile-physical-metadata-reads-v1.mjs",
+      "mode": "100644",
+      "bytes": 2060,
+      "sha256": "799f9a06faee12d58eb5f67ef1fea49ef4e1dab47f752dc4ddf8ec9f09fc9f70",
+      "gitBlobSha": "39c0191f7c8814e9dcb2fd811cd6dfb3ef0c67f2"
+    },
+    {
+      "path": "scripts/profile-recorded-planning.mjs",
+      "mode": "100644",
+      "bytes": 3864,
+      "sha256": "d673bbc868516584f36ee2816083d567a40aaa6e9e30458b8c6f22dc79309fe1",
+      "gitBlobSha": "5fdca96c360b0fed7efec39f3b867bebf5f35029"
+    },
+    {
+      "path": "scripts/rebuild-minecraft-distributed-g6-r1-baseline-v1.mjs",
+      "mode": "100644",
+      "bytes": 877,
+      "sha256": "093313ca3ae1daa81618f9f354e10e25d953e9ee9049396e5a1880e82b7f7851",
+      "gitBlobSha": "1f7bec6b1b170c2185b6293b865d5bd896d5017c"
+    },
+    {
+      "path": "scripts/rebuild-two-stage-note-experience-v1.mjs",
+      "mode": "100644",
+      "bytes": 5169,
+      "sha256": "70ebfcab4985a583e127e2262f5db5f4e388ed61e48e9bb58037359e1f262702",
+      "gitBlobSha": "98b30c6ea64556dd0eee5544d37d91c81185c9df"
+    },
+    {
+      "path": "scripts/record-heldout-computation-stop-v1.mjs",
+      "mode": "100644",
+      "bytes": 2099,
+      "sha256": "5f56596c903db8a221a14d0cf850c39911fc61fe90754d4c5afe6b0a66f33126",
+      "gitBlobSha": "a4a3b688a963151c41eb88c3acb8eef8da1c2f54"
+    },
+    {
+      "path": "scripts/recover-experience-journal.mjs",
+      "mode": "100644",
+      "bytes": 1713,
+      "sha256": "4b5b67dcb3242972fe9305921b845e3c3525350596405aaa1fa6c9df77d3e63b",
+      "gitBlobSha": "0cdc1f35b70bfb4f3ff76f7f1039925e98ed6cee"
+    },
+    {
+      "path": "scripts/replay-guided-note-events-v1.mjs",
+      "mode": "100644",
+      "bytes": 4953,
+      "sha256": "57266ed429162a22720e9ab3fceb010fd40706a1c09f70e901c408bf6ce0445a",
+      "gitBlobSha": "ef3bbfc29e8bd7719d22f25a88ece75d3fd9f2b8"
+    },
+    {
+      "path": "scripts/replay-merged-note-foundation-v1.mjs",
+      "mode": "100644",
+      "bytes": 8472,
+      "sha256": "f56d70a8768325450d05f5317b494915e62ad6f4a3bb3b62018a09c5252809a1",
+      "gitBlobSha": "0b03a7140a265d063c859dd8ca018b9a14547ae4"
+    },
+    {
+      "path": "scripts/reprocess-visual-experience.mjs",
+      "mode": "100644",
+      "bytes": 11497,
+      "sha256": "b9bd84400b8a48e83e0c5f1f86abff05903e3e0ea833af80f16d43815beec66d",
+      "gitBlobSha": "f49463e55624fea3877ca754b2824b80de6466ea"
+    },
+    {
+      "path": "scripts/run-capacity-probe-v1.mjs",
+      "mode": "100644",
+      "bytes": 961,
+      "sha256": "80630dbdc26236c2cf5f33ebbf7a91d55712646f80492a3d128d76f367b9704d",
+      "gitBlobSha": "16e5040ef9e6ade8657aaf2d37ff31b2d29f3efd"
+    },
+    {
+      "path": "scripts/run-current-grounded-minecraft-note-v1.mjs",
+      "mode": "100644",
+      "bytes": 10837,
+      "sha256": "44551850105865e29cfb10c79a9a0e906e3e3d329c587270852252834d07dd93",
+      "gitBlobSha": "db226b237e1220f1222de9e57099a7430b9af914"
+    },
+    {
+      "path": "scripts/run-distributed-g5-neutral-control-v1.mjs",
+      "mode": "100644",
+      "bytes": 4985,
+      "sha256": "81ba637c223cf51ec4d005a122beb0c2e57440aaf8ad73dc24715e528733d41a",
+      "gitBlobSha": "2b9af947da6cfc349e5a25ccc364ca0b017e91b3"
+    },
+    {
+      "path": "scripts/run-experience-body.mjs",
+      "mode": "100644",
+      "bytes": 5530,
+      "sha256": "0578fb01a6ee548b6330f87f1125cb35e34d69fcd35b87aac8b708cc133a4036",
+      "gitBlobSha": "c3f0797288d79987a3d272391177084f9843ef75"
+    },
+    {
+      "path": "scripts/run-minecraft-basic-action-loop-v1.mjs",
+      "mode": "100644",
+      "bytes": 458,
+      "sha256": "0b4d35f97371d4e689620261a5938b8921e7c71673b5f62b97b1dbb6a5bd352a",
+      "gitBlobSha": "9f52d6e79d17f69eab5ec32c9fd9c7ae6c82b79e"
+    },
+    {
+      "path": "scripts/run-minecraft-distributed-g6-continuous-capture-v1.mjs",
+      "mode": "100644",
+      "bytes": 1211,
+      "sha256": "da2ec36fe535bb5d8535ee9ab667df9ec915e0cf18c974ead036ba5e1044d5b8",
+      "gitBlobSha": "fec5db2334269fef477166abe9f9b43197872eac"
+    },
+    {
+      "path": "scripts/run-minecraft-distributed-g6-live-v1.mjs",
+      "mode": "100644",
+      "bytes": 3825,
+      "sha256": "7164cad5b3a72c7247d02ee9fc86d7bbd0c6f2f2e1b921b3f85f2423e5163dad",
+      "gitBlobSha": "9907dbe8dbd68f8b47144ee54c61a24da0c5975f"
+    },
+    {
+      "path": "scripts/run-minecraft-tests.mjs",
+      "mode": "100644",
+      "bytes": 767,
+      "sha256": "89969d3348ed9719fa39abe8d36dd1c7256e6a2f27c614b46b040ddc3139e64a",
+      "gitBlobSha": "c64df6a2fea424bd19f72b865ac8c75785b0931f"
+    },
+    {
+      "path": "scripts/run-next-stage-tests.mjs",
+      "mode": "100644",
+      "bytes": 1027,
+      "sha256": "a622b377f6453af7640b29ad25cc9f21dccb82af1ae90a88138ce58666c3f216",
+      "gitBlobSha": "7dc97d423f0d549ef96089f15d12d585c911817b"
+    },
+    {
+      "path": "scripts/run-prototype-tests.mjs",
+      "mode": "100644",
+      "bytes": 771,
+      "sha256": "653e0732e61e189d5375a1460fb3da10b3ab653d1b827d77184d265f45134803",
+      "gitBlobSha": "964f8dcb1850f4e55468859f1ec89ded81513c8f"
+    },
+    {
+      "path": "scripts/run-temporal-fidelity-probe-v1.mjs",
+      "mode": "100644",
+      "bytes": 1296,
+      "sha256": "3a4c3e2d7d988da44fc3320a1bdc8a1e84e1050b874d40ccc89a7a7e9c08f7c6",
+      "gitBlobSha": "72bdfd235670ec8d88d89e7f04ffbcd72e5b078b"
+    },
+    {
+      "path": "scripts/serve-recorded-prototype-demo-v1.mjs",
+      "mode": "100644",
+      "bytes": 1316,
+      "sha256": "24011be1f626b25207d23dd9b130278fb13450658927146230cba8b4ced0e048",
+      "gitBlobSha": "35204f669d4c347cd1f1367dc3306c0f6f32fad8"
+    },
+    {
+      "path": "scripts/summarize-heldout-control-log.mjs",
+      "mode": "100644",
+      "bytes": 2823,
+      "sha256": "c782f92b511994913c8159fff1ff2975f5d11678768a065b17397236518c4c14",
+      "gitBlobSha": "4543f85300631f44111c9c47cbe50168e9d5ed43"
+    },
+    {
+      "path": "scripts/verify-recorded-prototype-demo-v1.mjs",
+      "mode": "100644",
+      "bytes": 2088,
+      "sha256": "24ffc16a4e92130dc135baf9644fd086502ea53c370963106da455973624b350",
+      "gitBlobSha": "9e8e81b7b9d1e6ec69dfc22b4f07cea4bc5968eb"
+    },
+    {
+      "path": "src/action-contract.ts",
+      "mode": "100644",
+      "bytes": 2700,
+      "sha256": "97152fd8ea4c521f28c1b3d33b66b0ec0762d3de728bc91cd53c0c09cee00cba",
+      "gitBlobSha": "1ded497e978ff355dd7ef7b593bc3d69227fa982"
+    },
+    {
+      "path": "src/adapters/minecraft/experience.ts",
+      "mode": "100644",
+      "bytes": 7815,
+      "sha256": "496a80c745b62dce65153220ef19fbe57d5c74c8f6d225a8e40f5b926a0707ec",
+      "gitBlobSha": "c1aa43893807ec05acd0541d530527db5957a205"
+    },
+    {
+      "path": "src/adapters/minecraft/index.ts",
+      "mode": "100644",
+      "bytes": 774,
+      "sha256": "fa03c4456abd02225ca50ddcd9264558ba78eaaf52ff15a25fe0b0a9f1b39b64",
+      "gitBlobSha": "118273c3d1bdd7dcd9851ff8aef46ec013faa915"
+    },
+    {
+      "path": "src/adapters/minecraft/optics.ts",
+      "mode": "100644",
+      "bytes": 10803,
+      "sha256": "ff4323503cd3023dfc1dae2a9264dc208faddd15c0a7aca5c742204adee95458",
+      "gitBlobSha": "78a72ca65208ffc1250aabeeed7b9f2e17bc7aa6"
+    },
+    {
+      "path": "src/adapters/minecraft/retina.ts",
+      "mode": "100644",
+      "bytes": 9156,
+      "sha256": "1a593caf65e03700b5216279d44fc6b36bc26cfa72169e9daeaf17702447aa75",
+      "gitBlobSha": "29c3fb1c98acd5ff0f16292e83d5def974ad3774"
+    },
+    {
+      "path": "src/adapters/minecraft/viewer.ts",
+      "mode": "100644",
+      "bytes": 200,
+      "sha256": "6e8669a9ebc803ce7840b515c717462e008be9074d15c66348bdfd22813383d9",
+      "gitBlobSha": "96da724e8cbbdab290d3a2967fa7a64a77320177"
+    },
+    {
+      "path": "src/attention/attention-controller.ts",
+      "mode": "100644",
+      "bytes": 8045,
+      "sha256": "52f1203f30c74269160b57764c22a5c6efa813a24c67474ddc4761f6671754b0",
+      "gitBlobSha": "2fe5aed29b900d345364ce5e66f98eb1c5459460"
+    },
+    {
+      "path": "src/attention/monitor.ts",
+      "mode": "100644",
+      "bytes": 13415,
+      "sha256": "d08342ab3b6923c0054f7e7a1c7a33c38aa55186b895fd8bfc5e59b82cedc6f5",
+      "gitBlobSha": "a6d77d525ec9db6541853b790c7ad8dc9dfe5bb3"
+    },
+    {
+      "path": "src/attention/prediction-deviation.ts",
+      "mode": "100644",
+      "bytes": 2734,
+      "sha256": "d01873a3a8aff449d28ec5b5421ad1ddba6125ff61024421fcf62812973556e1",
+      "gitBlobSha": "3532b6e6160c74d375110f2c6264254eb128a171"
+    },
+    {
+      "path": "src/attention/types.ts",
+      "mode": "100644",
+      "bytes": 1026,
+      "sha256": "1c6e83c9513de8869b780e063b71eb733ff400edcc0a92fc5412bf2d04d95699",
+      "gitBlobSha": "7d79fadfe63d8bbbec2e7aed5025f6fe07d2a56d"
+    },
+    {
+      "path": "src/body.ts",
+      "mode": "100644",
+      "bytes": 49871,
+      "sha256": "c183336947dfb8e416efdde0be69137c9074ce7b5324165947de7a2e339196e5",
+      "gitBlobSha": "163e89e5b9fb6cb1cebe03776bb1019d486f3c9d"
+    },
+    {
+      "path": "src/compute.ts",
+      "mode": "100644",
+      "bytes": 11680,
+      "sha256": "d9ae0bc9e8916b600c21fde4cc81ae8ba07c02b357bac80a91bedb205f35178f",
+      "gitBlobSha": "b0be23a14923bc6f7a58a09583e739dd3e775ad8"
+    },
+    {
+      "path": "src/contextual-readout.ts",
+      "mode": "100644",
+      "bytes": 21102,
+      "sha256": "8f4cbd5b074535127950686512b407c9243f04add97c216432839bc72af8da2c",
+      "gitBlobSha": "0fc2c6439ffcf4c80fe95267d57f960642199f80"
+    },
+    {
+      "path": "src/contracts.ts",
+      "mode": "100644",
+      "bytes": 7076,
+      "sha256": "7928cf9129ffe529ee17607893217866bcfc07a697e6261a1efab67fa6cdf2fa",
+      "gitBlobSha": "4e9e54b5f1bb8b9cd64c838406ea2cacd69cb129"
+    },
+    {
+      "path": "src/control/active-trajectory.ts",
+      "mode": "100644",
+      "bytes": 2215,
+      "sha256": "06ea3a5641847b63c380a14065601f4b48de8041eb5624de39aec79087434639",
+      "gitBlobSha": "0281e113039a9feab0c0dbd125a43eff2b7943bb"
+    },
+    {
+      "path": "src/control/contracts.ts",
+      "mode": "100644",
+      "bytes": 17735,
+      "sha256": "41c83261449ea558a37a9f4c57e51abaa620b5bd12e262f4d6f811c0b11f1934",
+      "gitBlobSha": "bdd434e5d6c5dfedc650de7f5e71b173569c051f"
+    },
+    {
+      "path": "src/control/controller.ts",
+      "mode": "100644",
+      "bytes": 82719,
+      "sha256": "40a4813112308b661f723ff9e247012a34e49b371a654a1fca468a1e0a45c805",
+      "gitBlobSha": "cf8846c126aea24571403326df8e2817d13f1fa3"
+    },
+    {
+      "path": "src/control/field.ts",
+      "mode": "100644",
+      "bytes": 12675,
+      "sha256": "b077d9fc10d922e90b2a69d2a369e2fd3566b254d2dd04e3f35d7023ff2d1398",
+      "gitBlobSha": "21de8c55c06dc8aa67c6e442b6b49f0b0f4521ad"
+    },
+    {
+      "path": "src/control/goal.ts",
+      "mode": "100644",
+      "bytes": 12887,
+      "sha256": "8c9c1a1238b9d05fa32a31fe908285ec38731e64d6d3a8755fbf12a861e29e7a",
+      "gitBlobSha": "bea3962a50d4a339e46d0a852c0599fe368116c5"
+    },
+    {
+      "path": "src/control/habit.ts",
+      "mode": "100644",
+      "bytes": 14189,
+      "sha256": "d9a6e82d7da9145585a3bb67d0ac6e126be56975e12dd99910f651ea1bf92b4a",
+      "gitBlobSha": "b42b32b091bd33b57d0c8e6aa1009a146ab8e9d5"
+    },
+    {
+      "path": "src/control/interoception.ts",
+      "mode": "100644",
+      "bytes": 4134,
+      "sha256": "990b01da7185fafb42c8bdbe10d69b87e061f4e0a4eccc5bc9aa84d296192138",
+      "gitBlobSha": "39036425f1dd06ca75f6a28a6937b8e144666a78"
+    },
+    {
+      "path": "src/control/meta-evidence.ts",
+      "mode": "100644",
+      "bytes": 10537,
+      "sha256": "4abcb0b440e61ae20022555a217e23d0f4b8700605eb6100d0b8441d1c608a93",
+      "gitBlobSha": "baa081a8c48dfbe646e2f14800cb44a6d704d1bc"
+    },
+    {
+      "path": "src/control/short-chain-paths.ts",
+      "mode": "100644",
+      "bytes": 1329,
+      "sha256": "8190e709d1934893b9c59a6c660337d5844714a4ccf3a90f73fd9d07cf360585",
+      "gitBlobSha": "3d8ddd32e11ab82d0ada62781a8259d12155ac57"
+    },
+    {
+      "path": "src/control/workspace.ts",
+      "mode": "100644",
+      "bytes": 36584,
+      "sha256": "d5d66ef6790e39c1c6b82a217e801092a861102a7e9f3b298ff9812422b1b76f",
+      "gitBlobSha": "1e9d1d13ff827ca6ef456470025669e3e6579e6d"
+    },
+    {
+      "path": "src/core/compatibility.ts",
+      "mode": "100644",
+      "bytes": 1114,
+      "sha256": "80875767ca7059868240e0f2be876f7fa999fd97a88755469e295f4aae6198e6",
+      "gitBlobSha": "da95c861f6300f877aa256aee131942bd1097a08"
+    },
+    {
+      "path": "src/core/contracts.ts",
+      "mode": "100644",
+      "bytes": 36309,
+      "sha256": "2c2573504616a8bc1d442e344b5ce3efee32b26e2611c1d96298550a33b9848a",
+      "gitBlobSha": "b1386c4dcba228b6c14981ddb6d29b3fe8d1c9cf"
+    },
+    {
+      "path": "src/core/events/contracts.ts",
+      "mode": "100644",
+      "bytes": 10810,
+      "sha256": "834a72a43f54aae5f498a2c880799ab428e6f59b8a36f7153f5f09149da5fb15",
+      "gitBlobSha": "08a2ba060ad84bc5a0e405440e31395255911e33"
+    },
+    {
+      "path": "src/core/learning/attractor-public-dictionary.ts",
+      "mode": "100644",
+      "bytes": 10393,
+      "sha256": "bce32439cc819d008095809abfb36f251989c387be5cf60ec9034bcf43089214",
+      "gitBlobSha": "37423be53bc1d7192277e349126f7d4fc45bc0ca"
+    },
+    {
+      "path": "src/core/learning/consolidation-replay.ts",
+      "mode": "100644",
+      "bytes": 7282,
+      "sha256": "aeac5c0db51ee93a5417c6b2797f27e6d0f2bd423f57d6f6e2bde3d4256106be",
+      "gitBlobSha": "a4bdb095ce6d9627a9511867d35691a66c4d2593"
+    },
+    {
+      "path": "src/core/learning/distributed-r1-contracts.ts",
+      "mode": "100644",
+      "bytes": 9991,
+      "sha256": "00b148ef4cfdc305de56fba49bd5eeeb443b4693e9d60709a438653d4c2fddee",
+      "gitBlobSha": "86cdc237e18b2be6399975a42926f7b61188c491"
+    },
+    {
+      "path": "src/core/learning/distributed-r1.ts",
+      "mode": "100644",
+      "bytes": 21877,
+      "sha256": "5c00ad3503c92a7ce5adfbbf28b4b6006e66cb4889e0e5afba109a61b38600a7",
+      "gitBlobSha": "d97bef08bd7d264242f51a01eb737f06d85bbd5c"
+    },
+    {
+      "path": "src/core/learning/distributed-r2-contracts.ts",
+      "mode": "100644",
+      "bytes": 6548,
+      "sha256": "eac9ec32d276867e4b1fd4a61ec7c63f289b152e54a6160cb1f6e7dc376863c8",
+      "gitBlobSha": "434bbe654cb922b800979f8ba61251e57f53638c"
+    },
+    {
+      "path": "src/core/learning/distributed-r2.ts",
+      "mode": "100644",
+      "bytes": 20667,
+      "sha256": "0cf0cc3a7d988f61f9e3bfe2e376491d4454d9ec7f66f17d2f4e7ccd076e3f87",
+      "gitBlobSha": "e30f3976c12688f3259b4cad12396f29ba4774c2"
+    },
+    {
+      "path": "src/core/learning/distributed-r2a-physical-contracts.ts",
+      "mode": "100644",
+      "bytes": 13846,
+      "sha256": "5602aa065ddc0d11bcc0df89a33f1dd2a29a22cb6be1ed8d05e281a28c9004ae",
+      "gitBlobSha": "34613360444d3bfed53f3247226cda8e7ba6afb1"
+    },
+    {
+      "path": "src/core/learning/distributed-r2a-physical.ts",
+      "mode": "100644",
+      "bytes": 168206,
+      "sha256": "d61cd60d109ec33e751c04e6e23105e9ca19fc2e1435121974763a56226614bc",
+      "gitBlobSha": "8dc52ab4a597353923b66470fc47bf1140862033"
+    },
+    {
+      "path": "src/core/learning/distributed-r2a.ts",
+      "mode": "100644",
+      "bytes": 1642,
+      "sha256": "a4dc14c9d93883b3671fad319ef0709bb16e171eb2eadd04ae815232bfa1ada2",
+      "gitBlobSha": "2fa612a9c537a21193d94ed6a78ac6465afc4722"
+    },
+    {
+      "path": "src/core/learning/intervention-agenda.ts",
+      "mode": "100644",
+      "bytes": 11781,
+      "sha256": "5475a109c3989d829599ccededdcd6144409d44c63132a1b9a315595c3ad28f7",
+      "gitBlobSha": "303e600c33aa42f6f9ad7fcd18ad9e4ec55186fe"
+    },
+    {
+      "path": "src/core/learning/intervention-pair-collector.ts",
+      "mode": "100644",
+      "bytes": 7787,
+      "sha256": "c7e83e9e17d534acd0b50af314e4d6448e47f86a4aa26a7ef9467257681b053c",
+      "gitBlobSha": "f911ac62311f342cfffe4fd537c3e601a4f0384c"
+    },
+    {
+      "path": "src/core/learning/memory-timescales.ts",
+      "mode": "100644",
+      "bytes": 7104,
+      "sha256": "9da3d7d800af07987b7eca5f6f82a929a236ffb94610c576d6ad320310beb012",
+      "gitBlobSha": "c829e0c498fcd0e35e6ad2de28b2f776f4c15c72"
+    },
+    {
+      "path": "src/core/learning/r2a-action-input-boundary.ts",
+      "mode": "100644",
+      "bytes": 1850,
+      "sha256": "edd8b8175282257d9df23412e1d1a8cec825995f1133e50bc1f619ffeb271939",
+      "gitBlobSha": "490676f194018f46c24020e3ced99b6dba7e7f96"
+    },
+    {
+      "path": "src/core/learning/self-organizing-afferent.ts",
+      "mode": "100644",
+      "bytes": 33284,
+      "sha256": "a52754e9b670b7a57b775fe41410ae4e75b1148f544926b06d1eed25caca4655",
+      "gitBlobSha": "767fb454f47f0aef4f60c9f3498044d722776761"
+    },
+    {
+      "path": "src/core/learning/sparse-interlayer-projection.ts",
+      "mode": "100644",
+      "bytes": 11653,
+      "sha256": "92db52ca51fe33d74c468ea0e1f1e0eacd89e5cae883f50b492962dd7b582cf2",
+      "gitBlobSha": "58c046d50519c74fdc2fcbd5a6fd247db6d5b273"
+    },
+    {
+      "path": "src/core/physics/distributed-hierarchical-timescale-owner-v1.ts",
+      "mode": "100644",
+      "bytes": 10861,
+      "sha256": "de6ddad3649d80174567556493f2504fe2da63b8d598ef4df2920c168e367e88",
+      "gitBlobSha": "589297a39c6a46c079523f0c8141e58c8102c787"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-probe-parallel.ts",
+      "mode": "100644",
+      "bytes": 10006,
+      "sha256": "9710e9d9969c25019b941af3779059a1eb3ff4aaebfb1a308024fbd9144a462d",
+      "gitBlobSha": "82c3a85c52565170c08d2cb58ded1076690e6099"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-recovery-v2.ts",
+      "mode": "100644",
+      "bytes": 5356,
+      "sha256": "df5594bd20b7bae8e79b5352d6d02b15eb83ab4eda555835d2a22b51f177c562",
+      "gitBlobSha": "cb3ec206653a3f1a9825e2dbd7cae4875996d045"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-timescale-adapter-v2.ts",
+      "mode": "100644",
+      "bytes": 4109,
+      "sha256": "b11fb18fed96940ab42da285b2207a00559476e9121a19c1b240c5941944d5ae",
+      "gitBlobSha": "9a9ce3757eb6fb24bdafa059429456fd524c6f74"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-timescale-protocol-v2.ts",
+      "mode": "100644",
+      "bytes": 6991,
+      "sha256": "1be90a1ddb29076182ab633e92d6463473d29b522e9de4461c28ab69caa44000",
+      "gitBlobSha": "7cd88a80c071244a5719e39089920156b1779225"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-timescale-state-v2.ts",
+      "mode": "100644",
+      "bytes": 7257,
+      "sha256": "60a79d183de5ee26ecd445aaf4db5b0a21a6d97cba2295d118da0932b05daa88",
+      "gitBlobSha": "d434748f6b8e9fad16325f06605940ba3b37e0a5"
+    },
+    {
+      "path": "src/core/physics/distributed-physical-contracts.ts",
+      "mode": "100644",
+      "bytes": 10567,
+      "sha256": "8c0337661bfae6baa2d4aac5d490ac519c719f06a692ba3a5f26d66f210f3763",
+      "gitBlobSha": "8856d717089701bc9044914a8ea77f69ece6f36d"
+    },
+    {
+      "path": "src/core/physics/distributed-physical-medium.ts",
+      "mode": "100644",
+      "bytes": 156685,
+      "sha256": "b531a8d142053411627f1b3f6bafb96aa0574fa1e8050b005a6f4aabbfa78ee0",
+      "gitBlobSha": "b742816ac5968fb18c79f874f3a1d90d200cd7dd"
+    },
+    {
+      "path": "src/core/physics/distributed-physical-structure-scanner.ts",
+      "mode": "100644",
+      "bytes": 13596,
+      "sha256": "42953b4434130a147903f754b379517c8fc75996cb3bf78343ec33f28e8c2c13",
+      "gitBlobSha": "a5c06761537f8a786885791d0ee8850ae7ba4197"
+    },
+    {
+      "path": "src/core/physics/distributed-snapshot-transfer.ts",
+      "mode": "100644",
+      "bytes": 837,
+      "sha256": "72d471e295e459f47bbb8af5d5e4935db090867489cce6ca3cb0177d787f30cb",
+      "gitBlobSha": "5a1ea4d9be7e55049d8c3f449ed09d2c84606cb8"
+    },
+    {
+      "path": "src/core/physics/runtime-measured-salience-bridge-v1.ts",
+      "mode": "100644",
+      "bytes": 4582,
+      "sha256": "dab3a5088cf4f1c885f4df8f8e6a15b429d12a9f8d8f630c2e4dc3c0f42b0138",
+      "gitBlobSha": "73fa2a33e74b33011eb6344a3e1ae7c697d0517e"
+    },
+    {
+      "path": "src/core/prediction/distributed-prediction-clone-parallel.ts",
+      "mode": "100644",
+      "bytes": 8745,
+      "sha256": "4cbddedf00ce718eddd181ee7342540764e757b0cbd39883e6d1bd5c5a560a45",
+      "gitBlobSha": "950bcb52b0610bc78c669154aa87442b9a2eccde"
+    },
+    {
+      "path": "src/core/prediction/distributed-prediction-clone.ts",
+      "mode": "100644",
+      "bytes": 27751,
+      "sha256": "81d147b19411be3d870af7331f3e10033001008532342853c2a4a213e1620174",
+      "gitBlobSha": "ea21817d0abb9b425b7e600453c5b04ee2e9966a"
+    },
+    {
+      "path": "src/core/prediction/distributed-reasoning-adapter.ts",
+      "mode": "100644",
+      "bytes": 3898,
+      "sha256": "212c01eb13ed015d4a500033a2aac9292a4c9b1ecbc9d5c9e9f0391bbf664124",
+      "gitBlobSha": "c3ab9f666f6803335521f6c70014398187795fc3"
+    },
+    {
+      "path": "src/core/prediction/distributed-reasoning-contracts.ts",
+      "mode": "100644",
+      "bytes": 3005,
+      "sha256": "21c58695e9071cc86528b69c400179d6815993d7f077a8e5cd83a99fb9bc763c",
+      "gitBlobSha": "a895a3c3cd9a91441652863a8b840c6cf26d5b9f"
+    },
+    {
+      "path": "src/core/prediction/physical-short-chain.ts",
+      "mode": "100644",
+      "bytes": 4203,
+      "sha256": "7f6181e693a557bb48bed4dd303814af898b7cdee5c64dd3bb282837d753977f",
+      "gitBlobSha": "3ed6eda63c581136d12b2da420733b8d9e796e44"
+    },
+    {
+      "path": "src/core/random.ts",
+      "mode": "100644",
+      "bytes": 1626,
+      "sha256": "07fa4ef22409f86058cb9168d21e50612fd16d7df0af55c4596a36d9e81fd3e9",
+      "gitBlobSha": "d62debde038492b99ea75f0741821dc229b4c305"
+    },
+    {
+      "path": "src/core/vector.ts",
+      "mode": "100644",
+      "bytes": 2214,
+      "sha256": "a3a4cbf259bb84e43a038ad9419f70797566a17e47438ea674e642136d9844b3",
+      "gitBlobSha": "af389f304313adfccf9c499843ad7e0fc0f58752"
+    },
+    {
+      "path": "src/dashboard.ts",
+      "mode": "100644",
+      "bytes": 6832,
+      "sha256": "4361ce6e65bca45ea3c03b95f9e6a82074b7fbad39fe2dcdb0f35288a44659d2",
+      "gitBlobSha": "dfc2a7fe3696e4b9f9fef7dd542fbe236b117ba1"
+    },
+    {
+      "path": "src/distributed-hierarchical-memory.ts",
+      "mode": "100644",
+      "bytes": 85893,
+      "sha256": "c2024d14b50eef0b6f0a1962c24f5b10fc80662be1022e55a7f13a13fc7cdb7e",
+      "gitBlobSha": "87d3fc907d336d66050ab71027e3cab28361b902"
+    },
+    {
+      "path": "src/evaluation/capacity-probe-v1.ts",
+      "mode": "100644",
+      "bytes": 3332,
+      "sha256": "42b161dae89788d998ec4360bc5b06211c678082968ba3a7a4409b4c88c8f865",
+      "gitBlobSha": "b1a2ae9f672f6a1f6f38b23192f35db50b544abd"
+    },
+    {
+      "path": "src/evaluation/distributed-g5-neutral-control-v1.ts",
+      "mode": "100644",
+      "bytes": 47682,
+      "sha256": "6fd0265c906d5c81157e64e7bf2504f4702ac16ebd4d2505485b2a3947f0c0f5",
+      "gitBlobSha": "a9bad81f758cfd1e9a1955be23dfae03d5f7211c"
+    },
+    {
+      "path": "src/evaluation/minecraft-basic-action-loop-v1.ts",
+      "mode": "100644",
+      "bytes": 9093,
+      "sha256": "3337040c05b9c7bea585af6adf136dabcb36db54565a65509d7bb6c54f2e4837",
+      "gitBlobSha": "d154bbd368e7d9d63c51cf32b6602f173392ec55"
+    },
+    {
+      "path": "src/evaluation/minecraft-distributed-g6-continuous-capture-v1.ts",
+      "mode": "100644",
+      "bytes": 36560,
+      "sha256": "61b719f7a58a6d705734aaef6799d3f9cd09f2f2caa848a177aa2ee720c7189c",
+      "gitBlobSha": "95039664c0a4cab35efb3e623544efee99850b1e"
+    },
+    {
+      "path": "src/evaluation/minecraft-distributed-g6-live-v1.ts",
+      "mode": "100644",
+      "bytes": 47679,
+      "sha256": "70f06a61938b2199a0bafa022a6a8f541be5d86d9f755372f5d312f1f6ef5fe5",
+      "gitBlobSha": "bb3d11e8a3cfc841760d105c11f3766d776ccbd8"
+    },
+    {
+      "path": "src/evaluation/minecraft-note-fixture-v1.ts",
+      "mode": "100644",
+      "bytes": 6489,
+      "sha256": "1972d573203788a867223f3f386f5d99ccdbc20099463c935302852a2666af4b",
+      "gitBlobSha": "082ea804aa3ab50828b20ddb88f31c73224498e4"
+    },
+    {
+      "path": "src/evaluation/note-progression-test-contract.ts",
+      "mode": "100644",
+      "bytes": 1828,
+      "sha256": "43c23002d0262ca147e7b9d2c71ae3a9ba1a61461093317eac99e5bffdc7e60a",
+      "gitBlobSha": "59956c094cc3287de0f8b5c26a172e2743712d77"
+    },
+    {
+      "path": "src/evaluation/rebuild-minecraft-distributed-g6-r1-baseline-v1.ts",
+      "mode": "100644",
+      "bytes": 18782,
+      "sha256": "5048ae50b4c45b55221b8caf94bbe4bac4391a996131f46cae5ef470b08cea70",
+      "gitBlobSha": "959c32b98220c33370f6d43c40641b6df45144fc"
+    },
+    {
+      "path": "src/evaluation/temporal-fidelity-probe-v1.ts",
+      "mode": "100644",
+      "bytes": 7076,
+      "sha256": "ae66d48d9d12438b6a7d5f36cd032b18ea0488f16fcea03592e8978c543ffc48",
+      "gitBlobSha": "1f51068ce00177afb980a0ab9316592a507372b0"
+    },
+    {
+      "path": "src/events.ts",
+      "mode": "100644",
+      "bytes": 48074,
+      "sha256": "7405d04b39e8ebdd00587262ec39a22797c4c76d336c2003dca9aed952095982",
+      "gitBlobSha": "bda71fe1de8ef6f44e9bd8b787a481d0df01546c"
+    },
+    {
+      "path": "src/evidence-writer.ts",
+      "mode": "100644",
+      "bytes": 5956,
+      "sha256": "b6e3f00902c278ea890d227fdb30b3f76dd79e18c6d24fa1f79cc534f4fc304d",
+      "gitBlobSha": "5dc762be644513f0bfc1899bec06ea26f13c7a06"
+    },
+    {
+      "path": "src/experience-agent.ts",
+      "mode": "100644",
+      "bytes": 16281,
+      "sha256": "8a8dc2ccb53dd88003c44d7179de31c56c11e2d279c926ff9fea61644e131410",
+      "gitBlobSha": "d0eeaf3b2eb54303b1bcff860d1c90f1b91aa8f1"
+    },
+    {
+      "path": "src/experience-ledger.ts",
+      "mode": "100644",
+      "bytes": 3672,
+      "sha256": "503d8e3f8913093abaa3f00ee6fef0c70cac82bcae26d3619d6f671590a706f0",
+      "gitBlobSha": "c931ef68c157d4761e8b85d8ce055636653ea456"
+    },
+    {
+      "path": "src/experience-medium.ts",
+      "mode": "100644",
+      "bytes": 57565,
+      "sha256": "82279256b3c18bf843417d4ff2e9ef21ed8958f9c13cb2771b4f5de046b2c133",
+      "gitBlobSha": "168cf55ecd2be6a150c73e53b9f8edb6ebccc735"
+    },
+    {
+      "path": "src/experience-session.ts",
+      "mode": "100644",
+      "bytes": 21434,
+      "sha256": "fab55f6f62bdac6717df48c08e7066cc099c667c16129ad0d0a0e5b79d2758a1",
+      "gitBlobSha": "7bdcd58439eb69fbb546bcda7f8dc287c1f1ae49"
+    },
+    {
+      "path": "src/experience-snapshot-contract.ts",
+      "mode": "100644",
+      "bytes": 2527,
+      "sha256": "c0c3a46b426ca110b76cd1be27a870df8d15b16ff8745fa160a53c9fa34ba114",
+      "gitBlobSha": "bc912da0fb84af88284c06b28dcc6f468f2e677e"
+    },
+    {
+      "path": "src/experience-world.ts",
+      "mode": "100644",
+      "bytes": 7234,
+      "sha256": "eaefd0a9a7c5687eb9b36a15485ef35bc7eddb6f5675509861b520355d3f275b",
+      "gitBlobSha": "11e2a0573846d751b74bf32d61f7b157338c59d2"
+    },
+    {
+      "path": "src/learned-affordances.ts",
+      "mode": "100644",
+      "bytes": 4303,
+      "sha256": "ee74970719ce405c83452f737becf2888988741710718c1e3b0e037694ef029b",
+      "gitBlobSha": "6008a6206ab041f7beb8f8daf360e1f8f7fa30c5"
+    },
+    {
+      "path": "src/main.ts",
+      "mode": "100644",
+      "bytes": 17829,
+      "sha256": "9f5ed2737f56c9369c2808fdf6b93f8a13f9e84f7fa7e091802faf4340940cbf",
+      "gitBlobSha": "63e1589fa58ae79e203c7247ce0c212bd1ccf10d"
+    },
+    {
+      "path": "src/numeric-ranges.ts",
+      "mode": "100644",
+      "bytes": 2350,
+      "sha256": "e693bcbccad0f5554d7bc4ad0c472388e5895697955517299459cc903b563925",
+      "gitBlobSha": "344c5479c5621b31c92fa0cd3c13d2520e469009"
+    },
+    {
+      "path": "src/passive-experience.ts",
+      "mode": "100644",
+      "bytes": 1775,
+      "sha256": "8491a8063daecd3bc3660fd6e196a51e11c5f3e9e3973b4f9293955ca8bef565",
+      "gitBlobSha": "16d27d1bb200868c9dd9852d6a2dbe57380df86d"
+    },
+    {
+      "path": "src/perception.ts",
+      "mode": "100644",
+      "bytes": 18519,
+      "sha256": "43ac450cb7b8ff99471dcd30c1296447f18b4d5d7fd18034d9e09bdd047481fc",
+      "gitBlobSha": "8fd58bcd6a4a56a598cc82d4e471f6aeeb93324c"
+    },
+    {
+      "path": "src/prototype.ts",
+      "mode": "100644",
+      "bytes": 1164,
+      "sha256": "d7e3fd5e93503179cf285178826d43a648474ef6b0418eed82360bdeb29f554c",
+      "gitBlobSha": "baf161a57a6fba9331998de8039fcd8e3c71e75d"
+    },
+    {
+      "path": "src/public-context.ts",
+      "mode": "100644",
+      "bytes": 1358,
+      "sha256": "7d1389640b2dd36f17696add932e24a86f996fd93c9c0c36d730b4bfeff18c17",
+      "gitBlobSha": "09263383790dce4c948a7528a50fc1222f424bf0"
+    },
+    {
+      "path": "src/runtime.ts",
+      "mode": "100644",
+      "bytes": 61901,
+      "sha256": "23b73139a4397053758f6816cfe30c7f8cfab55978591dae5d999280ec5d1ec6",
+      "gitBlobSha": "ac63a6f9b237147def0df75e264510401307392d"
+    },
+    {
+      "path": "src/services.ts",
+      "mode": "100644",
+      "bytes": 12202,
+      "sha256": "21ab3ab33b66cd5a613915639e119e5cd09c557ea3a002d6af16efa69981bb75",
+      "gitBlobSha": "aba5cc2ffe395157742b897c9d845791f421fb77"
+    },
+    {
+      "path": "src/stall-watchdog.ts",
+      "mode": "100644",
+      "bytes": 3927,
+      "sha256": "8e570df3a8e5deab94dbcf435721e82f3fa1184cb49ceba741b988b3b3eaf1c5",
+      "gitBlobSha": "23e19275f23db4bcde67e5c124c43b1b02e2ae3d"
+    },
+    {
+      "path": "src/util-stream.ts",
+      "mode": "100644",
+      "bytes": 19046,
+      "sha256": "3a6c3035ac73d2a203ba3129c2c3bfea674048a40f4bd97c196e7fa98f4b91dc",
+      "gitBlobSha": "b7d069c347df658355d178fb24f9c5be208e279b"
+    },
+    {
+      "path": "src/util.ts",
+      "mode": "100644",
+      "bytes": 1307,
+      "sha256": "9d4611835cb534699d2eeecd47217a709795c65050ec186faffb55b5baa33da5",
+      "gitBlobSha": "65f586c95637c3a6d8652c6b7f336f69d93c308e"
+    },
+    {
+      "path": "src/viewer.mjs",
+      "mode": "100644",
+      "bytes": 7189,
+      "sha256": "cf960a9bf47483eb93c08ef035003cc061ec9fab5c7e2f78bf0629a0989025d7",
+      "gitBlobSha": "98d5d3db4af6abbcb14c737ad761ddec56b79779"
+    },
+    {
+      "path": "src/worker.ts",
+      "mode": "100644",
+      "bytes": 12942,
+      "sha256": "2b6817fdfa21f5bd4f456ecb755ceef8c53d029c0ddc0517e950a7c546b37b00",
+      "gitBlobSha": "60edfe8ac0fc436e28614a361552293a027fe9e8"
+    },
+    {
+      "path": "test/action-contract.test.ts",
+      "mode": "100644",
+      "bytes": 822,
+      "sha256": "b99228b07230b65fcefcedc0da48d1a594d665e3738fb5c82e8845c4c2659234",
+      "gitBlobSha": "0156c1c2ab34cc6b8691b47cea56b16e44ecd8df"
+    },
+    {
+      "path": "test/action-offer-observation-envelope.test.ts",
+      "mode": "100644",
+      "bytes": 1704,
+      "sha256": "aec91613e5cc87281333b96f934fcd777d725407f287c9f829011ba1d5bfa3c5",
+      "gitBlobSha": "fc87d90acfe06bc8ac7aa7ce0308594cef082901"
+    },
+    {
+      "path": "test/active-control-trajectory.test.ts",
+      "mode": "100644",
+      "bytes": 3913,
+      "sha256": "8c30fbcada29b8ebb26aa0a298dd6673ef21a472d77099643dc22e466e8670ee",
+      "gitBlobSha": "71a3e08218c513f510d5c0bb58576e51a65f094b"
+    },
+    {
+      "path": "test/afferent-event-outcome-scope.test.ts",
+      "mode": "100644",
+      "bytes": 9037,
+      "sha256": "e3a72abeb31fe88871d331df7b5becff03867131316a858800fe3ddd22372694",
+      "gitBlobSha": "1fde25632423854b183d58d038ae8f84ece0786f"
+    },
+    {
+      "path": "test/afferent-physical-order-not-hash.test.ts",
+      "mode": "100644",
+      "bytes": 8120,
+      "sha256": "a12c8fe9dc3855a23873273b48706543740ab3afb9aadb5a178ddcdd2bf37e33",
+      "gitBlobSha": "4e9b80192ce9a855d960d9e507d8c8766025ef23"
+    },
+    {
+      "path": "test/affordance-event-expression.test.ts",
+      "mode": "100644",
+      "bytes": 16313,
+      "sha256": "a9bed8b0f3f22cc26bb77e0e5ce9366217c8907c4bd3a967f44b94190eb052d4",
+      "gitBlobSha": "01990ff64440b2aba137269f879141bb24d0dfc5"
+    },
+    {
+      "path": "test/attention.test.ts",
+      "mode": "100644",
+      "bytes": 5451,
+      "sha256": "ca93c946443a0c89229f429b4edc450746dd10e65e8699266d873391ad7d040a",
+      "gitBlobSha": "e541ca1c6357549ce65f448db508f9136e783cd4"
+    },
+    {
+      "path": "test/block-optics.test.ts",
+      "mode": "100644",
+      "bytes": 4084,
+      "sha256": "d946890bf0f23ca2655ce10d0f05e8e36521467d4a58fb471ac950a92beadfc9",
+      "gitBlobSha": "3bc009d60d4d29638f04a3ab58ed854d2ce5ef3d"
+    },
+    {
+      "path": "test/body-action-requirements.test.ts",
+      "mode": "100644",
+      "bytes": 4431,
+      "sha256": "3a22bba64543b665671057dcee259e4815b8d245c098601b46545d21e9a5064c",
+      "gitBlobSha": "253922657e763b804e3034d138d99cd5102239bb"
+    },
+    {
+      "path": "test/body-motor-window.test.ts",
+      "mode": "100644",
+      "bytes": 10815,
+      "sha256": "eb4bdb7b232dfa133cbefb1122239034ee7db73a073c01568f3133b6bdde9bb3",
+      "gitBlobSha": "8c9b89f9930f8c01550e48522c6ae12430ad4ce3"
+    },
+    {
+      "path": "test/canonical-stream.test.ts",
+      "mode": "100644",
+      "bytes": 4322,
+      "sha256": "a05a66cbdfaa07a818e269d27dc09417baf95f37db10a875d937bcded70c99cc",
+      "gitBlobSha": "934e60c918985f4dd6156976334b0a8928eadabf"
+    },
+    {
+      "path": "test/compatibility-documentation.test.ts",
+      "mode": "100644",
+      "bytes": 582,
+      "sha256": "84e6e9207f4c9e72cb67559da4c69596e9e52c8bcb1510c88606166952164e9f",
+      "gitBlobSha": "22400adc519438be566ac65fd5c3a63ad7361b83"
+    },
+    {
+      "path": "test/compute-timescale-v4-bridge.test.ts",
+      "mode": "100644",
+      "bytes": 633,
+      "sha256": "3eb44ebfbb15b84e1c7511654929168d479f60933a37a7a8854e3e300fe7fdbb",
+      "gitBlobSha": "31cb962aaebbda429e228026b0c142af45e037a7"
+    },
+    {
+      "path": "test/control-field.test.ts",
+      "mode": "100644",
+      "bytes": 5767,
+      "sha256": "1e69218a60b8e879985cedb7609d50c5090cf080723764cf70957616f9a5165d",
+      "gitBlobSha": "856252fac788ff3087f5ec01064c24f024145747"
+    },
+    {
+      "path": "test/control-habit-persistence.test.ts",
+      "mode": "100644",
+      "bytes": 6382,
+      "sha256": "52484eca8562568f1277eadd7e9807f242a59ffbb353648c7ed8a24b4fd1dcfe",
+      "gitBlobSha": "d5cbde221f9ee91882016e77a148fde47ace9ca3"
+    },
+    {
+      "path": "test/control-habit.test.ts",
+      "mode": "100644",
+      "bytes": 6979,
+      "sha256": "dd9477c8308a82bced6dc334dd6ec417e2a47d380b779e50054212bcf27d6438",
+      "gitBlobSha": "ae21f3d09fb6209218fc93c273ba21587d88bf06"
+    },
+    {
+      "path": "test/control-prediction-audit-retention.test.ts",
+      "mode": "100644",
+      "bytes": 3877,
+      "sha256": "5748d196f857832c4091e3e9a7b9302922c1526de7930a0cc61c217d2ba1f6b2",
+      "gitBlobSha": "744454a6c0533585a1fd69952443a5b1736741d5"
+    },
+    {
+      "path": "test/control-transition-evidence-refresh.test.ts",
+      "mode": "100644",
+      "bytes": 3614,
+      "sha256": "c1a9f9d893aeb7d2c862f3e37d590d3f59991a1762fa08dcad972f9689b32b46",
+      "gitBlobSha": "27f7cfcdb2389bd5f4f22d59e6de76295341e4c0"
+    },
+    {
+      "path": "test/control-workspace.test.ts",
+      "mode": "100644",
+      "bytes": 13232,
+      "sha256": "c5bae88d871a3267a56ae5401f1b4484fd6a650340514209820c4e6665cfc8a8",
+      "gitBlobSha": "6618ce703afc4456831e229c6a4922ce5827c7fb"
+    },
+    {
+      "path": "test/current-action-r3-alignment.test.ts",
+      "mode": "100644",
+      "bytes": 1654,
+      "sha256": "7b88b8fa9175bb4d28ce9f150c8cc1932eed180436c01fd16021f1940e05ca15",
+      "gitBlobSha": "51552ccb7b1f70424b9edf4a3d8dfa6732207eda"
+    },
+    {
+      "path": "test/dashboard-bounded-payload.test.ts",
+      "mode": "100644",
+      "bytes": 9378,
+      "sha256": "573303efd5d4d698426d1b940dfa78778eea98347b0f6eb4b931142f2c972668",
+      "gitBlobSha": "7353dbcfad3aeef7a19e6311bb4363c276c52fdb"
+    },
+    {
+      "path": "test/dashboard-restored-snapshot-p99.test.ts",
+      "mode": "100644",
+      "bytes": 10847,
+      "sha256": "35bd16526e87baef2f4911d0a632006e3468674bb7425044f9497fc36cc6ed7a",
+      "gitBlobSha": "a08c45cedca9726b4c115122eff54504b14bc377"
+    },
+    {
+      "path": "test/design-001-interoception.test.ts",
+      "mode": "100644",
+      "bytes": 4134,
+      "sha256": "738187ea9ff145b3cbef5823c63d3f11dac99cc8b90550a1c7f5c66d032fb99f",
+      "gitBlobSha": "f9ddd503b254ffd59177b313547a7d5d0c7bbba0"
+    },
+    {
+      "path": "test/design-001-meta-evidence.test.ts",
+      "mode": "100644",
+      "bytes": 3543,
+      "sha256": "5b08881df179c2477fd6c6af76dace452e03f6229e9a084590fed5425897b9ff",
+      "gitBlobSha": "8c9f2e5a0c8c9eb060029104aaada208a5ff57a5"
+    },
+    {
+      "path": "test/design-002-consolidation-replay.test.ts",
+      "mode": "100644",
+      "bytes": 3150,
+      "sha256": "02fb6e695f80770e64d016303d101fd545875d083e35fd975494cf42a0df3ccd",
+      "gitBlobSha": "8f4c12acf81d42244532e214bceb0912cb191d2b"
+    },
+    {
+      "path": "test/design-002-medium-recovery.test.ts",
+      "mode": "100644",
+      "bytes": 3891,
+      "sha256": "b896da673404583d165abc5682794c77ac08c29723e4ac41ca14a807e838dc5d",
+      "gitBlobSha": "e10d816e356ff8b46721ca3c24e681f74eae9a8b"
+    },
+    {
+      "path": "test/design-002-production-replay.test.ts",
+      "mode": "100644",
+      "bytes": 4122,
+      "sha256": "883d57ac81209ea8e38c13cf6f60fada68faaee13c4972e85838e50c25d74d8b",
+      "gitBlobSha": "f38cea7c73f24b08ffd59cc5b89a7d36c16610c8"
+    },
+    {
+      "path": "test/design-002-runtime-encoding-gain.test.ts",
+      "mode": "100644",
+      "bytes": 5532,
+      "sha256": "79c342aff955bc3078229991208f3158cbbf4c460ca059a1c62e2326975cea59",
+      "gitBlobSha": "c8ba4e1a873c581acf015b2cb5a01e9cbffab246"
+    },
+    {
+      "path": "test/design-002-timescale-adapter.test.ts",
+      "mode": "100644",
+      "bytes": 3436,
+      "sha256": "dfc2b9b2788d47f76baccf7d44b72d39a20757d1836325d22119665de234087c",
+      "gitBlobSha": "72c5c9138ec18e7d7ebdb5c31bca71a8770955c4"
+    },
+    {
+      "path": "test/design-002-timescale-law.test.ts",
+      "mode": "100644",
+      "bytes": 2674,
+      "sha256": "6de92abaaaf8cdaf0d6aef5b28202153c6aa82c5a0d3c1f75a4289d626d3acfd",
+      "gitBlobSha": "cce2b1b93d975abb573724e936f1dc9474015f5f"
+    },
+    {
+      "path": "test/design-002-timescale-protocol.test.ts",
+      "mode": "100644",
+      "bytes": 3175,
+      "sha256": "621716011d7a70476b96739ee2e8d54937779480c31eb4be75f78f32f62703ca",
+      "gitBlobSha": "6b2c3ce74097c204e38a004100b47a7bcc0738b6"
+    },
+    {
+      "path": "test/design-002-timescale-state.test.ts",
+      "mode": "100644",
+      "bytes": 2878,
+      "sha256": "b39def8483b6fc580cdd1642c0923e398619e2644470b5b11084cef13d496683",
+      "gitBlobSha": "8bcb37255239de9c61862f5219ea25e33ac7c68e"
+    },
+    {
+      "path": "test/design-003a-capacity-probe.test.ts",
+      "mode": "100644",
+      "bytes": 695,
+      "sha256": "45b74da75f408f4c953de456125af8ce04ed7fbb3c4ee50dad17ed69d68c6146",
+      "gitBlobSha": "6f7d56669c94179dd56964f21c8e5fd1d16b3ed8"
+    },
+    {
+      "path": "test/design-006-temporal-fidelity.test.ts",
+      "mode": "100644",
+      "bytes": 2075,
+      "sha256": "7bcf863dd7e10d8e2098be2d07b8bf73a5fc08d90344c00f9e35821c7384b26e",
+      "gitBlobSha": "6404a4dc9f485aeac7533f1b03299caa1d5fc794"
+    },
+    {
+      "path": "test/dig-action-window.test.ts",
+      "mode": "100644",
+      "bytes": 8053,
+      "sha256": "bec4607dfc4e53e74ce10a735d4b962f82bccd60814a0f0beac6f400ff44e9e8",
+      "gitBlobSha": "4159ea7fc2968ec554d882bc220612c79f999ec0"
+    },
+    {
+      "path": "test/directed-population-optimization.test.ts",
+      "mode": "100644",
+      "bytes": 4738,
+      "sha256": "11189cec273eabfc31d843221896f4179a6097b4abc7744444200622934df042",
+      "gitBlobSha": "aeac4ccbda5aeda2294015c8479686bb16588203"
+    },
+    {
+      "path": "test/distributed-afferent-readout.test.ts",
+      "mode": "100644",
+      "bytes": 9075,
+      "sha256": "8b8a345747a354396d31a04a5a1cfefc7d3b900cd5e78108a8fe826c165c2e6b",
+      "gitBlobSha": "0b1331aff52657d8639cc80a43181d7e2fdf085a"
+    },
+    {
+      "path": "test/distributed-anonymous-physical-structure-scanner.test.ts",
+      "mode": "100644",
+      "bytes": 7041,
+      "sha256": "017019bb0e3dae1adca673708831cc9e70613d07749e3128cf6ad566eb83a499",
+      "gitBlobSha": "fd42b92cfb3ea6c20ad6e1dd670f73a073f775a4"
+    },
+    {
+      "path": "test/distributed-assembly-residence.test.ts",
+      "mode": "100644",
+      "bytes": 5573,
+      "sha256": "804d356801a071aed483a25aecd2f1cbdbd879e8b6ab889eb68defb99f340712",
+      "gitBlobSha": "e260fe2e7687bf7073512fe53ea973a5116e31a7"
+    },
+    {
+      "path": "test/distributed-attractor-local-domain.test.ts",
+      "mode": "100644",
+      "bytes": 4634,
+      "sha256": "65968b2be87c8ced38fd68bc69e9d249d161cd499dc7311faf36eeb3c6c5c651",
+      "gitBlobSha": "7654aa04e2fc0888e258830c0f9047ce420d1861"
+    },
+    {
+      "path": "test/distributed-coactivation-assembly-readout.test.ts",
+      "mode": "100644",
+      "bytes": 5791,
+      "sha256": "080ebadfd5c3eb6b8d495328a87d45a559b1bc6f8cad1ff98099657c2f7d9e1f",
+      "gitBlobSha": "36b92bb12084719cf54533f1660405ca43a798d0"
+    },
+    {
+      "path": "test/distributed-conditioned-probe.test.ts",
+      "mode": "100644",
+      "bytes": 3175,
+      "sha256": "f0273379f155564fa7ab4e857e2eb32124d7c1191319a84b68bc92a6d684ad23",
+      "gitBlobSha": "442c295efb7d72d5b0272cd0e9f2ddbf60b97c3d"
+    },
+    {
+      "path": "test/distributed-control-fixtures.ts",
+      "mode": "100644",
+      "bytes": 2692,
+      "sha256": "94dc43bf619fa544e422b7a27890b1509d5d714c11fc8c71857d73ed114112c6",
+      "gitBlobSha": "8e8decd32780d9eeaa11aa19bea4c26264d9ea0c"
+    },
+    {
+      "path": "test/distributed-directed-net-flux.test.ts",
+      "mode": "100644",
+      "bytes": 4947,
+      "sha256": "5c43ddf89cc4b691181a7f1fa14cdc79b8184f102f56a81652ba18db16a231d5",
+      "gitBlobSha": "ba9812e507296ed93fac3aedf6b7d27e53de57e9"
+    },
+    {
+      "path": "test/distributed-directed-plasticity-branching.test.ts",
+      "mode": "100644",
+      "bytes": 3850,
+      "sha256": "c8cc5cf81308ce907df9a54203a9223724e262e196cea58b1ed9d6586323fcb9",
+      "gitBlobSha": "30fef251548ac72734c0fbb0e223d1a8cd6de6db"
+    },
+    {
+      "path": "test/distributed-field-sweep-timescale.test.ts",
+      "mode": "100644",
+      "bytes": 2451,
+      "sha256": "7cc71c964a5ad8bbc7482da8c6dafea0c0eda977a438b9d954d0c5c33b590c9e",
+      "gitBlobSha": "bfec2649519f81080950313c1df1bf45f710498d"
+    },
+    {
+      "path": "test/distributed-footprint-liveness.test.ts",
+      "mode": "100644",
+      "bytes": 2380,
+      "sha256": "d8e4d5a1438f7b9fee56c4bb080709f585c94a2138f06b5f8790ded23d9da7b7",
+      "gitBlobSha": "9cd63645bcf92ff7ff5fac68ec984f2a0bbe738b"
+    },
+    {
+      "path": "test/distributed-g5-neutral-control.test.ts",
+      "mode": "100644",
+      "bytes": 8154,
+      "sha256": "a56a4529028af74a6d83c341d931b66b5d33a7a263c35e850beba143cac6beaa",
+      "gitBlobSha": "688e3950d879c042784ea35ca849f5b8c7d85386"
+    },
+    {
+      "path": "test/distributed-g6-baseline-provenance.test.ts",
+      "mode": "100644",
+      "bytes": 2679,
+      "sha256": "5ecd36d36f470e7ed1b21e5a4a76ff0aef3ee5403b6ede8080256553d9c2ff29",
+      "gitBlobSha": "9960bf1c18e75c02e85747fd7ee85e107d019eb0"
+    },
+    {
+      "path": "test/distributed-g6-gate-identity.test.ts",
+      "mode": "100644",
+      "bytes": 3700,
+      "sha256": "9a5c9eabeb4e1b6f47447951c0cd8d468c6eb93b8629b1618f73b3caf3415ed9",
+      "gitBlobSha": "16702b548315de3ed6139b5b349caa8afe361c4d"
+    },
+    {
+      "path": "test/distributed-g6-r1-rebuild.test.ts",
+      "mode": "100644",
+      "bytes": 7126,
+      "sha256": "aad74c8d418509b345a3f7298c11a0bbff2f75e4969b1be56be3d885db7c71ee",
+      "gitBlobSha": "e13d3c5938bd2128d44bbe8384bf46a2784398f3"
+    },
+    {
+      "path": "test/distributed-goal-readout-diagnostics.test.ts",
+      "mode": "100644",
+      "bytes": 2528,
+      "sha256": "b3710870d3821a43bdbcb3a126e827c29192853083d232e0a8e1af239c86c6c6",
+      "gitBlobSha": "5e5f1a0c6673301e0837522658192ee92ce6b275"
+    },
+    {
+      "path": "test/distributed-hierarchical-memory-production-integration.test.ts",
+      "mode": "100644",
+      "bytes": 11045,
+      "sha256": "053c8bfb60a24c90f1937efe1abf4a3e4ec10d5b6a5af7cc5a68ae4a3748b2e8",
+      "gitBlobSha": "68f86dabdd96d8930ff3c7f1a07229516b5360b3"
+    },
+    {
+      "path": "test/distributed-hierarchical-memory-v4-timescale.test.ts",
+      "mode": "100644",
+      "bytes": 1578,
+      "sha256": "a2435b544b57c44977d2686c45864ef6eaa86b634086fb3cba2f21e3ccc39ebe",
+      "gitBlobSha": "ec9f77e91dcdd1874cdc7e5be6aad5b20c2a5271"
+    },
+    {
+      "path": "test/distributed-hierarchical-timescale-owner.test.ts",
+      "mode": "100644",
+      "bytes": 4431,
+      "sha256": "34ea3579f06c99b491037a7328b00fa30efad4cd38f13bfbfa9a799d4d32e4d2",
+      "gitBlobSha": "f514d9cfd978e6cea49f733acead33114773d214"
+    },
+    {
+      "path": "test/distributed-local-excitation-isolation.test.ts",
+      "mode": "100644",
+      "bytes": 4135,
+      "sha256": "fe54c7a89ceb3b0f3ba2bef70c6c9260dd92a140d00e7e1f212c3708ff8a7460",
+      "gitBlobSha": "3a08ff0c340d527a70847d48f956238f7204b977"
+    },
+    {
+      "path": "test/distributed-medium-architecture-gate.test.ts",
+      "mode": "100644",
+      "bytes": 6510,
+      "sha256": "bd9e5600fb5589c56d20cba02425e3d087d87d57bd3f9a36d21b3e828929681c",
+      "gitBlobSha": "9eb187c68bf93b50788c1d1ed781d69d653a02ea"
+    },
+    {
+      "path": "test/distributed-medium-dynamics-gate.test.ts",
+      "mode": "100644",
+      "bytes": 7161,
+      "sha256": "90845af278765b66c2a22f9124f5d6f4ecd8226cf943e539f449d8925859bb9a",
+      "gitBlobSha": "d5331ce762412b61ce88124097f9a7c9947f860c"
+    },
+    {
+      "path": "test/distributed-medium-probe-parallel.test.ts",
+      "mode": "100644",
+      "bytes": 3941,
+      "sha256": "e47b84086d12284b340d3cd0525e685b51bca710ec639f566147b45eb9c3d516",
+      "gitBlobSha": "2b1f800a654719a47b40efb872cca534a5747657"
+    },
+    {
+      "path": "test/distributed-native-predict-candidate-readout.test.ts",
+      "mode": "100644",
+      "bytes": 8839,
+      "sha256": "8b7df46613563d12ded49b46285c7c159e475956504dc81f1fd0267d2c72206d",
+      "gitBlobSha": "45ab3cfc60c72c4dd0f7fb9cbc6865b75bb98f63"
+    },
+    {
+      "path": "test/distributed-novelty-capacity.test.ts",
+      "mode": "100644",
+      "bytes": 3072,
+      "sha256": "a5ccee786a4b37d2f32ce5b1e7d574e104807291e90c933e92c2a03accdd2b55",
+      "gitBlobSha": "73e5fd1ac970b19af2ecd2b0baf39bda51d9b399"
+    },
+    {
+      "path": "test/distributed-passive-assembly-continuation.test.ts",
+      "mode": "100644",
+      "bytes": 3321,
+      "sha256": "f9288e0983fe7df0227da93c6cd6f4e55ad1300e36e21ed42aeeb12536b33173",
+      "gitBlobSha": "f9cb8e41209c72d34f05a160506e98aafa5d1fb7"
+    },
+    {
+      "path": "test/distributed-physical-medium.test.ts",
+      "mode": "100644",
+      "bytes": 7437,
+      "sha256": "693410f959f478a03cdaf7fd4307697e6ad13db3201e8f213f24f0f4b42a547f",
+      "gitBlobSha": "df14e78c673704ca705412ec3edd420b51e6ad63"
+    },
+    {
+      "path": "test/distributed-physical-semantics-no-approximation.test.ts",
+      "mode": "100644",
+      "bytes": 12082,
+      "sha256": "2994ec499ee7822db3459e5249a2f23f4bd6b983c70fc70fd58c27d132dd8503",
+      "gitBlobSha": "397c071d0ce700542cf63dbdc3adb647e5645344"
+    },
+    {
+      "path": "test/distributed-physical-two-step-control.red.test.ts",
+      "mode": "100644",
+      "bytes": 26482,
+      "sha256": "cce43f96375f46f4adda61e872a725d0d2b616bb228d95731e26b086ec4b88b9",
+      "gitBlobSha": "6a57f3e7670fe0e1108f0e3fb09857c3b32b6011"
+    },
+    {
+      "path": "test/distributed-prediction-clone-gate.test.ts",
+      "mode": "100644",
+      "bytes": 9494,
+      "sha256": "c3a39e451c2295fc447f10963b231d540fc4dc7af7ebc493126901ff88dd522a",
+      "gitBlobSha": "b08c25fdf51fa87b3ace2e2f70a0964d9547127f"
+    },
+    {
+      "path": "test/distributed-prediction-clone-parallel.test.ts",
+      "mode": "100644",
+      "bytes": 4742,
+      "sha256": "f30d759e9ccc1afe62f84f135ef068d08b0da3c6aade6e7cce4f1ed9fd1b7b55",
+      "gitBlobSha": "38a4b98d37e3f585d5e10f4e3bcf03aeea3acd2a"
+    },
+    {
+      "path": "test/distributed-prediction-clone.test.ts",
+      "mode": "100644",
+      "bytes": 7507,
+      "sha256": "c340dfb26093d94920e52f68b9d90d6a454b315c1baa7964648423e6daac4cc2",
+      "gitBlobSha": "baf876935ac360701ec35f988838cb524f59749a"
+    },
+    {
+      "path": "test/distributed-prediction-current-binding.test.ts",
+      "mode": "100644",
+      "bytes": 2390,
+      "sha256": "655f0cdd5d8e520e38036909ad40a3f02286297391b21853abd9e227840feb9c",
+      "gitBlobSha": "52e8b592e999521f5c79c88acddc8a15c6bf3176"
+    },
+    {
+      "path": "test/distributed-r1-contrast-gate.test.ts",
+      "mode": "100644",
+      "bytes": 13995,
+      "sha256": "a52a9da140be7e71af5ad2b62e39a0c3f9ba9f1ec91ca246fd4212416be508bb",
+      "gitBlobSha": "28c9fbc3fc96e50f1e58134e1ca7e8a775d42bb4"
+    },
+    {
+      "path": "test/distributed-r2a-checkpoint-index-cache.test.ts",
+      "mode": "100644",
+      "bytes": 4008,
+      "sha256": "4b6ab186134e52f1228fd71f4bd40a726a1908d58776345c7c87da9e8264d80b",
+      "gitBlobSha": "4a1eadb6e279ee81fb4ee21b8df9bbc593888e6a"
+    },
+    {
+      "path": "test/distributed-r2a-consolidation-batch.test.ts",
+      "mode": "100644",
+      "bytes": 5931,
+      "sha256": "c0098c5db9185e90a43f9ba6dc91a89748d4508744f74d5d1e4938c9146923b5",
+      "gitBlobSha": "66b50ecb8bc1ecd154119a9648d809fffa8d7766"
+    },
+    {
+      "path": "test/distributed-r2a-intervention-performance.test.ts",
+      "mode": "100644",
+      "bytes": 4768,
+      "sha256": "9f4690512a652816ba6b350570cc33d539a746adb74821a74e785aa0b44ea7c2",
+      "gitBlobSha": "5c5add61405c380dcdd41ba93974e3cc00e0e0f8"
+    },
+    {
+      "path": "test/distributed-r2a-matched-contrast-cohort.test.ts",
+      "mode": "100644",
+      "bytes": 6062,
+      "sha256": "36a1c37461afa5285362cd9dc870aae24eb8648428656cada2c8ed83d6416d93",
+      "gitBlobSha": "92b88c41a73b2b9e5e43fe794faabcf29e064a83"
+    },
+    {
+      "path": "test/distributed-r2a-physical-v2.red.test.ts",
+      "mode": "100644",
+      "bytes": 33505,
+      "sha256": "e1b6d8e6e961d6fb82f0ef296502e46bc4a5c88bde1c6284c509460759db6d96",
+      "gitBlobSha": "1ff01e782d94f1b7b69dc34a2f7492e1ec209d0f"
+    },
+    {
+      "path": "test/distributed-r2a-query-cache.test.ts",
+      "mode": "100644",
+      "bytes": 1857,
+      "sha256": "818e87058a4bdc861d6dea6e48ca3d8d3703c2cccd8f86e3ad042f9c3e1dcff3",
+      "gitBlobSha": "38e422a7f8115f0d17c3e2ae90d45c95f29911b9"
+    },
+    {
+      "path": "test/distributed-r2a-weighted-downstream.test.ts",
+      "mode": "100644",
+      "bytes": 2849,
+      "sha256": "e62f46fcd4d1105aeac27930f4a89ec67d1396592716cb9e17beac3e05699ff4",
+      "gitBlobSha": "92295557f115666f4d885a91c33087634497a201"
+    },
+    {
+      "path": "test/distributed-runtime-v1-retirement.test.ts",
+      "mode": "100644",
+      "bytes": 3618,
+      "sha256": "211ea2aa9353ce4a90fae54c907c2fe2aa4c9d6271e3532bed469bf14518cc70",
+      "gitBlobSha": "63b2dbb6c79365c0f907365c5686bbb5d3530531"
+    },
+    {
+      "path": "test/distributed-snapshot-transfer.test.ts",
+      "mode": "100644",
+      "bytes": 2022,
+      "sha256": "f3a00eb715276ea8cddaeb7bb9ca7d1a9a9d990cc4395d6da6aaebffd933f709",
+      "gitBlobSha": "5012d99814aed117b9f143c3694bb996304949b9"
+    },
+    {
+      "path": "test/distributed-temporal-eligibility.test.ts",
+      "mode": "100644",
+      "bytes": 2860,
+      "sha256": "89250507432e5023ad2474ba7aa84956dbe0c6c50e604a68c261bc61918322fb",
+      "gitBlobSha": "a32720d9c13248927721c5ba1270e63b89c2ca88"
+    },
+    {
+      "path": "test/distributed-terminal-factor-reprojection.test.ts",
+      "mode": "100644",
+      "bytes": 2864,
+      "sha256": "44c0919881ba57fe488914c57f0cf80dd6361e206553a5a2ff4ff59408b31df8",
+      "gitBlobSha": "c7b8f3308bfd852508c6b223fc50031df02b7170"
+    },
+    {
+      "path": "test/distributed-weighted-probe.test.ts",
+      "mode": "100644",
+      "bytes": 4062,
+      "sha256": "87e134bbd759537c967c008f45b622f5d58a674209ecd473dfa8596fbb4f1f64",
+      "gitBlobSha": "4b6a139fc629270b00a52fdd80bcea9e7fcff7d7"
+    },
+    {
+      "path": "test/entity-retina.test.ts",
+      "mode": "100644",
+      "bytes": 4281,
+      "sha256": "06f47658accf8b6e459a2223d1c2a7636584a3d4e73299dcf0ee80bacc05f22b",
+      "gitBlobSha": "4463787010e920d164c3b2c168173c735803b394"
+    },
+    {
+      "path": "test/event-type-transition.test.ts",
+      "mode": "100644",
+      "bytes": 1699,
+      "sha256": "bbb867260b6d85884bb1ce2151a91cf854fd5afa77a40e509b6eaa5f7b62dd06",
+      "gitBlobSha": "2bbc7f694522cc526b6543b2ab120ec69e72b9c7"
+    },
+    {
+      "path": "test/evidence-writer.test.ts",
+      "mode": "100644",
+      "bytes": 4621,
+      "sha256": "bdbe1b55c311b47ee67513b9200c4d7c338ca4d864d7ef7c1137723c7e5c9118",
+      "gitBlobSha": "484757e1765fb6ff058240a42254a4ee9a26ee00"
+    },
+    {
+      "path": "test/exact-continuation-query-reuse.test.ts",
+      "mode": "100644",
+      "bytes": 4403,
+      "sha256": "029456940cd02d20a94fbbe275c630653e06e6c30cd1a63ee46673ee19655ec5",
+      "gitBlobSha": "d4c9b35968122c979b415679ca955a420f4601b8"
+    },
+    {
+      "path": "test/exact-prediction-batch-reuse.test.ts",
+      "mode": "100644",
+      "bytes": 4782,
+      "sha256": "e74910c1e8ee9c6f70427dd9d5e1bfc465f52c1007139dcbfcffd67d079676c1",
+      "gitBlobSha": "0fc66582334b542ec731e2a262628512fe650d24"
+    },
+    {
+      "path": "test/exact-public-block-hit.test.ts",
+      "mode": "100644",
+      "bytes": 1369,
+      "sha256": "a6c7568013a6aa436d6e23aa28c8a7c98e80eb08ad92cf4fd484b4b0910c7e53",
+      "gitBlobSha": "91485754745ce724063978332c0b3d59ddd7c7ea"
+    },
+    {
+      "path": "test/exact-r1-qualification-reuse.test.ts",
+      "mode": "100644",
+      "bytes": 2715,
+      "sha256": "3ae50e506d797aff3a0edbf9ace375d0649e86565123ab842c55626c5dce0202",
+      "gitBlobSha": "9fd1ecf4688aa5dac6013ce288c4424a8ea2eff6"
+    },
+    {
+      "path": "test/experience-prototype.test.ts",
+      "mode": "100644",
+      "bytes": 23447,
+      "sha256": "536981da21638e16f1b3fee3a77c7fb6f0e221a566a781dff1a3a4d3d994c73f",
+      "gitBlobSha": "2255d8d5e46149d4a10ba65400aa475a3e2b1c29"
+    },
+    {
+      "path": "test/expired-physical-relation-query.test.ts",
+      "mode": "100644",
+      "bytes": 946,
+      "sha256": "8cf4aafe0d57aeff63862b3cce5bee90003b59929a45f91bc823cf773d6e6244",
+      "gitBlobSha": "b87b36eeb179121187371be68208237254034c9e"
+    },
+    {
+      "path": "test/file-hash.test.ts",
+      "mode": "100644",
+      "bytes": 580,
+      "sha256": "6ff662647ff43f1bef688ab85c5f0b28b5d285086588d7f497ec0d34d924ff41",
+      "gitBlobSha": "a0833ba18fbd035cdb758393e196d3f03428ee9d"
+    },
+    {
+      "path": "test/grounded-goal.test.ts",
+      "mode": "100644",
+      "bytes": 6215,
+      "sha256": "0c1604cc7cc25d119ad21c9e924eb3f881f250e25e0ab137a1f1699382a0070f",
+      "gitBlobSha": "9ed44d6feda341efe92af9d3b6fea0e868317133"
+    },
+    {
+      "path": "test/historical-transition-precondition.test.ts",
+      "mode": "100644",
+      "bytes": 10528,
+      "sha256": "2717c2c45f908c63521eddcb6f2558a3c71c192f3b3fcb52a548b21dea2f8640",
+      "gitBlobSha": "69f9b4dff43656910d54518ce13cc9bea6e6a02c"
+    },
+    {
+      "path": "test/interact-observation-window.test.ts",
+      "mode": "100644",
+      "bytes": 7497,
+      "sha256": "d3f1f7505e5fc639534894dbc943a0bbf438ac121d73756d1120285372ef6e21",
+      "gitBlobSha": "f0b408103e28b934133d1999c4d2cc047810a638"
+    },
+    {
+      "path": "test/interlayer-local-neighbourhood.test.ts",
+      "mode": "100644",
+      "bytes": 1315,
+      "sha256": "ace9772846f49371c54c39357ec412d183dbc3de2ab6e00239abb2c2e8f625e1",
+      "gitBlobSha": "0022b5dd85035c5f7f2a7c7a8c889c2a3e3a32a9"
+    },
+    {
+      "path": "test/interlayer-physical-readback.test.ts",
+      "mode": "100644",
+      "bytes": 1404,
+      "sha256": "d4b1f80fdebf587cca59e3474e217531231bef541cada407aa09c1459c894f12",
+      "gitBlobSha": "f36414a667feaeec96f13ddba8489885ffa21036"
+    },
+    {
+      "path": "test/interlayer-site-cardinality.test.ts",
+      "mode": "100644",
+      "bytes": 3286,
+      "sha256": "2a139e867698eb8c28a9877f84d53fceeb6a7e9e51a73f8847d624f43c601de9",
+      "gitBlobSha": "7826341c61993e1cf1617c52224d283299d47571"
+    },
+    {
+      "path": "test/joint-control-architecture.test.ts",
+      "mode": "100644",
+      "bytes": 1478,
+      "sha256": "7ee3b8950610d0de0c5cb76be05e8f8e33f65e80c2498bcb867f1b5c641614c5",
+      "gitBlobSha": "ad551d1311fe8e53b8aaee21610092d209b76bb5"
+    },
+    {
+      "path": "test/joint-control-neutral-experiments.test.ts",
+      "mode": "100644",
+      "bytes": 28597,
+      "sha256": "1d78e42a548a236546b7534a928c4e26cdc5774efdf3e475fdf09b5d01800f87",
+      "gitBlobSha": "004a0eda2b2a3da9c053f039d075c02f0e26727b"
+    },
+    {
+      "path": "test/lingbot-physical-short-chain.test.ts",
+      "mode": "100644",
+      "bytes": 7764,
+      "sha256": "8de5f340231c704466e455d2a7b9cf4c4c4dd60eb96ea8b0438322ec7752cce2",
+      "gitBlobSha": "c28860efc1c3b86824ec1c0d6c6d8e4027ba1b87"
+    },
+    {
+      "path": "test/live-status-and-bounds.test.ts",
+      "mode": "100644",
+      "bytes": 978,
+      "sha256": "6b406f77b9cc8efecd47340e6a6a2f9992b9500ed8a646271168ee67e3a86dc8",
+      "gitBlobSha": "5659ae9879e2b9543f5bfba54d6c45becb703384"
+    },
+    {
+      "path": "test/lossless-physical-candidate-grouping.test.ts",
+      "mode": "100644",
+      "bytes": 19374,
+      "sha256": "b8380e4993aa33f7ebd5c8a6526513e0b079812cca90bb8ec3e5d40b8a174afb",
+      "gitBlobSha": "208410c6991e225b61816ab3f1e2c3e2b87bd444"
+    },
+    {
+      "path": "test/minecraft-basic-action-loop-v1.test.ts",
+      "mode": "100644",
+      "bytes": 1134,
+      "sha256": "f60df4a51ce6941f55e82b239cded7a7f4b4beb3917275a79df8663ae8afda9e",
+      "gitBlobSha": "eeab2262a99b742a0d6213432d83e0259083d845"
+    },
+    {
+      "path": "test/minecraft-distributed-g6-continuous-capture-v1.test.ts",
+      "mode": "100644",
+      "bytes": 10422,
+      "sha256": "86002405515d3250ea6731d83cdd794b78266d418f52a6d333170ad87fb01f0a",
+      "gitBlobSha": "db60a06239b26ed8e13125dfac974f10641a741a"
+    },
+    {
+      "path": "test/minecraft-distributed-g6-live-v1.test.ts",
+      "mode": "100644",
+      "bytes": 10538,
+      "sha256": "d4cb1f6906fa2543c60cfcfcd2b3d7951c824e4190b96e05682fcc53e34e5dc0",
+      "gitBlobSha": "8fd15b21966f157448abdf7a57aca403fd4259d2"
+    },
+    {
+      "path": "test/minecraft-experience.test.ts",
+      "mode": "100644",
+      "bytes": 8965,
+      "sha256": "04f2f53ce2bc12d025c384137d98bbca07ff4e1cca247eb80adf4204b4bd972d",
+      "gitBlobSha": "b29a250ef7d4ebf54d7fbbfd20c3232a7cc1f807"
+    },
+    {
+      "path": "test/multi-layer-public-observation-scope.test.ts",
+      "mode": "100644",
+      "bytes": 4856,
+      "sha256": "5ed0dbe5c34862bc21a4cb4f4419794b4f1308502c199a9504dd5f6371f7fc13",
+      "gitBlobSha": "6380ddbb4975a750643731b637f251e9353e0698"
+    },
+    {
+      "path": "test/new-visible-surface.test.ts",
+      "mode": "100644",
+      "bytes": 14625,
+      "sha256": "2c0bd691ffb5f6138e4b124fad8ccbb919e6559c5d4a127ba375ef42031dbb44",
+      "gitBlobSha": "e2f06d57bb694c5bba3ae7a5d56b62f5e035e31e"
+    },
+    {
+      "path": "test/note-progression-test-contract.test.ts",
+      "mode": "100644",
+      "bytes": 3023,
+      "sha256": "e7cca50ed08959d8129fc7eeca25c6370035adf6c0f8b863d004a2cbe117eb96",
+      "gitBlobSha": "b40b3bbbca7185484d7fc96087306c0987b005ca"
+    },
+    {
+      "path": "test/offline-profile.test.ts",
+      "mode": "100644",
+      "bytes": 590,
+      "sha256": "99123e941cfd77bd830166e7f5de1e7bbae9f0ab6bddd4e6fc149ca6c6bd2405",
+      "gitBlobSha": "82c790a000a35147f9f0aea7c4100c48261c2e37"
+    },
+    {
+      "path": "test/open-world.test.ts",
+      "mode": "100644",
+      "bytes": 48039,
+      "sha256": "337839398f004b9adff612e5f58a738c3df2286fb40ffccad20463192498898f",
+      "gitBlobSha": "ef6bdadb638e2ece9e705d48ae15c3d1c8ca6d07"
+    },
+    {
+      "path": "test/passive-experience.test.ts",
+      "mode": "100644",
+      "bytes": 9313,
+      "sha256": "a1e6d0d2e2cc2709a58b925ec01f2d00edcc306de3bb910f45dc7b140dc39051",
+      "gitBlobSha": "9319a99950d9c7043d8108f7fe9a47ecfe5e0e49"
+    },
+    {
+      "path": "test/perception.test.ts",
+      "mode": "100644",
+      "bytes": 8292,
+      "sha256": "867cae0d082e72d8c2b502e4a6909fc70e346cb8c7d88fb59f170033a35d7804",
+      "gitBlobSha": "d8cc00b87b18c83f74746613ddb94179998f822f"
+    },
+    {
+      "path": "test/physical-control-manager.test.ts",
+      "mode": "100644",
+      "bytes": 39454,
+      "sha256": "f1ae3f9c3d7fe6fe0fff105d7b0d532eab02eb8e83939894e62e15637578bc89",
+      "gitBlobSha": "d2482f3850038111fe3d7eec5e1609b3645ce867"
+    },
+    {
+      "path": "test/physical-metadata-read-access.test.ts",
+      "mode": "100644",
+      "bytes": 2672,
+      "sha256": "93dd12a9550955f93f6fac1cc97e05df8441075dcb72f6cf3f978a3cd93ac7f6",
+      "gitBlobSha": "af8bec4e783e70c158161a2424b11495cdca444d"
+    },
+    {
+      "path": "test/physical-observer-invariance.test.ts",
+      "mode": "100644",
+      "bytes": 2348,
+      "sha256": "493ea7d2f3fe8d3ab41322d76ed17eba8ed04a9eddf1939557b37f052f216188",
+      "gitBlobSha": "66fe31cde42b2dc29104d3bf2f8b5b20cb54685f"
+    },
+    {
+      "path": "test/physical-reasoning-v2-control-wiring.test.ts",
+      "mode": "100644",
+      "bytes": 10377,
+      "sha256": "beac8deffe45747ea76ff6426b8e1e0a326b97da97cdac01f01a7728c1b695b8",
+      "gitBlobSha": "24a719b7c5fba79f399c6396224e577bc719783a"
+    },
+    {
+      "path": "test/plan-002-performance.test.ts",
+      "mode": "100644",
+      "bytes": 1723,
+      "sha256": "8ecf2961cdd2646a0001d773c7c417d7871d5ff498c9d7a6c1ac7d3876f4e911",
+      "gitBlobSha": "d645416460b17898fc8c5b99fed7f377c83d2072"
+    },
+    {
+      "path": "test/prediction-deviation.test.ts",
+      "mode": "100644",
+      "bytes": 1459,
+      "sha256": "5505fce1518ef8ab73d2b2efbf700c7db49fe20ae6e942581ee2912515761089",
+      "gitBlobSha": "fdd54e34fff3d02964193fb8efcb64f53872ebea"
+    },
+    {
+      "path": "test/prediction-physical-membership.test.ts",
+      "mode": "100644",
+      "bytes": 1786,
+      "sha256": "83fd24c0b2484c1ad9e3be2413e185de1268c471b23a38a6810f236c515d99d2",
+      "gitBlobSha": "dd5880d839bd2ad3890b37a7439f0305836be8c1"
+    },
+    {
+      "path": "test/prediction-ranges.test.ts",
+      "mode": "100644",
+      "bytes": 7477,
+      "sha256": "707260530c735795d934514331bcd08800f8bc1b762e4dbe16e5c5d8dfc7f5e9",
+      "gitBlobSha": "fed700de6bf7b3173fa834ce356fb7674c3b3e1a"
+    },
+    {
+      "path": "test/prescribed-action-boundary.test.ts",
+      "mode": "100644",
+      "bytes": 5430,
+      "sha256": "65c4ca55b69bb4fb51287c0dad61f2e2f289928a85db9e1d9344f2a3314eca98",
+      "gitBlobSha": "0939355249f42ad5fd3cfe6ad47487e947b7129f"
+    },
+    {
+      "path": "test/prototype-boundary.test.ts",
+      "mode": "100644",
+      "bytes": 837,
+      "sha256": "1290cb3af89b1225963e5098007a2267801decc6279e2ef0ae49590784421cc9",
+      "gitBlobSha": "85edf8dce622601d28170951dca1dbb625353322"
+    },
+    {
+      "path": "test/public-action-requirement-bridge.test.ts",
+      "mode": "100644",
+      "bytes": 14269,
+      "sha256": "36d1a8ba0d82793898f5b5930eda6cb62c5bfae81ad06c58bee3da80d586c555",
+      "gitBlobSha": "61989f730f6486bdd14a2f4a723d47f368f1a918"
+    },
+    {
+      "path": "test/public-role-condition-separation.test.ts",
+      "mode": "100644",
+      "bytes": 1865,
+      "sha256": "918f27b0b837da60b6ba50271d9b779569301b4a156b43e32840e84c935a97ea",
+      "gitBlobSha": "c4ed1f2a6ecb993a2ba180a29fe6e718ebeb2648"
+    },
+    {
+      "path": "test/r-series-dictionary-agenda.test.ts",
+      "mode": "100644",
+      "bytes": 5372,
+      "sha256": "4f7d370f70c8413de7b8654c27639b6299230c15a7e37780ada8dbf1dad3e0e2",
+      "gitBlobSha": "e2d2976a3b36889a2965ef16b4d85cc0a99bf0be"
+    },
+    {
+      "path": "test/r2-observed-terminal-boundary.test.ts",
+      "mode": "100644",
+      "bytes": 6786,
+      "sha256": "5a38162f6c6bdd2945c4af2bace68aee2f497a817351d305027e54e5e27f6bd4",
+      "gitBlobSha": "697d01873916fd7dfa7d8779a7d5ce1882dfad2a"
+    },
+    {
+      "path": "test/r2a-action-input-boundary.test.ts",
+      "mode": "100644",
+      "bytes": 1963,
+      "sha256": "a817be4802fc6b7933dda3f8bc7f2426c7b0969070b834788ee42f88bc26143f",
+      "gitBlobSha": "e6176fffeb9021d5d449e786e42c6e25f13324dd"
+    },
+    {
+      "path": "test/r2a-continuation-route-consistency.test.ts",
+      "mode": "100644",
+      "bytes": 2098,
+      "sha256": "c40d7ee13a6d84add3cfbd27d3b08ea6001942b28a9ddd9041c022ae572cb508",
+      "gitBlobSha": "7a32aebb5aa266eef45a6392e264f5cd320137fd"
+    },
+    {
+      "path": "test/r2a-current-action-cache.test.ts",
+      "mode": "100644",
+      "bytes": 1472,
+      "sha256": "4ca36087a987e854d03a12fe2b0a4a173b7cdcb853fa8c9a582e309b7c295434",
+      "gitBlobSha": "22877d190b45dfdad4bfa210d0ef5dc989705ce5"
+    },
+    {
+      "path": "test/r2a-differential-deposit-scope.test.ts",
+      "mode": "100644",
+      "bytes": 2311,
+      "sha256": "2d751c8ab1b71b95cdee78dd14927483f86611b24dedab04370185c0427316d0",
+      "gitBlobSha": "caec9709bfee82a2b081b1f6b5caf3434c3fbe76"
+    },
+    {
+      "path": "test/r2a-local-condition-difference.test.ts",
+      "mode": "100644",
+      "bytes": 5234,
+      "sha256": "f4492edd0dde6398098705f8b15bc372e2da412774cb8ef089cca5a379ba77b9",
+      "gitBlobSha": "80244b319ea2ed707e932623e0ae38f57452b076"
+    },
+    {
+      "path": "test/r2a-matched-condition-pulse.test.ts",
+      "mode": "100644",
+      "bytes": 1349,
+      "sha256": "2cb855dcf64303988b3625600fb1d1d50a78530e4ef0fead840fb319871b898a",
+      "gitBlobSha": "95e1974eece8e447c8ff8c2176da17efb6f835f8"
+    },
+    {
+      "path": "test/r2a-ordered-road-patterns.test.ts",
+      "mode": "100644",
+      "bytes": 2156,
+      "sha256": "44f2367eb8bc9f256f5d632fddb02ca83e87967a9b3add9093e84b02d1ecf70c",
+      "gitBlobSha": "256c602675270b16d8738f9b5c98e9dce5407635"
+    },
+    {
+      "path": "test/run-fault-injection.test.ts",
+      "mode": "100644",
+      "bytes": 13709,
+      "sha256": "4064c73ea0c30b57e99d029d00360a2cf0bb546bfc78767917cfb09057735f02",
+      "gitBlobSha": "64a0da06aaddd03652de6dc1e4cc517393353701"
+    },
+    {
+      "path": "test/run-soak-synthetic.test.ts",
+      "mode": "100644",
+      "bytes": 10936,
+      "sha256": "eb2942ebcb932cf751403aa7b96c2ac1dc9cbc88d39fa9f90e9147e3a9770787",
+      "gitBlobSha": "320dcda1848c1a9d5f6c83be58255c5b8eb44b1a"
+    },
+    {
+      "path": "test/runtime-final-checkpoint.test.ts",
+      "mode": "100644",
+      "bytes": 4629,
+      "sha256": "f69755c056ba8bf9a701f33c2cba63abf735a5bc2d49bd61f5ca82f1ad3b7f9f",
+      "gitBlobSha": "2446038d6f730a0e018a2b1ae1c8ce00d0522bc4"
+    },
+    {
+      "path": "test/runtime-measured-salience-bridge.test.ts",
+      "mode": "100644",
+      "bytes": 2078,
+      "sha256": "874d79442f53de7df6ba14770bf088a09cc681e2a60ff8377328a61123ff25f3",
+      "gitBlobSha": "a59998d054de706c4d5ef7499ee8922d5f7ef9eb"
+    },
+    {
+      "path": "test/runtime-readonly-and-neutral-entry.test.ts",
+      "mode": "100644",
+      "bytes": 2629,
+      "sha256": "e44aa30a1c96c209769d9771c6740fbe5e9908e86057bcc4777b5587c04f332b",
+      "gitBlobSha": "b4a2f8f254718c5ade6b030115385ea0892733f5"
+    },
+    {
+      "path": "test/runtime-snapshot-bundle.test.ts",
+      "mode": "100644",
+      "bytes": 6191,
+      "sha256": "ece88bed8c307b29e3d61bc45721e142c011eb46b187ca6075fa0b9691676801",
+      "gitBlobSha": "d5e0e05645f8efc861704eed4c272ee45424a4dc"
+    },
+    {
+      "path": "test/runtime-v4-measurement-ingress.test.ts",
+      "mode": "100644",
+      "bytes": 3118,
+      "sha256": "a49dede2f63c99af3a3165d8a5687282f51314b8dbab70a18fa57046ee31e944",
+      "gitBlobSha": "86e9bc4b2d592d1d4d610782309b313f4c63bc0e"
+    },
+    {
+      "path": "test/runtime-v4-timescale-persistence.test.ts",
+      "mode": "100644",
+      "bytes": 3125,
+      "sha256": "3f75e30cf986f6cd34050bab3e87f79471c98dc1842b830542eb772415185eb4",
+      "gitBlobSha": "c5298bb286f961f731fd52628f2fe7ac6c586d3e"
+    },
+    {
+      "path": "test/segmented-snapshot-linear-paging.test.ts",
+      "mode": "100644",
+      "bytes": 1518,
+      "sha256": "7b645c9aaecac6509f56deae78ecc7db9ecb77f9233a17e6d38684f78a872dc4",
+      "gitBlobSha": "2e811de16b593e0974cbbcddd1cb91448b246803"
+    },
+    {
+      "path": "test/segmented-snapshot-paging.test.ts",
+      "mode": "100644",
+      "bytes": 9072,
+      "sha256": "b578c3f04069359e8a9c52bd2b78f12e3462cc52d245a5f58c9c24090184f184",
+      "gitBlobSha": "3e69c8b59b93c35a62612a6fac5d56fcf056d37e"
+    },
+    {
+      "path": "test/segmented-snapshot.test.ts",
+      "mode": "100644",
+      "bytes": 8443,
+      "sha256": "387be2c43b5f362ca63a472a56c0925390904c3a3b13ba1875301aecb61e2ab0",
+      "gitBlobSha": "3bb637e0baa9f792a8c1bce98fb5fe546c023dc7"
+    },
+    {
+      "path": "test/self-organizing-distributed-r1.test.ts",
+      "mode": "100644",
+      "bytes": 15508,
+      "sha256": "08a4d5683a4d7668a6fa7b0f97b378ae99f3446cb8457b16c97eeb39e2d5de1d",
+      "gitBlobSha": "4e7cdce2e7baa48aa0d28171499069f037ccb4d1"
+    },
+    {
+      "path": "test/sparse-interlayer-projection-topology.test.ts",
+      "mode": "100644",
+      "bytes": 5279,
+      "sha256": "9b75296a02b56344f72f46d924f654701f4518da11ebaadff7f95da17bedb9f2",
+      "gitBlobSha": "d8093eb1290cc4479e2238e655694cb973af541f"
+    },
+    {
+      "path": "test/stall-watchdog.test.ts",
+      "mode": "100644",
+      "bytes": 4296,
+      "sha256": "aaa1a55bbde02c90dd97e13b432160dc1b3376082bfe68c0a2f36a72e3f58cd1",
+      "gitBlobSha": "9eda762b6d7f1f1ab32e41581194d012e15d5553"
+    },
+    {
+      "path": "test/support/attempt018-replay.ts",
+      "mode": "100644",
+      "bytes": 4348,
+      "sha256": "29288629163b338273aa7ce21d630b70a6f5ae9f3ffb5cf5e690a5f45665aa8e",
+      "gitBlobSha": "a36cea4cb79387fa8863e8af2554ab2b5c86243b"
+    },
+    {
+      "path": "test/synthetic-body.ts",
+      "mode": "100644",
+      "bytes": 7407,
+      "sha256": "4a107670545b3e9b1dd116e9b5079ddedd554426b5e89ceaf34da1b5799ef644",
+      "gitBlobSha": "987f76a14f606be7d40cf4d1d346756e7af943cd"
+    },
+    {
+      "path": "test/terminal-readout-identity.test.ts",
+      "mode": "100644",
+      "bytes": 2235,
+      "sha256": "19211436b2be1d4e9d8e7438ec4f9b48feb440b0046a33144df10c5123db8b81",
+      "gitBlobSha": "e22ba0b81832817de049832724080652c0d2dce4"
+    },
+    {
+      "path": "tsconfig.json",
+      "mode": "100644",
+      "bytes": 349,
+      "sha256": "3dbc898f349438a7d09867ebc9b1f08dda56449075e5059664a342e2d7c12a34",
+      "gitBlobSha": "87203fe6fd4b86e13b13673aca1710450d38ada1"
+    }
+  ]
+}

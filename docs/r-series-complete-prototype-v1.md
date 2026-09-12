@@ -1,23 +1,28 @@
-# R 系列因果闭环与吸引域命名层
+# R 系列：保留的实验接口与删除的包装层
 
-本版本在原有三个分布式物理介质之上增加两层**只读/证据边界**：
+2026-09-10 第一性原理清理后，记忆由 `DistributedHierarchicalPhysicalMemoryV1`
+统一拥有，生产持久化继续使用 V3/V4 协议。删除了只重复包装同一份记忆与哈希的
+`KairosV5RSeriesRuntimeV1`；它没有提供另一条学习或控制闭环。旧包装文件需用
+[清理前版本](https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/tree/7fe4157dcac57daf9febf5f0d449ea938a081249)
+审计，不会被自动当作生产检查点导入。
 
-* `AttractorPublicEventDictionaryStoreV1` 只登记已经由可信真实事件到达并观察确认的终端吸引域。它保存的是物理终端签名到公开变化的审计关联，不参与候选选择，也不能在预测尚未到达终端时给出结果。冲突读出返回 `ambiguous`，未登记返回 `unknown`。
-* `InterventionAgendaStoreV1` 记录高置信预测偏差。相同物理前缀和精确动作的真实窗口由 `InterventionPairCollectorV1` 配对，自动派生四臂实验候选；只有真实匹配臂的物理测量可以升级证据等级。词典和议程都不会写入 R1/R2/R2A 介质。
-
-`KairosV5RSeriesRuntimeV1` 使用命名空间 `V5-RSERIES-V1` 包住现有物理记忆，检查记忆、词典和议程的独立哈希。旧的 V3/V4 检查点不被自动迁移；要建立新版本状态，必须从可信事件重新沉积。
-
-## 最小接线
+保留 `AttractorPublicEventDictionaryStoreV1`、`InterventionAgendaStoreV1` 与
+`InterventionPairCollectorV1` 及其在当前记忆中的状态。词典只命名已由可信事件
+确认的物理终端；冲突为 `ambiguous`，未登记为 `unknown`。议程与配对器保留
+真实事件来源、前缀和精确动作的匹配边界。
 
 ```ts
-const runtime = new KairosV5RSeriesRuntimeV1();
-const checkpoint = runtime.snapshot();
-const restored = KairosV5RSeriesRuntimeV1.restore(checkpoint);
+import { DistributedHierarchicalPhysicalMemoryV1 } from './src/prototype.js';
+const memory = new DistributedHierarchicalPhysicalMemoryV1();
+const restored = DistributedHierarchicalPhysicalMemoryV1.restore(memory.snapshot());
 ```
 
-真实事件封闭后，运行时可以把终端读出交给 `recordAttractorPublicObservation`；注意力或实测回执确认高置信偏差后，交给 `recordPredictionViolation`。当议程打开实验单元，`pendingInterventionArmRequests()` 只返回尚未测量的物理臂，身体和联合控制场仍负责决定是否执行。`recordInterventionWindow()` 只接受已被记忆观察过的真实事件，并从不透明因素状态中推导匹配关系。
+`recordAttractorPublicObservation`、`recordPredictionViolation`、
+`pendingInterventionArmRequests` 和 `recordInterventionWindow` 是实验接口。
+主控制器没有完整调用它们构成自主实验课程，不能把接口存在表述成自主因果学习
+已经完成。元证据内部通道和连续片段仍可审计；仅按片段/场景数量晋升
+“meta-predictive-stable”的接口已删除，因为它没有验证任何预测误差。
 
-## 当前边界
-
-这些接口已经实现并通过定向回归，但它们不会凭空制造因果证据。尚未出现两次真实预测偏差、四臂匹配执行或稳定的词典读出时，结果必须保持 `unknown`/`open`。Minecraft 真实演示仍需在中性 G3/G4 门和可信连续经验满足后单独运行；本版本不打开旧 Formal V3，也不改变受保护的物理核心。
-
+本次没有改动物理介质、行动资格门槛或真实记录。能力状态以
+[第一性原理审查](first-principles-review-2026-09-10.md)和
+[三阶段报告](three-stage-test-status-2026-09-10.md)为准。

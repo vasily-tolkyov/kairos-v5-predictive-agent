@@ -1,0 +1,1615 @@
+{
+  "version": 1,
+  "actionsPerPhase": 4096,
+  "seeds": [
+    41,
+    73,
+    109
+  ],
+  "phases": [
+    "A",
+    "B",
+    "A"
+  ],
+  "passed": true,
+  "elapsedMs": 160983,
+  "runs": [
+    {
+      "seed": 41,
+      "phaseIndex": 0,
+      "phase": "A",
+      "writes": 4096,
+      "prequentialFirst64": 0.203125,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 312,
+        "acceptedCorrect": 312,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": [
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.5311802804750246,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.590959520079009,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.7297227713889121,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.7500309148080218,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.6412574812267662,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.5587283326867535,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.5127862425784354,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 2
+              }
+            },
+            "correct": true,
+            "margin": 0.4954117122346396,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          }
+        ]
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "unknown",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        810,
+        853,
+        847,
+        818,
+        768
+      ]
+    },
+    {
+      "seed": 41,
+      "phaseIndex": 1,
+      "phase": "B",
+      "writes": 8192,
+      "prequentialFirst64": 0.640625,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 320,
+        "acceptedCorrect": 320,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": []
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        772,
+        898,
+        842,
+        799,
+        785
+      ]
+    },
+    {
+      "seed": 41,
+      "phaseIndex": 2,
+      "phase": "A",
+      "writes": 12288,
+      "prequentialFirst64": 0.75,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 320,
+        "acceptedCorrect": 320,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": []
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        781,
+        801,
+        859,
+        835,
+        820
+      ]
+    },
+    {
+      "seed": 73,
+      "phaseIndex": 0,
+      "phase": "A",
+      "writes": 4096,
+      "prequentialFirst64": 0.21875,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 312,
+        "acceptedCorrect": 312,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": [
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.6621012129649098,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.6475945155923597,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.49126533656499133,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.2923449910914822,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.7935554682764951,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.7549511111595789,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.6454987447593368,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.7699444376612133,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          }
+        ]
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "unknown",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        821,
+        849,
+        777,
+        818,
+        831
+      ]
+    },
+    {
+      "seed": 73,
+      "phaseIndex": 1,
+      "phase": "B",
+      "writes": 8192,
+      "prequentialFirst64": 0.703125,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 320,
+        "acceptedCorrect": 320,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": []
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        830,
+        814,
+        805,
+        868,
+        779
+      ]
+    },
+    {
+      "seed": 73,
+      "phaseIndex": 2,
+      "phase": "A",
+      "writes": 12288,
+      "prequentialFirst64": 0.75,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 320,
+        "acceptedCorrect": 320,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": []
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        786,
+        856,
+        834,
+        866,
+        754
+      ]
+    },
+    {
+      "seed": 109,
+      "phaseIndex": 0,
+      "phase": "A",
+      "writes": 4096,
+      "prequentialFirst64": 0.171875,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 304,
+        "acceptedCorrect": 304,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": [
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.23188531614084806,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 3
+              }
+            },
+            "correct": true,
+            "margin": 0.06296835155279917,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.025467857572039787,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 3
+              }
+            },
+            "correct": true,
+            "margin": 0.24805725293687148,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.16123359874033177,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 3
+              }
+            },
+            "correct": true,
+            "margin": 0.4775637608935969,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.12419996604881312,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 3
+              }
+            },
+            "correct": true,
+            "margin": 0.45914987778081173,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.34535570270638755,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 3
+              }
+            },
+            "correct": true,
+            "margin": 0.33246932735900936,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.12669476260280077,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 3
+              }
+            },
+            "correct": true,
+            "margin": 0.43662883873119224,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          }
+        ]
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "unknown",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        831,
+        791,
+        789,
+        804,
+        881
+      ]
+    },
+    {
+      "seed": 109,
+      "phaseIndex": 1,
+      "phase": "B",
+      "writes": 8192,
+      "prequentialFirst64": 0.796875,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 312,
+        "acceptedCorrect": 312,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": [
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.4625471705516049,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.3728969646987812,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.39383256116921683,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.4585604074190619,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.5458993745929087,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.430432328125456,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.6033738185362596,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.5513313605781005,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          }
+        ]
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        798,
+        711,
+        803,
+        860,
+        924
+      ]
+    },
+    {
+      "seed": 109,
+      "phaseIndex": 2,
+      "phase": "A",
+      "writes": 12288,
+      "prequentialFirst64": 0.78125,
+      "prequentialLast64": 1,
+      "holdout": {
+        "total": 320,
+        "correct": 320,
+        "accepted": 312,
+        "acceptedCorrect": 312,
+        "unseenCombinationTotal": 40,
+        "unseenCombinationCorrect": 40,
+        "errors": [
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.5585410728388974,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.5192572527595848,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.48497463064933205,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              false
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.580066269869324,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.6205410062041249,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              false,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.5658072979509288,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              false,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.6614407499009656,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false,
+              false,
+              true,
+              true
+            ],
+            "action": {
+              "kind": "select-hotbar",
+              "parameters": {
+                "slot": 1
+              }
+            },
+            "correct": true,
+            "margin": 0.655101330006377,
+            "score": 0.9999999999999996,
+            "reason": "insufficient-observed-predictive-support"
+          }
+        ]
+      },
+      "unreachable": {
+        "status": "unknown",
+        "actions": 0
+      },
+      "queryReadOnly": true,
+      "controls": {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      "passed": true,
+      "goalGroups": {
+        "one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "three": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 3
+        },
+        "partial-two": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 2,
+          "maximumPlan": 2
+        },
+        "partial-one": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "retained": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 1,
+          "maximumPlan": 1
+        },
+        "conjunction": {
+          "total": 4,
+          "verified": 4,
+          "minimumPlan": 3,
+          "maximumPlan": 4
+        }
+      },
+      "actionObservationCounts": [
+        795,
+        885,
+        767,
+        806,
+        843
+      ]
+    }
+  ],
+  "rawEvidence": "Full events, checkpoints and per-action results are in kairos-experience-evidence.tar.gz."
+}

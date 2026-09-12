@@ -41,7 +41,7 @@ import type { TrustedRuntimeMeasurementContextV1 }
 import { KAIROS_V5_RUNTIME_VERSION } from './core/compatibility.js';
 import { assertDistributedMemorySnapshotV3, assertDistributedMemorySnapshotV4, v3SnapshotFromV4,
   DISTRIBUTED_MEMORY_V4_VERSION } from './experience-snapshot-contract.js';
-import type { MediaPageRequestV1, MediaPageResultV1, SnapshotBundleResultV1,
+import type { MediaPageRequestV1, MediaPageResultV1, SerializedSnapshotBundleV1,
   SnapshotMediaStatisticsV1 } from './compute.js';
 
 export interface ExperiencePointer {
@@ -231,40 +231,6 @@ export async function saveExperienceBundleV4(directory: string,
 }
 
 /**
- * Keep an injected retired-memory backend auditable during shutdown without
- * weakening the production bundle contract.  The normal saver above remains
- * strict and rejects legacy snapshots; this separate artifact is deliberately
- * marked as an audit-only pointer, so restoreExperience() will refuse it before
- * touching a compute worker.  A real V5 worker never takes this branch.
- */
-async function saveRetiredMemoryAuditBundleV1(directory: string, snapshot: unknown,
-  metadata: ExperienceBundleMetadataV1, habit: ControlHabitWeightsV1): Promise<void> {
-  assert(typeof snapshot === 'object' && snapshot !== null && !Array.isArray(snapshot),
-    'invalid-retired-memory-audit-snapshot');
-  const value = snapshot as Record<string, unknown>;
-  assert(typeof value.version === 'string' && value.version.startsWith('KairosV5HierarchicalMemory'),
-    'invalid-retired-memory-audit-snapshot');
-  assert(Array.isArray(value.seenEventIds) && Number.isSafeInteger(value.writes),
-    'invalid-retired-memory-audit-snapshot');
-  assert(metadata.eventCount === value.seenEventIds.length && metadata.writes === value.writes,
-    'retired-memory-audit-count-mismatch');
-  const suffix = metadata.eventCount.toString().padStart(4, '0');
-  const filename = `experience-${suffix}.json`, habitFilename = `control-habit-${suffix}.json`;
-  const habitCheckpoint = habit.exportCheckpoint();
-  await saveJson(resolve(directory, filename), snapshot);
-  await saveJson(resolve(directory, habitFilename), habitCheckpoint);
-  // This pointer is intentionally not a DistributedExperiencePointerV2.  It
-  // exists only so shutdown observers can see the final audit artifact; the
-  // production restore gate rejects the retired runtime identity.
-  await saveJson(resolve(directory, 'EXPERIENCE_LATEST.json'), {
-    runtimeVersion: 'KairosV5HierarchicalRuntimeV1',
-    sourceContextVersion: PUBLIC_LAYOUT_SEMANTICS,
-    filename, sha256: sha(snapshot), habitFilename,
-    habitSha256: sha(habitCheckpoint), ...metadata,
-  });
-}
-
-/**
  * Lossless evidence reference for a queued passive event (PLAN-005 1.3).  The
  * full frames already live in frames.jsonl under the same session; this record
  * keeps every event field except the duplicated frame array and binds the
@@ -280,11 +246,7 @@ export function passiveEventReferenceV1(event: RealEvent, sessionId: string) {
     eventSha256: sha(event) };
 }
 
-function isRetiredMemorySnapshot(value: unknown): boolean {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-    && typeof (value as { readonly version?: unknown }).version === 'string'
-    && (value as { readonly version: string }).version.startsWith('KairosV5HierarchicalMemory');
-}
+
 
 export function assertNewExperienceOutput(pointerPath: string | null, outputDirectory: string): void {
   if (pointerPath === null) return;
@@ -896,14 +858,7 @@ export class V5Runtime implements PhysicalReasoningPortV3, PhysicalControlEnviro
           observedAt: eventTime, predictionDeviationMagnitude: predictionDeviation?.magnitude ?? 0 });
       }
     }
-    // The shutdown test intentionally injects the retired audit-only memory
-    // backend.  Its historical receipt predates novelty, so keep that test
-    // double readable without restoring the retired distributed rejection
-    // status to the production contract.
-    const novelty: DistributedNoveltyRecordV1 = 'novelty' in written
-      && written.novelty !== undefined ? written.novelty
-      : { version: 'DistributedNoveltyRecordV1', source: 'trusted-real-event',
-        newlyAllocatedSignalCount: 0, newlyAllocatedSignalIds: [], reusedSignalCount: 0 };
+    const novelty = written.novelty;
     this.#noveltySignals += novelty.newlyAllocatedSignalCount;
     if (novelty.newlyAllocatedSignalCount > 0) {
       const noveltySubject = event.bodyResult?.action.targetId
@@ -963,7 +918,7 @@ export class V5Runtime implements PhysicalReasoningPortV3, PhysicalControlEnviro
   async #saveOnce(): Promise<void> {
     const suffix = this.#events.toString().padStart(4, '0');
     const filename = `experience-${suffix}.json`;
-    const bundle = await this.compute.call<SnapshotBundleResultV1>('snapshotBundle',
+    const bundle = await this.compute.call<SerializedSnapshotBundleV1>('snapshotBundle',
       { directory: this.evidence, filename, includeMediaStatistics: this.#mediaStatisticsWanted,
         segmentThresholdBytes: this.#segmentThresholdBytes,
         ...(this.config.evidence?.segmentLimitBytes !== undefined
@@ -971,11 +926,7 @@ export class V5Runtime implements PhysicalReasoningPortV3, PhysicalControlEnviro
         ...(this.config.evidence?.segmentPageLimitBytes !== undefined
           ? { segmentPageLimitBytes: this.config.evidence.segmentPageLimitBytes } : {}) });
     const metadata = { actions: this.#actions, eventCount: this.#events, writes: this.#writes };
-    if (bundle.kind === 'retired-snapshot-bundle') {
-      assert(isRetiredMemorySnapshot(bundle.snapshot), 'invalid-retired-memory-audit-snapshot');
-      await saveRetiredMemoryAuditBundleV1(this.evidence, bundle.snapshot, metadata, this.#habit);
-      return;
-    }
+    assert(bundle.kind === 'serialized-snapshot-bundle', 'invalid-experience-bundle-kind');
     assert(Number.isSafeInteger(metadata.actions) && metadata.actions >= 0, 'invalid-experience-actions');
     assert(Number.isSafeInteger(metadata.eventCount) && metadata.eventCount >= 0
       && metadata.eventCount === bundle.eventCount, 'experience-event-count-mismatch');

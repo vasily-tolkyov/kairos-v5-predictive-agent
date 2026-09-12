@@ -577,7 +577,8 @@ export class PhysicalControlManagerV2 {
         // Physical readiness is telemetry, not a permission gate. Goals may
         // run while the substrate is still collecting its first events.
         let sites = isRealGoal
-          ? this.#reasoningAndActionSites(observation, evaluation, !budgetExhausted)
+          ? evaluation.status === 'satisfied' ? []
+            : this.#reasoningAndActionSites(observation, evaluation, !budgetExhausted)
           : this.#explorationSites(observation)
             .filter(site => !budgetExhausted || (site.operation !== 'execute' && site.operation !== 'observe-public'));
         const queryAvailable = sites.some(site => site.hardEligible && (site.operation === 'recall-effect'
@@ -667,7 +668,10 @@ export class PhysicalControlManagerV2 {
         }
       }
     }
-    if (budgetExhausted) {
+    // An achieved goal still needs later public verification. Exhausting the
+    // motor budget does not exhaust observation; wait for fresh frames instead
+    // of racing an unknown finish against a result that is already present.
+    if (budgetExhausted && !(isRealGoal && evaluation.status === 'satisfied')) {
       if (!queryAvailable) sites.push(this.#site('finish-unknown', root, true,
         { goal: evaluation.residual, unknown: 1, evidence: 1 }));
     }
@@ -854,7 +858,7 @@ export class PhysicalControlManagerV2 {
    * cached so the field can accumulate activation instead of rotating away. */
   #explorationOffers(offers: readonly ActionOfferV1[]): readonly ActionOfferV1[] {
     const capacity = this.config.branchCapacity;
-    const identity = (offer: ActionOfferV1): string => `${cueIdentity(offer.cue)}:${offer.action.targetId ?? ''}`;
+    const identity = (offer: ActionOfferV1): string => this.#explorationIdentity(offer);
     if (this.#explorationWindow === null) {
       const window = fairEvidenceWindowV2(offers, capacity, this.#explorationRotation, identity);
       this.#explorationRotation = window.nextRotation;
@@ -1267,12 +1271,18 @@ export class PhysicalControlManagerV2 {
     const depth = dependencyDepthV2(nodeId, workspace.dependencies);
     return clamp01(rootResidual * Math.pow(.8, depth));
   }
-  #novelty(offer: ActionOfferV1): number { return 1 / (1 + (this.#useInhibition.get(cueIdentity(offer.cue)) ?? 0)); }
+  #explorationIdentity(offer: ActionOfferV1): string {
+    return `${cueIdentity(offer.cue)}:${offer.action.targetId ?? ''}`;
+  }
+  #novelty(offer: ActionOfferV1): number {
+    return 1 / (1 + (this.#useInhibition.get(this.#explorationIdentity(offer)) ?? 0));
+  }
   #markUsed(offer: ActionOfferV1): void {
     for (const [key, value] of this.#useInhibition) {
       const next = value * .85; if (next < .01) this.#useInhibition.delete(key); else this.#useInhibition.set(key, next);
     }
-    const key = cueIdentity(offer.cue); this.#useInhibition.set(key, (this.#useInhibition.get(key) ?? 0) + 1);
+    const key = this.#explorationIdentity(offer);
+    this.#useInhibition.set(key, (this.#useInhibition.get(key) ?? 0) + 1);
   }
   #relation(previousNodeId: string, nextNodeId: string): ControlHabitGraphRelationV1 | null {
     if (previousNodeId === nextNodeId) return 'same-node';

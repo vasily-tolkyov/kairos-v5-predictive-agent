@@ -1,0 +1,362 @@
+{
+  "version": "KairosMinecraftLiveReviewV1",
+  "date": "2026-09-10",
+  "conclusion": "does-not-meet-expected-capability",
+  "learnedCoreCommit": "7f9a8fcca5e40bb58ffaf94b8a756a8a137cf657",
+  "learning": [
+    {
+      "label": "learn-A",
+      "room": "A",
+      "startWrites": 0,
+      "endWrites": 71,
+      "actions": 128,
+      "executed": 128,
+      "accepted": 0,
+      "correct": 0,
+      "kinds": {
+        "select-hotbar": 48,
+        "look": 26,
+        "jump": 10,
+        "observe": 13,
+        "move": 24,
+        "wait": 6,
+        "break": 1
+      },
+      "reasons": {
+        "unobserved-action": 71,
+        "unobserved-receptor-layout": 57
+      },
+      "learning": {
+        "accepted": 71,
+        "skippedLayout": 57,
+        "correctBeforeUpdate": 0
+      },
+      "checkpointHash": "b302f0d010e1c0ede42601733a91cfdb03cb30e0d02b1a6a29e9c47d4decdf4d",
+      "channels": 651,
+      "motors": 14
+    },
+    {
+      "label": "learn-B",
+      "room": "B",
+      "startWrites": 71,
+      "endWrites": 109,
+      "actions": 64,
+      "executed": 64,
+      "accepted": 0,
+      "correct": 0,
+      "kinds": {
+        "select-hotbar": 24,
+        "look": 14,
+        "jump": 4,
+        "observe": 9,
+        "move": 11,
+        "wait": 2
+      },
+      "reasons": {
+        "unobserved-receptor-layout": 38,
+        "unobserved-action": 26
+      },
+      "learning": {
+        "accepted": 38,
+        "skippedLayout": 26,
+        "correctBeforeUpdate": 0
+      },
+      "checkpointHash": "6629a73185bee105e9300a0d98edcb2872d4c328cf3b6ff4dddc7d99609e5e0e",
+      "channels": 1171,
+      "motors": 14
+    }
+  ],
+  "primaryGoalGroups": [
+    {
+      "label": "frozen-plan-A",
+      "room": "A",
+      "trials": 5,
+      "verified": 0,
+      "plannedActions": 0,
+      "readOnlyUnchanged": true,
+      "goals": [
+        {
+          "name": "slot",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "look",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "move",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "combined",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "three-interactions",
+          "status": "unknown",
+          "actionCount": 0
+        }
+      ]
+    },
+    {
+      "label": "frozen-plan-B",
+      "room": "B",
+      "trials": 5,
+      "verified": 0,
+      "plannedActions": 0,
+      "readOnlyUnchanged": true,
+      "goals": [
+        {
+          "name": "slot",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "look",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "move",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "combined",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "three-interactions",
+          "status": "unknown",
+          "actionCount": 0
+        }
+      ]
+    },
+    {
+      "label": "adapted-plan-B",
+      "room": "B",
+      "trials": 5,
+      "verified": 0,
+      "plannedActions": 0,
+      "readOnlyUnchanged": true,
+      "goals": [
+        {
+          "name": "slot",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "look",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "move",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "combined",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "three-interactions",
+          "status": "unknown",
+          "actionCount": 0
+        }
+      ]
+    },
+    {
+      "label": "retention-plan-A",
+      "room": "A",
+      "trials": 5,
+      "verified": 0,
+      "plannedActions": 0,
+      "readOnlyUnchanged": true,
+      "goals": [
+        {
+          "name": "slot",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "look",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "move",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "combined",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "three-interactions",
+          "status": "unknown",
+          "actionCount": 0
+        }
+      ]
+    },
+    {
+      "label": "unseen-plan-C",
+      "room": "C",
+      "trials": 5,
+      "verified": 0,
+      "plannedActions": 0,
+      "readOnlyUnchanged": true,
+      "goals": [
+        {
+          "name": "slot",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "look",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "move",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "combined",
+          "status": "unknown",
+          "actionCount": 0
+        },
+        {
+          "name": "three-interactions",
+          "status": "unknown",
+          "actionCount": 0
+        }
+      ]
+    }
+  ],
+  "primaryGoals": 25,
+  "primaryPlannedSuccesses": 0,
+  "finalCompleteRun": {
+    "source": "final-frozen-41",
+    "goals": 25,
+    "status": "completed",
+    "summary": {
+      "goals": 25,
+      "verified": 0,
+      "verifiedWithPlans": 0,
+      "meetsExpectedCapability": false
+    },
+    "allFrozenSnapshotsUnchanged": true
+  },
+  "exploratoryGoals": {
+    "trials": 5,
+    "verified": 1,
+    "actions": 77,
+    "plannedActions": 0,
+    "writesByTrial": [
+      9,
+      9,
+      8,
+      9,
+      9
+    ]
+  },
+  "checkpoints": {
+    "A": {
+      "channels": 651,
+      "inputs": 1768,
+      "compressedBytes": 17887278,
+      "compressedSha256": "f58f07ef7bd187a47095eb09c509eedfd4ffa8fcc0ac85e87cb5b6e9a22f45d3"
+    },
+    "AB": {
+      "channels": 1171,
+      "inputs": 2630,
+      "compressedBytes": 26832861,
+      "compressedSha256": "076236be22092449e18310cd77963768008fb64de863f1649db810c65336a814"
+    }
+  },
+  "layoutAudit": {
+    "registeredChannels": 651,
+    "registeredInputs": 1768,
+    "windows": 128,
+    "sameLayoutWindows": 71,
+    "framesMatchingLearnedUnion": 0,
+    "beforeChannelRange": [
+      26,
+      235
+    ],
+    "minimumMissingUnionChannels": 416
+  },
+  "nativeBodyControls": [
+    {
+      "room": "A",
+      "observedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "verified": true,
+      "usedForLearning": false,
+      "agentSelectedActions": 0
+    },
+    {
+      "room": "B",
+      "observedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "verified": true,
+      "usedForLearning": false,
+      "agentSelectedActions": 0
+    },
+    {
+      "room": "C",
+      "observedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "verified": true,
+      "usedForLearning": false,
+      "agentSelectedActions": 0
+    }
+  ],
+  "ioIsolation": {
+    "milliseconds": 35000,
+    "beforeSequence": 3,
+    "afterSequence": 703,
+    "retainedConnection": true
+  },
+  "github": {
+    "status": "blocked",
+    "repository": "vasily-tolkyov/kairos-v5-predictive-agent",
+    "localBranch": "codex/kairos-first-principles-cleanup",
+    "localCommit": "7f9a8fcca5e40bb58ffaf94b8a756a8a137cf657",
+    "localTree": "bc68595efa491ebc0b2f34ea3d2be163899a6756",
+    "verifiedRemoteMain": "7fe4157dcac57daf9febf5f0d449ea938a081249",
+    "gitPush": "could not read Username for https://github.com",
+    "authenticatedGitHubCreateTree": "403 Resource not accessible by integration",
+    "userAuthorization": "Explicitly authorized in current request",
+    "requiredExternalChange": "GitHub connection with repository contents write access",
+    "checkedAt": "2026-09-10T17:21:15.124352+00:00"
+  },
+  "scope": [
+    "One learner seed and one continuous A-to-B learning history, not independent population trials.",
+    "A/B/C are controlled native Minecraft rooms, not unrestricted survival terrain.",
+    "Goals are structured public predicates, not natural language understanding.",
+    "Model-planned success is separated from exploratory coincidence.",
+    "Initial numeric-note target mismatch and failed calibrations are retained and excluded from capability success.",
+    "Native scripted controls never enter tested learning memory.",
+    "Returning to A cannot prove retention of a skill that was never acquired."
+  ]
+}

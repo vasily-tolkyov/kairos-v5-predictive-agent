@@ -116,17 +116,17 @@ function r2Event(id: string, ordinalZeroSignal: string,
     { signalId: ordinalOneSignal, pulseOrdinal: 0, channelOrdinal: 1, receptorOrdinal: 0 },
   ];
   return { version: 'DistributedR2ContinuousEventV1', eventId: id,
-    atomIds: [`${id}-a`, `${id}-b`], sourceEventIds: [`${id}-sa`, `${id}-sb`],
-    orderedExperienceIdentities: ['action-a', 'action-b'],
-    orderedEpisodePatternIds: ['pattern-a', 'pattern-b'], dependencyIds: ['dependency'],
+    atomIds: [`${id}-a`], sourceEventIds: [`${id}-sa`],
+    orderedExperienceIdentities: ['action-a'],
+    orderedEpisodePatternIds: ['pattern-a'], dependencyIds: ['dependency'],
     contextIds: ['context'], completion: 'complete', boundaryReason: 'public-process-resolved',
     learningEligible: true, physicalFootprint: footprint(`r2-${id}`), processChanges: [],
     terminalChanges: [], beforePublicSignals: [...callerOrder],
     beforeSignalTimeline: [[...callerOrder]], beforePublicSignalOccurrences: occurrences,
     beforeSignalTimelineOccurrences: [occurrences], physicalPulseSiteIds: [[10, 11], [20, 21], [30, 31]],
     atomPulseRanges: [
-      { atomId: `${id}-a`, startPulseIndex: 0, endPulseIndexExclusive: 1 },
-      { atomId: `${id}-b`, startPulseIndex: 1, endPulseIndexExclusive: 3 },
+      // One complete atom: observed before state, command, observed result.
+      { atomId: `${id}-a`, startPulseIndex: 0, endPulseIndexExclusive: 3 },
     ], patternSha256: sha({ pattern: 'same' }) };
 }
 

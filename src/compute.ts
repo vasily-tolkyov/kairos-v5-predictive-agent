@@ -58,11 +58,6 @@ export interface SerializedSnapshotBundleV1 {
   readonly mediaStatistics: SnapshotMediaStatisticsV1 | null;
   readonly timescaleLawIdentitySha256?: string;
 }
-/** Test-only seam: an injected retired backend reports itself explicitly. */
-export interface RetiredSnapshotBundleV1 {
-  readonly kind: 'retired-snapshot-bundle'; readonly snapshot: unknown;
-}
-export type SnapshotBundleResultV1 = SerializedSnapshotBundleV1 | RetiredSnapshotBundleV1;
 export interface MediaPageRequestV1 {
   readonly medium: 'r1' | 'r2' | 'r2a'; readonly offset: number; readonly limit: number;
 }
@@ -171,8 +166,8 @@ export class Compute {
   }
   /** Serialize and persist the current memory snapshot inside the worker
    * (PLAN-005 1.2, PLAN-008 streaming). */
-  async snapshotBundle(request: SnapshotBundleRequestV1): Promise<SnapshotBundleResultV1> {
-    return this.call<SnapshotBundleResultV1>('snapshotBundle', request);
+  async snapshotBundle(request: SnapshotBundleRequestV1): Promise<SerializedSnapshotBundleV1> {
+    return this.call<SerializedSnapshotBundleV1>('snapshotBundle', request);
   }
   /** Bounded media page from the worker-retained last saved snapshot (PLAN-005 1.1). */
   async mediaPage(request: MediaPageRequestV1): Promise<MediaPageResultV1> {

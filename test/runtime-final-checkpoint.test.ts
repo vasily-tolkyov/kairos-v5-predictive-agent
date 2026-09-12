@@ -6,10 +6,10 @@ import { resolve } from 'node:path';
 import type { Observation, RealEvent } from '../src/contracts.js';
 import type { JointTransientControlFieldConfigV2 } from '../src/control/contracts.js';
 import type { MinecraftBody } from '../src/body.js';
-import type { Compute } from '../src/compute.js';
+import { Compute } from '../src/compute.js';
 import { realEventHierarchyContinuityV1 } from '../src/events.js';
-import { HierarchicalPhysicalMemoryV1, type HierarchicalMemorySnapshotV1 } from '../src/hierarchical-memory.js';
-import { V5Runtime, type ExperiencePointer } from '../src/runtime.js';
+import type { KairosV5DistributedPhysicalMemoryV3 } from '../src/distributed-hierarchical-memory.js';
+import { V5Runtime, restoreExperience, type ExperiencePointer } from '../src/runtime.js';
 import type { Configuration } from '../src/services.js';
 
 const control: JointTransientControlFieldConfigV2 = {
@@ -37,23 +37,20 @@ function passiveEvent(): RealEvent {
 
 test('normal close seals passive facts and the R2 boundary before its final checkpoint and worker close', async () => {
   const directory = await mkdtemp(resolve(process.cwd(), '.tmp-runtime-final-checkpoint-'));
-  const order: string[] = [], memory = new HierarchicalPhysicalMemoryV1();
-  const compute = { call: async <T>(method: string, ...args: unknown[]): Promise<T> => {
+  const order: string[] = [], compute = new Compute();
+  const call = compute.call.bind(compute), close = compute.close.bind(compute);
+  // Observe and serialize through the real distributed worker. The test only
+  // records ordering; it does not invent a second checkpoint protocol.
+  compute.call = async <T>(method: string, ...args: unknown[]): Promise<T> => {
     order.push(method);
-    if (method === 'observe') return memory.observe(args[0] as RealEvent) as T;
-    if (method === 'closeContinuity') return memory.closeContinuity(args[0] as Parameters<typeof memory.closeContinuity>[0]) as T;
-    if (method === 'snapshot') return memory.snapshot() as T;
-    // PLAN-005 1.2: save() now asks the worker for a serialized bundle; an
-    // injected retired backend reports itself through the explicit variant.
-    if (method === 'snapshotBundle') return { kind: 'retired-snapshot-bundle', snapshot: memory.snapshot() } as T;
-    if (method === 'predict') return memory.predict(args[0] as Parameters<typeof memory.predict>[0],
-      args[1] as Parameters<typeof memory.predict>[1], args[2] as Parameters<typeof memory.predict>[2]) as T;
-    throw new Error(`unexpected-test-compute-method:${method}`);
-  }, close: async () => {
+    return call<T>(method, ...args);
+  };
+  compute.close = async () => {
     assert.equal(existsSync(resolve(directory, 'EXPERIENCE_LATEST.json')), true,
       'worker closed before the final bundle pointer was committed');
     order.push('compute-close');
-  } } as unknown as Compute;
+    await close();
+  };
   const latest = observation(1, 1, true);
   const body = { session: { id: 'shutdown-session' }, on: () => body, latest: () => latest,
     close: async () => {
@@ -71,10 +68,17 @@ test('normal close seals passive facts and the R2 boundary before its final chec
 
     assert.deepEqual(order, ['observe', 'closeContinuity', 'snapshotBundle', 'body-close', 'compute-close']);
     const pointer = JSON.parse(await readFile(resolve(directory, 'EXPERIENCE_LATEST.json'), 'utf8')) as ExperiencePointer;
-    const snapshot = JSON.parse(await readFile(resolve(directory, pointer.filename), 'utf8')) as HierarchicalMemorySnapshotV1;
+    const snapshot = JSON.parse(await readFile(resolve(directory, pointer.filename), 'utf8')) as KairosV5DistributedPhysicalMemoryV3;
     assert.equal(pointer.eventCount, 1);
     assert.deepEqual(snapshot.seenEventIds, ['shutdown-passive-event']);
-    assert.equal(snapshot.pendingInitialization.length, 1);
+    assert.equal(snapshot.r1.records.length, 1);
+    assert.equal(snapshot.writes, 1);
+    const restoreWorker = new Compute();
+    try {
+      const restored = await restoreExperience(restoreWorker, resolve(directory, 'EXPERIENCE_LATEST.json'));
+      assert(restored);
+      assert.deepEqual(restored.snapshot, snapshot);
+    } finally { await restoreWorker.close(); }
     assert.equal(snapshot.activeSeconds, 1);
-  } finally { await rm(directory, { recursive: true, force: true }); }
+  } finally { await close(); await rm(directory, { recursive: true, force: true }); }
 });

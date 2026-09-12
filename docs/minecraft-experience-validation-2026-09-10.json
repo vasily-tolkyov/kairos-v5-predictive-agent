@@ -1,0 +1,123 @@
+{
+  "version": "KairosMinecraftValidationV1",
+  "sourceBaseCommit": "7f9a8fcca5e40bb58ffaf94b8a756a8a137cf657",
+  "sourceSha256": {
+    "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+    "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+    "src/body.ts": "f5df934a1d4f0a8fe3ad4174f347f3f96f9e246ec0d31fd53ed691861ab63d45",
+    "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+    "scripts/run-experience-body.mjs": "76f814fcde6586297e8c618a3d5ec6858b876b3687d583e3153c7c242e579a4d",
+    "scripts/minecraft-body-connection.mjs": "8e9dd9b4360d3920e21b784b73cf9d2156b2921a436bb6ef99f1b8c575d77095",
+    "scripts/evaluate-minecraft-experience.mjs": "323b010739fa0baa1f207e09e3f5885af9215a2a59dbe661155e9a0935df0c91",
+    "package.json": "1e6e6b2d48cacb38cf5c88670c0c627bf1ee0d9d802bf10150f1bbcd0a1c5585",
+    "docs/minecraft-experience-results-2026-09-10.json": "d44437e65c7aba469f89cf500b48df2621bf0564b02342ce65f0d4a60cdf8a22"
+  },
+  "regression": {
+    "tests": 13,
+    "passed": 13,
+    "failed": 0,
+    "wholeLegacySuitePassed": false
+  },
+  "realEvents": {
+    "checked": 287,
+    "counts": {
+      "baseline-41/events.jsonl": 128,
+      "transfer-41/events.jsonl": 141,
+      "native-body-calibration-v2/calibration-events.jsonl": 9,
+      "body-io-stall/calibration-events.jsonl": 9
+    },
+    "valid": true
+  },
+  "runs": {
+    "baseline-41": {
+      "status": "error",
+      "resultsSha256": "7cd6e39dade269f833256bbdba21788124bdd7dd48314182ab2e2ca99421db7b",
+      "recordedSources": {
+        "scripts/evaluate-minecraft-experience.mjs": "c47919374c4936a5a75837d843cf55d018c1e6d7761e35058092ada11636d57a",
+        "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+        "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+        "src/body.ts": "10f2aab80f2013ed0ac1afdbe29c38db804672d15dc36cb161aaea8361a1e129",
+        "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+        "dist/src/experience-agent.js": "d92a8059b367af2fd7208bfe8918158c8faaf7ab3962e3be931afb036b756ec4",
+        "dist/src/experience-medium.js": "0d3069b1079da3ce9c65c6f17cb70dbda5e425ba9ea7ef9a942cf655607018cb",
+        "dist/src/body.js": "69ba11fc062fc6502fe1fef91ca93d5e3b113887a3a30a35bceab6007b7b06aa"
+      }
+    },
+    "transfer-41": {
+      "status": "error",
+      "resultsSha256": "0c8b81912a2b7f0977a600cef08207b8742750d3f1efb92b11eee94198f72a07",
+      "recordedSources": {
+        "scripts/evaluate-minecraft-experience.mjs": "7b8dd56e7dc33a914d06435018b1a80b0649282e2132707868c70633e8ec163a",
+        "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+        "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+        "src/body.ts": "10f2aab80f2013ed0ac1afdbe29c38db804672d15dc36cb161aaea8361a1e129",
+        "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+        "dist/src/experience-agent.js": "d92a8059b367af2fd7208bfe8918158c8faaf7ab3962e3be931afb036b756ec4",
+        "dist/src/experience-medium.js": "0d3069b1079da3ce9c65c6f17cb70dbda5e425ba9ea7ef9a942cf655607018cb",
+        "dist/src/body.js": "69ba11fc062fc6502fe1fef91ca93d5e3b113887a3a30a35bceab6007b7b06aa"
+      },
+      "capturedEvaluatorMatches": true
+    },
+    "native-body-calibration": {
+      "status": "error",
+      "resultsSha256": "1d502286cc7a52f1b157a4d1f60cd3853beda9ba0bde868fb53295a003418001",
+      "recordedSources": {
+        "scripts/evaluate-minecraft-experience.mjs": "2f404e16d0c85571fb0cc4e0a08ddde899c676eed08ac78f3e0123fc7f65bd0b",
+        "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+        "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+        "src/body.ts": "10f2aab80f2013ed0ac1afdbe29c38db804672d15dc36cb161aaea8361a1e129",
+        "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+        "dist/src/experience-agent.js": "d92a8059b367af2fd7208bfe8918158c8faaf7ab3962e3be931afb036b756ec4",
+        "dist/src/experience-medium.js": "0d3069b1079da3ce9c65c6f17cb70dbda5e425ba9ea7ef9a942cf655607018cb",
+        "dist/src/body.js": "69ba11fc062fc6502fe1fef91ca93d5e3b113887a3a30a35bceab6007b7b06aa"
+      },
+      "capturedEvaluatorMatches": true
+    },
+    "native-body-calibration-v2": {
+      "status": "completed",
+      "resultsSha256": "d713ebed8794261b5deab5d6a561594a4360463f49f875ddf71f27c8deaf3a66",
+      "recordedSources": {
+        "scripts/evaluate-minecraft-experience.mjs": "6232f5621140e63c064e7759cec93bbcca1a1c4ad8196575e2e3b6f7130f6952",
+        "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+        "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+        "src/body.ts": "f5df934a1d4f0a8fe3ad4174f347f3f96f9e246ec0d31fd53ed691861ab63d45",
+        "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+        "dist/src/experience-agent.js": "d92a8059b367af2fd7208bfe8918158c8faaf7ab3962e3be931afb036b756ec4",
+        "dist/src/experience-medium.js": "0d3069b1079da3ce9c65c6f17cb70dbda5e425ba9ea7ef9a942cf655607018cb",
+        "dist/src/body.js": "73897f761cd389ef49cbfae86d19a234c410e638c89b6880150faa9a073dea10"
+      },
+      "capturedEvaluatorMatches": true
+    },
+    "body-io-stall": {
+      "status": "completed",
+      "resultsSha256": "b3e31b0e7e8743f7a31653e77bc6a81d914b523257cac6c1a6c44af2ce238fcd",
+      "recordedSources": {
+        "scripts/evaluate-minecraft-experience.mjs": "6232f5621140e63c064e7759cec93bbcca1a1c4ad8196575e2e3b6f7130f6952",
+        "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+        "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+        "src/body.ts": "f5df934a1d4f0a8fe3ad4174f347f3f96f9e246ec0d31fd53ed691861ab63d45",
+        "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+        "dist/src/experience-agent.js": "d92a8059b367af2fd7208bfe8918158c8faaf7ab3962e3be931afb036b756ec4",
+        "dist/src/experience-medium.js": "0d3069b1079da3ce9c65c6f17cb70dbda5e425ba9ea7ef9a942cf655607018cb",
+        "dist/src/body.js": "73897f761cd389ef49cbfae86d19a234c410e638c89b6880150faa9a073dea10"
+      },
+      "capturedEvaluatorMatches": true
+    },
+    "final-frozen-41": {
+      "status": "completed",
+      "resultsSha256": "05700ae686ae7294c27043c6369c1d57812b21d5baa552a0bcdd1eae8d0254fd",
+      "recordedSources": {
+        "scripts/evaluate-minecraft-experience.mjs": "6232f5621140e63c064e7759cec93bbcca1a1c4ad8196575e2e3b6f7130f6952",
+        "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+        "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+        "src/body.ts": "f5df934a1d4f0a8fe3ad4174f347f3f96f9e246ec0d31fd53ed691861ab63d45",
+        "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+        "dist/src/experience-agent.js": "d92a8059b367af2fd7208bfe8918158c8faaf7ab3962e3be931afb036b756ec4",
+        "dist/src/experience-medium.js": "0d3069b1079da3ce9c65c6f17cb70dbda5e425ba9ea7ef9a942cf655607018cb",
+        "dist/src/body.js": "73897f761cd389ef49cbfae86d19a234c410e638c89b6880150faa9a073dea10"
+      },
+      "capturedEvaluatorMatches": true
+    }
+  },
+  "githubStatus": "blocked-403-no-remote-write"
+}

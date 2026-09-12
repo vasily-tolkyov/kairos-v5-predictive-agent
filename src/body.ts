@@ -8,6 +8,10 @@ import { actionObservationTrackedIdsV1, cueFor, realEventHierarchyContinuityV1 }
 import { assert, sha } from './util.js';
 import { validateAction } from './action-contract.js';
 import { publicLayoutContextId } from './public-context.js';
+import { AttentivePerception } from './perception.js';
+import { captureRetina, visibleItemColor, visibleEntityColor, rayBoxDistance } from './adapters/minecraft/retina.js';
+import { frameOptics } from './adapters/minecraft/optics.js';
+import { PassiveExperienceWindows } from './passive-experience.js';
 import type { ActionObservationScopeV1, ActionOfferV1, GoalPredicateV1,
   PublicActionRequirementKindV2, PublicActionRequirementV2 } from './control/contracts.js';
 
@@ -60,7 +64,7 @@ export function publicBlockSelectionShapesV1(
   return shape ? [shape] : [];
 }
 
-/** One DDA traversal owns both visibility and the exact interaction hit. */
+/** Physical interaction hit only. Optical visibility uses visual models. */
 export function publicBlockRaycastV1(world: Bot['world'], from: Vec3,
   rayDirection: Vec3, range: number): PublicRaycastBlock | null {
   const matcher = ((block: Block, iterator: PublicRaycastIteratorV1): boolean => {
@@ -103,7 +107,6 @@ export interface BodyConfiguration { host: '127.0.0.1'; port: number; username: 
 export function describeActionRequirement(actionCue: ActionCue,
   observation: Observation): PublicActionRequirementV2 {
   const actionKind = actionCue.kind;
-  assert(actionKind !== 'passive', 'passive-cue-has-no-body-action-requirement');
   const crosshairTarget = observation.targetId === null ? null
     : observation.objects.find(object => object.id === observation.targetId) ?? null;
   const publicKind = (id: string): 'block' | 'entity' | null => id.startsWith('block:') ? 'block'
@@ -130,7 +133,8 @@ export function describeActionRequirement(actionCue: ActionCue,
     if (requirement === 'public-crosshair-block')
       return targetKind !== 'block' || !uniqueTarget || crosshairTarget?.id !== uniqueTarget.id;
     if (requirement === 'public-crosshair-entity')
-      return targetKind !== 'entity' || !uniqueTarget || crosshairTarget?.id !== uniqueTarget.id;
+      return targetKind !== 'entity' || !uniqueTarget || crosshairTarget?.id !== uniqueTarget.id
+        || crosshairTarget.properties.attackable !== true;
     if (requirement === 'public-unique-target-within-interaction-distance')
       return !uniqueTarget || Math.hypot(...uniqueTarget.relativePosition) > 4.5;
     return typeof heldItem !== 'string' || heldItem.length === 0;
@@ -175,18 +179,25 @@ export class BodySession {
 }
 /** This is the sole live-body owner. It has no model, forecast, rules, or action fallback. */
 export class MinecraftBody extends EventEmitter {
+  #perception = new AttentivePerception();
   readonly bot: Bot;
   readonly session: BodySession;
   readonly frames: Observation[] = [];
   #sequence = 0;
+  #lastFrameAt = performance.now();
   #fatal: Error | null = null;
   // Set when the connection itself died (kick/end); a clean close never sets it.
   #connectionFailure: Error | null = null;
   #closed = false;
   #executing = false;
+  #passive: PassiveExperienceWindows | null = null;
+  #pendingPassive: RealEvent[] = [];
   #eventNumber = 0;
   #physicalCalls = 0;
   #blockInteractionSequence = 0;
+  #readyRequested = false;
+  #clientLoadAfter: number | null = 3;
+  #oxygen: { rawAir: number; value: number } | undefined;
   #objects = new Map<string, { object: PublicObject; target: unknown }>();
   // The currently grounded action/goal scope is a public observation
   // continuity binding, not a hidden-world subscription.  Only objects that
@@ -196,7 +207,7 @@ export class MinecraftBody extends EventEmitter {
     super(); this.session = new BodySession(configuration.activeSecondsOffset, configuration.sessionId);
     assert(configuration.host === '127.0.0.1', 'only-isolated-loopback-world');
     this.bot = mineflayer.createBot({ host: configuration.host, port: configuration.port, username: configuration.username,
-      version: '1.21.4', auth: 'offline', hideErrors: false, viewDistance: 'short' });
+      version: '1.21.4', auth: 'offline', hideErrors: false, viewDistance: 'short', respawn: false });
     this.bot.on('error', error => this.#fail(error));
     this.bot.on('kicked', reason => {
       this.#connectionFailure = new Error(`Minecraft kicked: ${JSON.stringify(reason)}`);
@@ -207,15 +218,49 @@ export class MinecraftBody extends EventEmitter {
       this.#connectionFailure = new Error(`Minecraft disconnected: ${reason}`);
       this.#fail(this.#connectionFailure);
     });
-    this.bot.on('physicsTick', () => {
-      if (this.#closed || this.#fatal || !this.bot.entity) return;
-      try { const frame = this.#capture(); this.frames.push(frame);
-        if (this.frames.length > 24000) this.frames.shift();
-        this.record('frame', frame); this.emit('frame', frame);
-      } catch (error) { this.#fail(error as Error); }
+    this.bot.on('spawn', () => {
+      this.#clientLoadAfter = this.#sequence + 3;
+      this.record('body-spawn', { observationSequence: this.#sequence });
     });
+    this.bot.on('respawn', () => { this.#oxygen = undefined; });
+    this.bot._client.on('entity_metadata', (packet: { entityId: number; metadata: { key: number; value: unknown }[] }) => {
+      // The installed SDK assigns ANY entity's air_supply to oxygenLevel.
+      // Read only a fresh packet for this body; another creature's physiology
+      // and a previous body's cached reading are not our sensations.
+      if (packet.entityId !== this.bot.entity?.id) return;
+      const definition = this.bot.registry.entitiesByName.player as { metadataKeys?: string[] } | undefined;
+      const slot = definition?.metadataKeys?.indexOf('air_supply');
+      if (slot === undefined || slot < 0) return;
+      const rawAir = packet.metadata.find(value => value.key === slot)?.value;
+      if (typeof rawAir !== 'number' || !Number.isFinite(rawAir)) return;
+      this.#oxygen = { rawAir, value: Math.max(0, Math.round(rawAir / 15)) };
+      this.record('body-oxygen-sample', { observationSequence: this.#sequence, ...this.#oxygen });
+    });
+    this.bot.on('death', () => {
+      // The SDK stops physics ticks at death. Capture the actual health
+      // update so the terminal outcome and restart control remain observable.
+      this.#sample(); this.record('body-death', { observationSequence: this.#sequence });
+    });
+    this.bot.on('physicsTick', () => this.#sample());
     // An unsupported UI is a real body outcome, not permission to operate inventory.
     this.bot.on('windowOpen', window => this.bot.closeWindow(window));
+  }
+  #sample(): void {
+      if (this.#closed || this.#fatal || !this.bot.entity) return;
+      try { const frame = this.#capture(); this.frames.push(frame); this.#lastFrameAt = performance.now();
+        // A normal action window is at most 200 dig ticks + 80 settling ticks.
+        // Full retinal frames must not accumulate for twenty minutes in RAM.
+        if (this.frames.length > 512) this.frames.shift();
+        if (!this.#executing) this.#passive?.accept(frame);
+        // 1.21.4 ignores interactions until the client acknowledges loading
+        // (or the server timeout elapses). Mineflayer does not send this
+        // packet. A captured body scene is our loading-complete boundary.
+        if (this.#readyRequested && this.#clientLoadAfter !== null && this.#sequence >= this.#clientLoadAfter) {
+          this.bot._client.write('player_loaded', {}); this.#clientLoadAfter = null;
+          this.record('client-load-acknowledged', { observationSequence: this.#sequence });
+        }
+        this.record('frame', frame); this.emit('frame', frame);
+      } catch (error) { this.#fail(error as Error); }
   }
   #fail(error: Error): void { this.#fatal ??= error; this.emit('fault', error); }
   check(): void { if (this.#fatal) throw this.#fatal; }
@@ -224,7 +269,11 @@ export class MinecraftBody extends EventEmitter {
   get executing(): boolean { return this.#executing; }
   get physicalCalls(): number { return this.#physicalCalls; }
   latest(): Observation { this.check(); const frame = this.frames.at(-1); assert(frame, 'no-real-public-frame'); return frame; }
-  async ready(): Promise<void> { await this.#until(() => this.frames.length >= 3, 120_000); }
+  async ready(): Promise<void> {
+    this.#readyRequested = true;
+    await this.#until(() => this.frames.length >= 3 && this.#clientLoadAfter === null
+      || this.frames.length > 0 && this.bot.health <= 0, 120_000);
+  }
   async waitForObservationAfter(sequence: number): Promise<Observation> {
     this.check();
     const current = this.frames.at(-1);
@@ -246,47 +295,61 @@ export class MinecraftBody extends EventEmitter {
   }
   async #until(predicate: () => boolean, timeout: number, signal?: AbortSignal): Promise<void> {
     if (signal?.aborted || predicate()) return;
+    const startedAt = performance.now(), startedSequence = this.#sequence;
     await new Promise<void>((resolve, reject) => {
       const cleanup = () => { clearTimeout(timer); this.off('frame', frame); this.off('fault', fail); signal?.removeEventListener('abort', cancel); };
       const frame = () => { if (predicate()) { cleanup(); resolve(); } };
       const fail = (error: Error) => { cleanup(); reject(error); };
       const cancel = () => { cleanup(); resolve(); };
-      const timer = setTimeout(() => fail(new Error('Minecraft real-frame timeout')), timeout);
+      const timer = setTimeout(() => {
+        if (predicate()) { cleanup(); resolve(); return; }
+        let chunkLoaded: boolean | null = null;
+        try { if (this.bot.entity && typeof this.bot.blockAt === 'function') chunkLoaded = this.bot.blockAt(this.bot.entity.position) !== null; } catch {}
+        this.record('body-frame-timeout', { startedSequence, sequence: this.#sequence,
+          waitedMs: performance.now() - startedAt, frameSilenceMs: performance.now() - this.#lastFrameAt,
+          health: this.bot.health, physicsEnabled: this.bot.physicsEnabled, chunkLoaded,
+          position: this.bot.entity?.position, requestedTimeoutMs: timeout });
+        fail(new Error('Minecraft real-frame timeout'));
+      }, timeout);
       this.on('frame', frame); this.on('fault', fail); signal?.addEventListener('abort', cancel, { once: true });
       if (this.#fatal) fail(this.#fatal); else if (signal?.aborted) cancel();
     });
   }
   async waitTicks(count: number, signal?: AbortSignal): Promise<void> {
     this.check(); const start = this.#sequence;
-    await this.#until(() => this.#sequence >= start + count, Math.max(10_000, count * 200), signal); this.check();
+    await this.#until(() => this.#sequence >= start + count || this.bot.health <= 0,
+      Math.max(10_000, count * 200), signal); this.check();
   }
   async #digWithinWindow(target: Parameters<Bot['dig']>[0]): Promise<'completed' | 'observation-limit'> {
-    const controller = new AbortController();
-    const window = this.waitTicks(200, controller.signal).then(() => ({ kind: 'observation-limit' as const }),
-      (error: unknown) => ({ kind: 'error' as const, error }));
-    const failure: { occurred: boolean; error?: unknown } = { occurred: false };
+    const start = this.#sequence;
+    // This is the client's protocol timing, not a learned effect or a signal
+    // supplied to the agent. Infinite duration still permits a bounded press.
+    const completionTick = Math.ceil(this.bot.digTime(target) / 50);
+    let changed = false, requestedCompletion = false;
+    const updated = (before: Block | null, after: Block | null) => {
+      if ((after ?? before)?.position.equals(target.position)) changed ||= after?.stateId !== target.stateId;
+    };
+    const packet = (status: number) => this.bot._client.write('block_dig', { status, location: target.position,
+      face: (target as PublicRaycastBlock).face ?? 1, sequence: this.#blockInteractionSequence++ });
+    this.bot.on('blockUpdate', updated);
     try {
-      // The model already chose the public crosshair target. Dig must not turn the body again.
-      const digging = this.bot.dig(target, 'ignore').then(() => ({ kind: 'completed' as const }), (error: unknown) => {
-        failure.occurred = true; failure.error = error; return { kind: 'error' as const, error };
-      });
-      const first = await Promise.race([digging, window]); this.check();
-      if (first.kind === 'error') throw first.error;
-      if (first.kind === 'completed') return 'completed';
-      // A rejection already received before our stop is never reclassified as our cancellation.
-      if (failure.occurred) throw failure.error;
-      let canceledByThisStop = false;
-      const aborted = (block: Block) => { if (block === target) canceledByThisStop = true; };
-      this.bot.on('diggingAborted', aborted);
-      try {
-        this.bot.stopDigging();
-        const stopped = await digging; this.check();
-        // Mineflayer 4.37.1 emits this event for the same block and rejects with this explicit error.
-        if (stopped.kind === 'error' && !(canceledByThisStop && stopped.error instanceof Error && stopped.error.message === 'Digging aborted'))
-          throw stopped.error;
-      } finally { this.bot.off('diggingAborted', aborted); }
-      return 'observation-limit';
-    } finally { controller.abort(); } // No old frame listener/timer survives a completed or failed dig.
+      // Avoid SDK dig(), which throws on infinite duration and optimistically
+      // rewrites the block to air. Only a server update completes this window.
+      // Do not send an early finish: the server can keep that delayed operation
+      // alive even after an abort, including indefinitely on an unchanged block.
+      packet(0); this.bot.swingArm('right');
+      while (!changed && this.bot.health > 0 && this.#sequence - start < 200) {
+        await this.waitTicks(1);
+        if (!changed && !requestedCompletion && this.#sequence - start >= completionTick) {
+          packet(2); requestedCompletion = true;
+        }
+        if ((this.#sequence - start) % 7 === 0) this.bot.swingArm('right');
+      }
+      return changed ? 'completed' : 'observation-limit';
+    } finally {
+      this.bot.off('blockUpdate', updated);
+      packet(1);
+    }
   }
   #replacePublicContinuityBindings(action: Action, scope: ActionObservationScopeV1 | undefined,
     observation: Observation): readonly string[] {
@@ -338,9 +401,36 @@ export class MinecraftBody extends EventEmitter {
         properties: { ...block.getProperties() } }, target: block });
     }
   }
+  #attackable(entity: Bot['entity']): boolean {
+    const definition = this.bot.registry.entitiesByName[entity.name ?? ''] as { metadataKeys?: string[] } | undefined;
+    // This body currently supports attacks on living, non-player entities.
+    // Items/projectiles/orbs do not expose the living-entity health channel.
+    return entity.id !== this.bot.entity.id && entity.type !== 'player'
+      && definition?.metadataKeys?.includes('health') === true;
+  }
   #capture(): Observation {
     this.#sequence++;
     const entity = this.bot.entity, position = entity.position, eye = position.offset(0, 1.62, 0);
+    const renderable = Object.values(this.bot.entities).flatMap(other => {
+      if (other.id === entity.id || !Number.isFinite(other.width) || !Number.isFinite(other.height)
+        || other.width <= 0 || other.height <= 0 || other.position.distanceTo(eye) > 12) return [];
+      // Dropped items have a visible item model, not a living-entity texture.
+      // Wait for its actual stack metadata before rendering its icon color.
+      // Names remain inside this renderer; collection is still ordinary motion.
+      const slot = this.bot.registry.supportFeature('metadataIxOfItem') as unknown as number;
+      const dropped = Number.isInteger(slot) && other.metadata?.[slot] ? other.getDroppedItem?.() : null;
+      const color = visibleEntityColor(other.name ?? '', dropped?.name);
+      return color ? [{ entity: other, color, lower: tuple(other.position.offset(-other.width / 2, 0, -other.width / 2)),
+        upper: tuple(other.position.offset(other.width / 2, other.height, other.width / 2)) }] : [];
+    });
+    const entityRay = (ray: Vec3, range: number) => {
+      let nearest: { entity: Bot['entity']; color: readonly number[]; distance: number } | null = null;
+      for (const surface of renderable) {
+        const distance = rayBoxDistance(tuple(eye), tuple(ray), surface.lower, surface.upper, nearest?.distance ?? range);
+        if (distance !== null && (!nearest || distance < nearest.distance)) nearest = { ...surface, distance };
+      }
+      return nearest;
+    };
     const objects = new Map<string, { object: PublicObject; target: unknown }>();
     // Only first ray intersections enter public input; loaded occluded blocks never enter the mirror.
     for (let h = -4; h <= 4; h++) for (let v = -3; v <= 3; v++) {
@@ -360,15 +450,16 @@ export class MinecraftBody extends EventEmitter {
         delta.scaled(1 / distance), distance);
       if (occluder && occluder.position.distanceTo(eye) < distance - .6) continue;
       const id = `entity:${other.id}`;
-      objects.set(id, { object: { id, type: other.name ?? other.type, relativePosition: tuple(other.position.minus(position)), properties: {} }, target: other });
+      objects.set(id, { object: { id, type: other.name ?? other.type, relativePosition: tuple(other.position.minus(position)),
+        properties: { attackable: this.#attackable(other) } }, target: other });
     }
     this.#appendPublicContinuityObjects(objects, position, eye, entity.yaw, entity.pitch);
     // Mineflayer's helper rejects exact zero yaw/pitch through a truthiness check; use its same physical ray directly.
     const cursor = publicBlockRaycastV1(this.bot.world, eye,
       direction(entity.yaw, entity.pitch), 4.5);
-    const entityCursor = this.bot.entityAtCursor(3.5);
-    const blockDistance = cursor ? cursor.position.plus(new Vec3(.5, .5, .5)).distanceTo(eye) : Number.POSITIVE_INFINITY;
-    const entityDistance = entityCursor && entityCursor.type !== 'player' ? entityCursor.position.distanceTo(eye) : Number.POSITIVE_INFINITY;
+    const entityHit = entityRay(direction(entity.yaw, entity.pitch), 3.5), entityCursor = entityHit?.entity;
+    const blockDistance = cursor?.intersect?.distanceTo(eye) ?? Number.POSITIVE_INFINITY;
+    const entityDistance = entityCursor && entityCursor.type !== 'player' ? entityHit!.distance : Number.POSITIVE_INFINITY;
     const targetId = entityDistance < blockDistance ? `entity:${entityCursor!.id}`
       : cursor ? `block:${cursor.position.x},${cursor.position.y},${cursor.position.z}` : null;
     if (cursor) {
@@ -378,46 +469,73 @@ export class MinecraftBody extends EventEmitter {
     }
     if (entityCursor && entityCursor.type !== 'player' && targetId === `entity:${entityCursor.id}`) {
       objects.set(targetId, { object: { id: targetId, type: entityCursor.name ?? entityCursor.type,
-        relativePosition: tuple(entityCursor.position.minus(position)), properties: {} }, target: entityCursor });
+        relativePosition: tuple(entityCursor.position.minus(position)), properties: { attackable: this.#attackable(entityCursor) } }, target: entityCursor });
     }
     this.#objects = objects;
     const visible = [...objects.values()].map(value => value.object);
-    return Object.freeze({ sequence: this.#sequence, activeSeconds: this.session.activeSeconds(this.#sequence),
+    const observation: Observation = { sequence: this.#sequence, activeSeconds: this.session.activeSeconds(this.#sequence),
       self: { position: tuple(position), yaw: entity.yaw, pitch: entity.pitch,
         properties: { onGround: entity.onGround, health: this.bot.health, food: this.bot.food,
+          ...(this.#oxygen ? { oxygen: this.#oxygen.value } : {}),
           selectedSlot: this.bot.quickBarSlot, heldItem: this.bot.heldItem?.name ?? null,
           gameMode: this.bot.game.gameMode,
           velocityX: entity.velocity.x, velocityY: entity.velocity.y, velocityZ: entity.velocity.z } },
+      bodySensation: { version: 'OwnedBodySignals1', ...(this.#oxygen ? { oxygen: { ...this.#oxygen } } : {}) },
+      hotbarSensation: { version: 'VisibleHotbar1', slots: Array.from({ length: 9 }, (_, index) => {
+        const item = this.bot.inventory.slots[this.bot.inventory.hotbarStart + index];
+        return { count: item?.count ?? 0, color: item ? visibleItemColor(item.name) : null };
+      }) },
       objects: visible, targetId,
-      contextId: publicLayoutContextId(this.bot.game.dimension, visible) });
+      contextId: publicLayoutContextId(this.bot.game.dimension, visible) };
+    let retinalTargetId: string | null = null;
+    const opticalRay = frameOptics(this.bot.world);
+    const sensation = captureRetina(entity.yaw, entity.pitch, (yaw, pitch, range) => {
+      const ray = direction(yaw, pitch), other = entityRay(ray, range);
+      const hit = opticalRay(eye, ray, range, other ? { distance: other.distance, color: other.color,
+        targetId: `entity:${other.entity.id}` } : null);
+      if (Math.abs(yaw - entity.yaw) < 1e-12 && Math.abs(pitch - entity.pitch) < 1e-12)
+        retinalTargetId = hit?.targetId ?? null;
+      return hit;
+    });
+    return Object.freeze({ ...observation, retinalTargetId, sensation, perception: this.#perception.observe(observation, sensation) });
   }
   listActionOffers(observation: Observation = this.latest()): readonly ActionOfferV1[] {
+    return MinecraftBody.actionOffers(observation);
+  }
+  static actionOffers(observation: Observation): readonly ActionOfferV1[] {
     // Offers are the immutable action catalogue belonging to this captured
     // public frame. Minecraft may advance while physical reasoning runs; the
     // runtime rebinds the selected cue against the latest frame immediately
     // before execution. Requiring the captured frame to still be globally
     // latest here would break the observation+offers event boundary.
     const actions: Action[] = [
-      { kind: 'observe', parameters: { ticks: 5 } }, { kind: 'observe', parameters: { ticks: 20 } },
-      { kind: 'wait', parameters: { ticks: 5 } }, { kind: 'wait', parameters: { ticks: 20 } },
+      // The camera already streams continuously. This port issues no motor
+      // output for an exact measured interval, sharing its physical cue with
+      // spontaneous passive windows. Legacy observe/wait cues are not aliased.
+      { kind: 'passive', parameters: { ticks: 10 } },
       { kind: 'look', parameters: { yawDegrees: -15, pitchDegrees: 0 } },
       { kind: 'look', parameters: { yawDegrees: 15, pitchDegrees: 0 } },
       { kind: 'look', parameters: { yawDegrees: 0, pitchDegrees: -15 } },
       { kind: 'look', parameters: { yawDegrees: 0, pitchDegrees: 15 } },
       ...['forward', 'back', 'left', 'right'].map(direction => ({ kind: 'move' as const, parameters: { direction, ticks: 4 } })),
-      { kind: 'jump', parameters: { forward: false, ticks: 4 } },
-      { kind: 'jump', parameters: { forward: true, ticks: 4 } },
+      ...[4, 20].flatMap(holdTicks => [false, true].map(forward => ({ kind: 'jump' as const, parameters: { forward, holdTicks } }))),
+      { kind: 'use-item', parameters: { holdTicks: 40 } },
       ...Array.from({ length: 9 }, (_, slot) => ({ kind: 'select-hotbar' as const, parameters: { slot } })),
     ];
     const target = observation.targetId ? observation.objects.find(object => object.id === observation.targetId) : null;
-    if (target?.id.startsWith('entity:')) actions.push({ kind: 'attack', parameters: {}, targetId: target.id });
+    if (target?.id.startsWith('entity:') && target.properties.attackable === true)
+      actions.push({ kind: 'attack', parameters: {}, targetId: target.id });
     if (target?.id.startsWith('block:')) {
       actions.push({ kind: 'interact', parameters: {}, targetId: target.id },
         { kind: 'break', parameters: {}, targetId: target.id });
-      if (typeof observation.self.properties.heldItem === 'string') for (const face of ['up', 'north', 'south', 'east', 'west'])
-        actions.push({ kind: 'place', parameters: { face }, targetId: target.id });
+      // Right-click already places a held block at the actual ray hit. Do not
+      // offer an additional auto-aiming API for arbitrarily chosen faces.
     }
-    return actions.map(action => { validateAction(action); return { version: 'ActionOfferV1',
+    // The death screen exposes its restart button; ordinary world controls
+    // are unavailable there. Pressing it remains a controller-selected action.
+    const available: Action[] = Number(observation.self.properties.health) <= 0
+      ? [{ kind: 'respawn', parameters: {} }] : actions;
+    return available.map(action => { validateAction(action); return { version: 'ActionOfferV1',
       offerId: sha({ observationSequence: observation.sequence, action }), observationSequence: observation.sequence,
       action: structuredClone(action), cue: cueFor(action, observation) }; });
   }
@@ -429,16 +547,44 @@ export class MinecraftBody extends EventEmitter {
     // newest frame before touching Minecraft.
     return describeActionRequirement(actionCue, observation);
   }
-  async execute(action: Action, observationScope?: ActionObservationScopeV1): Promise<{ result: BodyResult; event: RealEvent | null }> {
+  takePassiveEvents(): readonly RealEvent[] {
+    assert(!this.#executing, 'cannot-drain-passive-observation-during-a-motor');
+    if (!this.#passive) {
+      // Opt in only after the evaluator has finished setup. Earlier loading,
+      // teleportation or apparatus construction is not autonomous experience.
+      this.#passive = new PassiveExperienceWindows(this.session.id, event => {
+        if (this.#pendingPassive.length >= 256) throw new Error('passive-experience-consumer-fell-behind');
+        this.#pendingPassive.push(event);
+      });
+      this.#passive.resume(this.latest()); return [];
+    }
+    this.#passive.flush(); return this.#pendingPassive.splice(0);
+  }
+  async execute(action: Action, observationScope?: ActionObservationScopeV1): Promise<{
+    result: BodyResult; event: RealEvent | null; precedingPassiveEvents?: readonly RealEvent[] }> {
+    this.check(); validateAction(action); assert(!this.#executing, 'body-already-executing');
+    this.#passive?.suspend();
+    const precedingPassiveEvents = this.#pendingPassive.splice(0);
+    try { return { ...await this.#executeMotor(action, observationScope),
+      ...(precedingPassiveEvents.length ? { precedingPassiveEvents } : {}) }; }
+    catch (error) {
+      // Preserve collected passive evidence even if the following motor fails.
+      this.#pendingPassive.unshift(...precedingPassiveEvents); throw error;
+    } finally { const last = this.frames.at(-1); if (last) this.#passive?.resume(last); }
+  }
+  async #executeMotor(action: Action, observationScope?: ActionObservationScopeV1): Promise<{ result: BodyResult; event: RealEvent | null }> {
     this.check(); validateAction(action); assert(!this.#executing, 'body-already-executing'); this.#executing = true;
-    const start = this.latest();
+    const start = this.latest(), physicalCallsBefore = this.#physicalCalls;
     const result = (executed: boolean, status: BodyResult['status']): BodyResult => ({ action, executed, status,
       startSequence: start.sequence, endSequence: this.latest().sequence });
     const integer = (key: string, min: number, max: number, fallback: number) => {
       const value = action.parameters[key] ?? fallback; assert(typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max, `invalid-${key}`); return value;
     };
     let digEnd: { sequence: number; crosshair: string | null; reason: 'completed' | 'observation-limit' } | null = null;
+    const heldMotor = action.kind === 'jump' && Object.hasOwn(action.parameters, 'holdTicks') || action.kind === 'use-item';
     try {
+      if ((Number(start.self.properties.health) <= 0) !== (action.kind === 'respawn'))
+        return { result: result(false, 'unavailable'), event: null };
       if (['interact', 'break', 'place', 'attack'].includes(action.kind)) {
         const bound = this.#objects.get(action.targetId ?? '');
         if (!bound || (action.kind !== 'attack' && start.targetId !== action.targetId)) return { result: result(false, 'no-target'), event: null };
@@ -450,6 +596,7 @@ export class MinecraftBody extends EventEmitter {
       const interactOutcomeIds = explicitlyReferencedIds.length > 0 ? explicitlyReferencedIds
         : action.targetId && continuityIds.includes(action.targetId) ? [action.targetId] : [];
       switch (action.kind) {
+        case 'passive': await this.waitTicks(integer('ticks', 1, 100, 10)); break;
         case 'observe': case 'wait': await this.waitTicks(integer('ticks', 1, 100, 5)); break;
         case 'look': {
           const yaw = Number(action.parameters.yawDegrees), pitch = Number(action.parameters.pitchDegrees);
@@ -464,7 +611,16 @@ export class MinecraftBody extends EventEmitter {
         }
         case 'jump': this.#physicalCalls++; this.bot.setControlState('jump', true);
           if (action.parameters.forward === true) this.bot.setControlState('forward', true);
-          await this.waitTicks(1); this.bot.setControlState('jump', false); await this.waitTicks(integer('ticks', 1, 20, 4)); break;
+          if (heldMotor) await this.waitTicks(integer('holdTicks', 1, 20, 4));
+          else { // Legacy pulse decoding is retained only for old action contracts.
+            await this.waitTicks(1); this.bot.setControlState('jump', false); await this.waitTicks(integer('ticks', 1, 20, 4));
+          }
+          break;
+        case 'respawn': this.#physicalCalls++; this.bot.respawn();
+          await this.#until(() => this.#sequence > start.sequence && this.bot.health > 0 && this.#clientLoadAfter === null, 120_000);
+          break;
+        case 'use-item': this.#physicalCalls++; this.bot.activateItem();
+          await this.waitTicks(integer('holdTicks', 1, 40, 40)); this.bot.deactivateItem(); break;
         case 'select-hotbar': this.#physicalCalls++; this.bot.setQuickBarSlot(integer('slot', 0, 8, 0)); await this.waitTicks(1); break;
         case 'interact': {
           this.#physicalCalls++;
@@ -483,7 +639,8 @@ export class MinecraftBody extends EventEmitter {
         }
         case 'attack': {
           const target = this.bot.entityAtCursor(3.5);
-          if (!target || target.type === 'player' || `entity:${target.id}` !== action.targetId) return { result: result(false, 'no-target'), event: null };
+          if (!target || !this.#attackable(target) || `entity:${target.id}` !== action.targetId)
+            return { result: result(false, 'no-target'), event: null };
           this.#physicalCalls++; this.bot.attack(target); await this.waitTicks(1); break;
         }
         case 'place': {
@@ -495,6 +652,21 @@ export class MinecraftBody extends EventEmitter {
         default: throw new Error(`unsupported-body-action:${action.kind}`);
       }
       this.bot.clearControlStates();
+      if (action.kind === 'passive' && this.#sequence < start.sequence + Number(action.parameters.ticks)) {
+        // Death stops the SDK's physical clock. Keep the actually observed
+        // shorter interval as passive evidence, never pretend the requested
+        // duration completed or train it as a full-duration response.
+        const frames = this.frames.filter(frame => frame.sequence >= start.sequence);
+        this.record('body-incomplete-window', { version: 'IncompletePhysicalWindow1',
+          id: this.session.eventId(++this.#eventNumber), complete: false, action, cue: cueFor(action, start),
+          physicalCalls: this.#physicalCalls - physicalCallsBefore, error: 'passive-interval-interrupted',
+          startSequence: start.sequence, endSequence: this.#sequence, frames });
+        this.#passive?.resume(start);
+        for (const frame of frames.slice(1)) this.#passive?.accept(frame);
+        this.#passive?.suspend();
+        const receipt = { ...result(false, 'unavailable'), terminationReason: 'body-interrupted' as const };
+        this.record('body-result', receipt); return { result: receipt, event: null };
+      }
       // Stable completion is observed, not assumed from a successful API return.
       let stable = 0, interactEffectObserved = false; const stabilizationStart = this.#sequence;
       const objectChanged = (before: Observation, after: Observation, id: string): boolean => {
@@ -506,7 +678,7 @@ export class MinecraftBody extends EventEmitter {
         return displacement > .001 || later.type !== earlier.type
           || sha(later.properties) !== sha(earlier.properties);
       };
-      while (stable < 3 && this.#sequence - stabilizationStart < 80) {
+      while (action.kind !== 'passive' && !heldMotor && this.bot.health > 0 && stable < 3 && this.#sequence - stabilizationStart < 80) {
         const before = this.latest(); await this.waitTicks(1); const after = this.latest();
         const moved = Math.hypot(...after.self.position.map((v, i) => v - before.self.position[i]!));
         const anyObjectChanged = after.objects.some(object => {
@@ -520,21 +692,22 @@ export class MinecraftBody extends EventEmitter {
           if (!interactEffectObserved)
             interactEffectObserved = interactOutcomeIds.some(id => objectChanged(start, after, id));
           const scopedStable = continuityIds.every(id => !objectChanged(before, after, id));
-          // One full stone-button pulse fits inside 24 physical ticks, while
-          // the same rule also covers other asynchronous public interaction
-          // results.  No referenced effect is a real no-effect event and runs
-          // normally to the explicit 80-tick observation ceiling.
-          stable = interactEffectObserved && this.#sequence - stabilizationStart >= 24
-            && moved < .001 && scopedStable ? stable + 1 : 0;
+          // Return once the observed effect settles. Waiting for a named
+          // mechanism's full pulse erases the opportunity to act on a brief
+          // change. Unobserved effects still use the bounded observation wait.
+          stable = interactEffectObserved && moved < .001 && scopedStable ? stable + 1 : 0;
         } else stable = moved < .001 && !anyObjectChanged ? stable + 1 : 0;
       }
       const observationWindowExhausted = this.#sequence - stabilizationStart >= 80;
-      await this.waitTicks(2);
-      const terminationReason: NonNullable<BodyResult['terminationReason']> = stable >= 3
+      if (action.kind !== 'passive') await this.waitTicks(2);
+      const terminationReason: NonNullable<BodyResult['terminationReason']> = action.kind === 'passive' ? 'interval-complete'
+        : this.bot.health <= 0 ? 'body-interrupted'
+        : heldMotor ? 'motor-released' : stable >= 3
         && digEnd?.reason !== 'observation-limit' ? 'stable'
         : action.kind === 'interact' && !interactEffectObserved && observationWindowExhausted
           ? 'no-effect-window-complete' : 'observation-limit';
-      const receipt = { ...result(true, 'completed'), terminationReason };
+      const receipt = { ...result(true, 'completed'), terminationReason,
+        ...(action.kind === 'passive' ? { endSequence: start.sequence + Number(action.parameters.ticks) } : {}) };
       const frames = this.frames.filter(frame => frame.sequence >= start.sequence && frame.sequence <= receipt.endSequence);
       this.#eventNumber++;
       const eventWithoutContinuity: RealEvent = { version: 'RealEventV5', id: this.session.eventId(this.#eventNumber), cue: cueFor(action, start),
@@ -545,11 +718,28 @@ export class MinecraftBody extends EventEmitter {
         bodyResult: receipt, provenance: 'executed-real-body', complete: true };
       const event: RealEvent = { ...eventWithoutContinuity,
         hierarchyContinuity: realEventHierarchyContinuityV1(eventWithoutContinuity, this.session.id) };
+      if (action.kind === 'passive' && this.#sequence > receipt.endSequence) {
+        // A batch of transport callbacks may outpace the awaiting promise.
+        // Extra real frames belong to the following passive interval.
+        this.#passive?.resume(frames.at(-1)!);
+        for (const frame of this.frames.filter(frame => frame.sequence > receipt.endSequence)) this.#passive?.accept(frame);
+        this.#passive?.suspend();
+      }
       if (digEnd) this.record('dig-attempt', { targetId: action.targetId, startSequence: start.sequence, startCrosshair: start.targetId,
         forceEndSequence: digEnd.sequence, forceEndCrosshair: digEnd.crosshair, forceEndReason: digEnd.reason,
         endSequence: receipt.endSequence, endCrosshair: this.latest().targetId, terminationReason: receipt.terminationReason });
       this.record('body-result', receipt); return { result: receipt, event };
-    } finally { this.bot.clearControlStates(); if (action.kind !== 'break' || this.bot.targetDigBlock) this.bot.stopDigging(); this.#executing = false; }
+    } catch (error) {
+      // Archive what was actually observed before an interrupted motor. It is
+      // not a completed RealEvent and cannot enter the dynamics learner.
+      this.record('body-incomplete-window', { version: 'IncompletePhysicalWindow1',
+        id: this.session.eventId(++this.#eventNumber), complete: false, action, cue: cueFor(action, start),
+        physicalCalls: this.#physicalCalls - physicalCallsBefore, error: String(error),
+        startSequence: start.sequence, endSequence: this.#sequence,
+        frames: this.frames.filter(frame => frame.sequence >= start.sequence) });
+      throw error;
+    } finally { this.bot.clearControlStates(); if (action.kind === 'use-item' && this.bot.usingHeldItem) this.bot.deactivateItem();
+      if (action.kind !== 'break' || this.bot.targetDigBlock) this.bot.stopDigging(); this.#executing = false; }
   }
   async close(): Promise<void> {
     if (this.#closed) return; // close is idempotent: stop(), the run finale and double-close tests all converge here

@@ -1,0 +1,43 @@
+{
+  "version": "KairosNextStageCheckpoint13",
+  "status": "in-progress; overall open-world and multistage target not met",
+  "sourceCommit": "ea097eb823eb28639c58639dd55f552fab08e98d",
+  "gate": {
+    "tests": 120,
+    "pass": 120,
+    "log": "recovered-evidence/v52c-integrated-tests.log"
+  },
+  "priorEvidence": {
+    "checkpoint11Sha256": "1672b7b47199e1fba631f9b72e139b04fff05ea71ad6e5c3a089c163baa425cc",
+    "checkpoint12Sha256": "e5ca0f3c1dde7d4a7051011beef0792290b9766734030206bfbb47f13dd1dde2"
+  },
+  "includedStoppedRuns": [
+    "native-natural-v47-optical-cold",
+    "native-passive-experience-v49",
+    "native-natural-v50-passive-continuation",
+    "native-unfamiliar-v50-start",
+    "native-unfamiliar-v50-warm-start",
+    "native-unfamiliar-v50-erased-start",
+    "native-unfamiliar-v50-carry-warm",
+    "native-unfamiliar-v50-carry-erased",
+    "native-natural-v51-bounded-fitting",
+    "native-passive-planning-port-v52"
+  ],
+  "executedBuilds": [
+    "v48",
+    "v50",
+    "v51",
+    "v52"
+  ],
+  "ongoingNotIncluded": "native-unfamiliar-v52-passive-transfer",
+  "findings": [
+    "V47 coordinate goal confirmed independently, followed by 14 deaths; supported paths repeat locomotion, not different causal prerequisite stages.",
+    "V50 learned spontaneous passive windows but fitting fell behind physics; diagnostic pause preserves failure.",
+    "Both V50 frozen carry-and-reach trials failed; no transfer benefit established.",
+    "V51 incremental fitting restored live throughput but new passive-composition control found inconsistent calibration sample mass; fixed in V52.",
+    "V52 scripted native exact passive port check passed; apparatus evidence is not fed into autonomous model.",
+    "V52 synthetic active-passive-active composition succeeds and loses complete solution after passive-memory erasure; not native multistage competence."
+  ],
+  "archivePolicy": "Original run top-level reports/journals, events, passive-events, server evidence, verified stopped-world archives and compiled copies. Runtime directories and duplicate journal segment caches are excluded. No Minecraft executable or decompiled source is distributed.",
+  "replayNotes": "The passive profile events link is portable and points to original V50 passive files. The 128-window V40 active suffix benchmark additionally requires its original native events from earlier checkpoint 11; no missing frames are synthesized."
+}

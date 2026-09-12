@@ -21,6 +21,9 @@ interface GoalPredicateBaseV1 {
   readonly id: string;
   readonly subject: GroundedSubjectV1;
   readonly observable: PublicObservableV2;
+  /** Optional calibration in this observable's units, never an action effect.
+   * Otherwise progress is normalized by the goal's initial measured gap. */
+  readonly residualScale?: number;
 }
 export type GoalPredicateV1 =
   | (GoalPredicateBaseV1 & { readonly comparator: 'equals' | 'not-equals'; readonly target: PublicValue })
@@ -60,6 +63,7 @@ export interface ActionOfferV1 {
   readonly observationSequence: number;
   readonly action: Action;
   readonly cue: ActionCue;
+  readonly attentionId?: string;
 }
 
 export type PublicActionRequirementKindV1 =

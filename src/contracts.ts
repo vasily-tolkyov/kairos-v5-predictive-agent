@@ -8,6 +8,24 @@ export interface PublicObject {
   readonly properties: Readonly<Record<string, PublicValue>>;
 }
 export interface Observation {
+  /** Provenance of body-side measurements, never a predictive input. An
+   * absent channel remains unknown across login/respawn boundaries. */
+  readonly bodySensation?: { readonly version: 'OwnedBodySignals1'; readonly oxygen?: {
+    readonly rawAir: number; readonly value: number } };
+  /** Body-side optical binding, removed before anonymous learner input. */
+  readonly retinalTargetId?: string | null;
+  /** An engineered reading of the currently visible hotbar, without item IDs,
+   * names, recipes, stack limits, or hidden inventory slots. */
+  readonly hotbarSensation?: { readonly version: 'VisibleHotbar1'; readonly slots: readonly {
+    readonly count: number; readonly color: XYZ | null }[] };
+  readonly sensation?: import('./perception.js').VisualSensation;
+  readonly perception?: import('./perception.js').PerceptionFrame;
+  /** Present only on imagined states: fields absent from this set are unknown. */
+  readonly predictionSupport?: readonly string[];
+  readonly predictionContext?: Readonly<Record<string, PublicValue>>;
+  /** Imagined numeric possibilities accumulated from measured response
+   * envelopes. These are not observations or confidence guarantees. */
+  readonly predictionBounds?: import('./numeric-ranges.js').NumericRanges;
   readonly sequence: number;
   readonly activeSeconds: number;
   readonly objects: readonly PublicObject[];
@@ -24,14 +42,14 @@ export interface VerifiedInternalChannelV1 {
   readonly provenance: 'verified-internal';
   readonly availableBeforeOutcome: true;
 }
-export type PrimitiveKind = 'observe' | 'wait' | 'look' | 'move' | 'jump' | 'interact' | 'attack' | 'break' | 'place' | 'select-hotbar';
+export type PrimitiveKind = 'passive' | 'observe' | 'wait' | 'look' | 'move' | 'jump' | 'interact' | 'attack' | 'break' | 'place' | 'select-hotbar' | 'respawn' | 'use-item';
 export interface Action {
   readonly kind: PrimitiveKind;
   readonly parameters: Readonly<Record<string, string | number | boolean>>;
   readonly targetId?: string;
 }
 export interface ActionCue {
-  readonly kind: PrimitiveKind | 'passive';
+  readonly kind: PrimitiveKind;
   readonly parameters: Readonly<Record<string, string | number | boolean>>;
   readonly targetRole: string | null;
 }
@@ -41,7 +59,7 @@ export interface BodyResult {
   readonly status: 'completed' | 'no-target' | 'out-of-reach' | 'unavailable';
   readonly startSequence: number;
   readonly endSequence: number;
-  readonly terminationReason?: 'stable' | 'no-effect-window-complete' | 'observation-limit';
+  readonly terminationReason?: 'stable' | 'no-effect-window-complete' | 'observation-limit' | 'motor-released' | 'body-interrupted' | 'interval-complete';
 }
 export interface RealEventContinuityEvidenceV1 {
   readonly dependencyId: string;
@@ -73,6 +91,8 @@ export interface RealEvent {
   readonly cue: ActionCue;
   readonly frames: readonly Observation[];
   readonly trackedIds: readonly string[];
+  /** Object selected for attention before the action, never from its outcome. */
+  readonly attentionId?: string | null;
   readonly bodyResult: BodyResult | null;
   readonly provenance: 'executed-real-body' | 'observed-passive';
   readonly complete: boolean;

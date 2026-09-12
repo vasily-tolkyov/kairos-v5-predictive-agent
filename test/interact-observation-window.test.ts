@@ -34,6 +34,7 @@ class AsyncInteractBot extends EventEmitter {
   entities = {};
   game = { dimension: 'overworld' };
   health = 20; food = 20; quickBarSlot = 0; heldItem = null;
+  inventory = { hotbarStart: 36, slots: Array(45).fill(null) };
   buttonPowered = false;
   doorOpen = false;
   doorFanVisible = true;
@@ -59,9 +60,9 @@ class AsyncInteractBot extends EventEmitter {
       return null;
     },
   };
-  _client = { write: (name: string) => {
+  _client = Object.assign(new EventEmitter(), { write: (name: string) => {
     assert.equal(name, 'block_place'); this.interactionCalls++; this.buttonPowered = true;
-  } };
+  } });
   entityAtCursor(): null { return null; }
   blockAt(position: Vec3): PublicBlockFixture {
     if (position.equals(this.button.position)) return this.button;
@@ -147,4 +148,18 @@ test('an interact with no scoped result completes its bounded no-effect window a
     object.id === h.doorId)?.properties.open === false));
   assert(!eventRows(event).changes.flat().some(change => change.subject.startsWith('iron_door#')
     && change.property === 'open'));
+});
+
+test('a briefly observable interaction effect is returned before it disappears', async t => {
+  const h = fixture(t);
+  let returned: Awaited<ReturnType<MinecraftBody['execute']>> | null = null;
+  const pending = h.body.execute(h.action, h.scope).then(result => { returned = result; return result; });
+  void pending.catch(() => {});
+  await h.tick(2); h.bot.doorOpen = true; await h.tick(6);
+  assert(returned, 'body must release control while the observed effect is still available');
+  const { event } = await pending;
+  assert(event); assert(event.frames.length < 20);
+  assert.equal(event.frames.at(-1)!.objects.find(object => object.id === h.doorId)?.properties.open, true);
+  h.bot.doorOpen = false; await h.tick(20);
+  assert.equal(event.frames.at(-1)!.objects.find(object => object.id === h.doorId)?.properties.open, true);
 });

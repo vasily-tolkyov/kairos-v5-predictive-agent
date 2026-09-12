@@ -1,0 +1,108 @@
+{
+  "version": "KairosExperienceCapabilityValidationV1",
+  "date": "2026-09-10",
+  "baseCommit": "87e28e90f78bc0920813ec6e0ea4358d7f3d95e9",
+  "architecture": "KairosExperienceMediumV1",
+  "node": "24.19.0",
+  "typescript": "5.9.3",
+  "build": "npm run test:experience",
+  "capabilities": {
+    "passed": true,
+    "seeds": [
+      41,
+      73,
+      109
+    ],
+    "phases": [
+      "A",
+      "B",
+      "A"
+    ],
+    "actionsPerPhase": 4096,
+    "trainingActions": 36864,
+    "verifiedGoals": 252,
+    "bodyPredictionsCorrect": 486,
+    "stateChecksCorrect": 2880,
+    "stateChecksAccepted": 2832,
+    "withheldCombinationChecksCorrect": 360,
+    "unreachableWithoutFalseSuccess": 9,
+    "readOnly": true,
+    "controls": [
+      {
+        "frozenAtChange": "unknown",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "unknown",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "unknown",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      },
+      {
+        "frozenAtChange": "action-budget",
+        "withoutConductances": "unknown",
+        "actionRequired": true
+      }
+    ],
+    "elapsedMs": 160983
+  },
+  "sourceSha256": {
+    "package.json": "0d9cc728f4df9a81cacb1e7ec4bfdc4f69471d36bdedaf7d93cc827fb6dfd1bd",
+    "package-lock.json": "1bf8ba74bf4790369d59b7a5ac07b50da4b5818468abb95b0e30ea26bd5fa3f6",
+    "tsconfig.json": "3dbc898f349438a7d09867ebc9b1f08dda56449075e5059664a342e2d7c12a34",
+    "src/prototype.ts": "8731c0ea4ba63d52c28e8241e1a8f65bba13e7df97c911c00181c53ad05e9ec4",
+    "src/experience-medium.ts": "96180ab4e84fb4e8b03be04984eb4a50f5488926ef0154645464e9c4ac0f4158",
+    "src/experience-agent.ts": "6feb71e8d567b2d1d17beb6d300e9d5713b8d8d1b1a6ae1eda093eccf7be844c",
+    "src/control/goal.ts": "2cd0ffa5230abae6a1cd9314c819fde6d96a06d175dddb51cb5de7b29e793dbb",
+    "src/contracts.ts": "6ebdc4e92f32ea3255b02cd716030b5151c7bf3868fe7d7c38012a04bddbc568",
+    "src/events.ts": "77a5587be01a6f47f77c1c8a35a1f8ba3ae15193b97ae5bf9198ee0b9904f29e",
+    "src/util.ts": "9d4611835cb534699d2eeecd47217a709795c65050ec186faffb55b5baa33da5",
+    "src/adapters/minecraft/experience.ts": "368c8aff494a5800e8d97dec58fe35df47ff74afe90fe116b4b96b806ec7682a",
+    "scripts/evaluate-experience.mjs": "7c9062d9e75221a1413638cfa2017df8c65bf61ef0a2b5ae5c80de5b9998fbf9",
+    "scripts/run-experience-body.mjs": "ac8ed6c7732e5c026faec0fb49d43c0446cd442aebebc713b4b961bf7a2958da",
+    "test/experience-prototype.test.ts": "fc2e07e0aba07d4ef48e0f007f81a8a4a1cacc8caa5e53861730175e26cd8971",
+    "test/minecraft-experience.test.ts": "1f8fa4ba8e0b086557b839d85f6591e9118218f78235d688e9cf4ab62d7cfaaf",
+    "test/prototype-boundary.test.ts": "1290cb3af89b1225963e5098007a2267801decc6279e2ef0ae49590784421cc9"
+  },
+  "unitTests": {
+    "passed": 13,
+    "failed": 0
+  },
+  "limits": [
+    "synthetic body/environment; no new live Minecraft run",
+    "fixed sensory population and finite observed value sets",
+    "old lattice G5 remains failing; this is a separately versioned replacement",
+    "legacy regression groups are unchanged and not claimed fully passing"
+  ],
+  "githubPushed": false
+}

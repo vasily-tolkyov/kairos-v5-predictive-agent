@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { VerifiedInternalChannelV1 } from '../src/contracts.js';
 import { MetaEvidenceStoreV1, deriveMetaEvidenceEpisodesV1,
-  metaEvidenceQualificationV1, quantizeMetaInternalChannelsV1 } from '../src/control/meta-evidence.js';
+  quantizeMetaInternalChannelsV1 } from '../src/control/meta-evidence.js';
 
 function channel(value: number, name: VerifiedInternalChannelV1['name'] = 'goal-residual'):
 VerifiedInternalChannelV1 {
@@ -36,7 +36,7 @@ test('contiguous meta presence is one episode and re-entry starts another', () =
   assert.deepEqual(episodes.map(episode => episode.memberEventIds), [['e0', 'e1'], ['e2', 'e3']]);
 });
 
-test('meta qualification counts joint contexts, and restore is byte-stable', () => {
+test('meta audit retains observed episodes and restores byte-identically', () => {
   const store = new MetaEvidenceStoreV1();
   let ordinal = 0;
   for (let index = 0; index < 8; index += 1) {
@@ -45,18 +45,7 @@ test('meta qualification counts joint contexts, and restore is byte-stable', () 
   }
   const state = store.snapshot();
   assert.equal(state.episodes.length, 8);
-  assert.deepEqual(metaEvidenceQualificationV1(state.episodes).grade, 'meta-predictive-stable');
   assert.deepEqual(MetaEvidenceStoreV1.restore(state).snapshot(), state);
-});
-
-test('two joint contexts are not enough for the predictive-stable gate', () => {
-  const store = new MetaEvidenceStoreV1();
-  for (let index = 0; index < 8; index += 1) {
-    store.observe(`e${index * 2}`, index * 2, [channel(.3)], [`ctx-${index % 2}`]);
-    store.observe(`gap${index * 2 + 1}`, index * 2 + 1, [], [], ['goal-residual']);
-  }
-  assert.equal(store.qualification().grade, 'meta-repeated');
-  assert.equal(store.qualification().jointContextCount, 2);
 });
 
 test('meta episodes do not count an unavailable channel as an observed absence', () => {

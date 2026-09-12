@@ -34,7 +34,7 @@ export interface SelfOrganizingAfferentStateV1 {
   readonly bindings: readonly AfferentBindingStateV1[];
   /**
    * Event-local public channels which a prior trusted event actually changed.
-   * They may close a later direct-target no-effect window with its observed
+   * They may close a later same-cue no-effect window with its observed
    * terminal value.  This is not a semantic outcome list and never allocates a
    * coordinate by itself.
    */

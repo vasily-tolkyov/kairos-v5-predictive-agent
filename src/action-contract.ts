@@ -4,9 +4,9 @@ import { assert } from './util.js';
 /** Exact structural validation shared by the body and the physical controller. */
 export function validateAction(action: Action): void {
   const fields: Record<string, readonly string[]> = {
-    observe: ['ticks'], wait: ['ticks'], look: ['yawDegrees', 'pitchDegrees'],
-    move: ['direction', 'ticks'], jump: ['forward', 'ticks'], interact: [], attack: [], break: [],
-    place: ['face'], 'select-hotbar': ['slot'],
+    passive: ['ticks'], observe: ['ticks'], wait: ['ticks'], look: ['yawDegrees', 'pitchDegrees'],
+    move: ['direction', 'ticks'], jump: ['forward', Object.hasOwn(action?.parameters ?? {}, 'holdTicks') ? 'holdTicks' : 'ticks'],
+    interact: [], attack: [], break: [], place: ['face'], 'select-hotbar': ['slot'], respawn: [], 'use-item': ['holdTicks'],
   };
   assert(action && fields[action.kind] && action.parameters && typeof action.parameters === 'object',
     'invalid-action-kind-or-parameters');
@@ -20,8 +20,10 @@ export function validateAction(action: Action): void {
   assert(Object.keys(action).every(key => ['kind', 'parameters', ...(targeted ? ['targetId'] : [])].includes(key)),
     'unknown-action-field');
   if ('ticks' in parameters) assert(typeof parameters.ticks === 'number' && Number.isInteger(parameters.ticks)
-    && parameters.ticks >= 1 && parameters.ticks <= (['wait', 'observe'].includes(action.kind) ? 100 : 20),
+    && parameters.ticks >= 1 && parameters.ticks <= (['passive', 'wait', 'observe'].includes(action.kind) ? 100 : 20),
   'invalid-action-ticks');
+  if ('holdTicks' in parameters) assert(typeof parameters.holdTicks === 'number' && Number.isInteger(parameters.holdTicks)
+    && parameters.holdTicks >= 1 && parameters.holdTicks <= (action.kind === 'use-item' ? 40 : 20), 'invalid-action-hold-ticks');
   if (action.kind === 'look') for (const key of required) assert(typeof parameters[key] === 'number'
     && Number.isFinite(parameters[key]) && Math.abs(parameters[key] as number) <= 90, 'invalid-look-angles');
   if (action.kind === 'move') assert(['forward', 'back', 'left', 'right'].includes(String(parameters.direction)),
