@@ -121,9 +121,16 @@ export function visibleItemColor(name: string): readonly [number, number, number
 let entityModels: Record<string, { textures?: { default?: string } }> | null = null;
 export function visibleEntityColor(name: string, droppedItemName?: string): XYZ | null {
   if (['item', 'Item', 'item_stack'].includes(name)) return droppedItemName ? visibleItemColor(droppedItemName) : null;
+  if (!/^[a-z0-9_]+$/.test(name)) return null;
   entityModels ??= JSON.parse(readFileSync(resolve(viewerRoot, 'viewer/lib/entity/entities.json'), 'utf8'));
   const texture = entityModels![name]?.textures?.default;
-  return texture ? imageColor(resolve(viewerRoot, 'public', texture.replace('textures/', 'textures/1.21.4/') + '.png')) : null;
+  const described = texture ? imageColor(resolve(viewerRoot, 'public', texture.replace('textures/', 'textures/1.21.4/') + '.png')) : null;
+  if (described) return described;
+  // Some catalogue entries describe profession/variant overlays but omit the
+  // installed base image. Resolve only the entity's own conventional base
+  // paths; do not choose an arbitrary variant or invent an identity color.
+  const base = resolve(viewerRoot, 'public/textures/1.21.4/entity');
+  return imageColor(resolve(base, name, name + '.png')) ?? imageColor(resolve(base, name + '.png'));
 }
 
 /** Geometric silhouette approximation for the current low-resolution sensor.

@@ -22,12 +22,14 @@ const { values } = parseArgs({ options: { java: { type: 'string' }, server: { ty
   'wall-depth': { type: 'string', default: '2' }, 'half-width': { type: 'string', default: '5' },
   'start-x': { type: 'string', default: '.5' },
   environment: { type: 'string', default: 'enclosure' }, 'world-seed': { type: 'string' },
+  difficulty: { type: 'string' },
   'goal-distance': { type: 'string', default: '12' },
   'task-only': { type: 'boolean' }, 'frozen': { type: 'boolean' }, material: { type: 'string', default: 'oak_planks' } } });
 if (!values.java || !values.server || !values.output) throw new Error('required: --java --server --output NEW_DIRECTORY');
 if (values.continue && values.restore) throw new Error('continue-and-transfer-restore-are-distinct');
 if (values['migrated-session'] && !values.continue) throw new Error('a-migrated-session-requires-its-stopped-predecessor');
 if (!['enclosure', 'natural'].includes(values.environment)) throw new Error('invalid-environment');
+if (values.difficulty && !['peaceful', 'easy', 'normal', 'hard'].includes(values.difficulty)) throw new Error('invalid-difficulty');
 const number = key => {
   const value = Number(values[key]); if (!Number.isSafeInteger(value) || value < 0) throw new Error('invalid-' + key); return value;
 };
@@ -48,9 +50,14 @@ if (previousReport && (!previousReport.final
   || !['operator-paused', 'duration-paused', 'budget-paused', 'fault-paused', 'goal-verified', 'already-satisfied-goal-confirmed'].includes(previousReport.status)))
   throw new Error('only-a-checkpointed-stopped-native-world-can-continue');
 const runtime = previousReport?.runtimeRoot ?? resolve(predecessor ?? root, 'runtime');
-const worldSeed = predecessor ? (await readFile(resolve(runtime, 'minecraft/server.properties'), 'utf8'))
+const predecessorProperties = predecessor ? await readFile(resolve(runtime, 'minecraft/server.properties'), 'utf8') : null;
+const worldSeed = predecessor ? predecessorProperties
   .split(/\r?\n/).find(line => line.startsWith('level-seed='))?.slice(11)
   : values['world-seed'] ?? String(Date.now());
+const previousDifficulty = predecessorProperties?.split(/\r?\n/).find(line => line.startsWith('difficulty='))?.slice(11);
+const difficulty = values.difficulty ?? ({ 0: 'peaceful', 1: 'easy', 2: 'normal', 3: 'hard' }[previousDifficulty]
+  ?? previousDifficulty ?? (worldKind === 'natural' ? 'normal' : 'peaceful'));
+if (!['peaceful', 'easy', 'normal', 'hard'].includes(difficulty)) throw new Error('invalid-inherited-difficulty');
 const services = new Services(config, runtime, resolve(root, 'server-evidence'));
 let session = new ExperienceSession(new ExperienceMedium(number('seed')));
 const restorePath = values['migrated-session'] ? resolve(values['migrated-session'])
@@ -87,14 +94,17 @@ const report = { version: 'ContinuingMinecraftEvaluation1', started: new Date().
   commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), seed: number('seed'),
   protocol: { steps: number('steps'), seconds: number('seconds'), goalAfter: number('goal-after'), frozen: !!values.frozen,
     frozenScope: 'transferable dynamics and affordances; current task feedback remains active',
-    environment: worldKind, worldSeed, goalDistance: number('goal-distance'),
+    environment: worldKind, worldSeed, difficulty,
+    difficultySource: values.difficulty ? 'explicit-command-line' : predecessor ? 'preserved-server-properties' : 'fixture-default',
+    goalDistance: number('goal-distance'),
     geometry: previousReport?.protocol?.geometry ?? { wallDepth: depth, halfWidth, startX, material: values.material },
     taskOnly: !!values['task-only'], resetAfterStart: false, externalActionSelection: false,
     ...(requestedGoals ? { requestedGoals, goalSourceSha256: createHash('sha256').update(goalBytes).digest('hex') } : {}),
-    boundary: worldKind === 'natural' ? 'native normal terrain and normal difficulty; no setup, teleport or runtime rule callbacks'
+    boundary: worldKind === 'natural' ? `native normal terrain and ${difficulty} difficulty; no setup, teleport or runtime rule callbacks`
       : 'one static native survival enclosure; real block removal opens a low-ceiling exit; no runtime rule callbacks',
     limitations: [...(worldKind === 'natural' ? ['finite natural-world sample; goal prerequisites depend on actual terrain']
-      : ['bounded enclosure, not natural open terrain', 'peaceful difficulty']),
+      : ['bounded enclosure, not natural open terrain']),
+      ...(difficulty === 'peaceful' ? ['peaceful engine rules; no evidence of hostile survival or hunger management'] : []),
       'engineered block/entity silhouette RGBD and visible hotbar sensing; some visual assets are unsupported; not full client vision',
       'restart requires an explicit observed action; recovery does not establish survival',
       'finite duration cannot establish lifelong learning'] },
@@ -136,7 +146,15 @@ const checkpoint = async () => {
 };
 const start = Date.now();
 try {
-  await services.start(predecessor ? 'preserve' : worldKind === 'natural' ? 'natural' : 'empty', { worldSeed });
+  await services.start(predecessor ? 'preserve' : worldKind === 'natural' ? 'natural' : 'empty',
+    { worldSeed, difficulty: values.difficulty });
+  // Read-only engine audit. The difficulty response never enters learner input.
+  services.command('difficulty');
+  await services.server.ready(/The difficulty is (Peaceful|Easy|Normal|Hard)/i);
+  const serverLog = await readFile(resolve(root, 'server-evidence/minecraft-server.log'), 'utf8');
+  const difficultyReply = [...serverLog.matchAll(/The difficulty is (Peaceful|Easy|Normal|Hard)/gi)].at(-1)?.[1].toLowerCase();
+  if (difficultyReply !== difficulty) throw new Error('engine-difficulty-does-not-match-protocol:' + difficultyReply);
+  report.protocol.difficultyVerifiedByServer = difficultyReply;
   // Static fixture setup is owned by the evaluator and finishes before the
   // learner connects. Neither these names nor this geometry enters a policy.
   const commands = predecessor || worldKind === 'natural' ? [] : [`fill ${-halfWidth} 63 ${-depth - 5} ${halfWidth} 66 5 minecraft:bedrock hollow`,

@@ -1,6 +1,7 @@
 import { readFile, writeFile, rename } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 
@@ -18,9 +19,9 @@ if (hash(bytes) !== fork.sessionSha256) throw new Error('copied-session-no-longe
 const original = JSON.parse(gunzipSync(bytes));
 if (original.tasks.length || original.recent.length || original.world.places.length || original.world.surfaces.length)
   throw new Error('the-fresh-world-already-has-local-execution-state');
-const { ExperienceSession } = await import(resolve(build, 'src/experience-session.js'));
-const { ExperienceMedium } = await import(resolve(build, 'src/experience-medium.js'));
-const { LearnedAffordances } = await import(resolve(build, 'src/learned-affordances.js'));
+const { ExperienceSession } = await import(pathToFileURL(resolve(build, 'src/experience-session.js')).href);
+const { ExperienceMedium } = await import(pathToFileURL(resolve(build, 'src/experience-medium.js')).href);
+const { LearnedAffordances } = await import(pathToFileURL(resolve(build, 'src/learned-affordances.js')).href);
 const changed = { ...original, medium: new ExperienceMedium(original.medium.seed).snapshot(),
   affordances: new LearnedAffordances().snapshot() };
 const session = ExperienceSession.restore(changed, { sameWorld: true });

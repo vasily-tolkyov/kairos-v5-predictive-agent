@@ -9,7 +9,7 @@ import tarfile
 if len(sys.argv) != 3:
     raise SystemExit('required: STOPPED_NATIVE_OUTPUT NEW_ARCHIVE_TAR_GZ')
 source, output = map(lambda value: Path(value).resolve(), sys.argv[1:])
-report = json.loads((source / 'results.json').read_text())
+report = json.loads((source / 'results.json').read_text(encoding='utf-8'))
 if not report.get('stoppedAt') or not report.get('final') or report['status'] == 'running':
     raise SystemExit('native server has not recorded a completed shutdown')
 root = Path(report['runtimeRoot']) / 'minecraft'
@@ -33,9 +33,9 @@ with tarfile.open(output, 'x:gz') as archive:
         archive.add(root / 'logs', arcname='logs')
 with tarfile.open(output) as archive:
     names = set(archive.getnames())
-    assert str(relative / 'level.dat') in names
-    assert all(str(relative / 'region' / path.name) in names for path in regions)
-    assert archive.extractfile(str(relative / 'level.dat')).read() == level.read_bytes()
+    assert (relative / 'level.dat').as_posix() in names
+    assert all((relative / 'region' / path.name).as_posix() in names for path in regions)
+    assert archive.extractfile((relative / 'level.dat').as_posix()).read() == level.read_bytes()
 result = {'source': str(source), 'stoppedAt': report['stoppedAt'], 'levelName': level_name,
           'regions': len(regions), 'output': str(output), 'bytes': output.stat().st_size,
           'sha256': hashlib.sha256(output.read_bytes()).hexdigest()}

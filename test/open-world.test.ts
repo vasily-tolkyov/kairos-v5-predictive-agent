@@ -389,6 +389,159 @@ test('irrelevant sliding cannot give an unsupported goal hypothesis an unlimited
   assert.equal(sha([memory.snapshot(), session.agent.affordances.snapshot()]), digest);
 });
 
+test('a persistent mild maintenance deficit gives a pending external goal a bounded service opportunity', async () => {
+  const goal = (id: string, property: string, target: number): GroundedGoalV1 => ({ version: 'GroundedGoalV1', id,
+    expression: { kind: 'predicate', predicate: { version: 'GoalPredicateV1', id, subject: { kind: 'self' },
+      observable: `properties.${property}`, comparator: 'greater-than', target } } });
+  const session = new ExperienceSession(); session.submit(goal('external', 'signal', .5));
+  let observation = frame({ bodySignal: .9, signal: 0 }, 1000);
+  const environment = { maintenanceGoals: [goal('body', 'bodySignal', .95)],
+    observe: async () => observation = { ...observation, sequence: observation.sequence + 1 },
+    listActionOffers: () => [], executeOffer: async () => { throw new Error('no-physical-offer'); },
+    waitForObservationAfter: async () => observation };
+  const decisions = [];
+  for (let i = 0; i < 8; i++) {
+    decisions.push(await session.step(environment, { learn: false, exploration: false }));
+    assert.equal(observation.self.properties.bodySignal, .9, 'the mild deficit persists on every actual observation');
+  }
+  assert.equal(decisions[0]!.source, 'maintenance');
+  assert(decisions.slice(0, 2).some(decision => decision.source === 'task'),
+    'a persistent mild deficit must not exclude an external goal from every service opportunity');
+  for (let i = 0; i < decisions.length; i += 2)
+    assert.deepEqual(new Set(decisions.slice(i, i + 2).map(decision => decision.source)), new Set(['maintenance', 'task']));
+  assert(decisions.every(decision => decision.status === 'no-offers'));
+  assert.equal(session.stats.pendingGoals, 1); assert.equal(session.stats.verifiedGoals.length, 0);
+});
+
+test('persistent maintenance shares real learned actions and later task confirmation with frozen experience', async () => {
+  for (const remedy of [0, 1]) {
+    const memory = new ExperienceMedium(41), affordances = new LearnedAffordances();
+    const ports: Action[] = [1, 2].map(ticks => ({ kind: 'wait', parameters: { ticks } }));
+    const offers = (observation: Observation): ActionOfferV1[] => ports.map((action, i) => ({ version: 'ActionOfferV1',
+      offerId: String(i), observationSequence: observation.sequence, action, cue: cueFor(action, observation) }));
+    let sequence = 1;
+    // The fixture supplies only isolated measured effects. The scheduler gets
+    // no port identity, remedy mapping, or external-task solution.
+    for (let repeat = 0; repeat < 48; repeat++) for (const completed of [false, true]) for (let port = 0; port < 2; port++) {
+      const before = frame({ bodySignal: .9, completed }, sequence++);
+      const after = frame({ bodySignal: port === remedy ? .92 : .9, completed: completed || port !== remedy }, sequence++);
+      memory.observe(real(ports[port]!, before, after)); affordances.observe(before, offers(before));
+    }
+    const goal = (id: string, property: string, target: number): GroundedGoalV1 => ({ version: 'GroundedGoalV1', id,
+      expression: { kind: 'predicate', predicate: { version: 'GoalPredicateV1', id, subject: { kind: 'self' },
+        observable: `properties.${property}`, comparator: 'greater-than', target } } });
+    let observation = frame({ bodySignal: .9, completed: false }, sequence + 100);
+    const actual: Observation[] = [], observe = (next: Observation) => { actual.push(next); return observation = next; };
+    const environment = { maintenanceGoals: [goal('body', 'bodySignal', .95)],
+      observe: async () => observe(frame({ ...observation.self.properties, bodySignal: .9 }, observation.sequence + 1)),
+      listActionOffers: offers,
+      executeOffer: async (offer: ActionOfferV1) => {
+        assert.equal(offer.observationSequence, observation.sequence);
+        const before = observation, port = ports.findIndex(value => value.parameters.ticks === offer.action.parameters.ticks);
+        assert(port >= 0, 'only a currently offered physical port can execute');
+        observe(frame({ bodySignal: port === remedy ? .92 : .9,
+          completed: before.self.properties.completed === true || port !== remedy }, before.sequence + 1));
+        return { executed: true, observation, event: real(offer.action, before, observation) };
+      },
+      waitForObservationAfter: async () => observe({ ...observation, sequence: observation.sequence + 1 }) };
+    const external: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'external', expression: { kind: 'predicate',
+      predicate: { version: 'GoalPredicateV1', id: 'external', subject: { kind: 'self' },
+        observable: 'properties.completed', comparator: 'equals', target: true } } };
+    let session = new ExperienceSession(memory, affordances); session.submit(external);
+    const digest = sha([memory.snapshot(), affordances.snapshot()]), decisions = [];
+    for (let i = 0; i < 14; i++) {
+      decisions.push(await session.step(environment, { learn: false, exploration: false, depth: 1 }));
+      if (i < 13) assert.deepEqual(session.stats.verifiedGoals, [], 'an action or imagined outcome cannot verify the task');
+      if (i === 0) session = ExperienceSession.restore(JSON.parse(JSON.stringify(session.snapshot())), { sameWorld: true });
+    }
+    for (let i = 0; i < decisions.length; i += 2) {
+      assert.equal(decisions[i]!.source, 'maintenance'); assert.equal(decisions[i]!.status, 'executed');
+      assert.equal(decisions[i]!.offer!.action.parameters.ticks, ports[remedy]!.parameters.ticks);
+      assert.equal(decisions[i + 1]!.source, 'task');
+    }
+    assert.equal(decisions[1]!.status, 'executed');
+    assert.equal(decisions[1]!.offer!.action.parameters.ticks, ports[1 - remedy]!.parameters.ticks);
+    assert.equal(decisions.at(-1)!.status, 'goal-verified'); assert.deepEqual(session.stats.verifiedGoals, ['external']);
+    const task = session.tasks[0]!;
+    assert.equal(task.actions, 1); assert.equal(task.confirmations, 6);
+    assert(task.firstSatisfied! > decisions[1]!.observationSequence, 'confirmation starts on a distinct later actual observation');
+    assert(actual.every(value => Number(value.self.properties.bodySignal) < .95), 'maintenance remained deficient throughout');
+    assert.equal(new Set(actual.map(value => value.sequence)).size, actual.length);
+    assert.equal(sha([session.agent.medium.snapshot(), session.agent.affordances.snapshot()]), digest,
+      'service, restart and verification cannot train frozen experience');
+  }
+});
+
+test('intention arbitration resumes its service turn in the same world and clears ownership on transfer', async () => {
+  const bodyGoal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'body', expression: { kind: 'predicate',
+    predicate: { version: 'GoalPredicateV1', id: 'body', subject: { kind: 'self' },
+      observable: 'properties.bodySignal', comparator: 'greater-than', target: .95 } } };
+  const coordinateGoal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'old-world-coordinate', expression: { kind: 'predicate',
+    predicate: { version: 'GoalPredicateV1', id: 'coordinate', subject: { kind: 'self' },
+      observable: 'position.0', comparator: 'greater-than', target: 50 } } };
+  let observation = frame({ bodySignal: .9 }, 1000);
+  const environment = { maintenanceGoals: [bodyGoal], observe: async () => observation, listActionOffers: () => [],
+    executeOffer: async () => { throw new Error('no-physical-offer'); }, waitForObservationAfter: async () => observation };
+  const session = new ExperienceSession(); session.submit(coordinateGoal);
+  assert.equal((await session.step(environment, { learn: false, exploration: false })).source, 'maintenance');
+  const checkpoint = JSON.parse(JSON.stringify(session.snapshot()));
+  assert.deepEqual(checkpoint.arbitration, { nextService: 'task' });
+  const digest = sha([checkpoint.medium, checkpoint.affordances]);
+  const restored = ExperienceSession.restore(checkpoint, { sameWorld: true });
+  assert.deepEqual(restored.snapshot().arbitration, checkpoint.arbitration); assert.deepEqual(restored.tasks, session.tasks);
+  for (let i = 0; i < 8; i++) {
+    observation = { ...observation, sequence: observation.sequence + 1 };
+    const expected = await session.step(environment, { learn: false, exploration: false });
+    const actual = await restored.step(environment, { learn: false, exploration: false });
+    assert.deepEqual(actual, expected); assert.equal(actual.source, i % 2 ? 'maintenance' : 'task');
+  }
+  assert.deepEqual(restored.snapshot(), session.snapshot());
+  assert.equal(sha([restored.agent.medium.snapshot(), restored.agent.affordances.snapshot()]), digest);
+  const transferred = ExperienceSession.restore(checkpoint), transfer = transferred.snapshot();
+  assert.deepEqual(transfer.tasks, []); assert.equal(transfer.maintenance, null); assert.equal(transfer.investigation, null);
+  assert.deepEqual(transfer.deferred, []); assert.deepEqual(transfer.recent, []); assert.equal(transferred.world.stats.retainedPlaces, 0);
+  assert.deepEqual(transfer.arbitration, { nextService: 'maintenance' });
+  assert.equal(sha([transfer.medium, transfer.affordances]), digest);
+  transferred.submit({ ...coordinateGoal, id: 'new-world-goal' });
+  assert.equal((await transferred.step(environment, { learn: false, exploration: false })).source, 'maintenance',
+    'a new world cannot inherit the prior task service turn');
+  const legacy = structuredClone(checkpoint); delete legacy.arbitration;
+  const old = ExperienceSession.restore(legacy, { sameWorld: true });
+  assert.deepEqual(old.snapshot().arbitration, { nextService: 'maintenance' });
+  assert.equal((await old.step(environment, { learn: false, exploration: false })).source, 'maintenance');
+  assert.equal((await old.step(environment, { learn: false, exploration: false })).source, 'task');
+  for (const arbitration of [null, {}, { nextService: 'unknown' }])
+    assert.throws(() => ExperienceSession.restore({ ...checkpoint, arbitration }, { sameWorld: true }), /invalid-continuing-session/);
+});
+
+test('persistent maintenance preserves submitted external-goal order and distinct actual confirmations', async () => {
+  const goal = (id: string, property: string, target: number): GroundedGoalV1 => ({ version: 'GroundedGoalV1', id,
+    expression: { kind: 'predicate', predicate: { version: 'GoalPredicateV1', id, subject: { kind: 'self' },
+      observable: `properties.${property}`, comparator: 'greater-than', target } } });
+  const session = new ExperienceSession(); session.submit(goal('first', 'firstSignal', .5)); session.submit(goal('second', 'secondSignal', .5));
+  let observation = frame({ bodySignal: .9, firstSignal: 0, secondSignal: 1 }, 1000);
+  const environment = { maintenanceGoals: [goal('body', 'bodySignal', .95)], observe: async () => observation,
+    listActionOffers: () => [], executeOffer: async () => { throw new Error('no-physical-offer'); },
+    waitForObservationAfter: async () => observation };
+  const step = () => session.step(environment, { learn: false, exploration: false, verificationTicks: 1 });
+  for (let i = 0; i < 8; i++) {
+    const decision = await step(); assert.equal(decision.goalId, i % 2 ? 'first' : 'body');
+  }
+  assert.deepEqual(session.stats.verifiedGoals, [], 'a later satisfied task does not overtake a pending predecessor');
+  observation = frame({ ...observation.self.properties, firstSignal: 1 }, observation.sequence + 1);
+  for (let i = 0; i < 8; i++) await step();
+  assert.deepEqual(session.stats.verifiedGoals, [], 'repeated scheduling of one actual frame is only one confirmation');
+  assert.equal(session.tasks[0]!.confirmations, 1);
+  observation = { ...observation, sequence: observation.sequence + 100 };
+  await step(); assert.equal((await step()).status, 'goal-verified');
+  assert.deepEqual(session.stats.verifiedGoals, ['first']);
+  await step(); const second = await step(); assert.equal(second.goalId, 'second'); assert.equal(second.status, 'observation-stalled');
+  assert.deepEqual(session.stats.verifiedGoals, ['first']);
+  observation = { ...observation, sequence: observation.sequence + 1 };
+  await step(); assert.equal((await step()).status, 'goal-verified');
+  assert.deepEqual(session.stats.verifiedGoals, ['first', 'second']);
+});
+
 test('body conditions interrupt and resume an external task using learned, permuted motor effects', async () => {
   for (const remedy of [0, 1]) {
     const memory = new ExperienceMedium(41), ports: Action[] = [1, 2].map(ticks => ({ kind: 'wait', parameters: { ticks } }));
@@ -626,7 +779,15 @@ test('ten causal stages are composed from isolated experience with changing acti
       return { executed: true, observation, event: null };
     }, waitForObservationAfter: async () => observation = { ...observation, sequence: observation.sequence + 1 }
   };
-  const result = await agent.runGoal(environment, goal, { actionBudget: 10, learn: false, allowExploration: false });
+  // This test measures causal composition, bounded by 512 node expansions,
+  // independently of CPU contention in concurrent test files. A zero wall
+  // budget must still refuse to execute an unsupported/uncomputed plan.
+  const timedOut = await agent.runGoal(environment, goal,
+    { actionBudget: 10, learn: false, allowExploration: false, milliseconds: 0 });
+  assert.equal(timedOut.status, 'unknown'); assert.equal(timedOut.actions.length, 0);
+  assert.equal(sha([memory.snapshot(), affordances.snapshot()]), digest);
+  const result = await agent.runGoal(environment, goal,
+    { actionBudget: 10, learn: false, allowExploration: false, milliseconds: Infinity });
   assert.equal(result.status, 'goal-verified'); assert.equal(result.actions.length, 10);
   assert.equal(sha([memory.snapshot(), affordances.snapshot()]), digest);
   observation = frame(Object.fromEntries(Array.from({ length: 10 }, (_, i) => ['signal' + i, false])), 3000);
@@ -638,9 +799,11 @@ test('ten causal stages are composed from isolated experience with changing acti
   erased.contexts!.structures = erased.contexts!.structures?.filter(([id]) => !id.startsWith(removed + '/'));
   assert.equal(new ExperienceAgent(ExperienceMedium.restore(erased), affordances).plan(goal, observation, offers(observation)).steps.length, 0);
   let session = new ExperienceSession(memory, affordances); session.submit(goal);
-  for (let i = 0; i < 5; i++) assert.equal((await session.step(environment, { learn: false, exploration: false })).status, 'executed');
+  for (let i = 0; i < 5; i++) assert.equal((await session.step(environment,
+    { learn: false, exploration: false, milliseconds: Infinity })).status, 'executed');
   session = ExperienceSession.restore(JSON.parse(JSON.stringify(session.snapshot())), { sameWorld: true });
-  for (let i = 0; i < 12 && !session.stats.verifiedGoals.length; i++) await session.step(environment, { learn: false, exploration: false });
+  for (let i = 0; i < 12 && !session.stats.verifiedGoals.length; i++) await session.step(environment,
+    { learn: false, exploration: false, milliseconds: Infinity });
   assert.equal(session.stats.executed, 10); assert.deepEqual(session.stats.verifiedGoals, [goal.id]);
   const transferred = ExperienceSession.restore(session.snapshot());
   assert.equal(transferred.tasks.length, 0); assert.equal(transferred.world.stats.retainedPlaces, 0);

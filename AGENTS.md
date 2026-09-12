@@ -1,5 +1,12 @@
 # Kairos continuation
 
+The user's current instruction (2026-09-13) supersedes historical workflow
+requirements: use available native Codex tools, skills and plugins, work directly
+in the main task, and do not delegate or spawn sub-agents. Do not run ACL-X,
+generator/critic loops, custom routing or phase-stage autorun protocols. Archived
+workflow artifacts are historical evidence only. Current engineering progress is
+recorded in `docs/native-continuation-2026-09-13.md`.
+
 Start at `START_HERE.md`, `docs/codex-rescue/README.zh-CN.md`, and
 `docs/codex-rescue/TASK_STATE.json`. Also read `docs/codex-handoff/README.zh-CN.md`,
 `docs/codex-handoff/evidence/next-stage-checkpoint13.json`, and
@@ -9,15 +16,27 @@ The repository imports the last verifiable saved source snapshot
 ea097eb823eb28639c58639dd55f552fab08e98d. The new GitHub import commit has its own
 identity. The targeted gate was rerun on Windows / Node 24.14.0 during the
 2026-09-13 rescue: 120 passed, zero failed. Overall open-world/multistage acceptance
-remains unmet. All 382 archived source files remain byte-identical.
+remains unmet. All 382 archived source files were verified byte-identical before
+the new engineering changes below; original recovered evidence is immutable.
 
 The saved pending item is `native-unfamiliar-v52-passive-transfer`. Its running
 state and later results were not recovered. Its exact invocation and pause
 reason were rescued from the public conversation. The claimed later 121-test
 scheduling patch has no recoverable payload or test log; do not invent it.
-The present source still lets a persistent maintenance need exclude external
-tasks. Reproduce and repair that issue on a new working branch before native
-acceptance work. A new implementation is not the original missing patch.
+The working branch now contains a newly reproduced and tested repair for
+persistent maintenance excluding external tasks. Normal-mode R1/R2 are both
+stopped and audited: 515 new decisions, 495 actions, 60 deaths, no new task
+success. A missing native base texture made zombie villagers invisible; its
+repair passed an isolated native visibility/occlusion/action calibration.
+The active gate now passes 125/125. The synthetic ten-stage composition test
+uses a deterministic expansion budget and separately checks a zero wall budget;
+native 100/50 ms planning deadlines are unchanged. Failed logs are retained.
+
+The user's current direction is peaceful mode first, then more complex
+scenarios. Natural evaluation now accepts explicit --difficulty peaceful and
+independently records the engine reply. Read the current progress record before
+running another experiment or repeating completed work. Never equate peaceful
+results with hostile survival or hunger management.
 
 The rescue release provides 5,928 complete files, including verified V47/V50/V51
 sessions and stopped worlds. Prefer V51 as the latest recovered stopped state.
