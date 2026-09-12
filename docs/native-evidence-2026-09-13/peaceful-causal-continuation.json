@@ -1,0 +1,95 @@
+{
+  "version": "PeacefulNativeCausalContinuation1",
+  "scope": "Same-world continuation; partial exploratory prerequisites, exit pending, no supported causal plan.",
+  "decisions": 433,
+  "actualWindows": 433,
+  "learningWrites": 2196,
+  "passiveWindows": 1763,
+  "seconds": 1218.779,
+  "cumulativeDecisions": 945,
+  "cumulativeWrites": 4266,
+  "deaths": {
+    "reported": 0,
+    "serverMessages": []
+  },
+  "goalStatus": "pending",
+  "barrierCells": [
+    {
+      "position": [
+        0,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        64,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        65,
+        -3
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        64,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        65,
+        -3
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    }
+  ],
+  "savedPlayers": [
+    {
+      "file": "136824b8-89a5-3717-81f9-1b11bd3b889d.dat",
+      "position": [
+        1.3,
+        64,
+        -1.7
+      ],
+      "inventory": [
+        {
+          "count": 4,
+          "Slot": 0,
+          "id": "minecraft:oak_planks"
+        }
+      ]
+    }
+  ],
+  "supportedPlans": 0,
+  "hypotheses": 59,
+  "worldArchiveSha256": "d410dae7e7c0d15e0fb4c7abbb979b96ccaffa0f8caf6d08695bd5f54221d5e2",
+  "priorArchiveReauditUnchanged": true
+}

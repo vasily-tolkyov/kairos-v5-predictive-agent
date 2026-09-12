@@ -1,0 +1,119 @@
+{
+  "version": "NativeProgressRecoveryWitness1",
+  "source": "evidence/peaceful-natural-online-long",
+  "goal": {
+    "version": "GroundedGoalV1",
+    "id": "peaceful-heldout-reach-20260913",
+    "expression": {
+      "kind": "predicate",
+      "predicate": {
+        "version": "GoalPredicateV1",
+        "id": "terminal-coordinate",
+        "subject": {
+          "kind": "self"
+        },
+        "observable": "position.2",
+        "comparator": "less-than",
+        "target": -14.5
+      }
+    }
+  },
+  "baselineMetadataSha256": "02b83fc5a2bd436976acec47202f8a09e1c3e45a1eceda2b42a9daab576789d8",
+  "originalCheckpointSha256": "efc24fe33533b2f9f729677878bb8238e1a7564bc5329f570266f4325e9e261a",
+  "physicalTrials": 0,
+  "scope": "Read-only analysis of original native windows. Actual goal residual decreased inside an executed task probe, but the old progress flag and forecast advancement were both false. This is a mechanism diagnostic, not a new successful task trial.",
+  "witnessCount": 156,
+  "followedByCooldownWithinNineDecisions": 14,
+  "examples": [
+    {
+      "decision": 2248,
+      "event": "d65df9a1-83c8-4737-8394-6987c6184039:event-129",
+      "file": "events/0000129.json.gz",
+      "sha256": "a5c601653153b11548a11475a372267f9a12e2c96851fabd0cf0d6d4beaaad30",
+      "beforeSequence": 6550,
+      "afterSequence": 6572,
+      "beforeZ": 23.329704183713602,
+      "afterZ": 23.003995680334498,
+      "beforeResidual": 0.5251958842872375,
+      "afterResidual": 0.5230391322616395,
+      "oldMeasuredProgress": false,
+      "forecastAdvanced": false,
+      "followingCooldown": null
+    },
+    {
+      "decision": 2251,
+      "event": "d65df9a1-83c8-4737-8394-6987c6184039:event-132",
+      "file": "events/0000132.json.gz",
+      "sha256": "2a17eb7b398d55a992006f3cc891a328dafe246a26362841ea6c0e136b97a4d5",
+      "beforeSequence": 6681,
+      "afterSequence": 6703,
+      "beforeZ": 23.7,
+      "afterZ": 23.374291496620895,
+      "beforeResidual": 0.5276243093922651,
+      "afterResidual": 0.5254896123175429,
+      "oldMeasuredProgress": false,
+      "forecastAdvanced": false,
+      "followingCooldown": null
+    },
+    {
+      "decision": 2257,
+      "event": "d65df9a1-83c8-4737-8394-6987c6184039:event-138",
+      "file": "events/0000138.json.gz",
+      "sha256": "77d9a85a54391a2e43d14f0d6541dd4097da95eb48ab72aa3fb917addda8ca77",
+      "beforeSequence": 6987,
+      "afterSequence": 7010,
+      "beforeZ": 25.7,
+      "afterZ": 25.611104927559467,
+      "beforeResidual": 0.5403225806451613,
+      "afterResidual": 0.5397726889764443,
+      "oldMeasuredProgress": false,
+      "forecastAdvanced": false,
+      "followingCooldown": null
+    },
+    {
+      "decision": 2264,
+      "event": "d65df9a1-83c8-4737-8394-6987c6184039:event-145",
+      "file": "events/0000145.json.gz",
+      "sha256": "47a1df28fb53bfd55f34bffb0dedcd25c97a2691d63e8eacdbeedbfbd318f3c7",
+      "beforeSequence": 7505,
+      "afterSequence": 7538,
+      "beforeZ": 25.7,
+      "afterZ": 25.516425168588643,
+      "beforeResidual": 0.5403225806451613,
+      "afterResidual": 0.5391855654282469,
+      "oldMeasuredProgress": false,
+      "forecastAdvanced": false,
+      "followingCooldown": null
+    },
+    {
+      "decision": 2272,
+      "event": "d65df9a1-83c8-4737-8394-6987c6184039:event-152",
+      "file": "events/0000152.json.gz",
+      "sha256": "48aea0a69f2332975416fb55453d851aa336264822355143370f39180c56510b",
+      "beforeSequence": 7859,
+      "afterSequence": 7880,
+      "beforeZ": 25.658558840556392,
+      "afterZ": 25.332850337177288,
+      "beforeResidual": 0.5400663954053564,
+      "afterResidual": 0.5380429114340652,
+      "oldMeasuredProgress": false,
+      "forecastAdvanced": false,
+      "followingCooldown": null
+    },
+    {
+      "decision": 2274,
+      "event": "d65df9a1-83c8-4737-8394-6987c6184039:event-154",
+      "file": "events/0000154.json.gz",
+      "sha256": "4bac7a1af17c541dd3a4dffa711e93a36ff2311f05fefb2f4f03a00fd529ebc3",
+      "beforeSequence": 7921,
+      "afterSequence": 7943,
+      "beforeZ": 25.332850337177288,
+      "afterZ": 25.007141833798183,
+      "beforeResidual": 0.5380429114340652,
+      "afterResidual": 0.5360015440957216,
+      "oldMeasuredProgress": false,
+      "forecastAdvanced": false,
+      "followingCooldown": null
+    }
+  ]
+}

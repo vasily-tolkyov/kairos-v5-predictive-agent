@@ -1,0 +1,1797 @@
+{
+  "version": "PeacefulNativeMatchedComparison1",
+  "goal": {
+    "version": "GroundedGoalV1",
+    "id": "peaceful-heldout-reach-20260913",
+    "expression": {
+      "kind": "predicate",
+      "predicate": {
+        "version": "GoalPredicateV1",
+        "id": "terminal-coordinate",
+        "subject": {
+          "kind": "self"
+        },
+        "observable": "position.2",
+        "comparator": "less-than",
+        "target": -14.5
+      }
+    }
+  },
+  "worldTreeSha256": "e9eab215b68c7e0dbdb2399217ef799cceb37a5e84f0da4a323910298044416b",
+  "initialSamplingCounter": 1801,
+  "sameActorFreezeSha256": "b21ebc8753c2886d37bf1f4d605a1d360ccd0cb41638e37847974e99d3bdbb8c",
+  "runOrder": [
+    "retained-frozen",
+    "erased-frozen"
+  ],
+  "runsWereSequential": true,
+  "arms": {
+    "retained-frozen": {
+      "reportSha256": "984c954533541668d6884e297d27c01a19942587073fac6956e05e820e07854f",
+      "auditSha256": "033024d86f32a8bcf70c3ce44f31046bd8f0974879ff1fc4309ebae33f4c0d7c",
+      "difficulty": "peaceful",
+      "newDecisions": 46,
+      "newActions": 40,
+      "newLearningWrites": 0,
+      "status": "goal-verified",
+      "initialGoalStatus": "mismatch",
+      "finalTask": [
+        {
+          "id": "peaceful-heldout-reach-20260913",
+          "expression": {
+            "kind": "predicate",
+            "predicate": {
+              "version": "GoalPredicateV1",
+              "id": "terminal-coordinate",
+              "subject": {
+                "kind": "self"
+              },
+              "observable": "position.2",
+              "comparator": "less-than",
+              "target": -14.5
+            }
+          },
+          "status": "verified",
+          "firstSatisfied": 1499,
+          "confirmations": 6
+        }
+      ],
+      "secondsIncludingStartupAndCheckpoint": 108.082,
+      "deaths": 0,
+      "finalSavedPlayerMatches": true,
+      "finalPosition": [
+        -3.880784686936611,
+        62,
+        -14.915114840135953
+      ],
+      "initialPosition": [
+        -3.5,
+        74,
+        -2.5
+      ],
+      "frozenDigestUnchanged": true,
+      "supportedTaskPlans": 25,
+      "supportedTaskMultistep": 0,
+      "worldArchiveSha256": "d88838eb428fe911dca016bdbb0c137b880b74a0eac3dc9f17a957decf7c2dfb",
+      "timeline": [
+        {
+          "decision": 1,
+          "seconds": 28.498,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 2,
+          "seconds": 29.579,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 3,
+          "seconds": 30.092,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 4,
+          "seconds": 31.08,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 5,
+          "seconds": 31.735,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 6,
+          "seconds": 32.65,
+          "z": -3.223616998464913,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 7,
+          "seconds": 34.299,
+          "z": -4.628517896001241,
+          "health": 13,
+          "status": "executed"
+        },
+        {
+          "decision": 8,
+          "seconds": 34.805,
+          "z": -4.628517896001241,
+          "health": 15,
+          "status": "executed"
+        },
+        {
+          "decision": 9,
+          "seconds": 35.353,
+          "z": -4.628517896001241,
+          "health": 16,
+          "status": "executed"
+        },
+        {
+          "decision": 10,
+          "seconds": 36.05,
+          "z": -4.628517896001241,
+          "health": 19,
+          "status": "executed"
+        },
+        {
+          "decision": 11,
+          "seconds": 36.737,
+          "z": -4.628517896001241,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 12,
+          "seconds": 37.513,
+          "z": -4.628517896001241,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 13,
+          "seconds": 38.488,
+          "z": -5.485687615837688,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 14,
+          "seconds": 39.576,
+          "z": -5.485687615837688,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 15,
+          "seconds": 44.41,
+          "z": -5.485687615837688,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 16,
+          "seconds": 45.461,
+          "z": -5.485687615837688,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 17,
+          "seconds": 54.354,
+          "z": -5.485687615837688,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 18,
+          "seconds": 55.576,
+          "z": -6.37289813178956,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 19,
+          "seconds": 56.886,
+          "z": -6.752174759154798,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 20,
+          "seconds": 58.171,
+          "z": -7.131451386520036,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 21,
+          "seconds": 59.504,
+          "z": -7.510728013885274,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 22,
+          "seconds": 60.907,
+          "z": -7.986239230196582,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 23,
+          "seconds": 62.198,
+          "z": -8.365515857561817,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 24,
+          "seconds": 63.522,
+          "z": -8.744792484927054,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 25,
+          "seconds": 64.907,
+          "z": -9.220303701238361,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 26,
+          "seconds": 66.255,
+          "z": -9.599580328603597,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 27,
+          "seconds": 67.884,
+          "z": -9.599580328603597,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 28,
+          "seconds": 69.181,
+          "z": -9.978856955968833,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 29,
+          "seconds": 70.459,
+          "z": -10.35813358333407,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 30,
+          "seconds": 71.734,
+          "z": -10.737410210699306,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 31,
+          "seconds": 73.007,
+          "z": -11.116686838064542,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 32,
+          "seconds": 74.323,
+          "z": -11.495963465429778,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 33,
+          "seconds": 83.879,
+          "z": -11.875240092795014,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 34,
+          "seconds": 85.238,
+          "z": -12.350751309106322,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 35,
+          "seconds": 86.578,
+          "z": -12.82626252541763,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 36,
+          "seconds": 87.885,
+          "z": -13.205539152782865,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 37,
+          "seconds": 89.297,
+          "z": -13.681050369094173,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 38,
+          "seconds": 90.572,
+          "z": -14.060326996459409,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 39,
+          "seconds": 91.822,
+          "z": -14.439603623824645,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 40,
+          "seconds": 93.086,
+          "z": -14.915114840135953,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 41,
+          "seconds": 93.114,
+          "z": -14.915114840135953,
+          "health": 20,
+          "status": "observing"
+        },
+        {
+          "decision": 42,
+          "seconds": 93.165,
+          "z": -14.915114840135953,
+          "health": 20,
+          "status": "observing"
+        },
+        {
+          "decision": 43,
+          "seconds": 93.226,
+          "z": -14.915114840135953,
+          "health": 20,
+          "status": "observing"
+        },
+        {
+          "decision": 44,
+          "seconds": 93.287,
+          "z": -14.915114840135953,
+          "health": 20,
+          "status": "observing"
+        },
+        {
+          "decision": 45,
+          "seconds": 93.35,
+          "z": -14.915114840135953,
+          "health": 20,
+          "status": "observing"
+        },
+        {
+          "decision": 46,
+          "seconds": 93.361,
+          "z": -14.915114840135953,
+          "health": 20,
+          "status": "goal-verified"
+        }
+      ]
+    },
+    "erased-frozen": {
+      "reportSha256": "392a50347fe9753cbb993224537d3d62161daf13caca5c384076cf7c5b109621",
+      "auditSha256": "300118523000ad922ef46b145f01dda98fd7797cd1e8aeb09aa7e74e935becdd",
+      "difficulty": "peaceful",
+      "newDecisions": 192,
+      "newActions": 191,
+      "newLearningWrites": 0,
+      "status": "budget-paused",
+      "initialGoalStatus": "mismatch",
+      "finalTask": [
+        {
+          "id": "peaceful-heldout-reach-20260913",
+          "expression": {
+            "kind": "predicate",
+            "predicate": {
+              "version": "GoalPredicateV1",
+              "id": "terminal-coordinate",
+              "subject": {
+                "kind": "self"
+              },
+              "observable": "position.2",
+              "comparator": "less-than",
+              "target": -14.5
+            }
+          },
+          "status": "pending",
+          "firstSatisfied": null,
+          "confirmations": 0
+        }
+      ],
+      "secondsIncludingStartupAndCheckpoint": 184.91,
+      "deaths": 0,
+      "finalSavedPlayerMatches": true,
+      "finalPosition": [
+        -6.987617306089117,
+        64,
+        18.7
+      ],
+      "initialPosition": [
+        -3.5,
+        74,
+        -2.5
+      ],
+      "frozenDigestUnchanged": true,
+      "supportedTaskPlans": 0,
+      "supportedTaskMultistep": 0,
+      "worldArchiveSha256": "79e2243ed7e30ddbda940416ac4cc8467710f9b4f0190a3ab1753d06d1672ab7",
+      "timeline": [
+        {
+          "decision": 1,
+          "seconds": 20.898,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 2,
+          "seconds": 21.671,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 3,
+          "seconds": 22.008,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 4,
+          "seconds": 24.156,
+          "z": -2.5,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 5,
+          "seconds": 25.261,
+          "z": 0.7280150284469464,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 6,
+          "seconds": 26.432,
+          "z": 1.2357615821280505,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 7,
+          "seconds": 27.996,
+          "z": 1.2357615821280505,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 8,
+          "seconds": 29.187,
+          "z": 1.2357615821280505,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 9,
+          "seconds": 29.99,
+          "z": 1.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 10,
+          "seconds": 30.87,
+          "z": 1.4819668747585975,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 11,
+          "seconds": 31.223,
+          "z": 1.4819668747585975,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 12,
+          "seconds": 32.279,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 13,
+          "seconds": 32.65,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 14,
+          "seconds": 32.932,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 15,
+          "seconds": 33.51,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 16,
+          "seconds": 33.828,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 17,
+          "seconds": 34.279,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 18,
+          "seconds": 38.546,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 19,
+          "seconds": 39.228,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 20,
+          "seconds": 41.329,
+          "z": 0.6262954268571976,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 21,
+          "seconds": 41.661,
+          "z": 0.8221035116,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 22,
+          "seconds": 42.269,
+          "z": 0.9420111081557887,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 23,
+          "seconds": 42.576,
+          "z": 0.9420111081557887,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 24,
+          "seconds": 42.864,
+          "z": 1.4675176121321274,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 25,
+          "seconds": 43.681,
+          "z": 1.909889890834897,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 26,
+          "seconds": 44.083,
+          "z": 1.909889890834897,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 27,
+          "seconds": 44.426,
+          "z": 1.909889890834897,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 28,
+          "seconds": 44.971,
+          "z": 1.909889890834897,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 29,
+          "seconds": 45.38,
+          "z": 1.909889890834897,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 30,
+          "seconds": 46.494,
+          "z": 4.218695368215292,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 31,
+          "seconds": 47.024,
+          "z": 4.307870920207557,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 32,
+          "seconds": 47.798,
+          "z": 4.307870920207557,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 33,
+          "seconds": 48.321,
+          "z": 4.307870920207557,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 34,
+          "seconds": 48.722,
+          "z": 4.307870920207557,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 35,
+          "seconds": 49.586,
+          "z": 4.307870920207557,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 36,
+          "seconds": 50.026,
+          "z": 4.307870920207557,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 37,
+          "seconds": 52.149,
+          "z": 4.307870920207557,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 38,
+          "seconds": 53.285,
+          "z": 7.501782164991541,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 39,
+          "seconds": 54.443,
+          "z": 11.29383897936194,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 40,
+          "seconds": 55.868,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 41,
+          "seconds": 57.012,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 42,
+          "seconds": 58.385,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 43,
+          "seconds": 58.747,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 44,
+          "seconds": 63.048,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 45,
+          "seconds": 63.524,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 46,
+          "seconds": 63.873,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 47,
+          "seconds": 66.12,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 48,
+          "seconds": 66.488,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 49,
+          "seconds": 66.885,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 50,
+          "seconds": 67.295,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 51,
+          "seconds": 68.489,
+          "z": 12.689058642752068,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 52,
+          "seconds": 69.741,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 53,
+          "seconds": 71.107,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 54,
+          "seconds": 72.38,
+          "z": 12.210189233327762,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 55,
+          "seconds": 76.763,
+          "z": 12.210189233327762,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 56,
+          "seconds": 77.972,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 57,
+          "seconds": 78.482,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 58,
+          "seconds": 78.773,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 59,
+          "seconds": 83.093,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 60,
+          "seconds": 83.423,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 61,
+          "seconds": 83.971,
+          "z": 12.32270555307217,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 62,
+          "seconds": 84.284,
+          "z": 12.558275976322317,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 63,
+          "seconds": 85.404,
+          "z": 12.713298270245676,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 64,
+          "seconds": 86.046,
+          "z": 12.713298270245676,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 65,
+          "seconds": 86.432,
+          "z": 12.713298270245676,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 66,
+          "seconds": 86.79,
+          "z": 12.713298270245676,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 67,
+          "seconds": 87.225,
+          "z": 12.713298270245676,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 68,
+          "seconds": 89.399,
+          "z": 12.713298270245676,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 69,
+          "seconds": 90.555,
+          "z": 12.346945180565779,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 70,
+          "seconds": 90.973,
+          "z": 12.346945180565779,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 71,
+          "seconds": 92.126,
+          "z": 12.258050108125238,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 72,
+          "seconds": 93.325,
+          "z": 12.169155035684696,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 73,
+          "seconds": 93.688,
+          "z": 12.404725458934843,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 74,
+          "seconds": 94.893,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 75,
+          "seconds": 94.931,
+          "z": 13.7,
+          "health": 20,
+          "status": "refused"
+        },
+        {
+          "decision": 76,
+          "seconds": 95.405,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 77,
+          "seconds": 95.768,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 78,
+          "seconds": 96.17,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 79,
+          "seconds": 96.679,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 80,
+          "seconds": 97.039,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 81,
+          "seconds": 97.325,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 82,
+          "seconds": 99.18,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 83,
+          "seconds": 99.626,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 84,
+          "seconds": 99.967,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 85,
+          "seconds": 101.117,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 86,
+          "seconds": 101.856,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 87,
+          "seconds": 103.083,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 88,
+          "seconds": 103.469,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 89,
+          "seconds": 103.983,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 90,
+          "seconds": 104.356,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 91,
+          "seconds": 104.882,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 92,
+          "seconds": 109.189,
+          "z": 13.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 93,
+          "seconds": 110.403,
+          "z": 14.850314195556,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 94,
+          "seconds": 111.249,
+          "z": 14.94201110815579,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 95,
+          "seconds": 112.15,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 96,
+          "seconds": 112.496,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 97,
+          "seconds": 112.894,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 98,
+          "seconds": 113.234,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 99,
+          "seconds": 114.376,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 100,
+          "seconds": 114.752,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 101,
+          "seconds": 116.885,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 102,
+          "seconds": 117.338,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 103,
+          "seconds": 118.474,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 104,
+          "seconds": 118.84,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 105,
+          "seconds": 119.54,
+          "z": 13.869259789526549,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 106,
+          "seconds": 119.943,
+          "z": 14.468598732651738,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 107,
+          "seconds": 121.185,
+          "z": 16.78639384266806,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 108,
+          "seconds": 123.474,
+          "z": 17.15021218219252,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 109,
+          "seconds": 123.943,
+          "z": 17.15021218219252,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 110,
+          "seconds": 124.782,
+          "z": 17.15021218219252,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 111,
+          "seconds": 125.186,
+          "z": 17.15021218219252,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 112,
+          "seconds": 125.638,
+          "z": 17.15021218219252,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 113,
+          "seconds": 126.524,
+          "z": 16.07746086356327,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 114,
+          "seconds": 127.413,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 115,
+          "seconds": 127.873,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 116,
+          "seconds": 128.336,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 117,
+          "seconds": 128.84,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 118,
+          "seconds": 129.236,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 119,
+          "seconds": 129.606,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 120,
+          "seconds": 129.899,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 121,
+          "seconds": 130.241,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 122,
+          "seconds": 130.646,
+          "z": 15.220291143726826,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 123,
+          "seconds": 131.518,
+          "z": 16.048253513629813,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 124,
+          "seconds": 132.163,
+          "z": 16.048253513629813,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 125,
+          "seconds": 132.564,
+          "z": 16.048253513629813,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 126,
+          "seconds": 132.984,
+          "z": 16.048253513629813,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 127,
+          "seconds": 134.179,
+          "z": 16.048253513629813,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 128,
+          "seconds": 134.697,
+          "z": 16.048253513629813,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 129,
+          "seconds": 135.658,
+          "z": 15.012055309780177,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 130,
+          "seconds": 136.178,
+          "z": 15.012055309780177,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 131,
+          "seconds": 136.478,
+          "z": 15.012055309780177,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 132,
+          "seconds": 137.3,
+          "z": 15.840017679683168,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 133,
+          "seconds": 137.681,
+          "z": 15.840017679683168,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 134,
+          "seconds": 138.085,
+          "z": 15.840017679683168,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 135,
+          "seconds": 138.483,
+          "z": 15.840017679683168,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 136,
+          "seconds": 138.886,
+          "z": 15.840017679683168,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 137,
+          "seconds": 139.356,
+          "z": 15.840017679683168,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 138,
+          "seconds": 140.168,
+          "z": 15.621984554441767,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 139,
+          "seconds": 141.585,
+          "z": 15.621984554441767,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 140,
+          "seconds": 142.06,
+          "z": 15.621984554441767,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 141,
+          "seconds": 144.268,
+          "z": 15.621984554441767,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 142,
+          "seconds": 145.504,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 143,
+          "seconds": 145.845,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 144,
+          "seconds": 146.638,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 145,
+          "seconds": 147.617,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 146,
+          "seconds": 147.985,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 147,
+          "seconds": 148.472,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 148,
+          "seconds": 148.809,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 149,
+          "seconds": 149.99,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 150,
+          "seconds": 150.512,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 151,
+          "seconds": 150.905,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 152,
+          "seconds": 153.166,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 153,
+          "seconds": 153.646,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 154,
+          "seconds": 154.047,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 155,
+          "seconds": 154.443,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 156,
+          "seconds": 154.791,
+          "z": 16.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 157,
+          "seconds": 155.718,
+          "z": 16.593742599773833,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 158,
+          "seconds": 156.095,
+          "z": 16.593742599773833,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 159,
+          "seconds": 156.469,
+          "z": 16.593742599773833,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 160,
+          "seconds": 157.694,
+          "z": 16.593742599773833,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 161,
+          "seconds": 158.931,
+          "z": 16.593742599773833,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 162,
+          "seconds": 159.887,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 163,
+          "seconds": 160.506,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 164,
+          "seconds": 160.95,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 165,
+          "seconds": 161.402,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 166,
+          "seconds": 161.871,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 167,
+          "seconds": 162.26,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 168,
+          "seconds": 162.696,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 169,
+          "seconds": 163.2,
+          "z": 15.557544395924195,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 170,
+          "seconds": 164.14,
+          "z": 16.385506765827184,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 171,
+          "seconds": 164.496,
+          "z": 16.385506765827184,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 172,
+          "seconds": 166.034,
+          "z": 16.385506765827184,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 173,
+          "seconds": 166.399,
+          "z": 16.89310706990081,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 174,
+          "seconds": 167.242,
+          "z": 17.320405878734167,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 175,
+          "seconds": 167.898,
+          "z": 17.320405878734167,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 176,
+          "seconds": 168.767,
+          "z": 17.3,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 177,
+          "seconds": 173.194,
+          "z": 17.3,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 178,
+          "seconds": 173.593,
+          "z": 17.3,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 179,
+          "seconds": 175.86,
+          "z": 17.3,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 180,
+          "seconds": 176.454,
+          "z": 17.3,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 181,
+          "seconds": 177.308,
+          "z": 17.518033125241406,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 182,
+          "seconds": 177.685,
+          "z": 17.518033125241406,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 183,
+          "seconds": 178.816,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 184,
+          "seconds": 179.371,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 185,
+          "seconds": 180.782,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 186,
+          "seconds": 181.352,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 187,
+          "seconds": 181.9,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 188,
+          "seconds": 182.345,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 189,
+          "seconds": 182.79,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 190,
+          "seconds": 183.294,
+          "z": 17.7,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 191,
+          "seconds": 184.11,
+          "z": 17.918033125241404,
+          "health": 20,
+          "status": "executed"
+        },
+        {
+          "decision": 192,
+          "seconds": 184.87,
+          "z": 18.7,
+          "health": 20,
+          "status": "executed"
+        }
+      ]
+    }
+  },
+  "interpretation": "One paired unfamiliar-world locomotion comparison supports a benefit from retained experience in this scene. It is not a repeated-seed effect estimate, causal multistage success, reliable calibration or long-term learning proof."
+}

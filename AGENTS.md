@@ -28,9 +28,18 @@ persistent maintenance excluding external tasks. Normal-mode R1/R2 are both
 stopped and audited: 515 new decisions, 495 actions, 60 deaths, no new task
 success. A missing native base texture made zombie villagers invisible; its
 repair passed an isolated native visibility/occlusion/action calibration.
-The active gate now passes 125/125. The synthetic ten-stage composition test
+The active gate now passes 127/127. Decision evidence also preserves a copied
+goal definition and its baseline frame number after an autonomous intention
+leaves live state. Running R3 actors remain immutable and predate that logging
+addition. The synthetic ten-stage composition test
 uses a deterministic expansion budget and separately checks a zero wall budget;
 native 100/50 ms planning deadlines are unchanged. Failed logs are retained.
+
+The R5 candidate credits actual action-window progress while recovering from
+a setback, independently of the historical best. It preserves that best and
+still rejects no effect, numerical drift and unrelated sliding. The regression
+failed on the prior actor and passes with frozen dynamics. Native R5 validation
+is pending; do not change running immutable R3/R4 actors in place.
 
 The user's current direction is peaceful mode first, then more complex
 scenarios. Natural evaluation now accepts explicit --difficulty peaceful and

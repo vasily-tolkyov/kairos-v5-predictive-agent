@@ -1,0 +1,98 @@
+{
+  "version": "PeacefulNativeCausalProbe1",
+  "initialExperience": "empty",
+  "difficulty": "peaceful",
+  "decisions": 512,
+  "actualWindows": 512,
+  "passiveWindows": 1558,
+  "learningWrites": 2070,
+  "seconds": 1120.999,
+  "deaths": 0,
+  "goal": [
+    {
+      "id": "reach-other-side",
+      "expression": {
+        "kind": "predicate",
+        "predicate": {
+          "version": "GoalPredicateV1",
+          "id": "past-exit",
+          "subject": {
+            "kind": "self"
+          },
+          "observable": "position.2",
+          "comparator": "less-than",
+          "target": -4.2
+        }
+      },
+      "status": "pending",
+      "firstSatisfied": null,
+      "confirmations": 0
+    }
+  ],
+  "barrierCells": [
+    {
+      "position": [
+        0,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        65,
+        -3
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        64,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    }
+  ],
+  "savedPlayers": [
+    {
+      "file": "136824b8-89a5-3717-81f9-1b11bd3b889d.dat",
+      "position": [
+        2.3,
+        64,
+        -1.7
+      ],
+      "inventory": [
+        {
+          "count": 5,
+          "Slot": 0,
+          "id": "minecraft:oak_planks"
+        }
+      ]
+    }
+  ],
+  "breakAttempts": 27,
+  "supportedPlans": 0,
+  "hypotheses": 111,
+  "longestHypothesis": 6,
+  "worldArchiveSha256": "0fbd7e14a7efa968c6a6a48fe28e848d25e0aab6f27ef42ee88538459ec6bcc9",
+  "journalMismatches": [],
+  "scope": "Autonomous exploration partially opened a real prerequisite barrier, acquired five items and entered the first layer. The terminal remains pending; no supported causal plan or complete multistage task success. Subsequent continuation preserves this world and model."
+}

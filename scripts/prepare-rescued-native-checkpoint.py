@@ -1,4 +1,4 @@
-"""Prepare a new local predecessor from verified rescued Kairos evidence.
+"""Prepare a new local predecessor from registered, verified Kairos evidence.
 
 Only paths and provenance in the copied report change. Original evidence,
 session bytes and every archived world file stay unchanged. No game is run.
@@ -19,12 +19,14 @@ def sha(data):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--evidence-root', type=Path, required=True,
-                        help='Extracted kairos-handoff-ea097eb directory')
+                        help='Extracted directory containing the registered native run directories')
+    parser.add_argument('--registry', type=Path,
+                        help='Explicit verified checkpoint registry; defaults to the historical rescue registry')
     parser.add_argument('--output', type=Path, required=True,
                         help='New directory; an existing destination is refused')
     parser.add_argument('--run', default='native-natural-v51-bounded-fitting')
     args = parser.parse_args()
-    registry_path = Path(__file__).resolve().parents[1] / 'docs/codex-rescue/rescued-state-verification.json'
+    registry_path = args.registry or Path(__file__).resolve().parents[1] / 'docs/codex-rescue/rescued-state-verification.json'
     registry = json.loads(registry_path.read_text(encoding='utf-8'))
     expected = next((r for r in registry['runs'] if r['run'] == args.run), None)
     if expected is None:
@@ -91,7 +93,8 @@ def main():
                 if sha(path.read_bytes()) != files[member.name]:
                     raise SystemExit('Extracted file verification failed')
     record = {
-        'version': 'RescuedStoppedNativeCheckpoint1',
+        'version': 'PreparedStoppedNativeCheckpoint1' if args.registry else 'RescuedStoppedNativeCheckpoint1',
+        'registrySha256': sha(registry_path.read_bytes()),
         'historicalSource': expected['originalSource'],
         'localEvidenceSource': str(source),
         'sourceReportSha256': sha(report_bytes),
@@ -101,7 +104,7 @@ def main():
         'worldFiles': files,
         'newPhysicalTrials': 0,
         'sessionBytesUnchanged': True,
-        'scope': 'Relocated stopped state, not recovery of the missing V52 transfer run',
+        'scope': 'Relocated verified stopped state; no new physical trials or inferred missing state',
     }
     (target / 'session.json.gz').write_bytes(session_bytes)
     (target / 'original-results.json').write_bytes(report_bytes)

@@ -11,6 +11,7 @@ import { ExperienceAgent, compareExperiencePrediction } from '../src/experience-
 import { ExperienceSession } from '../src/experience-session.js';
 import { cueFor, cueIdentity } from '../src/events.js';
 import { sha } from '../src/util.js';
+import { GroundedGoalEvaluatorV1 } from '../src/control/goal.js';
 
 const frame = (properties: Observation['self']['properties'], sequence = 1): Observation => ({ sequence,
   activeSeconds: sequence / 20, contextId: 'unused-label', self: { position: [0, 0, 0], yaw: 0, pitch: 0, properties },
@@ -20,6 +21,81 @@ function real(action: Action, before: Observation, after: Observation, id = 'eve
     provenance: 'executed-real-body', complete: true,
     bodyResult: { action, executed: true, status: 'completed', startSequence: before.sequence, endSequence: after.sequence } };
 }
+
+test('a completed autonomous intention remains independently auditable after its live state is cleared', async () => {
+  const goal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'investigation-0', expression: { kind: 'predicate',
+    predicate: { version: 'GoalPredicateV1', id: 'axis-0', subject: { kind: 'self' }, observable: 'position.0',
+      comparator: 'within', lower: .7, upper: 1.3 } } };
+  const baseline = frame({}, 10), snapshot = new ExperienceSession().snapshot();
+  snapshot.investigation = { goal, baseline, destination: [1, 0, 0], status: 'pending', actions: 0,
+    firstSatisfied: null, bestResidual: 1, lastProgress: 0 };
+  const session = ExperienceSession.restore(snapshot, { sameWorld: true });
+  let observation: Observation = { ...frame({}, 100), self: { ...frame({}).self, position: [1, 0, 0] } };
+  const environment = { observe: async () => observation, listActionOffers: () => [],
+    executeOffer: async () => { throw new Error('confirmation-must-not-execute-a-motor'); },
+    waitForObservationAfter: async () => observation = { ...observation, sequence: observation.sequence + 1 } };
+  const journal = [];
+  for (let i = 0; i < 6; i++) {
+    const actual = structuredClone(observation), decision = await session.step(environment, { learn: false, exploration: false });
+    const serialized = JSON.parse(JSON.stringify(decision));
+    assert.deepEqual(serialized.goal, goal, 'a goal id cannot reconstruct a discarded autonomous intention');
+    assert.equal(serialized.goalBaselineSequence, baseline.sequence);
+    journal.push({ decision: serialized, actual });
+    assert.equal(decision.status, i === 5 ? 'goal-verified' : 'observing');
+    if (i === 0) {
+      // A consumer may edit its returned metadata, but cannot change the live goal.
+      Object.assign((decision as typeof decision & { goal: GroundedGoalV1 }).goal, { id: 'caller-edit' });
+      assert.equal(session.snapshot().investigation!.goal.id, goal.id);
+    }
+  }
+  assert.equal(session.snapshot().investigation, null);
+  assert.equal(new Set(journal.map(row => row.actual.sequence)).size, 6);
+  for (const row of journal) {
+    const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(row.decision.goal, baseline);
+    assert.equal(evaluator.evaluate(row.actual).status, 'satisfied');
+  }
+  assert.equal(session.stats.writes, 0); assert.equal(session.stats.executed, 0);
+});
+
+test('actual recovery after a setback remains productive before regaining the historical best', async () => {
+  const memory = new ExperienceMedium(83), action: Action = { kind: 'wait', parameters: { ticks: 3 } };
+  for (let i = 0; i < 96; i++) {
+    const before = frame({}, i * 2 + 1), after = { ...frame({}, i * 2 + 2),
+      self: { ...before.self, position: [.5, 0, 0] as const } };
+    memory.observe(real(action, before, after));
+  }
+  const goal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'recover-progress', expression: { kind: 'predicate',
+    predicate: { version: 'GoalPredicateV1', id: 'terminal', subject: { kind: 'self' }, observable: 'position.0',
+      comparator: 'greater-than', target: 5 } } };
+  for (const actualIncrement of [.25, 0, 1e-11]) {
+    const session = new ExperienceSession(ExperienceMedium.restore(memory.snapshot())); session.submit(goal);
+    const digest = sha(session.agent.medium.snapshot());
+    let observation: Observation = { ...frame({}, 2000), self: { ...frame({}).self, position: [1, 0, 0] } };
+    const environment = { observe: async () => observation, listActionOffers: (sensed: Observation): ActionOfferV1[] => [{
+      version: 'ActionOfferV1', offerId: 'actual-' + sensed.sequence, observationSequence: sensed.sequence,
+      action, cue: cueFor(action, sensed) }], executeOffer: async () => {
+      const before = observation;
+      observation = { ...observation, sequence: observation.sequence + 1, activeSeconds: observation.activeSeconds + .05,
+        self: { ...observation.self, position: [observation.self.position[0] + actualIncrement, 0, 0] } };
+      return { executed: true, observation, event: real(action, before, observation) };
+    }, waitForObservationAfter: async () => observation };
+    const options = { learn: false, exploration: false, depth: 1, milliseconds: Infinity };
+    assert.equal((await session.step(environment, options)).status, 'executed');
+    const bestBeforeSetback = session.tasks[0]!.bestResidual;
+    observation = { ...observation, sequence: observation.sequence + 1, activeSeconds: observation.activeSeconds + .05,
+      self: { ...observation.self, position: [-10, 0, 0] } }; // Independently observed setback.
+    const decisions = [];
+    for (let i = 0; i < 16; i++) decisions.push(await session.step(environment, options));
+    if (actualIncrement === .25) {
+      assert(decisions.every(decision => decision.status === 'executed' && decision.measuredProgress && !decision.hypothesisDeferred),
+        'real forward progress must not trigger a failed-probe cooldown while recovering from a setback');
+      assert.equal(observation.self.position[0], -6);
+      assert.equal(session.tasks[0]!.bestResidual, bestBeforeSetback, 'the historical best must not be overwritten by recovery');
+    } else assert(decisions.some(decision => decision.status === 'no-offers'),
+      'no effect or floating-point drift cannot earn unlimited faith in an inaccurate forecast');
+    assert.equal(sha(session.agent.medium.snapshot()), digest, 'task feedback cannot train frozen dynamics');
+  }
+});
 
 test('bounded contextual learning retains opposing unrehearsed mechanisms and rejects missing context', () => {
   const memory = new ContextualReadout(64);

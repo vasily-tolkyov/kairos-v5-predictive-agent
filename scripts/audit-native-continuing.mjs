@@ -22,8 +22,11 @@ const lines = async (path, expected) => {
 };
 const sha = value => createHash('sha256').update(value).digest('hex');
 const report = await load('results.json'); assert(report.stoppedAt && report.final, 'a stopped native run is required');
-const actions = await lines('physical-actions.jsonl', report.final.executed - report.initialStats.executed),
+const actions = await lines('physical-actions.jsonl', report.journal?.['physical-actions']
+    ?? (report.final.decisions === report.initialStats.decisions ? 0 : undefined)),
   decisions = await lines('decisions.jsonl', report.final.decisions - report.initialStats.decisions);
+if (report.journal) assert.equal(actions.length, report.journal['physical-actions'] ?? 0,
+  'physical receipt export is incomplete, including refused actions');
 const initial = await load('initial-observation.json');
 const mismatches = [], windows = [], gaps = [], healthDrops = [], oxygenDrops = [];
 let previous = initial, actionIndex = 0;

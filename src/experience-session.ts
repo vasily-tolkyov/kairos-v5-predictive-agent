@@ -16,6 +16,8 @@ interface Investigation extends ContinuingTask { destination: XYZ }
 export interface SessionDecision {
   index: number; status: 'executed' | 'refused' | 'observing' | 'goal-verified' | 'no-offers' | 'observation-stalled';
   source: 'task' | 'investigation' | 'curiosity' | 'maintenance'; goalId: string | null; observationSequence: number;
+  /** Audit metadata only. An autonomous goal may leave live state on completion. */
+  goal?: GroundedGoalV1; goalBaselineSequence?: number;
   offer?: ActionOfferV1; planLength?: number; planReason?: string; learned?: boolean;
   exploration?: { source: 'hypothesis' | 'curiosity'; planLength: number };
   prediction?: ReturnType<typeof compareExperiencePrediction>;
@@ -154,7 +156,9 @@ export class ExperienceSession {
       this.#investigation = this.#proposal(observation, offers);
     const source: SessionDecision['source'] = maintenance ? 'maintenance' : task ? 'task' : this.#investigation ? 'investigation' : 'curiosity';
     let intention: ContinuingTask | null = maintenance ?? task ?? this.#investigation;
-    const common = { source, goalId: intention?.goal.id ?? null, observationSequence: observation.sequence };
+    const common = { source, goalId: intention?.goal.id ?? null, observationSequence: observation.sequence,
+      goal: intention ? structuredClone(intention.goal) : undefined,
+      goalBaselineSequence: intention ? (intention.baseline?.sequence ?? observation.sequence) : undefined };
     if (intention) {
       intention.baseline ??= light(observation);
       const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(intention.goal, intention.baseline);
@@ -192,6 +196,7 @@ export class ExperienceSession {
         this.#deferred = this.#deferred.slice(-32); this.#investigation = null;
         intention = null;
         common.source = 'curiosity'; common.goalId = null;
+        common.goal = undefined; common.goalBaselineSequence = undefined;
       }
     }
     if (!offers.length) return this.#record({ ...common, status: 'no-offers' });
@@ -255,9 +260,13 @@ export class ExperienceSession {
     if (intention) {
       const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(intention.goal, intention.baseline!);
       const measured = evaluator.evaluate(result.observation);
-      measuredProgress = measured.status !== 'unknown' && measured.residual < intention.bestResidual - .01;
+      const beforeAction = evaluator.evaluate(result.event?.frames[0] ?? observation);
+      // A real advance can recover from a setback without beating an earlier
+      // best. Credit the actual action window, not passive drift during search
+      // or the magnitude of an inaccurate forecast. Ignore numerical roundoff.
+      measuredProgress = measured.status !== 'unknown' && measured.residual < beforeAction.residual - 1e-12;
       if (measuredProgress) {
-        intention.bestResidual = measured.residual; intention.lastProgress = this.#steps;
+        intention.bestResidual = Math.min(intention.bestResidual, measured.residual); intention.lastProgress = this.#steps;
         intention.unsuccessfulProbes = 0; intention.probeAfter = 0;
       } else if (forecastAdvanced) intention.unsuccessfulProbes = 0;
       else if (selected || this.agent.lastExploration?.source === 'hypothesis') {

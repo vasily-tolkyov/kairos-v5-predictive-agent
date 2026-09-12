@@ -1,0 +1,45 @@
+{
+  "status": "budget-paused",
+  "decisions": 64,
+  "actualWindows": 64,
+  "initialWrites": 5098,
+  "finalWrites": 5098,
+  "frozen": true,
+  "learningDigestUnchanged": true,
+  "savedWorld": {
+    "file": "world-v5-physical-control/level.dat",
+    "sha256": "1c6ba6b01097d9b921ec311b08a6aee22b9ad3047f6b5fedeb650c279ae359ba",
+    "difficulty": "peaceful",
+    "gameType": 0
+  },
+  "taskConfirmations": [
+    {
+      "id": "peaceful-impossible-health-20260913",
+      "expression": {
+        "kind": "predicate",
+        "predicate": {
+          "version": "GoalPredicateV1",
+          "id": "negative-health",
+          "subject": {
+            "kind": "self"
+          },
+          "observable": "properties.health",
+          "comparator": "less-than",
+          "target": -1
+        }
+      },
+      "status": "pending",
+      "firstSatisfied": null,
+      "confirmations": 0
+    }
+  ],
+  "finalSavedPlayerMatches": true,
+  "deaths": {
+    "reported": 0,
+    "serverMessages": []
+  },
+  "stoppedAt": "2026-09-12T18:34:31.556Z",
+  "seconds": 141.419,
+  "worldArchiveSha256": "c15a34a15e7acd8eef8c92b0d544de8cc962a057fff9e46ca41b28ba8d8c0073",
+  "interpretation": "Impossible terminal health < -1 remained pending, with zero false goal confirmations. 64 actual actions, not a proof of all possible negative cases."
+}

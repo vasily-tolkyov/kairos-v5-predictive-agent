@@ -2,6 +2,8 @@ import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { gunzipSync, inflateSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
 import nbt from 'prismarine-nbt';
 
 // Post-run evidence inspection only. Saved block names and player NBT never
@@ -12,14 +14,33 @@ const root = resolve(source), read = async file => JSON.parse(await readFile(res
 const report = await read('results.json');
 if (!report.stoppedAt || !report.final || report.protocol.environment !== 'enclosure')
   throw new Error('a-stopped-enclosure-checkpoint-is-required');
-const properties = await readFile(resolve(report.runtimeRoot, 'minecraft/server.properties'), 'utf8');
+// A continuation mutates runtimeRoot. Historical outcomes must come from the
+// verified archive of this exact stop, never that later mutable directory.
+const proofs = [];
+for (const file of await readdir(root)) if (file.endsWith('.tar.gz.provenance.json')) {
+  const proof = await read(file);
+  if (proof.stoppedAt !== report.stoppedAt) continue;
+  const archive = resolve(root, file.slice(0, -'.provenance.json'.length)), bytes = await readFile(archive);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), proof.sha256);
+  assert.equal(bytes.length, proof.bytes); proofs.push({ archive, proof });
+}
+assert.equal(proofs.length, 1, 'one verified world archive of this exact stop is required');
+const { archive, proof } = proofs[0];
+const members = execFileSync('tar', ['-tzf', archive], { encoding: 'utf8' }).trim().split(/\r?\n/);
+const worldFilesRead = {};
+const historicalFile = path => {
+  assert.equal(members.filter(member => member === path).length, 1, 'archive member missing or ambiguous: ' + path);
+  const bytes = execFileSync('tar', ['-xOf', archive, path], { maxBuffer: 64 * 1024 * 1024 });
+  worldFilesRead[path] = createHash('sha256').update(bytes).digest('hex'); return bytes;
+};
+const properties = historicalFile('server.properties').toString('utf8');
 const name = properties.split(/\r?\n/).find(line => line.startsWith('level-name='))?.slice(11);
 if (!name || name.includes('/') || name.includes('\\') || name === '..') throw new Error('unsupported-level-name');
-const world = resolve(report.runtimeRoot, 'minecraft', name), chunks = new Map();
+const chunks = new Map();
 async function chunk(x, z) {
   const key = `${x},${z}`;
   if (chunks.has(key)) return chunks.get(key);
-  const bytes = await readFile(resolve(world, 'region', `r.${Math.floor(x / 32)}.${Math.floor(z / 32)}.mca`));
+  const bytes = historicalFile(`${name}/region/r.${Math.floor(x / 32)}.${Math.floor(z / 32)}.mca`);
   const offset = bytes.readUIntBE(4 * ((x & 31) + 32 * (z & 31)), 3) * 4096;
   if (!offset) throw new Error('required-chunk-is-absent');
   const length = bytes.readUInt32BE(offset), compression = bytes[offset + 4];
@@ -45,8 +66,9 @@ async function block(x, y, z) {
   return palette[selected].Name;
 }
 const players = [];
-for (const file of await readdir(resolve(world, 'playerdata'))) if (file.endsWith('.dat')) {
-  const player = nbt.simplify((await nbt.parse(await readFile(resolve(world, 'playerdata', file)), 'big')).parsed);
+for (const path of members.filter(path => path.startsWith(name + '/playerdata/') && path.endsWith('.dat'))) {
+  const file = path.slice((name + '/playerdata/').length);
+  const player = nbt.simplify((await nbt.parse(historicalFile(path), 'big')).parsed);
   players.push({ file, position: player.Pos, inventory: player.Inventory });
 }
 const geometry = report.protocol.geometry, changes = [];
@@ -83,6 +105,7 @@ for (const action of actions) {
 const target = -geometry.wallDepth - 2.2, final = report.finalObservation.self.position;
 const actual = players.find(player => JSON.stringify(player.position) === JSON.stringify(final));
 const summary = { version: 'StoppedEnclosureAudit1', source: root, commit: report.commit,
+  worldArchive: archive, worldArchiveSha256: proof.sha256, worldFilesRead,
   resultSha256: createHash('sha256').update(await readFile(resolve(root, 'results.json'))).digest('hex'),
   status: report.status, seconds: report.seconds, initialGoalEvaluation: report.taskInitialEvaluation,
   actualWindows: actions.filter(a => a.executed).length, journalMismatches: mismatches,
