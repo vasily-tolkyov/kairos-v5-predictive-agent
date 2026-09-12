@@ -53,6 +53,15 @@ independently records the engine reply. Read the current progress record before
 running another experiment or repeating completed work. Never equate peaceful
 results with hostile survival or hunger management.
 
+Further actuator work found a synchronous physics catch-up defect: requested
+four-tick presses could last seven ticks. R6 releases modern offered movement,
+held jump and held-item controls inside the frame callback and records release
+receipts. Native isolated movement calibration independently confirms original
+counts [4,4,4,4,4,7] and repaired counts [4,4,4,4,4,4], with matching server
+positions. These are twelve evaluator-selected actions, zero autonomous trials
+and zero learning writes. The current integrated gate is 131/131. Do not infer
+that retention is repaired; the old learned data and actors remain immutable.
+
 The rescue release provides 5,928 complete files, including verified V47/V50/V51
 sessions and stopped worlds. Prefer V51 as the latest recovered stopped state.
 Use `scripts/prepare-rescued-native-checkpoint.py` for explicit path relocation

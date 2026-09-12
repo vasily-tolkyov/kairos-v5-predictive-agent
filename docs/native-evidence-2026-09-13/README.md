@@ -7,6 +7,13 @@ limitations. Source branch: `codex/native-continuation-20260913` in
 `vasily-tolkyov/kairos-v5-predictive-agent`, draft PR #2. No overall acceptance of
 long-term autonomous learning or open causal multistage competence is claimed.
 
+The later [motor timing comparison](motor-catchup-comparison.json) reproduces
+and repairs an actuator catch-up defect. Its separate supplementary artifact
+contains twelve evaluator-selected calibration actions, with no learner or
+autonomous trials. The main package and its source snapshot remain unchanged;
+the supplement contains the later R6 actor and diagnosis. The current source
+passes 131 integrated checks.
+
 ## What the raw package preserves
 
 - Original reports, model snapshots, decision/receipt journals, active and passive

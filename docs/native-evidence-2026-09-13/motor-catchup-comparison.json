@@ -1,0 +1,214 @@
+{
+  "version": "NativeMotorCatchupComparison1",
+  "status": "passed",
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "evaluatorSelectedPhysicalActions": 12,
+  "runs": [
+    {
+      "source": "D:\\Kairos project\\.kairos\\worktrees\\native-continuation-20260913\\evidence\\peaceful-motor-catchup-control",
+      "expectation": "overshoot",
+      "stoppedAt": "2026-09-12T20:14:25.404Z",
+      "reportSha256": "e47cc3759ffd750f52c4d47b040e1878b49a2eed9cc75e30ce4d1275887134af",
+      "windowsSha256": "2a5cb282773a75cf36ea1e22f55baec7aa7232f3d45288fde3e412c613d0383d",
+      "bodyRecordsSha256": "7160160771096fbdf7b6d8cde9f7a74765e528f95bb722250916b3867e7147e6",
+      "actorBodySha256": "a6a0706c50b4763ac9bfa35e8c0a6b1599dbab0c5b6b225ace56f67414c154dd",
+      "calibrationScriptSha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf",
+      "trials": [
+        {
+          "round": 0,
+          "loaded": false,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 26,
+          "endSequence": 42,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "3028646d-c844-4bc0-a826-4cb1d7157315:event-1"
+        },
+        {
+          "round": 0,
+          "loaded": true,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 61,
+          "endSequence": 76,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "3028646d-c844-4bc0-a826-4cb1d7157315:event-2"
+        },
+        {
+          "round": 1,
+          "loaded": false,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 95,
+          "endSequence": 111,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "3028646d-c844-4bc0-a826-4cb1d7157315:event-3"
+        },
+        {
+          "round": 1,
+          "loaded": true,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 130,
+          "endSequence": 146,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "3028646d-c844-4bc0-a826-4cb1d7157315:event-4"
+        },
+        {
+          "round": 2,
+          "loaded": false,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 167,
+          "endSequence": 182,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "3028646d-c844-4bc0-a826-4cb1d7157315:event-5"
+        },
+        {
+          "round": 2,
+          "loaded": true,
+          "requestedTicks": 4,
+          "pressedTicks": 7,
+          "displacement": 1.5073127400226338,
+          "startSequence": 202,
+          "endSequence": 221,
+          "serverPosition": [
+            0.5,
+            64,
+            -1.0073127400226338
+          ],
+          "eventId": "3028646d-c844-4bc0-a826-4cb1d7157315:event-6"
+        }
+      ]
+    },
+    {
+      "source": "D:\\Kairos project\\.kairos\\worktrees\\native-continuation-20260913\\evidence\\peaceful-motor-catchup-candidate",
+      "expectation": "exact",
+      "stoppedAt": "2026-09-12T20:15:43.424Z",
+      "reportSha256": "4d950587a3a67fa8c52187946a407d6cdb5a6d3df42ecd515f28bf0db0038b3f",
+      "windowsSha256": "5c794b934498e5f67675f387fc179a346f71ba06aab1c2df390c034da497ac28",
+      "bodyRecordsSha256": "efd1601033edb136b97ff045b5906fc22fe28534043881f21ab896d06f557774",
+      "actorBodySha256": "5e195b8810c793678474b911d0a20213ab7941d272756d48b4fc179f0fc94154",
+      "calibrationScriptSha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf",
+      "trials": [
+        {
+          "round": 0,
+          "loaded": false,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 25,
+          "endSequence": 42,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "d8548182-5cb6-4990-9853-f5f13ba8c63c:event-1"
+        },
+        {
+          "round": 0,
+          "loaded": true,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 61,
+          "endSequence": 76,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "d8548182-5cb6-4990-9853-f5f13ba8c63c:event-2"
+        },
+        {
+          "round": 1,
+          "loaded": false,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 94,
+          "endSequence": 111,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "d8548182-5cb6-4990-9853-f5f13ba8c63c:event-3"
+        },
+        {
+          "round": 1,
+          "loaded": true,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 130,
+          "endSequence": 146,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "d8548182-5cb6-4990-9853-f5f13ba8c63c:event-4"
+        },
+        {
+          "round": 2,
+          "loaded": false,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 164,
+          "endSequence": 180,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "d8548182-5cb6-4990-9853-f5f13ba8c63c:event-5"
+        },
+        {
+          "round": 2,
+          "loaded": true,
+          "requestedTicks": 4,
+          "pressedTicks": 4,
+          "displacement": 0.8571697198364467,
+          "startSequence": 199,
+          "endSequence": 215,
+          "serverPosition": [
+            0.5,
+            64,
+            -0.3571697198364468
+          ],
+          "eventId": "d8548182-5cb6-4990-9853-f5f13ba8c63c:event-6"
+        }
+      ]
+    }
+  ],
+  "limitation": "Isolated actuator boundary calibration, not a retained-learning or multistage task outcome. Native jump/item checks were not run."
+}

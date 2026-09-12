@@ -320,6 +320,30 @@ export class MinecraftBody extends EventEmitter {
     await this.#until(() => this.#sequence >= start + count || this.bot.health <= 0,
       Math.max(10_000, count * 200), signal); this.check();
   }
+  async #holdMotor(action: Action, ticks: number, press: () => void, release: () => void): Promise<void> {
+    const start = this.#sequence; let released = false;
+    const releaseOnce = (reason: 'interval-complete' | 'interrupted') => {
+      if (released) return;
+      released = true; release();
+      this.record('body-motor-release', { version: 'MeasuredMotorRelease1', action,
+        requestedTicks: ticks, startSequence: start, releaseSequence: this.#sequence,
+        observedIntervals: this.#sequence - start, reason });
+    };
+    const frame = () => {
+      if (this.bot.health <= 0) releaseOnce('interrupted');
+      else if (this.#sequence >= start + ticks) releaseOnce('interval-complete');
+    };
+    const fault = () => releaseOnce('interrupted');
+    // Mineflayer runs several physical steps synchronously during catch-up.
+    // A promise resolved on the deadline resumes only AFTER that batch. Release
+    // inside the frame callback, before the next simulation step reads controls.
+    this.on('frame', frame); this.on('fault', fault);
+    try { press(); await this.waitTicks(ticks); }
+    finally {
+      this.off('frame', frame); this.off('fault', fault);
+      if (!released) releaseOnce('interrupted');
+    }
+  }
   async #digWithinWindow(target: Parameters<Bot['dig']>[0]): Promise<'completed' | 'observation-limit'> {
     const start = this.#sequence;
     // This is the client's protocol timing, not a learned effect or a signal
@@ -607,20 +631,27 @@ export class MinecraftBody extends EventEmitter {
         }
         case 'move': {
           const key = String(action.parameters.direction); assert(['forward', 'back', 'left', 'right'].includes(key), 'invalid-move-direction');
-          this.#physicalCalls++; this.bot.setControlState(key as 'forward', true); await this.waitTicks(integer('ticks', 1, 20, 4)); break;
+          this.#physicalCalls++;
+          await this.#holdMotor(action, integer('ticks', 1, 20, 4),
+            () => this.bot.setControlState(key as 'forward', true), () => this.bot.clearControlStates()); break;
         }
-        case 'jump': this.#physicalCalls++; this.bot.setControlState('jump', true);
-          if (action.parameters.forward === true) this.bot.setControlState('forward', true);
-          if (heldMotor) await this.waitTicks(integer('holdTicks', 1, 20, 4));
+        case 'jump': this.#physicalCalls++;
+          if (heldMotor) await this.#holdMotor(action, integer('holdTicks', 1, 20, 4), () => {
+            this.bot.setControlState('jump', true);
+            if (action.parameters.forward === true) this.bot.setControlState('forward', true);
+          }, () => this.bot.clearControlStates());
           else { // Legacy pulse decoding is retained only for old action contracts.
+            this.bot.setControlState('jump', true);
+            if (action.parameters.forward === true) this.bot.setControlState('forward', true);
             await this.waitTicks(1); this.bot.setControlState('jump', false); await this.waitTicks(integer('ticks', 1, 20, 4));
           }
           break;
         case 'respawn': this.#physicalCalls++; this.bot.respawn();
           await this.#until(() => this.#sequence > start.sequence && this.bot.health > 0 && this.#clientLoadAfter === null, 120_000);
           break;
-        case 'use-item': this.#physicalCalls++; this.bot.activateItem();
-          await this.waitTicks(integer('holdTicks', 1, 40, 40)); this.bot.deactivateItem(); break;
+        case 'use-item': this.#physicalCalls++;
+          await this.#holdMotor(action, integer('holdTicks', 1, 40, 40), () => this.bot.activateItem(),
+            () => { if (this.bot.usingHeldItem) this.bot.deactivateItem(); }); break;
         case 'select-hotbar': this.#physicalCalls++; this.bot.setQuickBarSlot(integer('slot', 0, 8, 0)); await this.waitTicks(1); break;
         case 'interact': {
           this.#physicalCalls++;

@@ -90,7 +90,7 @@ A separate registered retention test uses the original initial world, original c
 
 The later model was also examined on the exact preserved action-start frame 19 from the earlier successful trial, with the same baseline and initial choice counter. The earlier model found a supported single-step approach at 100/500/2000 ms; the later model found none at all three budgets. Its longer hypothetical plan includes a later respawn, which is neither an accepted forecast nor an executed solution. This zero-trial, zero-write diagnostic shows that simply increasing the tested planning time budget did not recover a supported approach on this frame. Calibration-driven withdrawal of unreliable predictions, representation/retention and native task performance must be investigated separately; the earlier model's numerical accuracy was already poor.
 
-A causal multistage claim requires independently checked prerequisite changes and supported predicted-step traces; a conjunction, repeated movement or curiosity-only success is insufficient. Peaceful rules exclude claims of hostile survival and hunger management. Persistent task failure in this simplified scene points to the architecture/controller and prediction quality, rather than hostile-environment difficulty. The earlier synthetic ten-stage failure concerned wall-clock test design; it was not native evidence.
+A causal multistage claim requires independently checked prerequisite changes and supported predicted-step traces; a conjunction, repeated movement or curiosity-only success is insufficient. Peaceful rules exclude claims of hostile survival and hunger management. Persistent task failure in this simplified scene requires checking prediction quality, the controller and actuator fidelity; hostile difficulty cannot explain it alone. The earlier synthetic ten-stage failure concerned wall-clock test design; it was not native evidence.
 
 Portable evidence preparation accepts an explicit checkpoint registry. It verifies the exact report, model, archive, provenance and each world member before creating a relocated predecessor. A modified registry is rejected before creating a destination. The package builder includes only registered stopped worlds and explicit supporting files, verifies every ZIP member, rejects changed inputs and excludes mutable runtime directories. Its three apparatus tests pass; synthetic packaging fixtures are never counted as native trials.
 
@@ -103,4 +103,45 @@ The body still uses engineered 25×19 RGBD, approximate entity/fluid optics, own
 
 The current evidence supports an initial experience-transfer benefit and a sustained one-hour native learning opportunity, plus actual exploratory partial prerequisites. It does not support successful long-term adaptation, retained task performance after the new updates, autonomous intention completion in these native runs, or supported open causal multistage completion. The controller repair is validated as progress bookkeeping, with no measured task-completion benefit in its small frozen pair. All limitations and failures are preserved.
 
-Keep peaceful mode and the existing simple scene. The next engineering target is the loss of usable, calibrated task predictions after continued learning, using the exact before/after models and frame-19 comparison in this package. Inspect contextual readout retention, prediction support and imagined affordances before changing the scene. Do not obtain success by weakening support criteria, teaching a prescribed route, treating hypothetical respawn as execution, or feeding goals/imagined outcomes into learning. A repaired model should first retain the earlier simple task under the same frozen comparison, then demonstrate genuinely supported prerequisite changes in the physical barrier task.
+Keep peaceful mode and the existing simple scene. The next engineering target is the loss of usable, calibrated task predictions after continued learning, using the exact before/after models and frame-19 comparison in this package. The actuator defect below is now repaired, but its effect on learning and retention remains unmeasured. New physical learning should use the corrected actor and preserve actual release receipts; historical model data must not be relabelled as if their controls had already been repaired. Continue inspecting contextual retention and prediction support. Do not obtain success by weakening support criteria, teaching a prescribed route, treating hypothetical respawn as execution, or feeding goals/imagined outcomes into learning. A repaired model should first retain the earlier simple task under the same frozen comparison, then demonstrate supported prerequisite changes in the physical barrier task.
+
+## Actuator timing diagnosis and native repair
+
+`evidence-backed` offline diagnosis: the later backward-motor circuit retains
+86 of 173 earlier samples after 174 new writes. Three of six samples in the
+old frame-19 longitudinal-motion region survive. The later partition selects
+a different ten-sample region, with outcome standard deviation about 0.540
+and zero correct contextual forecasts there. The old model itself relied on
+the global regression fallback: the local region had only six calibration
+samples and was unsupported. This does not establish that all task regression
+is forgetting; inaccurate early support and later withdrawal also matter.
+The inspection uses frozen snapshots and adds zero physical trials or writes.
+
+`validated` actuator defect: the installed Mineflayer physics loop can deliver
+four synchronous catch-up ticks. Releasing a held control only after awaiting
+a promise lets the next steps in that batch read the still-pressed control.
+A boundary regression reproduces three extra pressed ticks for movement,
+held jump and held-item use. The body now releases these offered controls in
+the frame callback at their deadline, and releases on interruption. It records
+the requested duration and actual release sequence. Legacy jump pulse syntax
+retains its historical behavior and is outside this offered-action repair.
+
+The registered peaceful native calibration uses three alternating unloaded /
+230 ms loaded pairs on a flat platform for each actor. Its independent SDK
+listener observes controls before the body's callback. Original R5 press counts
+are `[4,4,4,4,4,7]`; corrected R6 counts are `[4,4,4,4,4,4]`. The overlong original
+press travels 1.5073127400 blocks; the other eleven presses travel 0.8571697198.
+All twelve endpoints agree with the independently queried server positions.
+The original windows, control samples, release records and server replies pass
+`audit-native-motor-catchup.mjs`. The candidate freeze manifest SHA256 is
+`b7f6119c8302198d486c5dc85290072dd2400a3dd5b59ea790a7970d0513885d`.
+All native calibration processes are stopped.
+
+The corrected source passes 131/131 integrated checks; the separate focused
+body/passive group passes 28/28. The failing pre-repair log is preserved.
+These twelve evaluator-selected actions are apparatus calibration, with zero
+autonomous trials and zero learning writes. Native jump/item calibration was
+not performed. Historical native runs did not record exact control release,
+so this pair cannot determine how often overshoot occurred in them or how much
+of their retention failure it explains. Improved long-term learning remains
+a hypothesis requiring fresh physical learning and matched retention tests.
