@@ -112,3 +112,6 @@ of the same initial scene, not two new independent worlds. The R6 retention
 package overlays the primary and motor packages and keeps the two main
 manifests; preserve or rename an existing root `EVIDENCE-MANIFEST.json` before
 extracting a later package with its own manifest.
+The retention ZIP is 152,252,646 bytes and contains 1,902 verified files. All
+three ZIPs are uploaded, with GitHub SHA256 matching the locally verified
+packages; their exact identities are in [artifact.json](artifact.json).

@@ -6,7 +6,7 @@
     "tag": "native-evidence-2026-09-13",
     "isDraft": true
   },
-  "verifiedAt": "2026-09-12T20:29:31.968Z",
+  "verifiedAt": "2026-09-12T20:37:48.755Z",
   "artifacts": [
     {
       "version": "VerifiedNativeEvidencePackage1",
@@ -48,7 +48,23 @@
       "githubAssetId": 559894185,
       "githubState": "uploaded",
       "githubDigestVerified": true
+    },
+    {
+      "version": "VerifiedNativeEvidencePackage1",
+      "file": "kairos-r6-retention-20260913.zip",
+      "bytes": 152252646,
+      "sha256": "c101005a5db36fdec8de7a246d0501376bef00bf673dc417266574b2236b3639",
+      "filesVerified": 1902,
+      "runs": [
+        "peaceful-retention-r6",
+        "peaceful-retention-r6-valid"
+      ],
+      "registrySha256": "5e20b05382d5544a21072e8554bf78db2a5ace1318501fa63dd15d69353b77a9",
+      "sourceCommit": "a09bbebcad725082a709af7ea7693c1359b1880a",
+      "githubAssetId": 559914682,
+      "githubState": "uploaded",
+      "githubDigestVerified": true
     }
   ],
-  "scope": "The primary package has 15 registered stopped checkpoints, not 15 independent worlds. The motor supplement has 12 evaluator-selected calibration actions and zero autonomous trials. Later R6 retention evidence is separate."
+  "scope": "Primary: 15 stopped checkpoint entries. Motor supplement: 12 evaluator-selected calibration actions, zero autonomous trials. R6 retention: two additional stopped entries, one excluded launch and one valid failed candidate in the same initial scene. These are not independent-world counts."
 }
