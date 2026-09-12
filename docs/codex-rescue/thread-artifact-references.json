@@ -1,0 +1,206 @@
+[
+  {
+    "index": 304,
+    "id": "7c4cfee2-6386-574b-aa63-348d0f165185",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-first-principles-review.md"
+  },
+  {
+    "index": 304,
+    "id": "7c4cfee2-6386-574b-aa63-348d0f165185",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-first-principles.patch"
+  },
+  {
+    "index": 584,
+    "id": "5f27e2d0-f26c-57c4-858e-0ef29dd58745",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-first-principles-review.md"
+  },
+  {
+    "index": 584,
+    "id": "5f27e2d0-f26c-57c4-858e-0ef29dd58745",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-first-principles.patch"
+  },
+  {
+    "index": 1131,
+    "id": "699802c6-1143-5ec4-a7cf-8d4e99aa9bf3",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-capability-review.md"
+  },
+  {
+    "index": 1131,
+    "id": "699802c6-1143-5ec4-a7cf-8d4e99aa9bf3",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-first-principles.patch"
+  },
+  {
+    "index": 1131,
+    "id": "699802c6-1143-5ec4-a7cf-8d4e99aa9bf3",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-capability-evidence.tar.gz"
+  },
+  {
+    "index": 1540,
+    "id": "82fb779b-e0d4-5df1-a1fc-c4055021d170",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-capability-review.md"
+  },
+  {
+    "index": 1540,
+    "id": "82fb779b-e0d4-5df1-a1fc-c4055021d170",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-experience-rebuild.patch"
+  },
+  {
+    "index": 1540,
+    "id": "82fb779b-e0d4-5df1-a1fc-c4055021d170",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-first-principles.patch"
+  },
+  {
+    "index": 1540,
+    "id": "82fb779b-e0d4-5df1-a1fc-c4055021d170",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-experience-evidence.tar.gz"
+  },
+  {
+    "index": 1540,
+    "id": "82fb779b-e0d4-5df1-a1fc-c4055021d170",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-capability-validation.json"
+  },
+  {
+    "index": 2029,
+    "id": "28f37325-72dc-5ba3-be80-8436bc30bb68",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-minecraft-review.md"
+  },
+  {
+    "index": 2029,
+    "id": "28f37325-72dc-5ba3-be80-8436bc30bb68",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-github-sync.bundle"
+  },
+  {
+    "index": 2029,
+    "id": "28f37325-72dc-5ba3-be80-8436bc30bb68",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-minecraft-evidence.tar.gz"
+  },
+  {
+    "index": 2142,
+    "id": "76f676c1-7f02-5fa0-9c5e-0fd06adb8cab",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-perception-root-cause.md"
+  },
+  {
+    "index": 2142,
+    "id": "76f676c1-7f02-5fa0-9c5e-0fd06adb8cab",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-perception-evidence.tar.gz"
+  },
+  {
+    "index": 2857,
+    "id": "b54912e3-26f6-5a21-a0a9-553a40c628a4",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-perception-repair.md"
+  },
+  {
+    "index": 2896,
+    "id": "92ecda59-fbd2-5c30-9009-d16e3db13540",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-github-ready-1206bb5.zip"
+  },
+  {
+    "index": 2896,
+    "id": "92ecda59-fbd2-5c30-9009-d16e3db13540",
+    "type": "content_references",
+    "value": [
+      {
+        "type": "file",
+        "matched_text": "kairos-github-ready-1206bb5.zip",
+        "start_idx": 61,
+        "end_idx": 92,
+        "alt": null,
+        "refs": [],
+        "name": "kairos-github-ready-1206bb5.zip",
+        "id": "file_00000000096081f5ae864f78a32ab09a",
+        "source": "my_files",
+        "library_file_id": "libfile_281fc47cba488191b47f232099fff10d"
+      }
+    ]
+  },
+  {
+    "index": 3667,
+    "id": "ff4c5b70-4cdc-57f4-9a57-f290289d099e",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-012ab7e.zip"
+  },
+  {
+    "index": 3667,
+    "id": "ff4c5b70-4cdc-57f4-9a57-f290289d099e",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-03.tar.gz"
+  },
+  {
+    "index": 3858,
+    "id": "f7cead0a-f966-5f3b-b04b-75130e33abda",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-ce2f345.zip"
+  },
+  {
+    "index": 3858,
+    "id": "f7cead0a-f966-5f3b-b04b-75130e33abda",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-04.tar.gz"
+  },
+  {
+    "index": 4065,
+    "id": "78e476d4-4009-553e-8032-a283462b6a6d",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-aa01d19.zip"
+  },
+  {
+    "index": 4065,
+    "id": "78e476d4-4009-553e-8032-a283462b6a6d",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-05.tar.gz"
+  },
+  {
+    "index": 4303,
+    "id": "a38c6910-b84e-56a5-91df-0bbbd35de867",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-2839c3a.zip"
+  },
+  {
+    "index": 4303,
+    "id": "a38c6910-b84e-56a5-91df-0bbbd35de867",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-06.tar.gz"
+  },
+  {
+    "index": 4900,
+    "id": "37db95ce-fee7-5061-94e9-f976ed10136f",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-9e6ad8c.zip"
+  },
+  {
+    "index": 4900,
+    "id": "37db95ce-fee7-5061-94e9-f976ed10136f",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-09.tar.gz"
+  },
+  {
+    "index": 5360,
+    "id": "e43cb882-4671-5e22-913a-d46f4258665b",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-06b38bc.zip"
+  },
+  {
+    "index": 5360,
+    "id": "e43cb882-4671-5e22-913a-d46f4258665b",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-10.tar.gz"
+  },
+  {
+    "index": 6019,
+    "id": "dc4e4a01-496a-5190-833f-6b0b13cdf23d",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-63070f1.zip"
+  },
+  {
+    "index": 6019,
+    "id": "dc4e4a01-496a-5190-833f-6b0b13cdf23d",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-11.tar.gz"
+  },
+  {
+    "index": 6463,
+    "id": "49a0cb6a-d7aa-55a2-9045-782a837aa1d7",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-f483878.zip"
+  },
+  {
+    "index": 6463,
+    "id": "49a0cb6a-d7aa-55a2-9045-782a837aa1d7",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-12.tar.gz"
+  },
+  {
+    "index": 6975,
+    "id": "9cf912c5-dcff-5577-8835-ba6818ae36e3",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-code-ea097eb.zip"
+  },
+  {
+    "index": 6975,
+    "id": "9cf912c5-dcff-5577-8835-ba6818ae36e3",
+    "path": "sandbox:/workspace/scratch/7173c9a8d69e/deliverables/kairos-next-stage-evidence-13.tar.gz"
+  }
+]

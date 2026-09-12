@@ -9,18 +9,21 @@
 新导入提交；它不是对缺失的本地 Git 历史的重建。
 `source-manifest.json` 记录原快照每个文件的 SHA-256、Git blob SHA 和文件模式。
 
-## 最新保存状态
+## 原始保存状态与本次补充
 
 原始保存时间为 2026-09-11 21:26:05 UTC。`evidence/next-stage-checkpoint13.json`
 与源码 ZIP 的 Git 注释记录同一个来源提交。
 `evidence/v52c-integrated-tests.log` 记录定向集成门槛 120/120 通过、0 项失败。
-更早 V52/V52b 的失败日志也保留。本次源码导入仅验证字节、文件模式和树内容，
-没有重新运行项目测试或 Minecraft；不表示所有历史测试通过。
+更早 V52/V52b 的失败日志也保留。首次源码导入仅验证字节、文件模式和树内容。
+2026-09-13 的后续抢救已在 Windows / Node 24.14.0 重新编译并通过当前 120/120
+集成测试，日志见 `../codex-rescue/validation/next-stage-tests-windows.log`；
+本次没有启动 Minecraft，不表示所有历史测试通过。
 
 整体长期开放世界自主学习、生存和原生多阶段任务目标仍未达成。
 最新可核验的未完成运行名是 `native-unfamiliar-v52-passive-transfer`；
-其原始命令、输入检查点、运行中状态和后续结果未保存到可取得的存档，无法恢复。
-原线程末尾和可能的更晚回退也未取得，不能假称此导入等于其最终工作目录。
+后续抢救已取得它的原始命令、输入 V51 检查点、目标生成方法和暂停原因。
+该 V52 运行的现场、停机完成报告及后续结果仍未恢复；末尾所称的 121 项调度修复
+也没有可取得的补丁和测试原文，不能假称此导入等于原线程最终工作目录。
 工程文档中明确记录了 V36 删除 motion-uncertainty bonus 后的回退；
 当前保留的是后续 V52 保存版本，没有重新应用该已撤销实验。
 
@@ -39,8 +42,13 @@ npm run test:next-stage
 
 ## 接着做什么
 
-1. 固定源码、实际构建和学习检查点；重新记录 V52 迁移试验的 argv、cwd、世界种子、
-   时长/动作预算、目标、冻结范围与失败条件。新实验使用新目录和名称。
+先阅读根目录 `START_HERE.md`、[本次抢救报告](../codex-rescue/README.zh-CN.md)
+和 [下一任务说明](../codex-rescue/NEXT_CODEX_TASK.zh-CN.md)。首要事项是从当前
+源码复现并修复身体维护需求持续排除外部任务的问题，再继续原生验收。
+
+1. 固定源码、实际构建和学习检查点；以已恢复历史参数为参考，记录新迁移试验的
+   argv、cwd、世界种子、时长/动作预算、目标、冻结范围与失败条件。
+   新实验使用新目录和名称，不能声称重放了缺失的 V52 现场。
 2. 从可保存的 V51 会话/世界检查点检验恢复链路，再开始新的陌生世界评估。
    同一世界续跑使用 `--continue`；经验迁移到新世界使用 `--restore`。
    二者互斥，旧坐标目标和空间身份不能跨世界复用。
@@ -53,21 +61,20 @@ npm run test:next-stage
 
 ## 原始实机证据和恢复工具
 
-完整原始事件、会话、已停止世界与迁移工具在此前交付的
-`kairos-latest-source-tests-ea097eb.zip` 中。
-该交接 ZIP 的 SHA-256 为
+原线程曾交付 `kairos-latest-source-tests-ea097eb.zip`，记录的 SHA-256 为
 `956c2429ee74fcc402bd27900cc40a1c649eea7d9df858bd5142e24cfaad39f3`。
-解压后的包根目录有 `00_START_HERE.md`、`CODEX_HANDOFF.zh-CN.md`、
-`handoff/TASK_STATE.json`、`handoff/prepare_saved_resume.py`。
-这些路径相对于解压后的交接包，不是本仓库根目录。
+该完整包目前不可取得。本次从未完成下载中恢复 5,928 个完整成员，并以新的
+文件名和哈希发布到 [GitHub 抢救发布页](https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/rescue-2026-09-13)。
+新包保留完整成员原字节，未冒充原完整包；清单、校验方法和缺失范围见抢救报告。
 
 可核验的 V51 停止状态为 `native-natural-v51-bounded-fitting`，
 停止于 2026-09-11T21:13:53.615Z；累计 decisions 1600、executed 1445、
-writes 3149、passiveWindows 1704。其 session 和对应的停止世界都在交接 ZIP 中。
+writes 3149、passiveWindows 1704。其 session 和对应停止世界已恢复、校验并发布。
 它是较早的恢复起点，不是缺失 V52 运行的现场。
-原 fork 工具校验原绝对路径，迁移到新机器时应使用交接包提供的显式迁移工具，
+原 fork 工具校验原绝对路径，迁移到新机器时应使用仓库新增的
+`scripts/prepare-rescued-native-checkpoint.py` 显式迁移工具，
 保留原始 proof，不通过删掉校验或改写历史来源来强行恢复。
 
 原始证据中的机器路径只用于历史追溯。每次新运行保存实际命令、输入哈希、
 源码/执行构建、失败与成功日志、主动/被动事件、会话、停止世界和 provenance，
-并更新接手说明。没有保存的状态须继续明确标为“未保存、无法恢复”。
+并更新接手说明。没有取得的状态须继续明确标为“未恢复”。

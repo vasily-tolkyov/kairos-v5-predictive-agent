@@ -1,0 +1,68 @@
+{
+  "version": "KairosRecoveredV52Invocation1",
+  "status": "historical-command-recovered; runtime-state-not-recovered",
+  "sourceMessage": {
+    "index": 6925,
+    "id": "2ff487f9-a797-4107-a288-69d41ec034d7",
+    "timestamp": "2026-09-11T21:19:04.021674+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c 'node ../execution-builds/v52/scripts/evaluate-minecraft-continuing.mjs --java ../native-runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java --server ../native-runtime/server-1.21.4.jar --output ../native-unfamiliar-v52-passive-transfer --restore ../native-natural-v51-bounded-fitting/session.json.gz --environment natural --world-seed 129604783 --goal ../recovered-evidence/v50-carry-and-reach-goal.json --goal-after 128 --steps 2048 --seconds 3600 --port 25624 > ../recovered-evidence/v52-native-unfamiliar-transfer.log 2>&1'"
+  },
+  "originalArguments": {
+    "executedBuild": "execution-builds/v52",
+    "java": "native-runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+    "server": "native-runtime/server-1.21.4.jar",
+    "output": "native-unfamiliar-v52-passive-transfer",
+    "restore": "native-natural-v51-bounded-fitting/session.json.gz",
+    "environment": "natural",
+    "world-seed": "129604783",
+    "goal": "recovered-evidence/v50-carry-and-reach-goal.json",
+    "goal-after": 128,
+    "steps": 2048,
+    "seconds": 3600,
+    "port": 25624,
+    "frozen": false
+  },
+  "counterSemantics": {
+    "steps": "additional loop iterations for this run",
+    "goal-after": "additional loop iterations before submission; zero-based i >= threshold",
+    "sessionStats": "cumulative across restore"
+  },
+  "goalGeneratorMessage": {
+    "index": 6631,
+    "id": "7fbef779-1e68-4efb-9b3a-2809514b8ec2",
+    "timestamp": "2026-09-11T20:47:41.756849+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"node scripts/erase-forked-native-experience.mjs ../native-unfamiliar-v50-erased-start > ../recovered-evidence/v50-erasure-control.log 2>&1\npython3 - <<'PY'\nimport json,pathlib\nr=pathlib.Path('..');o=json.loads((r/'native-unfamiliar-v50-start/initial-observation.json').read_text());target=o['self']['position'][2]-24\ng={'version':'GroundedGoalV1','id':'carry-and-reach','expression':{'kind':'all','children':[{'kind':'predicate','predicate':{'version':'GoalPredicateV1','id':'past-boundary','subject':{'kind':'self'},'observable':'position.2','comparator':'less-than','target':target}},{'kind':'predicate','predicate':{'version':'GoalPredicateV1','id':'grip-nonempty','subject':{'kind':'self'},'observable':'properties.gripCount','comparator':'greater-than','target':0}}]}}\n(r/'recovered-evidence/v50-carry-and-reach-goal.json').write_text(json.dumps(g,indent=2)); print('terminal criteria: z <',target,'and visible grip count > 0')\nPY\""
+  },
+  "goal": {
+    "id": "carry-and-reach",
+    "conjunction": [
+      {
+        "observable": "position.2",
+        "comparator": "less-than",
+        "target": null,
+        "targetFormula": "native-unfamiliar-v50-start/initial-observation.json.self.position[2] - 24",
+        "status": "numeric threshold not recovered"
+      },
+      {
+        "observable": "properties.gripCount",
+        "comparator": "greater-than",
+        "target": 0
+      }
+    ]
+  },
+  "pauseRequestMessage": {
+    "index": 6978,
+    "id": "49deeea1-45a3-4820-8c38-705d0caa85dc",
+    "timestamp": "2026-09-11T21:28:25.987027+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"python3 - <<'PY'\nfrom pathlib import Path\np=Path('native-unfamiliar-v52-passive-transfer/PAUSE');p.write_text('Diagnostic pause: after the external goal was submitted, persistent physiological maintenance monopolized all decision opportunities. Preserve actual world/model and journals before a generic non-starving intention arbitration repair. No task planning or overall success is claimed.\\\\n')\nPY\""
+  },
+  "pauseCompleted": null,
+  "latePatchPayloadRecovered": false,
+  "late121TestLogRecovered": false
+}

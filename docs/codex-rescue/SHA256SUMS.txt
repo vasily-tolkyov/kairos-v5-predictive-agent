@@ -1,0 +1,3 @@
+37cfac0881165b8c7ad57ff5bbec923a5448b685c499b4eaf59a5e9f2935b39b  kairos-recovered-evidence-20260913.zip
+b91a9dff21de09e5fc0fd9c1d168dad8d29d9535c2d7a77ad0a5c2f61b6361ce  kairos-v51-resume-20260913.zip
+a63fccbd619ce6d55bc012315adde4fded4f8cde16b22339f3d08468a418d67d  kairos-next-stage-code-ea097eb.zip

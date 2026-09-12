@@ -1,0 +1,379 @@
+{
+  "sourceFiles": 382,
+  "sourceMismatches": [],
+  "runs": [
+    {
+      "run": "native-natural-v47-optical-cold",
+      "status": "operator-paused",
+      "stoppedAt": "2026-09-11T20:35:07.405Z",
+      "final": {
+        "compressedBytes": 6986100,
+        "decisions": 1177,
+        "executed": 1023,
+        "writes": 1023,
+        "pendingGoals": 0,
+        "verifiedGoals": [
+          "reach-other-side"
+        ],
+        "investigating": "investigation-1175",
+        "retainedPlaces": 391,
+        "retainedSurfaces": 512,
+        "observations": 1803,
+        "visibleSurfaces": 11
+      },
+      "lifecycle": {
+        "spawns": 15,
+        "deaths": 14,
+        "recent": [
+          {
+            "kind": "body-spawn",
+            "observationSequence": 0,
+            "at": "2026-09-11T20:14:19.058Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 19920,
+            "at": "2026-09-11T20:30:54.995Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 19920,
+            "at": "2026-09-11T20:30:55.253Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 21079,
+            "at": "2026-09-11T20:31:54.738Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 21079,
+            "at": "2026-09-11T20:31:54.943Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 21294,
+            "at": "2026-09-11T20:32:07.048Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 21294,
+            "at": "2026-09-11T20:32:07.532Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 21484,
+            "at": "2026-09-11T20:32:18.490Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 21484,
+            "at": "2026-09-11T20:32:20.531Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 21678,
+            "at": "2026-09-11T20:32:30.147Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 21678,
+            "at": "2026-09-11T20:32:30.643Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 21894,
+            "at": "2026-09-11T20:32:42.843Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 21895,
+            "at": "2026-09-11T20:32:45.035Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 22054,
+            "at": "2026-09-11T20:32:53.418Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 22054,
+            "at": "2026-09-11T20:32:53.632Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 22204,
+            "at": "2026-09-11T20:33:02.755Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 22204,
+            "at": "2026-09-11T20:33:03.038Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 22387,
+            "at": "2026-09-11T20:33:13.640Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 22387,
+            "at": "2026-09-11T20:33:14.182Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 22518,
+            "at": "2026-09-11T20:33:22.191Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 22518,
+            "at": "2026-09-11T20:33:22.738Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 22705,
+            "at": "2026-09-11T20:33:33.497Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 22705,
+            "at": "2026-09-11T20:33:34.234Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 23000,
+            "at": "2026-09-11T20:33:50.539Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 23000,
+            "at": "2026-09-11T20:33:50.786Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 23260,
+            "at": "2026-09-11T20:34:05.238Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 23260,
+            "at": "2026-09-11T20:34:05.888Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 23393,
+            "at": "2026-09-11T20:34:13.945Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 23393,
+            "at": "2026-09-11T20:34:14.486Z"
+          }
+        ]
+      },
+      "sessionVersion": "ExperienceSession1",
+      "sessionSha256": "d9cdbc833da8ee74aa29a6cb9fdd2144ae1bf06e1046a7320ac2a7a3ef90c962",
+      "worldArchive": "stopped-world-v47-natural-verified.tar.gz",
+      "worldSha256": "bfb1fec42b23c7fad42ce1008a7b0241d83931c5574a83fb061d3b36aec5ec01",
+      "worldSeed": "884930717",
+      "worldRegions": 4,
+      "worldFileCount": 26,
+      "worldFiles": {
+        "world-v5-physical-control/DIM-1/data/raids.dat": "276d695d28fab076377b5d35f46b3cc01409605a32d3314f6b3254f6fc0ea8ee",
+        "world-v5-physical-control/DIM1/data/raids_end.dat": "276d695d28fab076377b5d35f46b3cc01409605a32d3314f6b3254f6fc0ea8ee",
+        "world-v5-physical-control/advancements/136824b8-89a5-3717-81f9-1b11bd3b889d.json": "30f2fdd22287202433de954bc8e1483c2263c64196bd4fc6ca0b4e3d8e0fadd8",
+        "world-v5-physical-control/data/raids.dat": "276d695d28fab076377b5d35f46b3cc01409605a32d3314f6b3254f6fc0ea8ee",
+        "world-v5-physical-control/data/random_sequences.dat": "fd387ac78eb874d7c8e43c0c6419bfcacaec622c62a43a3d07b3a6b0569d74e0",
+        "world-v5-physical-control/data/scoreboard.dat": "75e55e2261e5ddf47d5e73cef2c2715d605ec77aebce2c9adb664329e3bc8fa6",
+        "world-v5-physical-control/entities/r.-1.-1.mca": "430ef3fefc2c53667e6df23489e4bf551be0c7638092256bd9a851c043e19ac7",
+        "world-v5-physical-control/entities/r.-1.0.mca": "505e1074a530c0ed348eefe4863d7da6e4c9b8f59b0d1d0f1905957f72026596",
+        "world-v5-physical-control/entities/r.0.-1.mca": "82dc35fe0e15a1bea3525c8aa3510d8b76d64d73952af07c262ae1b18cdac303",
+        "world-v5-physical-control/entities/r.0.0.mca": "badff676e7ee05b7bf8ab34690c58fdc3756fad5cee2a1983e6b71c1f9e383d1",
+        "world-v5-physical-control/level.dat": "25c069ea16a12816648f824782834d945566af816ea20de59efb5c806cd4a105",
+        "world-v5-physical-control/level.dat_old": "e5f353b2c9e9aa5b7566fd942d2451d88db08f63614fcd53eda9f8054aa6faa6",
+        "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat": "47e3b7d3331dfab803d052a5f20a487cd670f0e0a5bf47eab51334db9b63647b",
+        "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat_old": "58d95f2d5da6b5638bc40e9491c1359ce8612f85967278b1f8f5aa8bc8812558",
+        "world-v5-physical-control/poi/r.-1.-1.mca": "b27da0bf11c77245a8fa559d4d000cecc949a9a65b2a51512bc5476866f06f7a",
+        "world-v5-physical-control/poi/r.-1.0.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/poi/r.0.-1.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/poi/r.0.0.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/region/r.-1.-1.mca": "8c800417121ece0d52fa55216e9c331da65ac297fbb89864ea55b0792d0c52a7",
+        "world-v5-physical-control/region/r.-1.0.mca": "34a828a7dbd425b03eacd6b753cbcaf9b17e2caf2a46d91aed0e5cd0b97352f9",
+        "world-v5-physical-control/region/r.0.-1.mca": "ffa9863a526b5684a38e16b8044de68e675b4407405337af65beb832b1606a54",
+        "world-v5-physical-control/region/r.0.0.mca": "882d37b84aaf7c60d1ec772f54014bbe31d608b614f07d7ebe8d0e79d615b02e",
+        "world-v5-physical-control/session.lock": "51643361c79ecaef25a8de802de24f570ba25d9c2df1d22d94fade11b4f466cc",
+        "world-v5-physical-control/stats/136824b8-89a5-3717-81f9-1b11bd3b889d.json": "21ceb5287c2b86da03d075f1e3de662f8a55ca1280ef21fe2db0606ffc9c9426",
+        "server.properties": "8632e850b4bf438057bb8538e6f882b8b3970be37e206bb9712725ad08031ff0",
+        "logs/latest.log": "4e7746d1944843deb2384e694da530ea606ecd14a120ae8b3ba3a4c39f75e616"
+      },
+      "originalSource": "/workspace/scratch/7173c9a8d69e/native-natural-v47-optical-cold",
+      "originalRuntimeRoot": "/workspace/scratch/7173c9a8d69e/native-natural-v47-optical-cold/runtime",
+      "eventsRecovered": 1023,
+      "passiveEventsRecovered": 0,
+      "reportSha256": "787ae71c8bfc1ecb567414b69bb3f72eab98fd58900a122d3c9dcba46ea978cc",
+      "worldProofSha256": "1a9c05188e7e6723470569b38c2f6cb14f2beb623b2cbb65b33f09e8afad705c"
+    },
+    {
+      "run": "native-natural-v50-passive-continuation",
+      "status": "operator-paused",
+      "stoppedAt": "2026-09-11T20:55:09.630Z",
+      "final": {
+        "compressedBytes": 13886560,
+        "decisions": 1360,
+        "executed": 1206,
+        "writes": 2339,
+        "passiveWindows": 1133,
+        "passiveWrites": 1133,
+        "pendingGoals": 0,
+        "verifiedGoals": [
+          "reach-other-side"
+        ],
+        "investigating": "investigation-1307",
+        "retainedPlaces": 438,
+        "retainedSurfaces": 512,
+        "observations": 2169,
+        "visibleSurfaces": 17
+      },
+      "lifecycle": {
+        "spawns": 1,
+        "deaths": 0,
+        "recent": [
+          {
+            "kind": "body-spawn",
+            "observationSequence": 0,
+            "at": "2026-09-11T20:43:30.580Z"
+          }
+        ]
+      },
+      "sessionVersion": "ExperienceSession1",
+      "sessionSha256": "4ad39a1f2c062246336ee7b2f501e74d00714f5f6efdd3a64008ba17a013df47",
+      "worldArchive": "stopped-world-v50-verified.tar.gz",
+      "worldSha256": "aec85ebd759c69430d0f0bb0860645d3efd950b40cd958a0447f8e7a1fa63aff",
+      "worldSeed": "884930717",
+      "worldRegions": 4,
+      "worldFileCount": 27,
+      "worldFiles": {
+        "world-v5-physical-control/DIM-1/data/raids.dat": "c990ca8863d847f0eb6b81a323b354321f2ce836ba02084fb8e67636ab70976a",
+        "world-v5-physical-control/DIM1/data/raids_end.dat": "c990ca8863d847f0eb6b81a323b354321f2ce836ba02084fb8e67636ab70976a",
+        "world-v5-physical-control/advancements/136824b8-89a5-3717-81f9-1b11bd3b889d.json": "abd3b0c1b3166051f40af1b842559adbed5ff2b6240d5de10c9bc3ee01f70fd3",
+        "world-v5-physical-control/data/raids.dat": "c990ca8863d847f0eb6b81a323b354321f2ce836ba02084fb8e67636ab70976a",
+        "world-v5-physical-control/data/random_sequences.dat": "fd387ac78eb874d7c8e43c0c6419bfcacaec622c62a43a3d07b3a6b0569d74e0",
+        "world-v5-physical-control/data/scoreboard.dat": "75e55e2261e5ddf47d5e73cef2c2715d605ec77aebce2c9adb664329e3bc8fa6",
+        "world-v5-physical-control/entities/r.-1.-1.mca": "99cbaf2e2fd09d3656f28278ad309fd91e43347d6f56885971052cac9daecc7f",
+        "world-v5-physical-control/entities/r.-1.0.mca": "5eb92d4b90c97e0512536a10e5b6cbe0f60d79fd784ea9bda54b843dbbfd0021",
+        "world-v5-physical-control/entities/r.0.-1.mca": "9e05c8256953ea7c01cb3fe47afda2059b7227f495c9455f6d92e18036a9de38",
+        "world-v5-physical-control/entities/r.0.0.mca": "3b4ab90aff479f5bd2d62a3ef11dddc5c9ef9db6067e964fb5625ec309ee935c",
+        "world-v5-physical-control/level.dat": "db5823825f699d54e6fc90675d20b5b320668968a8851bf19398a2c9bf92c7da",
+        "world-v5-physical-control/level.dat_old": "e6930c17ba3b6b120d14ca171f14227e899d65bbc6da998c8eedf4f761d13fdb",
+        "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat": "60b8c52febfcd4294efa728ad8778608ef29d7ff54ee8dcb0ec6fe6a5579fe4d",
+        "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat_old": "78f4fa63a92293122e7ae2f4bf1ea5b10ae6f308e886593cf5f2efec418934fd",
+        "world-v5-physical-control/poi/r.-1.-1.mca": "b27da0bf11c77245a8fa559d4d000cecc949a9a65b2a51512bc5476866f06f7a",
+        "world-v5-physical-control/poi/r.-1.0.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/poi/r.0.-1.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/poi/r.0.0.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/region/r.-1.-1.mca": "7ce3b01ea430f96b9977f50ae56ec13aa63768a354ee79ba6898a303cc509dda",
+        "world-v5-physical-control/region/r.-1.0.mca": "13f1355dd4fcc03efb20632e16f50e4a3d9efdcded29436a941cb46c542406a0",
+        "world-v5-physical-control/region/r.0.-1.mca": "a14ae7ad7386f88e488c73f38f24d4048b48e30685b04fb158ef7bc74faec47f",
+        "world-v5-physical-control/region/r.0.0.mca": "1cccfc1ce745406fdad6b033492f53ece65662c945c9056f2507361ea23d055b",
+        "world-v5-physical-control/session.lock": "51643361c79ecaef25a8de802de24f570ba25d9c2df1d22d94fade11b4f466cc",
+        "world-v5-physical-control/stats/136824b8-89a5-3717-81f9-1b11bd3b889d.json": "9403d099848c7a97cf27f91e2bc766c62d2106264963e495c6b4429bf14504da",
+        "server.properties": "0bc503c590ec68d3e7016c75ccec64373ed5069cc745e71385f92e6423905f33",
+        "logs/2026-09-11-1.log.gz": "f6eeb89937862e8874c2e0ab893aa66a27e4f930759c0dd5aa009ae7ea9e1def",
+        "logs/latest.log": "fde9e5b6b458575624f119286771d255452c51fc661c519490dd85aef59e4425"
+      },
+      "originalSource": "/workspace/scratch/7173c9a8d69e/native-natural-v50-passive-continuation",
+      "originalRuntimeRoot": "/workspace/scratch/7173c9a8d69e/native-natural-v47-optical-cold/runtime",
+      "eventsRecovered": 183,
+      "passiveEventsRecovered": 1133,
+      "reportSha256": "d549832e8160ec2b09d35182cc083e7ecdfbfcf07698e1a4e0495d164e1e5ef8",
+      "worldProofSha256": "bc5d5a32a9a8a1eb169cef9d8d2b50327adb26e5d2192364a1b424134f653f94"
+    },
+    {
+      "run": "native-natural-v51-bounded-fitting",
+      "status": "operator-paused",
+      "stoppedAt": "2026-09-11T21:13:53.615Z",
+      "final": {
+        "compressedBytes": 18104769,
+        "decisions": 1600,
+        "executed": 1445,
+        "writes": 3149,
+        "passiveWindows": 1704,
+        "passiveWrites": 1704,
+        "pendingGoals": 0,
+        "verifiedGoals": [
+          "reach-other-side"
+        ],
+        "investigating": "investigation-1579",
+        "retainedPlaces": 502,
+        "retainedSurfaces": 512,
+        "observations": 2615,
+        "visibleSurfaces": 26
+      },
+      "lifecycle": {
+        "spawns": 2,
+        "deaths": 1,
+        "recent": [
+          {
+            "kind": "body-spawn",
+            "observationSequence": 0,
+            "at": "2026-09-11T21:07:58.058Z"
+          },
+          {
+            "kind": "body-death",
+            "observationSequence": 6254,
+            "at": "2026-09-11T21:13:10.935Z"
+          },
+          {
+            "kind": "body-spawn",
+            "observationSequence": 6254,
+            "at": "2026-09-11T21:13:11.113Z"
+          }
+        ]
+      },
+      "sessionVersion": "ExperienceSession1",
+      "sessionSha256": "80c5707a74816434968924c80b11324d6ee567d763cb50eed9fb4400059b0d17",
+      "worldArchive": "stopped-world-v51-verified.tar.gz",
+      "worldSha256": "1891e013d7c0154ab42a3806703411a03cf5bce04819138505d71a6f444ee947",
+      "worldSeed": "884930717",
+      "worldRegions": 4,
+      "worldFileCount": 28,
+      "worldFiles": {
+        "world-v5-physical-control/DIM-1/data/raids.dat": "90900a68188cdf0c86371997c8f5263601d213414aef8f813a6b6944bbc51997",
+        "world-v5-physical-control/DIM1/data/raids_end.dat": "90900a68188cdf0c86371997c8f5263601d213414aef8f813a6b6944bbc51997",
+        "world-v5-physical-control/advancements/136824b8-89a5-3717-81f9-1b11bd3b889d.json": "abd3b0c1b3166051f40af1b842559adbed5ff2b6240d5de10c9bc3ee01f70fd3",
+        "world-v5-physical-control/data/raids.dat": "90900a68188cdf0c86371997c8f5263601d213414aef8f813a6b6944bbc51997",
+        "world-v5-physical-control/data/random_sequences.dat": "38b62b9d597ac3f581345ca74e79d73b9faa33bb2d63eabe6e5452133753f211",
+        "world-v5-physical-control/data/scoreboard.dat": "75e55e2261e5ddf47d5e73cef2c2715d605ec77aebce2c9adb664329e3bc8fa6",
+        "world-v5-physical-control/entities/r.-1.-1.mca": "b1652362c23a0d92041199b286d861b273d72d1cff233db9c57c7bdf0b0b6503",
+        "world-v5-physical-control/entities/r.-1.0.mca": "dd7aa797029ac7515e73ff1af1abd0999591242d0d5458b76dab90bf5facb09c",
+        "world-v5-physical-control/entities/r.0.-1.mca": "27e8ce30509a0aebf429323d3def0994fa134671818faf7ec34b5bf6184e6644",
+        "world-v5-physical-control/entities/r.0.0.mca": "1b8768f83504ef2741ee0a1257c2a294d2ec66c630403543b238ce4feb7b5fd7",
+        "world-v5-physical-control/level.dat": "668d643c513216f834ad6eb11b178c680c984d2ebfd0b40f5a4fc619aa4c0ef0",
+        "world-v5-physical-control/level.dat_old": "09d7219a82bf3c7e26196eabcee5872f5c5a3f188fdfb9abed8ec1901a263e08",
+        "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat": "c78c85a348c1e8f4ee00da5513a719fa9141583cf717567b958aedef570833e3",
+        "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat_old": "99e9660236c10f475ed36177a2b752e16eaf755b1a1c92acdb75e222b91c31fc",
+        "world-v5-physical-control/poi/r.-1.-1.mca": "b27da0bf11c77245a8fa559d4d000cecc949a9a65b2a51512bc5476866f06f7a",
+        "world-v5-physical-control/poi/r.-1.0.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/poi/r.0.-1.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/poi/r.0.0.mca": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "world-v5-physical-control/region/r.-1.-1.mca": "cfc16550d09ee0e9847581bed59f2c6ea608c87a2a4fe5868edcae2cc11af122",
+        "world-v5-physical-control/region/r.-1.0.mca": "e51d329f5d89338e7ede775db73534e4f875e4eb047d664c75b03ba9ccbce239",
+        "world-v5-physical-control/region/r.0.-1.mca": "24e1eaeaa6ae318c5aba2b82cdec549bb91e1803e3817752703e89190ebbf22a",
+        "world-v5-physical-control/region/r.0.0.mca": "bddffb35b0ac421e1f0946013bac0f735161cccdcb09f2ebd4f891cb86bb800f",
+        "world-v5-physical-control/session.lock": "51643361c79ecaef25a8de802de24f570ba25d9c2df1d22d94fade11b4f466cc",
+        "world-v5-physical-control/stats/136824b8-89a5-3717-81f9-1b11bd3b889d.json": "d3821607dc97641e4a5e5f9c10991dadf768935a224f251379afe8531565c901",
+        "server.properties": "edbec9d9c6c19a4e23557b9090eeb076770569c16ee4910ca007b4febf4e12f1",
+        "logs/2026-09-11-1.log.gz": "f6eeb89937862e8874c2e0ab893aa66a27e4f930759c0dd5aa009ae7ea9e1def",
+        "logs/2026-09-11-2.log.gz": "b65c590e4b75a057a4db9e9b6c30def758a2cb318e24279f39253993fbfe7c8e",
+        "logs/latest.log": "720c5d96936653034f748d9dfc3636c0d917bf680b16a474a0e0706e5dc3cf7b"
+      },
+      "originalSource": "/workspace/scratch/7173c9a8d69e/native-natural-v51-bounded-fitting",
+      "originalRuntimeRoot": "/workspace/scratch/7173c9a8d69e/native-natural-v47-optical-cold/runtime",
+      "eventsRecovered": 239,
+      "passiveEventsRecovered": 571,
+      "reportSha256": "bf81908afbeb5ae3ddda4b5324a21445278a61a83e958c657e7c6e08761f8271",
+      "worldProofSha256": "98b660c4dc82b1c6cb8671b22c51d2df88d3fea3996f7b392e7610d0dc90b1e1"
+    }
+  ]
+}
