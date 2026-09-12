@@ -1,0 +1,53 @@
+{
+  "version": "PeacefulNativeOneHourEvidence1",
+  "actor": "peaceful-r3",
+  "status": "duration-paused",
+  "stoppedAt": "2026-09-12T19:35:30.555Z",
+  "seconds": 3615.815,
+  "newDecisions": 1041,
+  "newActions": 1032,
+  "newWrites": 7223,
+  "newPassiveWindows": 6191,
+  "initialPosition": [
+    -3.5,
+    74,
+    -2.5
+  ],
+  "taskSubmissionPosition": [
+    6.466020157077054,
+    60.875,
+    19.7
+  ],
+  "finalPosition": [
+    8.3,
+    61.875,
+    46.01216825431156
+  ],
+  "goalStatus": "pending",
+  "deaths": {
+    "reported": 0,
+    "serverMessages": []
+  },
+  "supportedTaskPlans": 47,
+  "supportedTaskMultistep": 0,
+  "recordedNodeRssMB": {
+    "min": 698.73828125,
+    "max": 1853.41796875,
+    "final": 1615.25390625
+  },
+  "modelCompressedBytes": 31140359,
+  "retainedPlaces": 259,
+  "retainedSurfaces": 512,
+  "progressAudit": {
+    "taskWindows": 853,
+    "advances": 262,
+    "creditedAdvances": 0,
+    "uncreditedAdvances": 262,
+    "falseCredits": 0,
+    "deferredTaskWindows": 79,
+    "uncreditedAdvancesWithSoonCooldown": 36
+  },
+  "worldArchiveSha256": "edd26f33c8c4dc5a496f433230809a8d7159503d0f4f24d2d91bed27c600559f",
+  "sessionSha256": "1fb7c1ca445c8fad761274f5cb75a6c2c382874c69e270f8cb2684b2084da635",
+  "scope": "One-hour uninterrupted peaceful native learning opportunity with real actions and writes. No terminal success, autonomous intention success or supported multistage task; does not establish lifelong learning or positive task benefit from continued updates."
+}

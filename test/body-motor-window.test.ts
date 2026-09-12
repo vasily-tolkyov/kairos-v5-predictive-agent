@@ -77,6 +77,30 @@ test('a held motor keeps its requested duration and returns ongoing motion witho
   assert.throws(() => validateAction({ kind: 'jump', parameters: { forward: false, holdTicks: 0 } }), /hold-ticks/);
 });
 
+test('requested motor duration survives a synchronous physics catch-up batch', async t => {
+  const cases = [
+    { action: { kind: 'move', parameters: { direction: 'forward', ticks: 4 } }, ticks: 4, control: 'forward' },
+    { action: { kind: 'jump', parameters: { forward: true, holdTicks: 20 } }, ticks: 20, control: 'jump' },
+    { action: { kind: 'use-item', parameters: { holdTicks: 40 } }, ticks: 40, control: 'item' },
+  ] as const;
+  for (const entry of cases) await t.test(entry.action.kind, async t => {
+    const h = fixture(t); await h.tick(1);
+    const pending = h.body.execute(entry.action); void pending.catch(() => {});
+    await h.tick(entry.ticks - 1);
+    let additionalPressedTicks = 0;
+    // Mineflayer can simulate up to four ticks in one synchronous timer turn.
+    // Promise continuations cannot release a button between those callbacks.
+    for (let i = 0; i < 4; i++) {
+      if (entry.control === 'item' ? h.bot.usingHeldItem : h.bot.controls.get(entry.control)) additionalPressedTicks++;
+      h.bot.emit('physicsTick');
+    }
+    assert.equal(additionalPressedTicks, 1, 'the final requested tick must synchronously release the motor');
+    await turn(); await h.tick(12); const receipt = await pending;
+    assert(receipt.event); validateEvent(receipt.event);
+    assert.equal(h.bot.controls.size, 0); assert.equal(h.bot.usingHeldItem, false);
+  });
+});
+
 test('the passive port returns exactly its measured interval without motor output or waiting for stability', async t => {
   const h = fixture(t); await h.tick(1); h.body.takePassiveEvents();
   const offer = h.body.listActionOffers().find(value => value.action.kind === 'passive'); assert(offer);

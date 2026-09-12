@@ -1,0 +1,99 @@
+✔ observed stationary outcomes remain possible throughout a multistep forecast (71.673794ms)
+✔ small consistently measured motion can still compose a valid goal without an arbitrary dead zone (36.07872ms)
+✔ uncertain geometry obeys the measured coordinate transform and includes all possible yaw rotations (0.852001ms)
+✔ a future action cannot select the convenient side of an uncertain prerequisite (10.330114ms)
+✔ a globally accurate small mean cannot overrule a missing context with incompatible responses (79.638818ms)
+✔ grounded gaze goals use the predicted visible role and its numeric possibility range (0.346873ms)
+✔ imagined numeric envelopes cannot be learned as additional physical evidence (0.507952ms)
+✖ a sparse local response cannot borrow global regression calibration and can become supported through learning (128.996514ms)
+✖ regression cannot bypass the observed context range, including an uncertain future input (233.435064ms)
+✖ supported numeric ranges include measured pre-update residuals on a smooth held-out response (383.633021ms)
+✖ a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response (396.030058ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 7
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1444.333768
+
+✖ failing tests:
+
+test at dist/test/prediction-ranges.test.js:123:1
+✖ a sparse local response cannot borrow global regression calibration and can become supported through learning (128.996514ms)
+  AssertionError [ERR_ASSERTION]: six local calibration windows cannot inherit the frequent region's global score
+      at TestContext.<anonymous> (file:///workspace/scratch/4e465cab31cd/kairos/dist/test/prediction-ranges.test.js:138:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at dist/test/prediction-ranges.test.js:157:1
+✖ regression cannot bypass the observed context range, including an uncertain future input (233.435064ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(!model.medium.predict(offer(outside).cue, outside).supportedFields.includes('self/position.2'))
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4e465cab31cd/kairos/dist/test/prediction-ranges.test.js:166:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at dist/test/prediction-ranges.test.js:180:1
+✖ supported numeric ranges include measured pre-update residuals on a smooth held-out response (383.633021ms)
+  AssertionError [ERR_ASSERTION]: a small point error does not justify a narrower empirical range that excludes the actual outcome
+      at TestContext.<anonymous> (file:///workspace/scratch/4e465cab31cd/kairos/dist/test/prediction-ranges.test.js:185:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at dist/test/prediction-ranges.test.js:190:1
+✖ a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response (396.030058ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(compareExperiencePrediction(prediction, actual).errors.find(error => error.field === 'self/position.2').matched)
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/4e465cab31cd/kairos/dist/test/prediction-ranges.test.js:198:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

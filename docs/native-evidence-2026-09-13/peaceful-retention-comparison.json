@@ -1,0 +1,66 @@
+{
+  "version": "PeacefulNativeRetentionPair1",
+  "reference": "peaceful-natural-retained-frozen",
+  "postLearningRun": "peaceful-retention-after-learning",
+  "sameActorAndHarness": true,
+  "sameGoal": true,
+  "sameBudgets": {
+    "decisions": 192,
+    "seconds": 480
+  },
+  "before": {
+    "actions": 40,
+    "decisions": 46,
+    "seconds": 108.082,
+    "goalStatus": "verified",
+    "newWrites": 0,
+    "finalPosition": [
+      -3.880784686936611,
+      62,
+      -14.915114840135953
+    ],
+    "supportedTaskPlans": 25
+  },
+  "after": {
+    "actions": 191,
+    "decisions": 192,
+    "seconds": 351.602,
+    "goalStatus": "pending",
+    "newWrites": 0,
+    "learningDigestUnchanged": true,
+    "finalPosition": [
+      9.732385107196716,
+      60.875,
+      3.638440234311854
+    ],
+    "supportedTaskPlans": 0,
+    "hypotheses": 63,
+    "deaths": {
+      "reported": 0,
+      "serverMessages": []
+    },
+    "worldArchiveSha256": "87f2d609978cf970199547e746be7e64d87cc0a78aae3f05ca6e1645a75823e8"
+  },
+  "preparation": {
+    "version": "NativeLearningRetentionTransplant1",
+    "initialSource": "D:\\Kairos project\\.kairos\\worktrees\\native-continuation-20260913\\evidence\\peaceful-natural-initial",
+    "donor": "D:\\Kairos project\\.kairos\\worktrees\\native-continuation-20260913\\evidence\\peaceful-natural-online-long",
+    "beforeSessionSha256": "8cfdd33cc6ce4467a972483c28449d79899aaee83bafd3b2ed741ba3f4a6e833",
+    "afterSessionSha256": "6e71f4f4f4059f4ca22a76b7d9b84955f3d86b6f892db99877e86999b243e574",
+    "donorSessionSha256": "1fb7c1ca445c8fad761274f5cb75a6c2c382874c69e270f8cb2684b2084da635",
+    "donorReportSha256": "a3aea6a61627fd453487cc8b6059a8fec81b64ee6d7b51f3ec297d3435354775",
+    "originalReportSha256": "cc80cf262f3b63c258b3e06516e9af359a2b686915bdde61bdc063d934618f2e",
+    "beforeWrites": 5098,
+    "afterWrites": 12321,
+    "preservedChoices": 1801,
+    "preservedInitialCounters": {
+      "decisions": 2115,
+      "executed": 1940,
+      "passiveWindows": 3158
+    },
+    "unchangedWorldTreeSha256": "e9eab215b68c7e0dbdb2399217ef799cceb37a5e84f0da4a323910298044416b",
+    "newPhysicalTrials": 0,
+    "scope": "Only learned dynamics and affordances come from the stopped later model. All nonlearning initial controls and world bytes are unchanged. This preparation is not another learning trial."
+  },
+  "conclusion": "The previously successful task was not retained within the same budget after the one-hour online updates. This matched initial-scene result is a task-performance regression concern, not a general forgetting estimate. It does not distinguish representational forgetting, calibration-driven withdrawal of unreliable predictions, timed planning limits and native variability."
+}

@@ -1,0 +1,21 @@
+{
+  "version": "NativePlanOutcomeSummary1",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\native-continuation-20260913\\evidence\\peaceful-natural-retained-frozen",
+  "scope": "Recorded online comparisons, not a fresh prediction replay or a new trial",
+  "plans": 25,
+  "allPredictedPositionChannelsCorrect": 2,
+  "threePositionCoordinatesSupported": 0,
+  "goalAxisPredictions": 25,
+  "goalAxisCorrect": 2,
+  "wholeForecastMatched": 0,
+  "refuted": 0,
+  "actions": {
+    "passive": 6,
+    "move": 28,
+    "select-hotbar": 2,
+    "look": 1,
+    "jump": 1,
+    "interact": 1,
+    "break": 1
+  }
+}

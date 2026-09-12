@@ -1,0 +1,16 @@
+{
+  "version": "NativeLaunchProtocolDeviation1",
+  "run": "peaceful-progress-control-frozen",
+  "reason": "Omitted --goal allowed the historical harness to add default reach-other-side to the preserved custom task.",
+  "status": "operator-paused",
+  "newActions": 45,
+  "newWrites": 0,
+  "seconds": 108.497,
+  "taskIds": [
+    "peaceful-heldout-reach-20260913",
+    "reach-other-side"
+  ],
+  "excludedFromMatchedPair": true,
+  "worldArchiveSha256": "140d6a52cd09b7aa95e519c4d78b5a2f5c9387faebd436fa5beaf5f765dd1a55",
+  "correction": "Fresh copy from unchanged original archive; explicitly select the identical existing goal. New root harness guard rejects ambiguous custom-task continuation before booting."
+}

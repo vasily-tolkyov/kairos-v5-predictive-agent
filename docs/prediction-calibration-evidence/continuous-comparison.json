@@ -1,0 +1,104 @@
+{
+  "version": "SyntheticPredictionCalibrationDiagnostic1",
+  "nativeTrials": 0,
+  "scope": "Smooth mechanism diagnostic, not native retention or a blind benchmark. The 19-point grid is held out; its outcomes never update either frozen model.",
+  "scriptSha256": "c5598487a8184701b525e0b9797ced2bacc4cb9c3863292e7d319f61cd1865a7",
+  "builds": [
+    {
+      "experience-medium": "0d0bbfa8cf04d99ba911ba6ca3a6ff1180e6d77f399dbc57f95d1789f80ac2c3",
+      "contextual-readout": "ba187f2dce00896d654eb4afb105d7b7a7338e9a3196413fc472e7025295a72a",
+      "experience-agent": "d96e171633735c89852fd26e698ff4e606561880ddf7535a1422b76aa1baba66",
+      "numeric-ranges": "6fb183f6b48287414af6480bcee92aa1f4b8310f94aafb958a733376f242a07e",
+      "events": "88b9c6b66a0e2d71fe365fb5f3ae35f818b4d43f40828058f3bd02439bbde674"
+    },
+    {
+      "experience-medium": "256ed93476e66c3c65461ae5f7b88aca1045e815af9349afc6cfc44be6117c51",
+      "contextual-readout": "1d7c40067314d716153b00665ebaa955b05c683ccd76ae55b47b33b6f67944f6",
+      "experience-agent": "d96e171633735c89852fd26e698ff4e606561880ddf7535a1422b76aa1baba66",
+      "numeric-ranges": "6fb183f6b48287414af6480bcee92aa1f4b8310f94aafb958a733376f242a07e",
+      "events": "88b9c6b66a0e2d71fe365fb5f3ae35f818b4d43f40828058f3bd02439bbde674"
+    }
+  ],
+  "rows": [
+    {
+      "seed": 123,
+      "scale": 0.2,
+      "identicalLearnedState": true,
+      "modelSha256": "14b01727a8b3e70ff5bebd737a04516b9b6e904bde92e2c2ca658919909e0fe7",
+      "baseline": {
+        "queries": 19,
+        "supported": 19,
+        "matched": 17,
+        "directional": 19,
+        "meanWidth": 0.00999742407890918
+      },
+      "candidate": {
+        "queries": 19,
+        "supported": 18,
+        "matched": 18,
+        "directional": 18,
+        "meanWidth": 0.024002193070305503
+      }
+    },
+    {
+      "seed": 123,
+      "scale": 4,
+      "identicalLearnedState": true,
+      "modelSha256": "17660b6be7bb396e48c35ef9cde3f16abe1c931e3bad941e308c6ba5035e6fb0",
+      "baseline": {
+        "queries": 19,
+        "supported": 19,
+        "matched": 16,
+        "directional": 19,
+        "meanWidth": 0.21512169376161347
+      },
+      "candidate": {
+        "queries": 19,
+        "supported": 16,
+        "matched": 16,
+        "directional": 16,
+        "meanWidth": 0.47796909209146243
+      }
+    },
+    {
+      "seed": 456,
+      "scale": 0.2,
+      "identicalLearnedState": true,
+      "modelSha256": "6308428d895fdef09ee074094ffdbfabb1ac63445047e6e7b626b3185a106bd5",
+      "baseline": {
+        "queries": 19,
+        "supported": 19,
+        "matched": 16,
+        "directional": 19,
+        "meanWidth": 0.011472325164049297
+      },
+      "candidate": {
+        "queries": 19,
+        "supported": 14,
+        "matched": 14,
+        "directional": 14,
+        "meanWidth": 0.02347560772976298
+      }
+    },
+    {
+      "seed": 456,
+      "scale": 4,
+      "identicalLearnedState": true,
+      "modelSha256": "b8491c56262683477fe85b331f40513d7f035b1acb6e1f8600e55ad26753cc0d",
+      "baseline": {
+        "queries": 19,
+        "supported": 19,
+        "matched": 19,
+        "directional": 19,
+        "meanWidth": 0.24883349293744877
+      },
+      "candidate": {
+        "queries": 19,
+        "supported": 16,
+        "matched": 16,
+        "directional": 16,
+        "meanWidth": 0.6820006186766139
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> kairos-v5-physical-control-agent@0.4.0 test:next-stage
+> npm run build --silent && node scripts/run-next-stage-tests.mjs
+
+✔ liquid visual interfaces exist without collision and do not bind the solid behind them (440.145876ms)
+✔ a submerged ray meets the external liquid surface, not a fabricated face at the eye or a voxel seam (0.648809ms)
+✔ noncolliding crossed plant models retain both visible texels and transparent gaps (4.695664ms)
+✔ ordinary rotated and multipart assets remain visible and opaque blocks occlude entity silhouettes (0.895264ms)
+✔ target-free primitives expose satisfied body facts without an action suggestion (6.198357ms)
+✔ target primitives report missing public crosshair facts without saying how to satisfy them (12.697319ms)
+✔ requirements bind the exact current public target and reject the wrong public kind (0.523724ms)
+✔ place requires both an exact public block and a currently public held item (0.404598ms)
+✔ unsupported entity targets cannot offer an attack (2.152904ms)
+✔ a stalled real sensor archives only the incomplete measured motor window and releases its controls (22.804237ms)
+✔ a held motor keeps its requested duration and returns ongoing motion without waiting for rest (24.444312ms)
+▶ requested motor duration survives a synchronous physics catch-up batch
+  ✔ move (10.983825ms)
+  ✔ jump (11.146134ms)
+  ✔ use-item (20.003138ms)
+✔ requested motor duration survives a synchronous physics catch-up batch (43.242818ms)
+✔ the passive port returns exactly its measured interval without motor output or waiting for stability (5.220151ms)
+✔ death during a passive choice retains the short actual interval without completing its requested duration (1.666275ms)
+✔ breathing comes only from owned metadata and becomes unknown at a body replacement (4.494997ms)
+✔ death exposes an explicit restart action and no SDK restart runs before it is chosen (6.363683ms)
+✔ a death packet ends a physical window even when the SDK stops all subsequent physics ticks (4.373057ms)
+✔ using the held item is a measured button window, with no supplied item effect or consumption helper (18.701088ms)
+✔ readiness acknowledges captured client loading and repeats after a new spawn (25.671246ms)
+✔ an infinite client dig time still yields a bounded actual no-effect window without an optimistic disappearance (132.95333ms)
+✔ only the server-observed target change completes a dig and no old waiter survives (138.614212ms)
+✔ an unrelated server block update cannot certify a change to the attempted target (58.003394ms)
+✔ a real frame fault remains fatal and releases the active input and observers (2.431506ms)
+✔ start and cancellation transport failures cannot become successful action receipts (35.276242ms)
+✔ missing or unreachable targets do not emit a dig, retarget, or create experience (1.414101ms)

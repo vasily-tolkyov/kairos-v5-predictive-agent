@@ -16,6 +16,8 @@ interface Investigation extends ContinuingTask { destination: XYZ }
 export interface SessionDecision {
   index: number; status: 'executed' | 'refused' | 'observing' | 'goal-verified' | 'no-offers' | 'observation-stalled';
   source: 'task' | 'investigation' | 'curiosity' | 'maintenance'; goalId: string | null; observationSequence: number;
+  /** Audit metadata only. An autonomous goal may leave live state on completion. */
+  goal?: GroundedGoalV1; goalBaselineSequence?: number;
   offer?: ActionOfferV1; planLength?: number; planReason?: string; learned?: boolean;
   exploration?: { source: 'hypothesis' | 'curiosity'; planLength: number };
   prediction?: ReturnType<typeof compareExperiencePrediction>;
@@ -30,6 +32,7 @@ export interface ExperienceSessionSnapshot { version: 'ExperienceSession1'; medi
   steps: number; executed: number; tasks: ContinuingTask[]; investigation: Investigation | null;
   passiveWindows?: number; passiveWrites?: number;
   maintenance?: ContinuingTask | null;
+  arbitration?: { nextService: 'maintenance' | 'task' };
   deferred: { destination: XYZ; until: number }[]; recent: SessionDecision[] }
 const light = (observation: Observation): Observation => {
   const { sensation: _sensation, perception: _perception, ...rest } = observation; return structuredClone(rest);
@@ -54,6 +57,7 @@ export class ExperienceSession {
   world = new ExperienceWorld();
   #tasks: ContinuingTask[] = []; #investigation: Investigation | null = null;
   #maintenance: ContinuingTask | null = null;
+  #nextService: 'maintenance' | 'task' = 'maintenance';
   #deferred: { destination: XYZ; until: number }[] = [];
   #recent: SessionDecision[] = []; #steps = 0; #executed = 0;
   #passiveWindows = 0; #passiveWrites = 0;
@@ -74,6 +78,9 @@ export class ExperienceSession {
     investigating: this.#investigation?.goal.id ?? null, ...this.world.stats }; }
   get tasks(): readonly ContinuingTask[] { return structuredClone(this.#tasks); }
   #record(decision: Omit<SessionDecision, 'index'>): SessionDecision {
+    // Charge a completed service opportunity, including a refused action or
+    // unavailable offer. An unresolvable need cannot own every later turn.
+    this.#nextService = decision.source === 'maintenance' ? 'task' : 'maintenance';
     const result = { ...decision, index: ++this.#steps }; this.#recent.push(result);
     if (this.#recent.length > 256) this.#recent.shift(); return result;
   }
@@ -140,12 +147,18 @@ export class ExperienceSession {
     else if (!this.#maintenance || sha(this.#maintenance.goal) !== sha(need.goal))
       this.#maintenance = { goal: structuredClone(need.goal), baseline: light(observation), status: 'pending', actions: 0,
         firstSatisfied: null, bestResidual: need.measured.residual, lastProgress: this.#steps };
-    const task = this.#maintenance ? undefined : pending;
+    // Alternate service categories while both are present. The initial turn
+    // addresses the body; within each category the existing ordering stays
+    // intact. This is local scheduling state, never a learned action effect.
+    const maintenance = this.#maintenance && (!pending || this.#nextService === 'maintenance') ? this.#maintenance : null;
+    const task = maintenance ? undefined : pending;
     if (!task && !this.#maintenance && !this.#investigation && options.exploration !== false)
       this.#investigation = this.#proposal(observation, offers);
-    const source: SessionDecision['source'] = this.#maintenance ? 'maintenance' : task ? 'task' : this.#investigation ? 'investigation' : 'curiosity';
-    let intention: ContinuingTask | null = this.#maintenance ?? task ?? this.#investigation;
-    const common = { source, goalId: intention?.goal.id ?? null, observationSequence: observation.sequence };
+    const source: SessionDecision['source'] = maintenance ? 'maintenance' : task ? 'task' : this.#investigation ? 'investigation' : 'curiosity';
+    let intention: ContinuingTask | null = maintenance ?? task ?? this.#investigation;
+    const common = { source, goalId: intention?.goal.id ?? null, observationSequence: observation.sequence,
+      goal: intention ? structuredClone(intention.goal) : undefined,
+      goalBaselineSequence: intention ? (intention.baseline?.sequence ?? observation.sequence) : undefined };
     if (intention) {
       intention.baseline ??= light(observation);
       const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(intention.goal, intention.baseline);
@@ -183,6 +196,7 @@ export class ExperienceSession {
         this.#deferred = this.#deferred.slice(-32); this.#investigation = null;
         intention = null;
         common.source = 'curiosity'; common.goalId = null;
+        common.goal = undefined; common.goalBaselineSequence = undefined;
       }
     }
     if (!offers.length) return this.#record({ ...common, status: 'no-offers' });
@@ -246,9 +260,13 @@ export class ExperienceSession {
     if (intention) {
       const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(intention.goal, intention.baseline!);
       const measured = evaluator.evaluate(result.observation);
-      measuredProgress = measured.status !== 'unknown' && measured.residual < intention.bestResidual - .01;
+      const beforeAction = evaluator.evaluate(result.event?.frames[0] ?? observation);
+      // A real advance can recover from a setback without beating an earlier
+      // best. Credit the actual action window, not passive drift during search
+      // or the magnitude of an inaccurate forecast. Ignore numerical roundoff.
+      measuredProgress = measured.status !== 'unknown' && measured.residual < beforeAction.residual - 1e-12;
       if (measuredProgress) {
-        intention.bestResidual = measured.residual; intention.lastProgress = this.#steps;
+        intention.bestResidual = Math.min(intention.bestResidual, measured.residual); intention.lastProgress = this.#steps;
         intention.unsuccessfulProbes = 0; intention.probeAfter = 0;
       } else if (forecastAdvanced) intention.unsuccessfulProbes = 0;
       else if (selected || this.agent.lastExploration?.source === 'hypothesis') {
@@ -276,12 +294,14 @@ export class ExperienceSession {
     medium: this.agent.medium.snapshot(), affordances: this.agent.affordances.snapshot(), world: this.world.snapshot(),
     choices: this.agent.choices, steps: this.#steps, executed: this.#executed, tasks: this.#tasks,
     passiveWindows: this.#passiveWindows, passiveWrites: this.#passiveWrites,
+    arbitration: { nextService: this.#nextService },
     investigation: this.#investigation, maintenance: this.#maintenance, deferred: this.#deferred, recent: this.#recent }); }
   static restore(state: ExperienceSessionSnapshot, options: { sameWorld: boolean } = { sameWorld: false }): ExperienceSession {
     if (state.version !== 'ExperienceSession1' || !Number.isSafeInteger(state.steps) || state.steps < 0
       || !Number.isSafeInteger(state.executed) || state.executed < 0 || state.executed > state.steps
       || ![state.passiveWindows ?? 0, state.passiveWrites ?? 0].every(value => Number.isSafeInteger(value) && value >= 0)
       || (state.passiveWrites ?? 0) > (state.passiveWindows ?? 0)
+      || (state.arbitration !== undefined && state.arbitration?.nextService !== 'maintenance' && state.arbitration?.nextService !== 'task')
       || state.tasks.length > 64 || state.recent.length > 256 || state.deferred.length > 32)
       throw new Error('invalid-continuing-session');
     const session = new ExperienceSession(ExperienceMedium.restore(state.medium), LearnedAffordances.restore(state.affordances));
@@ -292,6 +312,7 @@ export class ExperienceSession {
       session.world = ExperienceWorld.restore(state.world); session.#tasks = structuredClone(state.tasks);
       session.#investigation = structuredClone(state.investigation); session.#deferred = structuredClone(state.deferred);
       session.#maintenance = structuredClone(state.maintenance ?? null);
+      session.#nextService = state.arbitration?.nextService ?? 'maintenance';
       for (const task of [...session.#tasks, ...(session.#investigation ? [session.#investigation] : [])]) task.firstSatisfied = null;
     }
     return session;

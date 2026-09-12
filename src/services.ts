@@ -43,6 +43,7 @@ export interface Configuration {
 }
 
 export type MinecraftFixtureModeV1 = 'legacy-door' | 'empty' | 'natural' | 'preserve';
+export type MinecraftDifficultyV1 = 'peaceful' | 'easy' | 'normal' | 'hard';
 
 export async function loadConfiguration(): Promise<Configuration> {
   const config = JSON.parse(await readFile(resolve('kairos.config.json'), 'utf8')) as Configuration;
@@ -108,8 +109,11 @@ class OwnedProcess {
 export class Services {
   server: OwnedProcess | null = null;
   constructor(readonly config: Configuration, readonly runRoot: string, readonly evidence: string) {}
-  async start(fixture: MinecraftFixtureModeV1 = 'legacy-door', options: { worldSeed?: string } = {}): Promise<void> {
+  async start(fixture: MinecraftFixtureModeV1 = 'legacy-door',
+    options: { worldSeed?: string; difficulty?: MinecraftDifficultyV1 } = {}): Promise<void> {
     assert(options.worldSeed === undefined || /^-?\d{1,19}$/.test(options.worldSeed), 'invalid-world-seed');
+    assert(options.difficulty === undefined || ['peaceful', 'easy', 'normal', 'hard'].includes(options.difficulty),
+      'invalid-minecraft-difficulty');
     const c = this.config, tmp = resolve(this.runRoot, 'tmp'), serverRoot = resolve(this.runRoot, 'minecraft');
     const propertiesPath = resolve(serverRoot, 'server.properties');
     let continuingProperties: string | null = null;
@@ -118,6 +122,9 @@ export class Services {
       const levelName = continuingProperties.split(/\r?\n/).find(line => line.startsWith('level-name='))?.slice(11);
       assert(levelName && !levelName.includes('/') && !levelName.includes('\\'), 'invalid-existing-world-name');
       await readFile(resolve(serverRoot, levelName, 'level.dat'));
+      if (options.difficulty !== undefined) continuingProperties = continuingProperties
+        .split(/\r?\n/).filter(line => !line.startsWith('difficulty=')).join('\n')
+        + `\ndifficulty=${options.difficulty}\n`;
     }
     await mkdir(tmp, { recursive: true }); await mkdir(serverRoot, { recursive: true }); await mkdir(this.evidence, { recursive: true });
     await copyFile(c.minecraft.serverJar, resolve(serverRoot, 'server.jar'));
@@ -130,7 +137,7 @@ export class Services {
       'max-players=1', 'enable-rcon=false', 'enable-query=false',
       `level-type=minecraft:${fixture === 'natural' ? 'normal' : 'flat'}`,
       `level-seed=${options.worldSeed ?? Date.now()}`, 'level-name=world-v5-physical-control', 'gamemode=survival',
-      `difficulty=${fixture === 'natural' ? 'normal' : 'peaceful'}`,
+      `difficulty=${options.difficulty ?? (fixture === 'natural' ? 'normal' : 'peaceful')}`,
       'spawn-protection=0', 'view-distance=4', 'simulation-distance=4', 'sync-chunk-writes=true',
     ].join('\n') + '\n');
     await saveJson(resolve(this.evidence, 'INSTALLATION_IDENTITIES.json'), {

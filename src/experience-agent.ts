@@ -209,7 +209,7 @@ export class ExperienceAgent {
 
   async runGoal(environment: ExperienceEnvironment, goal: GroundedGoalV1,
     options: { actionBudget: number; learn?: boolean; allowExploration?: boolean;
-      verificationTicks?: number; depth?: number } = { actionBudget: 8 }): Promise<ExperienceRun> {
+      verificationTicks?: number; depth?: number; milliseconds?: number } = { actionBudget: 8 }): Promise<ExperienceRun> {
     // Both bounded and continuing execution share one feedback owner. The
     // dynamic import avoids a module-initialization cycle with the planner.
     const { ExperienceSession } = await import('./experience-session.js');
@@ -224,7 +224,7 @@ export class ExperienceAgent {
         if (actions.length >= options.actionBudget && evaluator.evaluate(observation).status !== 'satisfied')
           return finish('action-budget');
         const decision = await session.step(environment, { learn: options.learn, exploration: options.allowExploration,
-          depth: options.depth, expansions: 512, verificationTicks: options.verificationTicks });
+          depth: options.depth, expansions: 512, verificationTicks: options.verificationTicks, milliseconds: options.milliseconds });
         observation = await environment.observe();
         if (decision.status === 'goal-verified') return finish('goal-verified');
         if (decision.status === 'refused') return finish('body-refused');

@@ -1,0 +1,105 @@
+{
+  "version": "PredictionCalibrationFollowupValidation1",
+  "sourceParent": "309c4ea6434c22b53f094835d3387babc59d38f8",
+  "node": "24.19.0",
+  "typescript": "5.9.3",
+  "platform": "Linux",
+  "dependencySetup": "Reused existing dependency installation. All non-root lock entries are identical; installed versions verified. npm ci was not rerun.",
+  "lockedPackageEntries": 192,
+  "buildCommand": "npm run build --silent",
+  "integrationCommand": "node --test --test-concurrency=1 dist/test/{open-world,experience-prototype,perception,minecraft-experience,prototype-boundary,grounded-goal,body-action-requirements,exact-public-block-hit,public-action-requirement-bridge,dig-action-window,interact-observation-window,body-motor-window,entity-retina,block-optics,passive-experience,new-visible-surface,prediction-ranges}.test.js",
+  "checks": [
+    {
+      "file": "baseline-integrated.txt",
+      "sha256": "acf91d477b160f01f4bc851aabf03aed92c28376d2444b0a6d9d336a66f411c0",
+      "complete": true,
+      "summary": {
+        "tests": 131,
+        "pass": 131,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "file": "regression-before.txt",
+      "sha256": "ebdd968c2373bfe698285c3c42c821e48e0d01546ebb40523d036b37b233c3a9",
+      "complete": true,
+      "summary": {
+        "tests": 11,
+        "pass": 7,
+        "fail": 4,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "file": "first-candidate-failure.txt",
+      "sha256": "3b426d599cdf801c57c1aead8961f9c74680ae48228ee2aa813520ddb1ae152c",
+      "complete": true,
+      "summary": {
+        "tests": 135,
+        "pass": 134,
+        "fail": 1,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "file": "integrated.txt",
+      "sha256": "f99e238bd8e5d2253c69723e7887506dbf7a4195c92b47f1a8703d7656e7b523",
+      "complete": true,
+      "summary": {
+        "tests": 135,
+        "pass": 135,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "file": "initial-incomplete-run.txt",
+      "sha256": "c812c8b6c7e94976ce6d5a8dbf3e4cb01522ea6f1be652349a87adfda855fdf6",
+      "complete": false,
+      "summary": {}
+    }
+  ],
+  "files": {
+    "src/contextual-readout.ts": "5f349919b7d0e00ffe3d088a6a793bc787f504930fb2fd2071c77fde2ca9b352",
+    "src/experience-medium.ts": "4011c869e52aaec62972d4132c4b682f69dd552c3d3870e3f07e7ecee5b60e6c",
+    "test/prediction-ranges.test.ts": "cdf2ffabeee0abce75a68e666b2265cc67ff5a140dfd5d489b3a796d40c6b6b9",
+    "scripts/compare-synthetic-calibration.mjs": "c5598487a8184701b525e0b9797ced2bacc4cb9c3863292e7d319f61cd1865a7",
+    "scripts/run-next-stage-tests.mjs": "a622b377f6453af7640b29ad25cc9f21dccb82af1ae90a88138ce58666c3f216",
+    "package-lock.json": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b"
+  },
+  "comparison": {
+    "file": "continuous-comparison.json",
+    "sha256": "bee0fc20dec29b3092c9ecd2e92c276a4f850c42f1f24f1e0d28d897e88398c2",
+    "queries": 76,
+    "baselineSupported": 76,
+    "baselineMatched": 68,
+    "candidateSupported": 64,
+    "candidateMatched": 64,
+    "candidateAbstained": 12
+  },
+  "nativeTrials": 0,
+  "nativeLearningWrites": 0,
+  "nativeEvidenceAccess": {
+    "metadata": "GitHub connector read draft Release and asset digests",
+    "directSupplementDownloadHttpStatus": 404,
+    "binaryReleaseDownloadToolAvailable": false,
+    "localJavaMajor": 17,
+    "requiredJavaMajor": 21,
+    "server1214Found": false
+  },
+  "limits": [
+    "Synthetic readout validation only; no replay of native frame 19 or before/after native models",
+    "Empirical residual radius is not a statistical coverage guarantee",
+    "Task retention and overall open-world/multistage acceptance remain unmet",
+    "The initial incomplete runner output is not counted as a passing gate"
+  ]
+}

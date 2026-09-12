@@ -1,0 +1,70 @@
+{
+  "version": "NativeEvidencePublication1",
+  "release": {
+    "id": 387688738,
+    "url": "https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/untagged-9e21a6982b1b0305ec71",
+    "tag": "native-evidence-2026-09-13",
+    "isDraft": true
+  },
+  "verifiedAt": "2026-09-12T20:38:51.540Z",
+  "artifacts": [
+    {
+      "version": "VerifiedNativeEvidencePackage1",
+      "file": "kairos-native-evidence-20260913.zip",
+      "bytes": 2073229124,
+      "sha256": "20716418a6bccd146d3306c4f9bfdce8c4a8fab4554662e2a724ee4aae7ff90e",
+      "filesVerified": 42651,
+      "runs": [
+        "native-v51-r1",
+        "native-v51-r2-long",
+        "peaceful-causal-continuation",
+        "peaceful-causal-initial",
+        "peaceful-causal-online",
+        "peaceful-causal-progress-candidate",
+        "peaceful-natural-erased-frozen",
+        "peaceful-natural-impossible-frozen",
+        "peaceful-natural-initial",
+        "peaceful-natural-online-long",
+        "peaceful-natural-retained-frozen",
+        "peaceful-progress-candidate-valid",
+        "peaceful-progress-control-frozen",
+        "peaceful-progress-control-valid",
+        "peaceful-retention-after-learning"
+      ],
+      "registrySha256": "af05650492c4a1fb745869d75e3da0be041d68422e5dc76e7248243f7bdaa4b0",
+      "sourceCommit": "a8c6b0f310cca45e5e4da1cc35dba285ca3fb486",
+      "githubAssetId": 559871197,
+      "githubState": "uploaded",
+      "githubDigestVerified": true
+    },
+    {
+      "version": "VerifiedNativeEvidenceSupplement1",
+      "file": "kairos-motor-evidence-20260913.zip",
+      "bytes": 2701785,
+      "sha256": "ea9c486ea26cd1e8768a6673f929c9ae81acd9042d013d7d2657af361b2964ba",
+      "filesVerified": 327,
+      "sourceCommit": "d425db00badf2de6d43e69638126ea0348cc227b",
+      "primaryPackageSha256": "20716418a6bccd146d3306c4f9bfdce8c4a8fab4554662e2a724ee4aae7ff90e",
+      "githubAssetId": 559894185,
+      "githubState": "uploaded",
+      "githubDigestVerified": true
+    },
+    {
+      "version": "VerifiedNativeEvidencePackage1",
+      "file": "kairos-r6-retention-20260913.zip",
+      "bytes": 152252646,
+      "sha256": "c101005a5db36fdec8de7a246d0501376bef00bf673dc417266574b2236b3639",
+      "filesVerified": 1902,
+      "runs": [
+        "peaceful-retention-r6",
+        "peaceful-retention-r6-valid"
+      ],
+      "registrySha256": "5e20b05382d5544a21072e8554bf78db2a5ace1318501fa63dd15d69353b77a9",
+      "sourceCommit": "a09bbebcad725082a709af7ea7693c1359b1880a",
+      "githubAssetId": 559914682,
+      "githubState": "uploaded",
+      "githubDigestVerified": true
+    }
+  ],
+  "scope": "Primary: 15 stopped checkpoint entries. Motor supplement: 12 evaluator-selected calibration actions, zero autonomous trials. R6 retention: two additional stopped entries, one excluded launch and one valid failed candidate in the same initial scene. These are not independent-world counts."
+}

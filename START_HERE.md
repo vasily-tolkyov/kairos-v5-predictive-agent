@@ -1,5 +1,12 @@
 # Kairos：从这里接手
 
+最新工程入口是 [PR #2](https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/pull/2)
+与 [预测校准接续记录](docs/prediction-calibration-followup.md)。当前集成集合
+**135/135 通过**；最新原生 R6 对照仍未完成目标，本轮未新增实机试验。
+下一步继续简单和平场景中的预测覆盖和学习后任务保持验证。
+
+## 原始抢救交接（历史记录）
+
 当前可核验源码为 `ea097eb823eb28639c58639dd55f552fab08e98d` 保存快照，
 382 个原始文件完整保留。2026-09-13 本机重新编译后，当前集成测试 **120/120 通过**。
 

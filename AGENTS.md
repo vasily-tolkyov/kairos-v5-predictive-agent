@@ -1,5 +1,21 @@
 # Kairos continuation
 
+The user's current instruction (2026-09-13) supersedes historical workflow
+requirements: use available native Codex tools, skills and plugins, work directly
+in the main task, and do not delegate or spawn sub-agents. Do not run ACL-X,
+generator/critic loops, custom routing or phase-stage autorun protocols. Archived
+workflow artifacts are historical evidence only. Current engineering progress is
+recorded in `docs/native-continuation-2026-09-13.md`.
+
+Read `docs/prediction-calibration-followup.md` for the subsequent readout repair
+from PR #2 head 309c4ea. Its complete active integration set passes 135/135.
+Four new synthetic regressions fail on that baseline. The repair requires local
+calibration and observed context for regression support, and adds measured
+residual margins to numeric ranges. It adds zero native trials and does not
+establish improved native retention. The failed first candidate and all earlier
+evidence remain preserved; obtaining the draft raw packages and running the
+same peaceful model/world comparison is still required.
+
 Start at `START_HERE.md`, `docs/codex-rescue/README.zh-CN.md`, and
 `docs/codex-rescue/TASK_STATE.json`. Also read `docs/codex-handoff/README.zh-CN.md`,
 `docs/codex-handoff/evidence/next-stage-checkpoint13.json`, and
@@ -9,15 +25,63 @@ The repository imports the last verifiable saved source snapshot
 ea097eb823eb28639c58639dd55f552fab08e98d. The new GitHub import commit has its own
 identity. The targeted gate was rerun on Windows / Node 24.14.0 during the
 2026-09-13 rescue: 120 passed, zero failed. Overall open-world/multistage acceptance
-remains unmet. All 382 archived source files remain byte-identical.
+remains unmet. All 382 archived source files were verified byte-identical before
+the new engineering changes below; original recovered evidence is immutable.
 
 The saved pending item is `native-unfamiliar-v52-passive-transfer`. Its running
 state and later results were not recovered. Its exact invocation and pause
 reason were rescued from the public conversation. The claimed later 121-test
 scheduling patch has no recoverable payload or test log; do not invent it.
-The present source still lets a persistent maintenance need exclude external
-tasks. Reproduce and repair that issue on a new working branch before native
-acceptance work. A new implementation is not the original missing patch.
+The working branch now contains a newly reproduced and tested repair for
+persistent maintenance excluding external tasks. Normal-mode R1/R2 are both
+stopped and audited: 515 new decisions, 495 actions, 60 deaths, no new task
+success. A missing native base texture made zombie villagers invisible; its
+repair passed an isolated native visibility/occlusion/action calibration.
+The active gate now passes 127/127. Decision evidence also preserves a copied
+goal definition and its baseline frame number after an autonomous intention
+leaves live state. Running R3 actors remain immutable and predate that logging
+addition. The synthetic ten-stage composition test
+uses a deterministic expansion budget and separately checks a zero wall budget;
+native 100/50 ms planning deadlines are unchanged. Failed logs are retained.
+
+The R5 candidate credits actual action-window progress while recovering from
+a setback, independently of the historical best. It preserves that best and
+still rejects no effect, numerical drift and unrelated sliding. The regression
+failed on the prior actor and passes with frozen dynamics. A 128-action native
+R5 continuation independently confirms all nine actual task advances, with zero
+false credits, but no task success. The matched controller comparison is stopped: R3 93 actions, R5 95 actions,
+both goals pending; R5 credits all 18 actual advances without false credits.
+The one-hour R3 run and retention test are also stopped and audited. After the
+one-hour updates, the earlier 40-action task failed at 191 actions under the same
+actor, world, goal, sampling state and budget. Current claims and exact hashes
+are in docs/native-evidence-2026-09-13. Do not overwrite immutable actors.
+
+The user's current direction is peaceful mode first, then more complex
+scenarios. Natural evaluation now accepts explicit --difficulty peaceful and
+independently records the engine reply. Read the current progress record before
+running another experiment or repeating completed work. Never equate peaceful
+results with hostile survival or hunger management.
+
+Further actuator work found a synchronous physics catch-up defect: requested
+four-tick presses could last seven ticks. R6 releases modern offered movement,
+held jump and held-item controls inside the frame callback and records release
+receipts. Native isolated movement calibration independently confirms original
+counts [4,4,4,4,4,7] and repaired counts [4,4,4,4,4,4], with matching server
+positions. These are twelve evaluator-selected actions, zero autonomous trials
+and zero learning writes. The current integrated gate is 131/131. Do not infer
+that retention is repaired; the old learned data and actors remain immutable.
+
+Wait for an asynchronous preparation command to complete before validating or
+launching its successor. The current harness supports --expected-session-sha256
+to reject wrong checkpoint bytes before game startup, and journals motor-release
+receipts. Immutable R6 copies predate those harness additions. One premature R6
+launch loaded the old model and executed ten actions; it is stopped, audited
+and explicitly excluded in retention-r6-launch-deviation.json. Never overwrite
+that deviation or substitute it for the valid model-matched candidate.
+The valid R6 comparison has also stopped: 192 decisions, 191 actions, zero
+writes/deaths, unchanged learned digest, goal pending, zero supported plans.
+Its saved world/player and original windows pass the continuing-run audit.
+Read retention-r6-comparison.json and its separate registry before continuing.
 
 The rescue release provides 5,928 complete files, including verified V47/V50/V51
 sessions and stopped worlds. Prefer V51 as the latest recovered stopped state.

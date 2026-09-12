@@ -24,6 +24,16 @@ test('dropped objects use their measured item appearance and remain unknown befo
   assert.notDeepEqual(visibleEntityColor('item', 'apple'), visibleEntityColor('item', 'oak_planks'));
 });
 
+test('installed base entity textures remain visible when the model catalogue only lists overlays', () => {
+  // Independent RGBA decoding of the installed 1.21.4 base images gives these
+  // alpha-weighted means. The old catalogue has no default for either entity;
+  // that must not make an actual visible body disappear from the sensor.
+  assert.deepEqual(visibleEntityColor('zombie_villager'), [83, 97, 60].map(value => value / 255));
+  assert.deepEqual(visibleEntityColor('villager'), [151, 115, 98].map(value => value / 255));
+  assert.equal(visibleEntityColor('unrendered-entity'), null);
+  assert.equal(visibleEntityColor('../zombie/zombie'), null);
+});
+
 test('an entity action binds only to the actual retinal surface, without exposing engine identity', async () => {
   let observation: Observation = { sequence: 1, activeSeconds: .05, contextId: 'engine', targetId: 'entity:17',
     retinalTargetId: 'entity:17', self: { position: [0, 64, 0], yaw: 0, pitch: 0, properties: {} },

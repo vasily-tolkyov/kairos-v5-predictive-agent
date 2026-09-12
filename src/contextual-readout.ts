@@ -7,6 +7,7 @@ interface Sample { input: SensoryState; targets: Record<string, readonly [Public
   errors: Record<string, number>; externalErrors?: Record<string, number>; serial: number }
 interface Leaf { kind: 'leaf'; numeric: boolean; absolute: boolean; value: PublicValue; loss: number;
   samples: number; calibrated: number; accuracy: number; error: number; progress: number;
+  errorRadius: number | null; externalErrorRadius: number | null;
   externalCalibrated: number; externalAccuracy: number;
   bounds?: { delta: NumericRange; absolute: NumericRange } }
 interface Branch { kind: 'branch'; key: string; threshold: PublicValue; numeric: boolean;
@@ -20,6 +21,8 @@ export interface ContextualReadoutSnapshot { version: 'ContextualReadout1' | 'Co
 export interface ConditionalValue { value: PublicValue; absolute: boolean; supported: boolean;
   samples: number; accuracy: number; error: number; progress: number; dependencies: readonly string[];
   externalCalibrated: number; externalAccuracy: number;
+  /** Calibration of the separate regression readout in every possible local region. */
+  externalSupported: boolean; externalErrorRadius: number | null;
   bounds?: { delta: NumericRange; absolute: NumericRange } }
 
 const tolerance = (a: PublicValue, b: PublicValue) => typeof a === 'number' && typeof b === 'number'
@@ -44,9 +47,34 @@ function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: numb
   // an obsolete partition remain in the evidence, but cannot permanently
   // disqualify a subsequently stable response. Outcome bounds still use ALL
   // retained observations, including the latest contradictory measurement.
-  const errors = rows.filter(row => Object.hasOwn(row.errors, key)).map(row => row.errors[key]!).slice(-32);
-  const allExternal = rows.flatMap(row => row.externalErrors?.[key] === undefined ? [] : [row.externalErrors[key]!]);
+  const calibratedRows = rows.filter(row => Object.hasOwn(row.errors, key)).slice(-32);
+  const errors = calibratedRows.map(row => row.errors[key]!);
+  const externalRows = rows.filter(row => row.externalErrors?.[key] !== undefined);
+  const allExternal = externalRows.map(row => row.externalErrors![key]!);
   const external = allExternal.slice(-32);
+  // Scores are stored in tolerance units, while prediction ranges use the
+  // observable's units. Use the recent 90th-percentile measured residual,
+  // not the tolerance itself. An isolated obsolete forecast must not inflate
+  // a now stable response indefinitely; ALL retained outcomes remain in the
+  // envelope below. This empirical radius is not a coverage guarantee.
+  // A clipped score is only a lower bound and cannot supply a finite radius.
+  const residualRadius = (samples: readonly Sample[], external: boolean): number | null => {
+    if (!numeric) return 0;
+    if (!samples.length) return null;
+    const residuals = samples.map(row => {
+      const error = (external ? row.externalErrors! : row.errors)[key]!;
+      const [before, after] = row.targets[key]!;
+      return error < 0 || error >= 20 ? Infinity : error * tolerance(before, after);
+    }).sort((a, b) => a - b);
+    const radius = residuals[Math.ceil(.9 * residuals.length) - 1]!;
+    return Number.isFinite(radius) ? radius : null;
+  };
+  const errorRadius = residualRadius(calibratedRows, false);
+  const externalErrorRadius = residualRadius(externalRows.slice(-32), true);
+  const envelope = (ranges: NumericRange[]): NumericRange => {
+    const range = hull(ranges), margin = errorRadius ?? 0;
+    return [range[0] - margin, range[1] + margin];
+  };
   const mean = (vs: readonly number[]) => vs.reduce((s, v) => s + v, 0) / Math.max(1, vs.length);
   const half = Math.floor(errors.length / 2);
   const externalAccuracy = mean(external.map(error => Number(error <= 1)));
@@ -58,10 +86,10 @@ function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: numb
     leaf: { kind: 'leaf', numeric, ...fit, samples: rows.length,
     calibrated: errors.length, accuracy: mean(errors.map(v => Number(v <= 1))), error: mean(errors),
     progress: errors.length >= 8 ? Math.max(0, mean(errors.slice(0, half)) - mean(errors.slice(half))) : 0,
-    externalCalibrated: external.length, externalAccuracy,
-    ...(numeric ? { bounds: { delta: hull(rows.map(row => {
+    externalCalibrated: external.length, externalAccuracy, errorRadius, externalErrorRadius,
+    ...(numeric ? { bounds: { delta: envelope(rows.map(row => {
       const [a, b] = row.targets[key]!; return [Number(b) - Number(a), Number(b) - Number(a)]; })),
-      absolute: hull(rows.map(row => [Number(row.targets[key]![1]), Number(row.targets[key]![1])])) } } : {}) } };
+      absolute: envelope(rows.map(row => [Number(row.targets[key]![1]), Number(row.targets[key]![1])])) } } : {}) } };
 }
 
 /** Partitions are induced from measured response differences. No action name,
@@ -157,11 +185,16 @@ export class ContextualReadout {
     if (!same) return null; // Missing context never selects a convenient outcome.
     return { value: first.value, absolute: first.absolute,
       supported: !outside && leaves.every(leaf => leaf.calibrated >= 8 && leaf.accuracy >= .8
+        && leaf.errorRadius !== null
         && (leaf.numeric ? Math.sqrt(leaf.loss / leaf.samples) <= .05 : leaf.loss / leaf.samples <= .05)),
       samples: Math.min(...leaves.map(leaf => leaf.samples)), accuracy: Math.min(...leaves.map(leaf => leaf.accuracy)),
       error: Math.max(...leaves.map(leaf => leaf.error)), progress: Math.max(...leaves.map(leaf => leaf.progress)),
       externalCalibrated: Math.min(...leaves.map(leaf => leaf.externalCalibrated)),
       externalAccuracy: Math.min(...leaves.map(leaf => leaf.externalAccuracy)),
+      externalSupported: !outside && leaves.every(leaf => leaf.externalCalibrated >= 8
+        && leaf.externalAccuracy >= .8 && leaf.externalErrorRadius !== null),
+      externalErrorRadius: leaves.some(leaf => leaf.externalErrorRadius === null) ? null
+        : Math.max(...leaves.map(leaf => leaf.externalErrorRadius!)),
       dependencies: [...dependencies], ...(first.bounds ? { bounds: {
         delta: hull(leaves.map(leaf => leaf.bounds!.delta)), absolute: hull(leaves.map(leaf => leaf.bounds!.absolute)) } } : {}) };
   }

@@ -1,0 +1,97 @@
+{
+  "version": "PeacefulNativeCausalProgressCandidate1",
+  "actor": "peaceful-r5-progress",
+  "newActions": 128,
+  "newWrites": 638,
+  "cumulativeActions": 1073,
+  "cumulativeWrites": 4904,
+  "seconds": 412.827,
+  "goalStatus": "pending",
+  "savedPositionSatisfies": false,
+  "barrierCells": [
+    {
+      "position": [
+        0,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        64,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        65,
+        -3
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        1,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        64,
+        -2
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        65,
+        -3
+      ],
+      "actual": "minecraft:air"
+    },
+    {
+      "position": [
+        2,
+        65,
+        -2
+      ],
+      "actual": "minecraft:air"
+    }
+  ],
+  "savedPlayers": [
+    {
+      "file": "136824b8-89a5-3717-81f9-1b11bd3b889d.dat",
+      "position": [
+        2.7,
+        64,
+        -1.4050026208040625
+      ],
+      "inventory": [
+        {
+          "count": 5,
+          "Slot": 0,
+          "id": "minecraft:oak_planks"
+        }
+      ]
+    }
+  ],
+  "worldArchiveSha256": "583d6f232571a590d1c17dce797685027f56a3a9869e903e175181296ee0d151",
+  "progressAudit": {
+    "taskWindows": 128,
+    "advances": 9,
+    "creditedAdvances": 9,
+    "uncreditedAdvances": 0,
+    "falseCredits": 0,
+    "deferredTaskWindows": 15,
+    "windowRuleMismatches": []
+  },
+  "scope": "Same-world continuation with a controller repair; partial prerequisites unchanged, no exit success or supported task plans. Not a matched controller effect estimate."
+}

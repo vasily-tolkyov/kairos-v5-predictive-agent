@@ -1,0 +1,326 @@
+{
+  "version": "RecordedRetentionContextSummary1",
+  "physicalTrials": 0,
+  "learningWrites": 0,
+  "eventSha256": "d36d9a8209dba5a680807fe4c15225622ea63e0e8cf67f41c4895dedfd9bf041",
+  "retention": [
+    {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "priorRows": 71,
+      "survivingRows": 71,
+      "newWrites": 32
+    },
+    {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "back",
+          "ticks": 4
+        }
+      },
+      "priorRows": 173,
+      "survivingRows": 86,
+      "newWrites": 174
+    },
+    {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "left",
+          "ticks": 4
+        }
+      },
+      "priorRows": 105,
+      "survivingRows": 105,
+      "newWrites": 71
+    },
+    {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "right",
+          "ticks": 4
+        }
+      },
+      "priorRows": 192,
+      "survivingRows": 111,
+      "newWrites": 81
+    }
+  ],
+  "sources": [
+    {
+      "source": "D:\\Kairos project\\.kairos\\worktrees\\native-continuation-20260913\\evidence\\peaceful-natural-initial\\session.json.gz",
+      "sha256": "8cfdd33cc6ce4467a972483c28449d79899aaee83bafd3b2ed741ba3f4a6e833",
+      "longitudinalBackward": {
+        "action": {
+          "kind": "move",
+          "parameters": {
+            "direction": "back",
+            "ticks": 4
+          }
+        },
+        "key": "motion/0",
+        "circuitWrites": 173,
+        "retainedSamples": 173,
+        "conditional": {
+          "value": -0.8571697198364459,
+          "absolute": false,
+          "supported": false,
+          "samples": 6,
+          "accuracy": 0.5,
+          "error": 0.9854697442914712,
+          "progress": 0,
+          "externalCalibrated": 6,
+          "externalAccuracy": 0,
+          "dependencies": [
+            "pitch",
+            "self/health",
+            "self/selectedSlot"
+          ],
+          "bounds": {
+            "delta": [
+              -0.8571697198364466,
+              -0.8571697198364441
+            ],
+            "absolute": [
+              -0.8571697198364466,
+              -0.8571697198364441
+            ]
+          }
+        },
+        "trace": {
+          "path": [
+            {
+              "key": "pitch",
+              "value": 0.26179938779913314,
+              "threshold": 0.3926990816986997,
+              "range": [
+                -0.5235987755982987,
+                1.5707963267947989
+              ],
+              "goLeft": true,
+              "beforeSamples": 173,
+              "selectedSamples": 108
+            },
+            {
+              "key": "self/health",
+              "value": 20,
+              "threshold": 18.5,
+              "range": [
+                2.3333334922790527,
+                20
+              ],
+              "goLeft": false,
+              "beforeSamples": 108,
+              "selectedSamples": 93
+            },
+            {
+              "key": "self/selectedSlot",
+              "value": 3,
+              "threshold": 6.5,
+              "range": [
+                0,
+                8
+              ],
+              "goLeft": true,
+              "beforeSamples": 93,
+              "selectedSamples": 58
+            },
+            {
+              "key": "pitch",
+              "value": 0.26179938779913314,
+              "threshold": -0.13089969389956657,
+              "range": [
+                -0.5235987755982987,
+                0.26179938779913314
+              ],
+              "goLeft": false,
+              "beforeSamples": 58,
+              "selectedSamples": 49
+            },
+            {
+              "key": "pitch",
+              "value": 0.26179938779913314,
+              "threshold": 0.13089969389956657,
+              "range": [
+                0,
+                0.26179938779913314
+              ],
+              "goLeft": false,
+              "beforeSamples": 49,
+              "selectedSamples": 6
+            }
+          ],
+          "samples": 6,
+          "serials": [
+            54,
+            55,
+            56,
+            57,
+            77,
+            78
+          ],
+          "deltaMean": -0.8571697198364459,
+          "deltaRange": [
+            -0.8571697198364466,
+            -0.8571697198364441
+          ],
+          "deltaStandardDeviation": 9.453208419344607e-16,
+          "calibrationSamples": 6,
+          "calibrationAccuracy": 0.5,
+          "externalSamples": 6,
+          "externalAccuracy": 0
+        },
+        "regression": {
+          "observations": 173,
+          "numericQuality": [
+            {
+              "correct": 0.6306378478254879,
+              "error": 0.1294454207799312
+            },
+            {
+              "correct": 0.6306378478254879,
+              "error": 0.1294454207799312
+            },
+            {
+              "correct": 0.8365125760756384,
+              "error": 0.10648773338006894
+            },
+            {
+              "correct": 0.8365125760756384,
+              "error": 0.10648773338006894
+            }
+          ],
+          "numericMeans": [
+            -0.9252346069932634,
+            -0.9252346069932634
+          ]
+        }
+      }
+    },
+    {
+      "source": "D:\\Kairos project\\.kairos\\worktrees\\native-continuation-20260913\\evidence\\peaceful-retention-after-learning-start\\session.json.gz",
+      "sha256": "6e71f4f4f4059f4ca22a76b7d9b84955f3d86b6f892db99877e86999b243e574",
+      "longitudinalBackward": {
+        "action": {
+          "kind": "move",
+          "parameters": {
+            "direction": "back",
+            "ticks": 4
+          }
+        },
+        "key": "motion/0",
+        "circuitWrites": 347,
+        "retainedSamples": 192,
+        "conditional": {
+          "value": -0.328197075909497,
+          "absolute": false,
+          "supported": false,
+          "samples": 10,
+          "accuracy": 0,
+          "error": 5.79794137299653,
+          "progress": 1.6904097624734735,
+          "externalCalibrated": 10,
+          "externalAccuracy": 0,
+          "dependencies": [
+            "velocity/2",
+            "self/hotbarCount1"
+          ],
+          "bounds": {
+            "delta": [
+              -1.480227281342184,
+              0.8950335869131293
+            ],
+            "absolute": [
+              -1.480227281342184,
+              0.8950335869131293
+            ]
+          }
+        },
+        "trace": {
+          "path": [
+            {
+              "key": "velocity/2",
+              "value": -0.005,
+              "threshold": -0.06299716643553015,
+              "range": [
+                -0.4448259643949201,
+                0.191222503721714
+              ],
+              "goLeft": false,
+              "beforeSamples": 192,
+              "selectedSamples": 103
+            },
+            {
+              "key": "self/hotbarCount1",
+              "value": 0,
+              "threshold": 1.5,
+              "range": [
+                0,
+                9
+              ],
+              "goLeft": true,
+              "beforeSamples": 103,
+              "selectedSamples": 10
+            }
+          ],
+          "samples": 10,
+          "serials": [
+            73,
+            109,
+            110,
+            123,
+            134,
+            149,
+            154,
+            174,
+            175,
+            176
+          ],
+          "deltaMean": -0.328197075909497,
+          "deltaRange": [
+            -1.480227281342184,
+            0.8950335869131293
+          ],
+          "deltaStandardDeviation": 0.539625251851979,
+          "calibrationSamples": 10,
+          "calibrationAccuracy": 0,
+          "externalSamples": 10,
+          "externalAccuracy": 0
+        },
+        "regression": {
+          "observations": 347,
+          "numericQuality": [
+            {
+              "correct": 0.5106000175747311,
+              "error": 0.1722613326557274
+            },
+            {
+              "correct": 0.5106000175747311,
+              "error": 0.1722613326557274
+            },
+            {
+              "correct": 0.659507694956657,
+              "error": 0.11782736487169204
+            },
+            {
+              "correct": 0.659507694956657,
+              "error": 0.11782736487169204
+            }
+          ],
+          "numericMeans": [
+            -0.4224709018939313,
+            -0.4224709018939313
+          ]
+        }
+      }
+    }
+  ],
+  "limit": "Inspection of preserved models, not proof of the cause of all native retention loss."
+}

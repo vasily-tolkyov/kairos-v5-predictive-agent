@@ -11,10 +11,22 @@ import nbt from 'prismarine-nbt';
 const [source, output] = process.argv.slice(2);
 if (!source || !output) throw new Error('usage: STOPPED_NATIVE_OUTPUT NEW_AUDIT_JSON');
 const root = resolve(source), load = async path => JSON.parse(await readFile(resolve(root, path), 'utf8'));
-const lines = async path => (await readFile(resolve(root, path), 'utf8')).trim().split('\n').filter(Boolean).map(JSON.parse);
+const lines = async (path, expected) => {
+  // A zero-action initialization has no journal kind to export. Missing
+  // evidence is allowed only when the checkpoint independently expects zero.
+  const data = await readFile(resolve(root, path), 'utf8').catch(error => {
+    if (error.code === 'ENOENT' && expected === 0) return '';
+    throw error;
+  });
+  return data.trim().split('\n').filter(Boolean).map(JSON.parse);
+};
 const sha = value => createHash('sha256').update(value).digest('hex');
 const report = await load('results.json'); assert(report.stoppedAt && report.final, 'a stopped native run is required');
-const actions = await lines('physical-actions.jsonl'), decisions = await lines('decisions.jsonl');
+const actions = await lines('physical-actions.jsonl', report.journal?.['physical-actions']
+    ?? (report.final.decisions === report.initialStats.decisions ? 0 : undefined)),
+  decisions = await lines('decisions.jsonl', report.final.decisions - report.initialStats.decisions);
+if (report.journal) assert.equal(actions.length, report.journal['physical-actions'] ?? 0,
+  'physical receipt export is incomplete, including refused actions');
 const initial = await load('initial-observation.json');
 const mismatches = [], windows = [], gaps = [], healthDrops = [], oxygenDrops = [];
 let previous = initial, actionIndex = 0;
@@ -75,7 +87,16 @@ assert.equal(archivedWorlds.length, 1, 'one verified archive of this exact stop 
 // A later continuation can modify runtimeRoot. Read the verified historical
 // archive itself so an audit remains reproducible after that world advances.
 const archivePath = archivedWorlds[0], players = [];
-const members = execFileSync('tar', ['-tzf', archivePath], { encoding: 'utf8' }).trim().split('\n');
+const members = execFileSync('tar', ['-tzf', archivePath], { encoding: 'utf8' }).trim().split(/\r?\n/);
+const levelFiles = members.filter(file => /\/level\.dat$/.test(file));
+assert.equal(levelFiles.length, 1, 'one saved world level is required');
+const levelBytes = execFileSync('tar', ['-xOf', archivePath, levelFiles[0]]);
+const level = nbt.simplify((await nbt.parse(levelBytes, 'big')).parsed).Data;
+const savedDifficulty = ['peaceful', 'easy', 'normal', 'hard'][level.Difficulty];
+if (report.protocol.difficulty !== undefined) {
+  assert.equal(savedDifficulty, report.protocol.difficulty, 'saved engine difficulty disagrees with protocol');
+  assert.equal(savedDifficulty, report.protocol.difficultyVerifiedByServer, 'saved engine difficulty disagrees with server query');
+}
 for (const file of members.filter(file => /\/playerdata\/[^/]+\.dat$/.test(file))) {
   const bytes = execFileSync('tar', ['-xOf', archivePath, file]);
   const player = nbt.simplify((await nbt.parse(bytes, 'big')).parsed);
@@ -92,6 +113,7 @@ const verifiedDecisionPositions = decisions.filter(row => row.status === 'goal-v
 const count = values => Object.fromEntries([...new Set(values)].map(value => [value, values.filter(item => item === value).length]));
 const result = { version: 'StoppedNativeContinuingAudit1', source: root, reportSha256: sha(await readFile(resolve(root, 'results.json'))),
   status: report.status, stoppedAt: report.stoppedAt, seconds: report.seconds,
+  savedWorld: { file: levelFiles[0], sha256: sha(levelBytes), difficulty: savedDifficulty, gameType: level.GameType },
   initialPosition: initial.self.position, finalPosition: report.finalObservation.self.position,
   decisions: decisions.length, actualWindows: windows.length, windows,
   countersMatch: report.final.executed - report.initialStats.executed === windows.length

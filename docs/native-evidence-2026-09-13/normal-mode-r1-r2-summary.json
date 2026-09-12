@@ -1,0 +1,66 @@
+{
+  "native-v51-r1": {
+    "status": "budget-paused",
+    "stoppedAt": "2026-09-12T17:55:02.446Z",
+    "seconds": 277.572,
+    "newDecisions": 128,
+    "newActions": 124,
+    "newPassiveWindows": 307,
+    "newWrites": 431,
+    "deaths": 16,
+    "taskStatuses": [
+      {
+        "id": "reach-other-side",
+        "status": "verified"
+      },
+      {
+        "id": "v51-new-carry-and-reach-20260913",
+        "status": "pending"
+      }
+    ],
+    "supportedTaskPlans": 0,
+    "supportedMultistepPlans": 0,
+    "gripMax": 0,
+    "rssMB": [
+      730.2890625,
+      1334.796875
+    ],
+    "decisionMs": {
+      "median": 1142.3247999999985,
+      "max": 4980.783199999991
+    },
+    "reportSha256": "6ad3532a48a901a333444f85e61fee230d7231bbc2ff5d9c0eb6a2c9b7772808"
+  },
+  "native-v51-r2-long": {
+    "status": "operator-paused",
+    "stoppedAt": "2026-09-12T18:11:26.907Z",
+    "seconds": 812.314,
+    "newDecisions": 387,
+    "newActions": 371,
+    "newPassiveWindows": 1147,
+    "newWrites": 1518,
+    "deaths": 44,
+    "taskStatuses": [
+      {
+        "id": "reach-other-side",
+        "status": "verified"
+      },
+      {
+        "id": "v51-new-carry-and-reach-20260913",
+        "status": "pending"
+      }
+    ],
+    "supportedTaskPlans": 2,
+    "supportedMultistepPlans": 0,
+    "gripMax": 0,
+    "rssMB": [
+      743.5,
+      1572.4375
+    ],
+    "decisionMs": {
+      "median": 1245.0763999999908,
+      "max": 6485.839599999948
+    },
+    "reportSha256": "b14db5007d16837e25a798cfb3a58359fbceca693ff7269d7814e1b2473e5b7a"
+  }
+}
