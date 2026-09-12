@@ -64,7 +64,7 @@ function hasSymbolicDependency(snapshot: ControlWorkspaceSnapshotV2,
 }
 
 class NeutralEnvironment implements PhysicalControlEnvironmentV2 {
-  actionCount = 0; readonly actionBudget = 12; sequence = 1;
+  actionCount = 0; readonly actionBudget: number = 12; sequence = 1;
   F = false; F1 = false; F2 = false; F3 = false; F4 = false; R = false;
   readonly timeline: SymbolicAction[] = []; readonly records: Array<{ kind: string; value: unknown }> = [];
   constructor(readonly order: readonly SymbolicAction[] = ['alpha', 'beta', 'gamma', 'delta', 'observe']) {}
@@ -204,10 +204,13 @@ test('joint dependency graph solves the neutral two-step task without a parent s
   assert.equal(snapshot.field.lastGoalEvaluation?.status, 'satisfied');
   assert(environment.records.some(record => {
     if (record.kind !== 'joint-control-decision') return false;
-    const sites = (record.value as { field?: { sites?: readonly { operation: string }[] } }).field?.sites ?? [];
+    const decision = record.value as { field?: { sites?: readonly { operation: string }[] };
+      lastDecision?: { operation: string; converged: boolean } };
+    const sites = decision.field?.sites ?? [];
     return sites.some(site => site.operation === 'finish-verified')
-      && sites.some(site => site.operation === 'compare-condition' || site.operation === 'predict-branch');
-  }), 'finish verification bypassed the ordinary joint competition');
+      && decision.lastDecision?.operation === 'finish-verified' && decision.lastDecision.converged
+      && sites.every(site => site.operation !== 'execute');
+  }), 'completion must be selected from the field without further motor actions');
 });
 
 test('three physical condition links remain simultaneously represented while actions unfold', async () => {
@@ -580,4 +583,75 @@ test('goal reasoning is available before physical memory readiness', async () =>
   assert.equal(result.status, 'goal-verified');
   assert(reasoning.recalls > 0, 'readiness incorrectly blocked goal reasoning');
   assert.equal(environment.statusCalls, 0, 'goal loop still polls readiness as a gate');
+});
+
+test('exploring one target does not suppress the same untried action on another target', async () => {
+  class TargetsEnvironment extends NeutralEnvironment {
+    readonly touched: string[] = [];
+    override listActionOffers(observation: Observation): readonly ActionOfferV1[] {
+      return ['o', 'other'].map(targetId => {
+        const action: Action = { kind: 'interact', targetId, parameters: {} };
+        return { version: 'ActionOfferV1', offerId: `${targetId}:${observation.sequence}`,
+          observationSequence: observation.sequence, action, cue: cueFor(action, observation) };
+      });
+    }
+    override frame(): Observation {
+      const frame = super.frame();
+      return { ...frame, objects: [frame.objects[0]!, { ...frame.objects[0]!, id: 'other' }] };
+    }
+    override async executeOffer(offer: ActionOfferV1) {
+      this.touched.push(offer.action.targetId!); this.actionCount++; this.sequence++;
+      return { executed: true, observation: this.frame(), eventId: `target-event-${this.actionCount}` };
+    }
+  }
+  const environment = new TargetsEnvironment();
+  const manager = new PhysicalControlManagerV2(new NeutralReasoning(environment), environment, config(37));
+  await manager.exploreUntil(() => environment.actionCount >= 2);
+  const second = environment.records.filter(value => value.kind === 'joint-control-decision')[1]!.value as {
+      field: { sites: { nodeId: string; drives: { novelty: number } }[] };
+      workspace: ControlWorkspaceSnapshotV2 };
+  const untouched = second.workspace.nodes.find(value => value.node.kind === 'exploration'
+    && value.node.offer.action.targetId !== environment.touched[0])!;
+  assert.equal(second.field.sites.find(site => site.nodeId === untouched.node.nodeId)?.drives.novelty, 1);
+  assert.equal(new Set(environment.touched).size, 2,
+    'the exploration policy ignored an untried public target');
+});
+
+test('a goal reached on the last allowed action still receives later public verification', async () => {
+  class LastActionEnvironment extends NeutralEnvironment {
+    override readonly actionBudget = 1;
+    override F = true;
+    waits = 0;
+    override async waitForObservationAfter(sequence: number) {
+      this.waits++;
+      return super.waitForObservationAfter(sequence);
+    }
+  }
+  const environment = new LastActionEnvironment(['beta']);
+  const reasoning = new NeutralReasoning(environment);
+  reasoning.recallByEffect = async () => [];
+  const result = await new PhysicalControlManagerV2(reasoning,
+    environment, config(37)).runGoal(goal);
+  assert.equal(result.status, 'goal-verified');
+  assert.deepEqual(environment.timeline, ['beta']);
+  assert.ok(environment.waits >= 5, 'completion was declared without later public evidence');
+});
+
+test('later verification rejects a transient goal reached at the action limit', async () => {
+  class TransientEnvironment extends NeutralEnvironment {
+    override readonly actionBudget = 1;
+    override F = true;
+    override async waitForObservationAfter(sequence: number) {
+      this.R = false;
+      return super.waitForObservationAfter(sequence);
+    }
+  }
+  const environment = new TransientEnvironment(['beta']);
+  const reasoning = new NeutralReasoning(environment);
+  reasoning.recallByEffect = async () => [];
+  const result = await new PhysicalControlManagerV2(reasoning,
+    environment, config(37)).runGoal(goal);
+  assert.notEqual(result.status, 'goal-verified');
+  assert.deepEqual(environment.timeline, ['beta']);
+  assert.equal(environment.R, false);
 });

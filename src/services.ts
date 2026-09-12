@@ -42,7 +42,7 @@ export interface Configuration {
   readonly evidence?: EvidenceConfigurationV1;
 }
 
-export type MinecraftFixtureModeV1 = 'legacy-door' | 'empty';
+export type MinecraftFixtureModeV1 = 'legacy-door' | 'empty' | 'natural' | 'preserve';
 
 export async function loadConfiguration(): Promise<Configuration> {
   const config = JSON.parse(await readFile(resolve('kairos.config.json'), 'utf8')) as Configuration;
@@ -108,16 +108,29 @@ class OwnedProcess {
 export class Services {
   server: OwnedProcess | null = null;
   constructor(readonly config: Configuration, readonly runRoot: string, readonly evidence: string) {}
-  async start(fixture: MinecraftFixtureModeV1 = 'legacy-door'): Promise<void> {
+  async start(fixture: MinecraftFixtureModeV1 = 'legacy-door', options: { worldSeed?: string } = {}): Promise<void> {
+    assert(options.worldSeed === undefined || /^-?\d{1,19}$/.test(options.worldSeed), 'invalid-world-seed');
     const c = this.config, tmp = resolve(this.runRoot, 'tmp'), serverRoot = resolve(this.runRoot, 'minecraft');
+    const propertiesPath = resolve(serverRoot, 'server.properties');
+    let continuingProperties: string | null = null;
+    if (fixture === 'preserve') {
+      continuingProperties = await readFile(propertiesPath, 'utf8');
+      const levelName = continuingProperties.split(/\r?\n/).find(line => line.startsWith('level-name='))?.slice(11);
+      assert(levelName && !levelName.includes('/') && !levelName.includes('\\'), 'invalid-existing-world-name');
+      await readFile(resolve(serverRoot, levelName, 'level.dat'));
+    }
     await mkdir(tmp, { recursive: true }); await mkdir(serverRoot, { recursive: true }); await mkdir(this.evidence, { recursive: true });
     await copyFile(c.minecraft.serverJar, resolve(serverRoot, 'server.jar'));
     await writeFile(resolve(serverRoot, 'eula.txt'), 'eula=true\n');
     await saveJson(resolve(serverRoot, 'whitelist.json'), [offlineProfile(c.minecraft.username)]);
-    await writeFile(resolve(serverRoot, 'server.properties'), [
+    await writeFile(propertiesPath, continuingProperties !== null
+      ? continuingProperties.replace(/^server-port=.*$/m, `server-port=${c.minecraft.port}`)
+      : [
       'server-ip=127.0.0.1', `server-port=${c.minecraft.port}`, 'online-mode=false', 'white-list=true',
-      'max-players=1', 'enable-rcon=false', 'enable-query=false', 'level-type=minecraft:flat',
-      `level-seed=${Date.now()}`, 'level-name=world-v5-physical-control', 'gamemode=survival', 'difficulty=peaceful',
+      'max-players=1', 'enable-rcon=false', 'enable-query=false',
+      `level-type=minecraft:${fixture === 'natural' ? 'normal' : 'flat'}`,
+      `level-seed=${options.worldSeed ?? Date.now()}`, 'level-name=world-v5-physical-control', 'gamemode=survival',
+      `difficulty=${fixture === 'natural' ? 'normal' : 'peaceful'}`,
       'spawn-protection=0', 'view-distance=4', 'simulation-distance=4', 'sync-chunk-writes=true',
     ].join('\n') + '\n');
     await saveJson(resolve(this.evidence, 'INSTALLATION_IDENTITIES.json'), {
@@ -127,6 +140,12 @@ export class Services {
     this.server = new OwnedProcess(c.minecraft.java, [`-Djava.io.tmpdir=${tmp}`, '-Xms1G', '-Xmx2G', '-jar', 'server.jar', 'nogui'],
       serverRoot, resolve(this.evidence, 'minecraft-server.log'), tmp);
     await this.server.ready(/Done \([^\n]+\)!/);
+    if (fixture === 'preserve' || fixture === 'natural') {
+      await saveJson(resolve(this.evidence, 'FIXTURE_SETUP.json'), {
+        kind: fixture === 'preserve' ? 'continued-native-world' : 'natural-native-world',
+        commands: [], controllerAccess: false, dynamicRuleCallbacks: false });
+      return;
+    }
     if (fixture === 'legacy-door') await this.#fixture();
     else {
       // A flat world may spawn around y=-60; placeBot uses y=64. Prepare

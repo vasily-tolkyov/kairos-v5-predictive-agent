@@ -1,0 +1,114 @@
+[
+  {
+    "index": 6925,
+    "id": "2ff487f9-a797-4107-a288-69d41ec034d7",
+    "timestamp": "2026-09-11T21:19:04.021674+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c 'node ../execution-builds/v52/scripts/evaluate-minecraft-continuing.mjs --java ../native-runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java --server ../native-runtime/server-1.21.4.jar --output ../native-unfamiliar-v52-passive-transfer --restore ../native-natural-v51-bounded-fitting/session.json.gz --environment natural --world-seed 129604783 --goal ../recovered-evidence/v50-carry-and-reach-goal.json --goal-after 128 --steps 2048 --seconds 3600 --port 25624 > ../recovered-evidence/v52-native-unfamiliar-transfer.log 2>&1'"
+  },
+  {
+    "index": 6931,
+    "id": "c5327a97-5acc-4af6-b516-869f00a61549",
+    "timestamp": "2026-09-11T21:21:00.947029+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"python3 - <<'PY'\nfrom pathlib import Path\nimport json,subprocess\nroot=Path.cwd(); repo=root/'kairos-next'\nmanifest={'version':'KairosNextStageCheckpoint13','status':'in-progress; overall open-world and multistage target not met','sourceCommit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip(),'gate':{'tests':120,'pass':120,'log':'recovered-evidence/v52c-integrated-tests.log'},'priorEvidence':{'checkpoint11Sha256':'1672b7b47199e1fba631f9b72e139b04fff05ea71ad6e5c3a089c163baa425cc','checkpoint12Sha256':'e5ca0f3c1dde7d4a7051011beef0792290b9766734030206bfbb47f13dd1dde2'},'includedStoppedRuns':['native-natural-v47-optical-cold','native-passive-experience-v49','native-natural-v50-passive-continuation','native-unfamiliar-v50-start','native-unfamiliar-v50-warm-start','native-unfamiliar-v50-erased-start','native-unfamiliar-v50-carry-warm','native-unfamiliar-v50-carry-erased','native-natural-v51-bounded-fitting','native-passive-planning-port-v52'],'executedBuilds':['v48','v50','v51','v52'],'ongoingNotIncluded':'native-unfamiliar-v52-passive-transfer','findings':['V47 coordinate goal confirmed independently, followed by 14 deaths; supported paths repeat locomotion, not different causal prerequisite stages.','V50 learned spontaneous passive windows but fitting fell behind physics; diagnostic pause preserves failure.','Both V50 frozen carry-and-reach trials failed; no transfer benefit established.','V51 incremental fitting restored live throughput but new passive-composition control found inconsistent calibration sample mass; fixed in V52.','V52 scripted native exact passive port check passed; apparatus evidence is not fed into autonomous model.','V52 synthetic active-passive-active composition succeeds and loses complete solution after passive-memory erasure; not native multistage competence.'],'archivePolicy':'Original run top-level reports/journals, events, passive-events, server evidence, verified stopped-world archives and compiled copies. Runtime directories and duplicate journal segment caches are excluded. No Minecraft executable or decompiled source is distributed.','replayNotes':'The passive profile events link is portable and points to original V50 passive files. The 128-window V40 active suffix benchmark additionally requires its original native events from earlier checkpoint 11; no missing frames are synthesized.'}\np=root/'recovered-evidence/next-stage-checkpoint13.json';p.write_text(json.dumps(manifest,indent=2))\nsubprocess.run(['git','archive','--format=zip','--prefix=kairos-next/','--output='+str(root/'deliverables/kairos-next-stage-code-ea097eb.zip'),manifest['sourceCommit']],cwd=repo,check=True)\nPY\""
+  },
+  {
+    "index": 6940,
+    "id": "5fe8eb66-e444-4f7c-8d5c-dad8b85c90e2",
+    "timestamp": "2026-09-11T21:21:49.987795+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"python3 - <<'PY'\nfrom pathlib import Path\nimport json,collections\np=Path('native-natural-v51-bounded-fitting');r=json.loads((p/'results.json').read_text());d=[json.loads(l) for l in (p/'decisions.jsonl').read_text().splitlines()]\nprint('decision keys',list(d[0]));print('sample decision',{k:v for k,v in d[0].items() if k not in ['self','prediction','predictedSteps','offer','stateKey']})\nprint('real pickup evidence',json.loads(Path('recovered-evidence/v52-v51-actual-inventory-gains.json').read_text()))\np=Path('native-unfamiliar-v52-passive-transfer');o=json.loads((p/'initial-observation.json').read_text());print('unfamiliar initial',o['self']['position'])\nPY\""
+  },
+  {
+    "index": 6954,
+    "id": "b005cbfd-13bd-4cd6-94d1-a68af67c6c9c",
+    "timestamp": "2026-09-11T21:25:27.026609+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"git status --short; sed -n '1,160p' scripts/evidence-journal.mjs; rg -n 'maxSeconds|durationMs|stopping|PAUSE' scripts/evaluate-minecraft-continuing.mjs\""
+  },
+  {
+    "index": 6955,
+    "id": "5ea25fde-c093-4371-bef7-b1b67268efd3",
+    "timestamp": "2026-09-11T21:25:28.145683+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"tail -n 3 recovered-evidence/v52-native-unfamiliar-transfer.log; tail -n 2 recovered-evidence/pack-checkpoint13.log; python3 - <<'PY'\nfrom pathlib import Path\nimport json,collections\np=Path('native-unfamiliar-v52-passive-transfer');f=p/'decisions.jsonl'\nif f.exists(): rows=[json.loads(l) for l in f.read_text().splitlines()]\nelse:\n rows=[]\n for f in sorted((p/'journal').glob('decisions/*.jsonl')):\n  rows.extend(json.loads(l) for l in f.read_text().splitlines())\nprint('records',len(rows))\nif rows:\n print('sources',dict(collections.Counter(r['source'] for r in rows)))\n print('actions',dict(collections.Counter(r.get('offer',{}).get('action',{}).get('kind') for r in rows)))\n print('last',{k:rows[-1].get(k) for k in ['index','status','goalId','self','durationMs']})\nPY\""
+  },
+  {
+    "index": 6958,
+    "id": "4c0e5945-3c3e-4f23-ab48-0a6542e038aa",
+    "timestamp": "2026-09-11T21:25:44.132816+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"python3 - <<'PY'\nimport json\nfrom pathlib import Path\nr=json.loads(Path('recovered-evidence/checkpoint13-local-artifacts.json').read_text())\nPath('recovered-evidence/checkpoint13-upload-request.json').write_text(json.dumps({'uploads':[{'local_path':x['path'],'purpose':'create_library_file'} for x in r]}))\nPY\npython3 /root/.codex/plugins/cache/openai-curated-remote/openai-library/0.1.54/skills/library/scripts/library_upload.py < recovered-evidence/checkpoint13-upload-request.json > recovered-evidence/checkpoint-upload-13.json\""
+  },
+  {
+    "index": 6959,
+    "id": "3d21f72e-a5a5-4af9-9bed-48464f7380af",
+    "timestamp": "2026-09-11T21:25:45.769182+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"python3 - <<'PY'\nfrom pathlib import Path\nimport json,collections\np=Path('native-unfamiliar-v52-passive-transfer');rows=[json.loads(f.read_text()) for f in sorted((p/'journal/decisions').glob('*.json'))]\nprint('records',len(rows))\nif rows:\n print('sources',dict(collections.Counter(r['source'] for r in rows)))\n print('intentions',dict(collections.Counter(r.get('goalId') for r in rows)))\n print('actions',dict(collections.Counter(r.get('offer',{}).get('action',{}).get('kind') for r in rows)))\n print('last',{k:rows[-1].get(k) for k in ['index','status','goalId','self','durationMs']})\n print('supportedTaskPlans',sum(r.get('source')=='task' and bool(r.get('planLength')) for r in rows),'maximumTaskPlan',max((r.get('planLength',0) for r in rows if r['source']=='task'),default=0))\nPY\""
+  },
+  {
+    "index": 6965,
+    "id": "791bf398-3fd2-4e23-acae-619ea45cdc29",
+    "timestamp": "2026-09-11T21:26:35.108200+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"rg -n 'residual|ratio|GroundedResidual|greater-than' src/control/goal.ts; sed -n '18,40p' src/adapters/minecraft/experience.ts; rg -n 'maintenance' test/open-world.test.ts\""
+  },
+  {
+    "index": 6967,
+    "id": "aecf6dde-1afb-4dcb-aa08-d2314f1f74b7",
+    "timestamp": "2026-09-11T21:26:35.324512+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c 'tail -n 5 recovered-evidence/checkpoint-upload-13.json; tail -n 2 recovered-evidence/v52-native-unfamiliar-transfer.log'"
+  },
+  {
+    "index": 6976,
+    "id": "d1d25154-725f-44a4-b460-270a830fe81f",
+    "timestamp": "2026-09-11T21:28:24.755871+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"sed -n '378,430p' test/open-world.test.ts; sed -n '180,210p' scripts/evaluate-minecraft-continuing.mjs\""
+  },
+  {
+    "index": 6978,
+    "id": "49deeea1-45a3-4820-8c38-705d0caa85dc",
+    "timestamp": "2026-09-11T21:28:25.987027+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"python3 - <<'PY'\nfrom pathlib import Path\np=Path('native-unfamiliar-v52-passive-transfer/PAUSE');p.write_text('Diagnostic pause: after the external goal was submitted, persistent physiological maintenance monopolized all decision opportunities. Preserve actual world/model and journals before a generic non-starving intention arbitration repair. No task planning or overall success is claimed.\\\\n')\nPY\""
+  },
+  {
+    "index": 6980,
+    "id": "ce05d786-fc58-4e8d-b36c-1def6336f5fd",
+    "timestamp": "2026-09-11T21:28:26.201227+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc apply_patch"
+  },
+  {
+    "index": 6989,
+    "id": "54b3708b-1fec-4379-9dd9-058ab797ac70",
+    "timestamp": "2026-09-12T02:21:08.496553+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"python3 - <<'PY'\nfrom pathlib import Path\nimport json,os\nroot=Path.cwd()\nfor name in ['native-unfamiliar-v52-passive-transfer','recovered-evidence','execution-builds','deliverables']:\n p=root/name\n total=0;n=0\n for f in p.rglob('*'):\n  if 'node_modules' in f.parts or 'runtime' in f.relative_to(p).parts or f.is_symlink(): continue\n  if f.is_file(): total+=f.stat().st_size;n+=1\n print(name,n,total)\nfor p in Path('/proc').iterdir():\n if p.name.isdigit():\n  try:\n   cmd=(p/'cmdline').read_bytes().split(b'\\\\0')\n   if cmd and (cmd[0].endswith(b'/java') or cmd[0] in [b'node',b'python3']) and any(b'evaluate-minecraft' in c or b'server-1.21.4.jar' in c or b'library_upload.py' in c for c in cmd): print('task process',p.name,[c.decode(errors='replace') for c in cmd[:4]])\n  except (FileNotFoundError,PermissionError):pass\nPY\""
+  },
+  {
+    "index": 6993,
+    "id": "283fc045-2978-4ca5-8b8a-404c08d30505",
+    "timestamp": "2026-09-12T02:21:43.015881+00:00",
+    "role": "assistant",
+    "kind": "code",
+    "text": "bash -lc /bin/bash -c \"pwd; rg --files -g '\"'!**/node_modules/**'\"' -g '\"'!**/.git/**'\"' | head -n 65; node --version; npm --version\""
+  }
+]

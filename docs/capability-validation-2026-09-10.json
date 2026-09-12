@@ -1,0 +1,203 @@
+{
+  "version": "KairosCapabilityValidationV1",
+  "date": "2026-09-10",
+  "remoteBaseline": "7fe4157dcac57daf9febf5f0d449ea938a081249",
+  "cleanedLocalBaseline": "330e0eabf496d361853bfac1edade0b0ccd58e53",
+  "currentDerivedIndex": "distributed-r2a-observed-contrast-and-stable-calibration-v22",
+  "githubPushed": false,
+  "capabilityAcceptancePassed": false,
+  "environment": {
+    "node": "24.19.0",
+    "typescript": "5.9.3",
+    "physicalMedium": "production numerical lattice",
+    "body": "synthetic public actuator world",
+    "minecraftRun": false
+  },
+  "validationCommandsArePortableReproductions": true,
+  "build": {
+    "command": "npm run build --silent",
+    "exitCode": 0
+  },
+  "scriptSyntax": {
+    "command": "node --check scripts/evaluate-capabilities.mjs",
+    "exitCode": 0
+  },
+  "diffCheck": {
+    "command": "git diff --check",
+    "exitCode": 0
+  },
+  "regressionBatches": [
+    {
+      "name": "afferent-exploration-verification-cadence",
+      "files": [
+        "afferent-event-outcome-scope",
+        "physical-control-manager",
+        "distributed-r2a-consolidation-batch"
+      ],
+      "log": "final-control-regression.tap",
+      "tests": 34,
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --test --test-reporter=tap --test-concurrency=2 dist/test/afferent-event-outcome-scope.test.js dist/test/physical-control-manager.test.js dist/test/distributed-r2a-consolidation-batch.test.js",
+      "durationMs": 7044.175315
+    },
+    {
+      "name": "physical-pattern-contrast-and-ablation",
+      "files": [
+        "distributed-r2a-physical-v2.red",
+        "r2a-local-condition-difference",
+        "r2a-matched-condition-pulse"
+      ],
+      "log": "iteration-4/r2a-regression.tap",
+      "tests": 26,
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --test --test-reporter=tap --test-concurrency=2 dist/test/distributed-r2a-physical-v2.red.test.js dist/test/r2a-local-condition-difference.test.js dist/test/r2a-matched-condition-pulse.test.js",
+      "durationMs": 319843.83895
+    },
+    {
+      "name": "related-production-contracts",
+      "files": [
+        "self-organizing-distributed-r1",
+        "distributed-afferent-readout",
+        "afferent-physical-order-not-hash",
+        "r2-observed-terminal-boundary",
+        "prescribed-action-boundary",
+        "distributed-r2a-checkpoint-index-cache",
+        "distributed-r2a-weighted-downstream",
+        "distributed-r2a-query-cache",
+        "r2a-current-action-cache",
+        "r2a-continuation-route-consistency",
+        "r2a-action-input-boundary",
+        "r2a-differential-deposit-scope",
+        "distributed-r2a-matched-contrast-cohort",
+        "distributed-r2a-intervention-performance",
+        "physical-observer-invariance",
+        "terminal-readout-identity",
+        "current-action-r3-alignment",
+        "public-role-condition-separation",
+        "control-transition-evidence-refresh",
+        "joint-control-neutral-experiments",
+        "runtime-final-checkpoint",
+        "distributed-hierarchical-memory-production-integration",
+        "distributed-g5-neutral-control",
+        "physical-reasoning-v2-control-wiring",
+        "control-workspace"
+      ],
+      "log": "final-related-regression.tap",
+      "tests": 93,
+      "passed": 93,
+      "failed": 0,
+      "skipped": 0,
+      "command": "node --test --test-reporter=tap --test-concurrency=2 dist/test/self-organizing-distributed-r1.test.js dist/test/distributed-afferent-readout.test.js dist/test/afferent-physical-order-not-hash.test.js dist/test/r2-observed-terminal-boundary.test.js dist/test/prescribed-action-boundary.test.js dist/test/distributed-r2a-checkpoint-index-cache.test.js dist/test/distributed-r2a-weighted-downstream.test.js dist/test/distributed-r2a-query-cache.test.js dist/test/r2a-current-action-cache.test.js dist/test/r2a-continuation-route-consistency.test.js dist/test/r2a-action-input-boundary.test.js dist/test/r2a-differential-deposit-scope.test.js dist/test/distributed-r2a-matched-contrast-cohort.test.js dist/test/distributed-r2a-intervention-performance.test.js dist/test/physical-observer-invariance.test.js dist/test/terminal-readout-identity.test.js dist/test/current-action-r3-alignment.test.js dist/test/public-role-condition-separation.test.js dist/test/control-transition-evidence-refresh.test.js dist/test/joint-control-neutral-experiments.test.js dist/test/runtime-final-checkpoint.test.js dist/test/distributed-hierarchical-memory-production-integration.test.js dist/test/distributed-g5-neutral-control.test.js dist/test/physical-reasoning-v2-control-wiring.test.js dist/test/control-workspace.test.js",
+      "durationMs": 84463.845694
+    }
+  ],
+  "balancedTwoStep": {
+    "command": "KAIROS_RUN_REAL_G5_TWO_STEP=1 node --test --test-reporter=tap --test-name-pattern='G5 real distributed memory' dist/test/distributed-physical-two-step-control.red.test.js",
+    "baselineLog": "baseline/g5-two-step.tap",
+    "retainedFinalLog": "latest-g5.tap",
+    "exitCode": 1,
+    "tests": 1,
+    "passed": 0,
+    "failed": 1,
+    "error": "R2A-intervention-pair-is-not-a-physical-matched-contrast",
+    "executedGoalPhase": false,
+    "training": "four scripted synthetic experience arms, 8 repetitions each, 4 context labels",
+    "externalInterventionRegistrationAttempted": true
+  },
+  "continualEvaluation": {
+    "command": "npm run test:capabilities -- --actions 64 --phases A,B,A --output ./evidence/capabilities",
+    "results": "iteration-5-continual/results.json",
+    "log": "iteration-5-continual.log",
+    "seed": 41,
+    "phases": [
+      "A",
+      "B",
+      "A"
+    ],
+    "actionsPerPhase": 64,
+    "selectedActions": 192,
+    "actuatorActions": 134,
+    "observationActions": 58,
+    "r1Writes": 384,
+    "r2Events": 192,
+    "reachableConfirmed": 10,
+    "reachableTasks": 12,
+    "reachablePlanned": 0,
+    "unreachableFalseSuccesses": 0,
+    "unreachableTasks": 3,
+    "learnedConditionRelations": 0,
+    "evaluationWrites": 0,
+    "errors": [],
+    "exitCode": 1,
+    "notSufficientForUniversalLearningConclusion": true,
+    "phaseSummary": [
+      {
+        "phase": "A",
+        "phaseIndex": 0,
+        "afterWrites": 128,
+        "completeR2Events": 64,
+        "patternCount": 7,
+        "stablePatterns": 2,
+        "relations": 0
+      },
+      {
+        "phase": "B",
+        "phaseIndex": 1,
+        "afterWrites": 256,
+        "completeR2Events": 128,
+        "patternCount": 7,
+        "stablePatterns": 4,
+        "relations": 0
+      },
+      {
+        "phase": "A",
+        "phaseIndex": 2,
+        "afterWrites": 384,
+        "completeR2Events": 192,
+        "patternCount": 9,
+        "stablePatterns": 5,
+        "relations": 0
+      }
+    ],
+    "durationMs": 1266562
+  },
+  "evidenceLimitations": [
+    "Single environment seed; simulation probe seeds are not environment replications.",
+    "64 actions per phase does not ensure two 8-member contrasts per command; first phase has fewer than 16 attempts for each goal-relevant command.",
+    "Randomized encounters are supplied by the environment; novelty rotation is not evidence of agent-designed information-seeking experiments.",
+    "All reachable confirmations came from exploration, with zero learned dependency edges.",
+    "The intermediate comparison used batch consolidation; final functional evaluation used online consolidation. Counts and wall times do not isolate one causal factor.",
+    "A->B->A ran before removal of unused fallback probes. Full G5 snapshots before and after that removal were exactly equal. Final retained tree was rebuilt and its balanced two-step diagnostic rerun.",
+    "Three regression batches cover related contracts, not the whole repository or a successful capability gate.",
+    "Missing Minecraft raw evidence, server, worlds and frozen live experience prevent new live qualification."
+  ],
+  "fallbackDeletion": {
+    "comparison": "fallback-equivalence.json",
+    "fullParsedSnapshotEqual": true,
+    "reference": "iteration-4/g5-memory.json.gz",
+    "candidate": "final-g5-memory.json.gz"
+  },
+  "rejectedExperiment": {
+    "name": "omit identical process-closing terminal pulse",
+    "patch": "iteration-6/duplicate-closing-experiment.patch",
+    "localTests": {
+      "log": "iteration-6/terminal-boundary.tap",
+      "tests": 5,
+      "passed": 5
+    },
+    "capabilityLog": "iteration-6/g5-quiet.tap",
+    "capabilityPassed": false,
+    "error": "R2A-intervention-pair-is-not-a-physical-matched-contrast",
+    "retainedInCode": false
+  },
+  "excludedFromClaims": [
+    "harness-smoke validation-gap failure (harness corrected)",
+    "terminal probe run started from non-resting activation (superseded by rest probes)",
+    "truncated verbose iteration-6 TAP log (superseded by complete quiet rerun)"
+  ],
+  "evidencePathsRelativeTo": "capability-evaluation/"
+}

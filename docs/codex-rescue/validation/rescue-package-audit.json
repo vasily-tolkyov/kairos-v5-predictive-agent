@@ -1,0 +1,36 @@
+{
+  "sourceFilesVerifiedUnchanged": 382,
+  "sourceGitModesAndBlobsVerified": true,
+  "assets": [
+    {
+      "asset": "kairos-recovered-evidence-20260913.zip",
+      "bytes": 240597847,
+      "files": 5928,
+      "sha256": "37cfac0881165b8c7ad57ff5bbec923a5448b685c499b4eaf59a5e9f2935b39b",
+      "allMemberHashesVerified": true
+    },
+    {
+      "asset": "kairos-v51-resume-20260913.zip",
+      "bytes": 64373579,
+      "files": 827,
+      "sha256": "b91a9dff21de09e5fc0fd9c1d168dad8d29d9535c2d7a77ad0a5c2f61b6361ce",
+      "allMemberHashesVerified": true
+    },
+    {
+      "asset": "kairos-next-stage-code-ea097eb.zip",
+      "bytes": 1087829,
+      "files": 382,
+      "sha256": "a63fccbd619ce6d55bc012315adde4fded4f8cde16b22339f3d08468a418d67d",
+      "allMemberHashesVerified": true,
+      "originalGitArchiveIdentityVerified": true
+    }
+  ],
+  "jsonFilesParsed": 9,
+  "publicRecordCounts": {
+    "thread-progress.jsonl": 248,
+    "thread-recorded-commands.jsonl": 2423
+  },
+  "credentialPatternScan": "no matches",
+  "newPhysicalTrials": 0,
+  "existingRecoveryDestinationRefused": true
+}

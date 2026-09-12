@@ -37,16 +37,6 @@ export interface MetaEvidenceEpisodeV1 {
   readonly jointContextIds: readonly string[];
 }
 
-export interface MetaEvidenceQualificationV1 {
-  readonly version: 'MetaEvidenceQualificationV1';
-  /** A coverage key, not a world relation or behavioral authority. */
-  readonly conditionKey: string | null;
-  readonly episodeCount: number;
-  readonly jointContextCount: number;
-  readonly grade: 'meta-repeated' | 'meta-predictive-stable' | 'insufficient';
-  readonly authority: 0;
-}
-
 export interface MetaEvidenceStateV1 {
   readonly version: 'MetaEvidenceStateV1';
   readonly observations: readonly MetaEvidenceObservationV1[];
@@ -151,33 +141,6 @@ export function deriveMetaEvidenceEpisodesV1(
     || left.conditionKey.localeCompare(right.conditionKey, 'en'));
 }
 
-export function metaEvidenceQualificationV1(
-  episodes: readonly MetaEvidenceEpisodeV1[]): MetaEvidenceQualificationV1 {
-  const groups = new Map<string, MetaEvidenceEpisodeV1[]>();
-  for (const episode of episodes) {
-    const group = groups.get(episode.conditionKey) ?? [];
-    group.push(episode); groups.set(episode.conditionKey, group);
-  }
-  const ranked = [...groups].map(([conditionKey, values]) => {
-    const joint = new Set(values.flatMap(episode => episode.jointContextIds));
-    return { conditionKey, episodeCount: values.length, jointContextCount: joint.size };
-  }).sort((left, right) => {
-    const leftPredictive = left.episodeCount >= 8 && left.jointContextCount >= 4;
-    const rightPredictive = right.episodeCount >= 8 && right.jointContextCount >= 4;
-    return Number(rightPredictive) - Number(leftPredictive)
-      || right.episodeCount - left.episodeCount
-    || right.jointContextCount - left.jointContextCount
-      || left.conditionKey.localeCompare(right.conditionKey, 'en');
-  });
-  const best = ranked[0];
-  const episodeCount = best?.episodeCount ?? 0;
-  const jointContextCount = best?.jointContextCount ?? 0;
-  return { version: 'MetaEvidenceQualificationV1', conditionKey: best?.conditionKey ?? null,
-    episodeCount, jointContextCount, authority: 0,
-    grade: episodeCount >= 8 && jointContextCount >= 4 ? 'meta-predictive-stable'
-      : episodeCount >= 2 ? 'meta-repeated' : 'insufficient' };
-}
-
 export class MetaEvidenceStoreV1 {
   readonly #observations: MetaEvidenceObservationV1[] = [];
 
@@ -203,19 +166,6 @@ export class MetaEvidenceStoreV1 {
       left.depositionOrdinal - right.depositionOrdinal);
     return { version: 'MetaEvidenceStateV1', observations,
       episodes: deriveMetaEvidenceEpisodesV1(observations) };
-  }
-
-  qualification(): MetaEvidenceQualificationV1 {
-    return metaEvidenceQualificationV1(this.snapshot().episodes);
-  }
-
-  /** Read-only per-condition coverage; never a world-relation grade. */
-  qualifications(): readonly MetaEvidenceQualificationV1[] {
-    const episodes = this.snapshot().episodes;
-    const keys = [...new Set(episodes.map(value => value.conditionKey))].sort((left, right) =>
-      left.localeCompare(right, 'en'));
-    return keys.map(key => metaEvidenceQualificationV1(
-      episodes.filter(value => value.conditionKey === key)));
   }
 
   static restore(state: MetaEvidenceStateV1): MetaEvidenceStoreV1 {

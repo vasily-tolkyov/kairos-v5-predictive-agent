@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { ActionCue, Observation, PrimitiveKind, PublicObject } from '../src/contracts.js';
-import { describeActionRequirement } from '../src/body.js';
+import { describeActionRequirement, MinecraftBody } from '../src/body.js';
 
 const observation = (target: PublicObject | null, heldItem: string | null = null): Observation => ({
   sequence: 41,
@@ -21,7 +21,7 @@ const block: PublicObject = {
   id: 'block:1,64,2', type: 'opaque-block', relativePosition: [1, 0, 2], properties: {},
 };
 const entity: PublicObject = {
-  id: 'entity:17', type: 'opaque-entity', relativePosition: [0, 0, 2], properties: {},
+  id: 'entity:17', type: 'opaque-entity', relativePosition: [0, 0, 2], properties: { attackable: true },
 };
 const cue = (kind: PrimitiveKind, targetRole: string | null = null): ActionCue =>
   ({ kind, parameters: {}, targetRole });
@@ -83,4 +83,10 @@ test('place requires both an exact public block and a currently public held item
   const ready = describeActionRequirement(cue('place', block.type), observation(block, 'opaque-item'));
   assert.equal(ready.satisfied, true);
   assert.deepEqual(ready.missing, []);
+});
+test('unsupported entity targets cannot offer an attack', () => {
+  const dropped = { ...entity, type: 'item', properties: { attackable: false } };
+  assert.equal(describeActionRequirement(cue('attack', dropped.type), observation(dropped)).satisfied, false);
+  assert(!MinecraftBody.actionOffers(observation(dropped)).some(offer => offer.action.kind === 'attack'));
+  assert(MinecraftBody.actionOffers(observation(entity)).some(offer => offer.action.kind === 'attack'));
 });

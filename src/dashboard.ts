@@ -30,11 +30,7 @@ setInterval(update,2000);update();
 /** A defensive, read-only dashboard projection. Exported so viewer non-mutation is directly testable. */
 export function dashboardPayload(runtime: V5Runtime): unknown {
   const snapshot = runtime.snapshotForDisplay;
-  const media = snapshot ? (() => {
-    const value = snapshot as unknown as Record<string, any>;
-    return value.r1Medium ? { r1: value.r1Medium, r2: value.r2Medium, r2a: value.r2a?.medium }
-      : { r1: value.r1Store?.medium, r2: value.r2Store?.medium, r2a: value.r2a?.r2aMedium };
-  })() : null;
+  const media = snapshot ? { r1: snapshot.r1Medium, r2: snapshot.r2Medium, r2a: snapshot.r2a.medium } : null;
   return structuredClone({ runtime: runtime.display(), controlFields: runtime.controlFieldForDisplay,
     controlHabits: runtime.habitCheckpointForDisplay,
     media });

@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { HierarchicalPhysicalMemoryV1 } from '../src/hierarchical-memory.js';
+import { DistributedHierarchicalPhysicalMemoryV1 } from '../src/distributed-hierarchical-memory.js';
 import { ControlHabitWeightsV1 } from '../src/control/habit.js';
 import { dashboardPayload } from '../src/dashboard.js';
 import type { V5Runtime } from '../src/runtime.js';
 
 test('dashboard payload is a defensive projection and cannot mutate runtime-owned values', () => {
-  const snapshot = new HierarchicalPhysicalMemoryV1().snapshot();
+  const snapshot = new DistributedHierarchicalPhysicalMemoryV1().snapshot();
+  const siteCount = snapshot.r1Medium.sites.length;
   const runtimeState = { nested: { value: 3 } };
   const controlField = { sites: [{ activation: .7 }], dependencies: [] };
   const habits = new ControlHabitWeightsV1().exportCheckpoint();
@@ -22,15 +23,15 @@ test('dashboard payload is a defensive projection and cannot mutate runtime-owne
   const payload = dashboardPayload(runtime) as {
     runtime: { nested: { value: number } };
     controlFields: { sites: { activation: number }[] };
-    media: { r1: { pages: unknown[] } };
+    media: { r1: { sites: unknown[] } };
   };
   payload.runtime.nested.value = 99;
   payload.controlFields.sites[0]!.activation = 0;
-  payload.media.r1.pages.push({});
+  payload.media.r1.sites.push({});
 
   assert.equal(runtimeState.nested.value, 3);
   assert.equal(controlField.sites[0]!.activation, .7);
-  assert.equal(snapshot.r1Store.medium.pages.length, 0);
+  assert.equal(snapshot.r1Medium.sites.length, siteCount);
 });
 
 test('runtime display getters clone owned snapshots at the boundary', async () => {

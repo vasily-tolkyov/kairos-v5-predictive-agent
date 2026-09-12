@@ -42,6 +42,28 @@ test('a previously observed outcome remains measurable in a later complete no-ef
     'no effect must describe the same observed state before and after the action');
 });
 
+test('untargeted actions retain their learned remote and self outcomes on no-effect attempts', () => {
+  const projection = new SelfOrganizingAfferentProjectionV1();
+  const medium = new DistributedPhysicalMedium3DV1({ name: 'untargeted-negative-outcomes' });
+  const untargeted = (id: string, after: boolean): RealEvent => {
+    const original = event(id, false, after);
+    return { ...original,
+      cue: { kind: 'select-hotbar', parameters: { slot: 0 }, targetRole: null },
+      bodyResult: { ...original.bodyResult!,
+        action: { kind: 'select-hotbar', parameters: { slot: 0 } } },
+      frames: original.frames.map((frame, index) => ({ ...frame, targetId: null,
+        self: { ...frame.self, properties: { selectedSlot: index === 0 ? 8 : 0,
+          enabled: index === 1 && after } } })) };
+  };
+  projection.projectEvent(untargeted('remote-success', true), medium);
+  const result = projection.projectEvent(untargeted('remote-no-effect', false), medium);
+  const readout = projection.readPublicState(result.episode.pulses.at(-1)!.drives);
+  assert.equal(readout.channels.find(channel => channel.property === 'q')?.value, false);
+  assert.equal(readout.channels.find(channel => channel.property === 'enabled')?.value, false);
+  assert.equal(readout.channels.find(channel => channel.property === 'selectedSlot')?.value, 0);
+  assert.equal(readout.channels.some(channel => channel.property === 'background'), false);
+});
+
 test('restoring afferent evidence preserves unchanged-outcome scope without future observation', () => {
   const projection = new SelfOrganizingAfferentProjectionV1();
   const medium = new DistributedPhysicalMedium3DV1({ name: 'scope-restore' });

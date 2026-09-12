@@ -1,0 +1,87 @@
+{
+  "version": "KairosCodexRescueState1",
+  "preparedAtUtc": "2026-09-12T16:42:45.534504+00:00",
+  "repository": "vasily-tolkyov/kairos-v5-predictive-agent",
+  "sourceConversation": {
+    "shareUrl": "https://chatgpt.com/share/6aa53c0a-2178-83ea-bb2e-73166dd04d56",
+    "conversationId": "6aa2962d-3fc4-83e8-9e37-5c830d931ed3",
+    "title": "审视并简化项目",
+    "shareSnapshotSha256": "2d26065d0abb9dff464605ba2966d0dcb8728b88b49319402d2f3d10efd13d4f",
+    "publicMessagesPreserved": 248,
+    "recordedCommandsPreserved": 2423,
+    "hiddenThoughtsIncluded": false
+  },
+  "source": {
+    "savedCommit": "ea097eb823eb28639c58639dd55f552fab08e98d",
+    "importCommit": "ffc3e1121ef03064632f93715eee89ee25f59db2",
+    "archivedFiles": 382,
+    "archivedFilesUnchanged": true,
+    "sourceManifest": "../codex-handoff/source-manifest.json"
+  },
+  "currentValidation": {
+    "node": "24.14.0",
+    "python": "3.11.9",
+    "platform": "Windows",
+    "command": "npm run test:next-stage",
+    "tests": 120,
+    "pass": 120,
+    "fail": 0,
+    "skip": 0,
+    "log": "validation/next-stage-tests-windows.log",
+    "recoveredWorldsVerified": [
+      "V47",
+      "V50",
+      "V51"
+    ],
+    "v51WorldFilesVerified": 28,
+    "v51CurrentCodeRestorePassed": true,
+    "learningUnchangedOnRestore": true,
+    "newMinecraftRuns": 0,
+    "newPhysicalTrials": 0,
+    "packageAndSourceAudit": "validation/rescue-package-audit.json"
+  },
+  "recovery": {
+    "completeFiles": 5928,
+    "uncompressedBytes": 325680383,
+    "partialInputBytes": 239626527,
+    "manifest": "recovered-files.json",
+    "releaseAssets": "release-assets.json",
+    "preferredRun": "native-natural-v51-bounded-fitting",
+    "preferredSessionSha256": "80c5707a74816434968924c80b11324d6ee567d763cb50eed9fb4400059b0d17",
+    "preferredWorldSha256": "1891e013d7c0154ab42a3806703411a03cf5bce04819138505d71a6f444ee947",
+    "preferredCounters": {
+      "decisions": 1600,
+      "executed": 1445,
+      "writes": 3149,
+      "passiveWindows": 1704
+    },
+    "prepareTool": "../../scripts/prepare-rescued-native-checkpoint.py",
+    "loadCheck": "../../scripts/verify-rescued-session.mjs"
+  },
+  "firstWorkItem": {
+    "problem": "Persistent maintenance need excludes pending external tasks",
+    "sourceFile": "src/experience-session.ts",
+    "evidence": "Current source selection logic plus public final activity and pause request",
+    "nextAction": "Reproduce in deterministic tests, implement generic bounded intention arbitration and verify checkpoint restoration",
+    "original121PatchRecovered": false,
+    "requireNewImplementationIdentity": true
+  },
+  "missing": [
+    "Original late scheduling patch and its 121st test/log",
+    "Final V52 transfer live checkpoint, stopped world and outcome",
+    "Historical numeric V50 carry-and-reach coordinate threshold",
+    "Original ZIP central directory and members beyond truncation",
+    "Complete original cloud Git history"
+  ],
+  "acceptance": {
+    "overallCompleted": false,
+    "longTermOpenWorldSurvival": "not established",
+    "openCausalMultistageTasks": "not established",
+    "doNotCountAsAcceptance": [
+      "finite coordinate success alone",
+      "respawns",
+      "more observations or actions",
+      "supported repeated locomotion without causal prerequisites"
+    ]
+  }
+}

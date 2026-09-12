@@ -1,0 +1,221 @@
+{
+  "base_commit": "7fe4157dcac57daf9febf5f0d449ea938a081249",
+  "node": "24.19.0",
+  "typescript": "5.9.3",
+  "build": "passed",
+  "diff_check": "passed",
+  "remaining_failed_tests": 2,
+  "live_minecraft_run": false,
+  "full_regression_passed": false,
+  "initial_bulk_run": {
+    "selection": "All 139 compiled *.test.js files, one node --test --test-reporter=tap process per file",
+    "parallel_file_limit": 8,
+    "per_process_timeout_seconds": 120,
+    "initial_summary_before_dashboard_fixture_correction": {
+      "files": 139,
+      "passed_files": 131,
+      "failed_files": 7,
+      "timed_out_files": 1,
+      "reported_counts": {
+        "tests": 489,
+        "pass": 467,
+        "fail": 19,
+        "skipped": 3,
+        "cancelled": 0
+      }
+    },
+    "timed_out_files": [
+      "dist/test/distributed-hierarchical-memory-production-integration.test.js"
+    ]
+  },
+  "initial_cleanup_targeted_run": {
+    "test_files": [
+      "runtime-final-checkpoint",
+      "runtime-readonly-and-neutral-entry",
+      "design-001-meta-evidence",
+      "r-series-dictionary-agenda",
+      "file-hash",
+      "distributed-medium-architecture-gate",
+      "prototype-boundary",
+      "compatibility-documentation"
+    ],
+    "tests": 21,
+    "pass": 21,
+    "fail": 0,
+    "skipped": 0,
+    "reason": "Verify cleanup boundaries and the corrected dashboard fixture without repeating unrelated tests"
+  },
+  "initial_failures_reproduced_on_base": [
+    {
+      "file": "test/afferent-physical-order-not-hash.test.ts",
+      "failed_tests": [
+        "R2A condition allocation uses explicit public sensor ordinals, not identity or caller array order"
+      ],
+      "reproduced_on_unmodified_base": true
+    },
+    {
+      "file": "test/directed-population-optimization.test.ts",
+      "failed_tests": [
+        "population recruitment preserves full-sort physical states and random readout"
+      ],
+      "reproduced_on_unmodified_base": true
+    },
+    {
+      "file": "test/distributed-prediction-clone.test.ts",
+      "failed_tests": [
+        "one stochastic field reports only its terminal winner, not every branch visited on the way"
+      ],
+      "reproduced_on_unmodified_base": true
+    },
+    {
+      "file": "test/distributed-r1-contrast-gate.test.ts",
+      "failed_tests": [
+        "G2 sealed attempt-018 first 32 R1 events physically separate all seven target/contrast arms",
+        "G2 sealed attempt-018 64/128 prefixes classify target versus contrast across public layouts"
+      ],
+      "reproduced_on_unmodified_base": true
+    },
+    {
+      "file": "test/distributed-r2a-consolidation-batch.test.ts",
+      "failed_tests": [
+        "explicit R2A batch coalesces cadence consolidations without deferring event deposits",
+        "default event cadence remains unchanged when no explicit batch is open"
+      ],
+      "reproduced_on_unmodified_base": true
+    },
+    {
+      "file": "test/distributed-r2a-physical-v2.red.test.ts",
+      "failed_tests": [
+        "2x2 q/s evidence produces a q-conditioned physical branch and no productive s relation",
+        "R2A pattern continuation starts from the members real pre-action R2 prefix, never a condition eligibility basin",
+        "R3-only q switch changes physical branch selection without writing R2A",
+        "physical terminal signals project factors only through a selected R2A branch and remain read-only",
+        "renaming/deleting audit event metadata preserves the physical branch output",
+        "physical branches are rediscovered after every audit index is deleted",
+        "cutting only directed channels preserves wells but removes conditional branch selection",
+        "clearing the physical R2A field removes branch capability while metadata remains",
+        "intervention identity, relation, factor and branch conclusions are derived inside the substrate",
+        "a physically flipped terminal outcome is counted without metadata",
+        "repeated physically flipped outcomes downgrade the relation grade"
+      ],
+      "reproduced_on_unmodified_base": true
+    }
+  ],
+  "remaining_failure_files": [
+    {
+      "file": "test/distributed-r1-contrast-gate.test.ts",
+      "failed_tests": [
+        "G2 sealed attempt-018 first 32 R1 events physically separate all seven target/contrast arms",
+        "G2 sealed attempt-018 64/128 prefixes classify target versus contrast across public layouts"
+      ],
+      "reproduced_on_unmodified_base": true
+    }
+  ],
+  "critical_files_identical_to_base": [
+    "src/core/physics/distributed-physical-medium.ts",
+    "src/core/physics/distributed-physical-contracts.ts",
+    "src/core/prediction/distributed-prediction-clone.ts",
+    "src/core/random.ts",
+    "src/distributed-hierarchical-memory.ts",
+    "src/core/learning/distributed-r1.ts",
+    "src/core/learning/distributed-r2.ts",
+    "src/control/controller.ts",
+    "src/control/field.ts",
+    "src/control/habit.ts",
+    "src/core/compatibility.ts"
+  ],
+  "followup_targeted_run": {
+    "command": "node --test --test-concurrency=2 --test-reporter=tap dist/test/runtime-final-checkpoint.test.js dist/test/runtime-readonly-and-neutral-entry.test.js dist/test/design-001-meta-evidence.test.js dist/test/r-series-dictionary-agenda.test.js dist/test/file-hash.test.js dist/test/distributed-medium-architecture-gate.test.js dist/test/prototype-boundary.test.js dist/test/compatibility-documentation.test.js dist/test/afferent-physical-order-not-hash.test.js dist/test/distributed-r2a-consolidation-batch.test.js dist/test/directed-population-optimization.test.js dist/test/distributed-prediction-clone.test.js dist/test/distributed-r2a-checkpoint-index-cache.test.js dist/test/distributed-r2a-weighted-downstream.test.js dist/test/distributed-r2a-query-cache.test.js dist/test/r2a-action-input-boundary.test.js dist/test/r2a-current-action-cache.test.js dist/test/prescribed-action-boundary.test.js dist/test/r2a-continuation-route-consistency.test.js dist/test/physical-observer-invariance.test.js dist/test/terminal-readout-identity.test.js dist/test/distributed-hierarchical-memory-production-integration.test.js dist/test/distributed-g5-neutral-control.test.js dist/test/distributed-prediction-clone-gate.test.js dist/test/distributed-physical-two-step-control.red.test.js dist/test/distributed-passive-assembly-continuation.test.js dist/test/current-action-r3-alignment.test.js dist/test/distributed-r2a-matched-contrast-cohort.test.js dist/test/distributed-r2a-intervention-performance.test.js dist/test/distributed-r2a-physical-v2.red.test.js",
+    "test_files": [
+      "runtime-final-checkpoint",
+      "runtime-readonly-and-neutral-entry",
+      "design-001-meta-evidence",
+      "r-series-dictionary-agenda",
+      "file-hash",
+      "distributed-medium-architecture-gate",
+      "prototype-boundary",
+      "compatibility-documentation",
+      "afferent-physical-order-not-hash",
+      "distributed-r2a-consolidation-batch",
+      "directed-population-optimization",
+      "distributed-prediction-clone",
+      "distributed-r2a-checkpoint-index-cache",
+      "distributed-r2a-weighted-downstream",
+      "distributed-r2a-query-cache",
+      "r2a-action-input-boundary",
+      "r2a-current-action-cache",
+      "prescribed-action-boundary",
+      "r2a-continuation-route-consistency",
+      "physical-observer-invariance",
+      "terminal-readout-identity",
+      "distributed-hierarchical-memory-production-integration",
+      "distributed-g5-neutral-control",
+      "distributed-prediction-clone-gate",
+      "distributed-physical-two-step-control.red",
+      "distributed-passive-assembly-continuation",
+      "current-action-r3-alignment",
+      "distributed-r2a-matched-contrast-cohort",
+      "distributed-r2a-intervention-performance",
+      "distributed-r2a-physical-v2.red"
+    ],
+    "counts": {
+      "tests": 111,
+      "pass": 109,
+      "fail": 0,
+      "skipped": 2,
+      "cancelled": 0
+    },
+    "selection_reason": "All changed boundaries plus real worker restore, R2A causal/erasure/contradiction tests, G5 and physical prediction regressions",
+    "existing_opt_in_skips": [
+      "KAIROS_RUN_R2A_PRECONSOLIDATION_DIAGNOSTIC",
+      "KAIROS_RUN_REAL_G5_TWO_STEP"
+    ],
+    "later_change": "Footprint recovery was subsequently restricted through the final actual command rather than merely omitting the last result; separately rerun below"
+  },
+  "missing_evidence_run": {
+    "command": "node --test --test-reporter=tap dist/test/distributed-r1-contrast-gate.test.js",
+    "counts": {
+      "tests": 7,
+      "pass": 5,
+      "fail": 2,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "missing_directory": "evidence/hierarchical-multilevel-goal-chain-live-v1-attempt-018",
+    "required_files": [
+      "RUN_PROTOCOL.json",
+      "events.jsonl",
+      "frames.jsonl"
+    ],
+    "failure_code": "ENOENT",
+    "tests_remain_enabled": true
+  },
+  "followup_changes": {
+    "baseline_failures_resolved": 16,
+    "runtime": "Restored action ports derive from physical bindings and ordered footprints; prediction lookup uses saved physical action populations rather than audit event identities",
+    "two_pulse_regression": "Before the fix, eight repetitions of [10,11] -> [30,31] admitted [30,31] as the continuation input and exposed a branch; such footprints now produce no continuation candidate",
+    "r2a_index_identity": "distributed-r2a-physical-command-and-terminal-free-rediscovery-v21",
+    "old_indexes": "Rediscovered from retained physical state; physical laws, thresholds and V3/V4 containers unchanged",
+    "fixtures": "Complete before/command/result atom ranges; initial q/s observation; shared physical terminal flip helper",
+    "prediction_assertion": "Assert physical ambiguity and mask independence instead of forcing a winner",
+    "recruitment_assertion": "Preserve all ten persistent-state full-sort golden hashes; remove unrelated obsolete decoder hash",
+    "no_new_live_capability_claim": true,
+    "footprint_boundary": "Require a physically bound action wire and retain pulses only through its actual command; exclude every later result pulse"
+  },
+  "terminal_boundary_run": {
+    "command": "node --test --test-reporter=tap --test-name-pattern='two-pulse|renaming/deleting|physical branches are rediscovered' dist/test/distributed-r2a-physical-v2.red.test.js",
+    "status": "passed",
+    "counts": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    }
+  },
+  "publication": {
+    "github": "paused_by_user",
+    "remote_branch_created": false,
+    "pull_request_created": false
+  }
+}

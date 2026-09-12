@@ -61,11 +61,12 @@ test("an off-road rollout returns explicit unknown instead of copying a historic
   assert.deepEqual(result.reachedAssemblyIds, []);
 });
 
-test("one stochastic field reports only its terminal winner, not every branch visited on the way", () => {
+test("terminal decoding preserves physical ambiguity even when only one decoder mask matches", () => {
   const medium = trained([[100, 101], [200, 201]]);
-  const result = new DistributedPredictionCloneV2(medium.snapshot()).run({
+  const clone = new DistributedPredictionCloneV2(medium.snapshot());
+  const request = {
     currentPerceptionSeedSiteIds: [0, 1], realPrefixSeedSiteIds: [[0, 1]],
-    currentPerceptionMode: 'held-boundary',
+    currentPerceptionMode: 'held-boundary' as const,
     actionSeedSiteIds: [0, 1], seed: 12n, steps: 180,
     readoutAssemblies: [
       { assemblyId: "branch-a", siteIds: [100, 101], minimumCoverage: .75,
@@ -73,13 +74,26 @@ test("one stochastic field reports only its terminal winner, not every branch vi
       { assemblyId: "branch-b", siteIds: [200, 201], minimumCoverage: .75,
         minimumPurity: .75 },
     ],
-  });
-  assert.equal(result.status, "reached");
+  };
+  const result = clone.run(request);
+  // Both independent outcomes remain active. A leading local core does not
+  // make their competition physically resolved, even if only its mask passes
+  // coverage. Dropping another passive decoder cannot supply that evidence.
+  const terminal = new Map(result.attractorReadout.terminalActivations?.map(value =>
+    [value.siteId, value.meanActivation]));
+  assert([100, 101, 200, 201].every(siteId =>
+    (terminal.get(siteId) ?? 0) >= medium.config.minimumActiveMagnitude));
+  assert.equal(result.attractorReadout.ambiguous, true);
+  assert.equal(result.status, "ambiguous");
   assert.equal(result.reachedAssemblyIds.length, 1);
   assert(["branch-a", "branch-b"].includes(result.reachedAssemblyIds[0]!));
   assert(result.reaches.every(reach => reach.visitedSiteIds.every(siteId =>
     result.attractorReadout.coreSiteIds.includes(siteId))),
   "an intermediate visit was decoded as a terminal predicted result");
+  const narrowed = clone.run({ ...request, readoutAssemblies: request.readoutAssemblies
+    .filter(assembly => result.reachedAssemblyIds.includes(assembly.assemblyId)) });
+  assert.deepEqual(narrowed.attractorReadout, result.attractorReadout);
+  assert.equal(narrowed.status, "ambiguous");
 });
 
 test("every seed owns independent transient activation and fixed seeds reproduce", () => {

@@ -12,6 +12,8 @@ import type { DistributedR2AInterventionAssessmentV2,
   DistributedR2ATransientFactorProjectionV2 }
   from '../src/core/learning/distributed-r2a-physical-contracts.js';
 import { sha } from '../src/util.js';
+import { DistributedPhysicalMedium3DV1 }
+  from '../src/core/physics/distributed-physical-medium.js';
 
 const SRC = resolve('src');
 
@@ -84,6 +86,24 @@ test('a co-active distributed population cannot dilute a fully active local asse
   assert.equal(measure(local, [100, 101, 102, 103]), 0);
 });
 
+test('two-pulse footprints cannot turn their observed terminal into a continuation seed', () => {
+  const Ctor = learnerConstructor();
+  const state = new Ctor(() => true).snapshot();
+  const medium = DistributedPhysicalMedium3DV1.fromSnapshot(state.medium);
+  for (let repetition = 0; repetition < 8; repetition++) {
+    medium.applyEpisode({ version: 'DistributedEpisodeV1', traceId: `two-pulse-${repetition}`,
+      provenance: 'trusted-real-event', pulses: [
+        { version: 'SparseFieldPulseV1', offset: 0,
+          drives: [10, 11].map(siteId => ({ siteId, intensity: 1 })) },
+        { version: 'SparseFieldPulseV1', offset: .04,
+          drives: [30, 31].map(siteId => ({ siteId, intensity: 1 })) },
+      ] });
+  }
+  const restored = Ctor.restore({ ...state, medium: medium.snapshot() }, () => true);
+  assert.deepEqual(restored.physicalBranches(), [],
+    'a footprint with no separate condition/action/result route manufactured a reachable branch');
+});
+
 function publicResultChange(branch: 'target' | 'contrast', sequence: number): PublicChange {
   return { subject: 'anonymous-result', property: 'opaque-state', before: false,
     after: branch === 'target', observationIndex: sequence, meaning: 'observed-co-occurrence' };
@@ -99,7 +119,10 @@ function event(branch: 'target' | 'contrast', repetition: number): DistributedR2
   const q = branch === 'target' ? 'channel-q:value-1' : 'channel-q:value-0';
   const s = `channel-s:value-${repetition % 2}`;
   const terminal = branch === 'target' ? [40, 41, 42, 43] : [60, 61, 62, 63];
-  const pulseSiteIds = [[10, 11, 12, 13], [20, 21, 22, 23], terminal];
+  // Both atoms preserve before → command → observed result. The first
+  // result is also the real before state of the final action.
+  const pulseSiteIds = [[80, 81, 82, 83], [90, 91, 92, 93], [10, 11, 12, 13],
+    [10, 11, 12, 13], [20, 21, 22, 23], terminal];
   const footprintSiteIds = [...new Set(pulseSiteIds.flat())];
   return {
     version: 'DistributedR2ContinuousEventV1', eventId,
@@ -113,9 +136,11 @@ function event(branch: 'target' | 'contrast', repetition: number): DistributedR2
       version: 'DistributedTraceFootprintV1', traceId: `r2-${eventId}`,
       footprintId: `r2-${eventId}`, depositedAt: repetition,
       siteIds: footprintSiteIds, pulseSiteIds, bondReferences: [
+        { fromSiteId: 80, toSiteId: 90, kind: 'plastic-directed' },
+        { fromSiteId: 90, toSiteId: 10, kind: 'plastic-directed' },
         { fromSiteId: 10, toSiteId: 20, kind: 'plastic-directed' },
         { fromSiteId: 20, toSiteId: terminal[0]!, kind: 'plastic-directed' },
-      ], directedBondIds: [`10->20`, `20->${terminal[0]}`], pulseCount: pulseSiteIds.length,
+      ], directedBondIds: ['80->90', '90->10', '10->20', `20->${terminal[0]}`], pulseCount: pulseSiteIds.length,
       supportMass: 1,
     },
     processChanges: [publicResultChange(branch, repetition * 10 + 4)],
@@ -123,15 +148,19 @@ function event(branch: 'target' | 'contrast', repetition: number): DistributedR2
     beforePublicSignals: ['channel-common:value-1', q, s],
     beforePublicSignalOccurrences: [
       { signalId: 'channel-common:value-1', pulseOrdinal: 0, channelOrdinal: 0, receptorOrdinal: 0 },
-      { signalId: q, pulseOrdinal: 1, channelOrdinal: 1, receptorOrdinal: 0 },
-      { signalId: s, pulseOrdinal: 1, channelOrdinal: 2, receptorOrdinal: 0 },
+      { signalId: q, pulseOrdinal: 0, channelOrdinal: 1, receptorOrdinal: 0 },
+      { signalId: s, pulseOrdinal: 0, channelOrdinal: 2, receptorOrdinal: 0 },
     ],
     beforeSignalTimeline: [
-      ['channel-common:value-1'],
+      ['channel-common:value-1', q, s],
       ['channel-common:value-1', q, s],
     ],
     beforeSignalTimelineOccurrences: [
-      [{ signalId: 'channel-common:value-1', pulseOrdinal: 0, channelOrdinal: 0, receptorOrdinal: 0 }],
+      [
+        { signalId: 'channel-common:value-1', pulseOrdinal: 0, channelOrdinal: 0, receptorOrdinal: 0 },
+        { signalId: q, pulseOrdinal: 0, channelOrdinal: 1, receptorOrdinal: 0 },
+        { signalId: s, pulseOrdinal: 0, channelOrdinal: 2, receptorOrdinal: 0 },
+      ],
       [
         { signalId: 'channel-common:value-1', pulseOrdinal: 1, channelOrdinal: 0, receptorOrdinal: 0 },
         { signalId: q, pulseOrdinal: 1, channelOrdinal: 1, receptorOrdinal: 0 },
@@ -140,8 +169,8 @@ function event(branch: 'target' | 'contrast', repetition: number): DistributedR2
     ],
     physicalPulseSiteIds: pulseSiteIds,
     atomPulseRanges: [
-      { atomId: `${eventId}:prefix`, startPulseIndex: 0, endPulseIndexExclusive: 1 },
-      { atomId: `${eventId}:action`, startPulseIndex: 1, endPulseIndexExclusive: 3 },
+      { atomId: `${eventId}:prefix`, startPulseIndex: 0, endPulseIndexExclusive: 3 },
+      { atomId: `${eventId}:action`, startPulseIndex: 3, endPulseIndexExclusive: 6 },
     ],
     patternSha256: sha({ version: 'anonymous-audit-only', branch }),
   };
@@ -187,7 +216,7 @@ function targetPhysicalQuery(state: DistributedR2APhysicalStateV3): {
     input: { currentConditionSiteIds: eventInput.conditionSiteIds,
       // The first atom is the actually observed prefix.  The remaining R2
       // pulses belong to the candidate action's not-yet-observed continuation.
-      realPrefixPulseSiteIds: eventInput.projectedPulseSiteIds.slice(0, 1),
+      realPrefixPulseSiteIds: eventInput.nextActionPrefixPulseSiteIds ?? [],
       actionSiteIds: eventInput.actionPulseSiteIds.at(-1) ?? eventInput.actionSiteIds } };
 }
 
@@ -289,7 +318,7 @@ test('R2A pattern continuation starts from the members real pre-action R2 prefix
   for (const pattern of state.patterns) {
     const members = state.eventInputs.filter(value => pattern.memberR2EventIds.includes(value.eventId));
     assert(members.length > 0, 'physical pattern has no retained member footprints');
-    const actualPrefix = members[0]!.projectedPulseSiteIds[0] ?? [];
+    const actualPrefix = members[0]!.nextActionPrefixPulseSiteIds?.at(-1) ?? [];
     const selectedPrefix = pattern.corridor.orderedPrefixPulseSiteIds.at(-1) ?? [];
     assert(overlapFraction(selectedPrefix, actualPrefix) >= .5,
       'R2A selected an incoming physical corridor that is not the real member pre-action R2 prefix');
@@ -524,34 +553,23 @@ test('intervention identity, relation, factor and branch conclusions are derived
   'two events from one terminal branch were accepted as a matched intervention');
 });
 
+function flippedTerminalEvent(repetition: number): DistributedR2ContinuousEventV1 {
+  const target = event('target', repetition), contrast = event('contrast', repetition);
+  const eventId = `target-flipped-${repetition}`;
+  return { ...target, eventId, contextIds: [`context-flipped-${repetition}`],
+    physicalPulseSiteIds: contrast.physicalPulseSiteIds,
+    physicalFootprint: { ...contrast.physicalFootprint!,
+      traceId: `r2-${eventId}`, footprintId: `r2-${eventId}` } };
+}
+
 test('a physically flipped terminal outcome is counted without metadata', () => {
   const Ctor = learnerConstructor();
   const learner = Ctor.restore(trainedPredictiveState(), () => true);
   const before = targetRelation(learner);
   assert.equal(before.contradictionCount, 0);
-  const flipped = structuredClone(event('target', 8)) as unknown as {
-    eventId: string; contextIds: string[]; physicalPulseSiteIds: number[][];
-    physicalFootprint: NonNullable<DistributedR2ContinuousEventV1['physicalFootprint']>;
-  } & DistributedR2ContinuousEventV1;
-  // Keep the target condition/action and even the public annotation unchanged;
-  // only the measured terminal physical population is switched to the other
-  // anonymous basin.  The production learner must use the physical readout,
-  // never this fixture's branch label, to classify it.
-  flipped.eventId = 'target-flipped-0';
-  flipped.contextIds = ['context-flipped'];
-  flipped.physicalPulseSiteIds = [[10, 11, 12, 13], [20, 21, 22, 23], [60, 61, 62, 63]];
-  flipped.physicalFootprint = {
-    ...flipped.physicalFootprint!, traceId: 'r2-target-flipped-0',
-    footprintId: 'r2-target-flipped-0',
-    siteIds: [10, 11, 12, 13, 20, 21, 22, 23, 60, 61, 62, 63],
-    pulseSiteIds: flipped.physicalPulseSiteIds,
-    bondReferences: [
-      { fromSiteId: 10, toSiteId: 20, kind: 'plastic-directed' },
-      { fromSiteId: 20, toSiteId: 60, kind: 'plastic-directed' },
-    ],
-    directedBondIds: ['10->20', '20->60'],
-  };
-  learner.observe(flipped);
+  // Keep the public annotation and condition unchanged; only the measured
+  // terminal population and its incoming physical bonds are switched.
+  learner.observe(flippedTerminalEvent(8));
   const after = learner.relations().find(value => value.relationId === before.relationId);
   assert(after, 'the original physically matched relation disappeared after one flipped event');
   assert(after.contradictionCount > 0,
@@ -569,25 +587,7 @@ test('repeated physically flipped outcomes downgrade the relation grade', () => 
   const learner = Ctor.restore(trainedPredictiveState(), () => true);
   const before = targetRelation(learner);
   for (let repetition = 8; repetition < 11; repetition++) {
-    const flipped = structuredClone(event('target', repetition)) as unknown as {
-      eventId: string; contextIds: string[]; physicalPulseSiteIds: number[][];
-      physicalFootprint: NonNullable<DistributedR2ContinuousEventV1['physicalFootprint']>;
-    } & DistributedR2ContinuousEventV1;
-    flipped.eventId = `target-flipped-${repetition}`;
-    flipped.contextIds = [`context-flipped-${repetition}`];
-    flipped.physicalPulseSiteIds = [[10, 11, 12, 13], [20, 21, 22, 23], [60, 61, 62, 63]];
-    flipped.physicalFootprint = {
-      ...flipped.physicalFootprint!, traceId: `r2-target-flipped-${repetition}`,
-      footprintId: `r2-target-flipped-${repetition}`,
-      siteIds: [10, 11, 12, 13, 20, 21, 22, 23, 60, 61, 62, 63],
-      pulseSiteIds: flipped.physicalPulseSiteIds,
-      bondReferences: [
-        { fromSiteId: 10, toSiteId: 20, kind: 'plastic-directed' },
-        { fromSiteId: 20, toSiteId: 60, kind: 'plastic-directed' },
-      ],
-      directedBondIds: ['10->20', '20->60'],
-    };
-    learner.observe(flipped);
+    learner.observe(flippedTerminalEvent(repetition));
   }
   const after = learner.relations().find(value => value.relationId === before.relationId);
   assert(after, 'the target relation disappeared after repeated physical counterexamples');

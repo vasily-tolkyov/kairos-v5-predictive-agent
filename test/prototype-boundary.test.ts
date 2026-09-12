@@ -7,9 +7,10 @@ test('prototype public surface has no live Minecraft dependency', async () => {
   const source = await readFile(resolve('src', 'prototype.ts'), 'utf8');
   assert.doesNotMatch(source, /mineflayer|MinecraftBody|Services|viewer\.mjs|dashboard\.js/);
   const prototype = await import('../src/prototype.js');
-  assert.equal(typeof prototype.DistributedHierarchicalPhysicalMemoryV1, 'function');
-  assert.equal(typeof prototype.JointTransientControlFieldV2, 'function');
-  assert.equal(typeof prototype.PhysicalControlManagerV2, 'function');
+  assert.equal(typeof prototype.ExperienceMedium, 'function');
+  assert.equal(typeof prototype.ExperienceAgent, 'function');
+  assert.equal(typeof prototype.GroundedGoalEvaluatorV1, 'function');
+  assert.equal('DistributedHierarchicalPhysicalMemoryV1' in prototype, false);
   assert.equal('MinecraftBody' in prototype, false);
   assert.equal('Services' in prototype, false);
 });

@@ -103,15 +103,13 @@ test('G0 production reasoning DTOs contain no fabricated legacy page, point, or 
   }
 });
 
-test('G0 package keeps hierarchical runners audit-only and production commands distributed-only', async () => {
+test('G0 package exposes only current runners; retired implementations stay in git history', async () => {
   const pkg = JSON.parse(await readFile(resolve('package.json'), 'utf8')) as {
     readonly scripts: Readonly<Record<string, string>>;
   };
   const unscoped = Object.keys(pkg.scripts).filter(name => name.startsWith('minecraft:hierarchical-'));
   assert.deepEqual(unscoped, [], `legacy hierarchical commands remain production-shaped: ${unscoped.join(',')}`);
-  const auditCommands = Object.keys(pkg.scripts)
-    .filter(name => name.startsWith('audit:legacy:minecraft-hierarchical-'));
-  assert.equal(auditCommands.length, 4, 'all four sealed hierarchical runners must be explicit legacy audits');
+  assert.deepEqual(Object.keys(pkg.scripts).filter(name => name.startsWith('audit:legacy:')), []);
   for (const name of ['start', 'g5:neutral:canary', 'g5:neutral:matrix',
     'minecraft:distributed-g6-continuous-capture-v1']) {
     const command = pkg.scripts[name];

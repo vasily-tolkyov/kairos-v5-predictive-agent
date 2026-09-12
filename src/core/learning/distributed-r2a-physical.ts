@@ -109,59 +109,13 @@ export function distributedPhysicalBranchReadoutAssembliesV1(
       minimumResidenceScore: .5, minimumCoverage: .75, minimumPurity: .75 };
   });
 }
-/**
- * V5 commits weighted terminal pulse/readout semantics together with the
- * higher-order coactivation assembly identity carried by physical readouts.
- * A checkpoint produced with the former V4 index must therefore be
- * rediscovered rather than accepted as an exact derived-index cache.
- */
-/**
- * The branch index is derived from a reachable prefix/continuation probe.  The
- * identity is deliberately advanced when that derivation changes: a cached
- * index made by the old terminal-pulse-only reader must be re-read from the
- * physical field rather than silently reused.
- */
-/** Legacy identity retained only so old checkpoints can be recognized and
- * rejected by the current cache boundary. */
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V6 =
-  'distributed-r2a-reachable-prefix-continuation-index-v6' as const;
-
-/** Current identity includes the separation between observed-terminal
- * calibration and terminal-free continuation queries. */
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V7 =
-  'distributed-r2a-observed-terminal-calibration-v7' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V8 =
-  'distributed-r2a-ordered-road-terminal-pattern-v8' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V9 =
-  'distributed-r2a-matched-condition-counterfactual-v9' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V10 =
-  'distributed-r2a-local-difference-before-components-v10' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V11 =
-  'distributed-r2a-topological-site-correspondence-v11' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V12 =
-  'distributed-r2a-differential-deposit-scope-v12' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V13 =
-  'distributed-r2a-measured-terminal-identity-v13' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V14 =
-  'distributed-r2a-neighbour-anchored-site-v14' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V15 =
-  'distributed-r2a-passive-measurement-arrival-v15' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V16 =
-  'distributed-r2a-pairwise-matched-differences-v16' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V17 =
-  'distributed-r2a-terminal-local-contrast-v17' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V18 =
-  'distributed-r2a-complete-terminal-membership-v18' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V19 =
-  'distributed-r2a-observer-independent-contained-readout-v19' as const;
-export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V20 =
-  'distributed-r2a-prescribed-action-boundary-v20' as const;
-
-/** Compatibility export for callers that only record an algorithm identity.
- * New snapshots use V20; the alias deliberately does not accept a literal V6
- * checkpoint as an exact derived-index cache. */
+/** The export name is retained for callers. Only this current derived-index
+ * identity restores without rediscovery; no historical version list is needed.
+ * V22 keys terminal calibration by its actual measured population; unrelated
+ * contexts cannot shift its probe seeds. Observed contrast replay no longer
+ * requires an already successful predictor. */
 export const DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V5 =
-  DISTRIBUTED_R2A_INDEX_ALGORITHM_IDENTITY_V20;
+  'distributed-r2a-observed-contrast-and-stable-calibration-v22' as const;
 
 /**
  * Derive an anonymous branch identity from the measured dynamic core and, when
@@ -394,13 +348,22 @@ export function continuationCandidateForInputV1(input: DistributedR2AEventPhysic
  * pulse is deliberately excluded; it is evidence of what happened, not a
  * query seed that could make the same result inevitable.
  */
-function continuationCandidateForFootprintV1(footprint: DistributedMediumSnapshotV1['footprints'][number]):
+function continuationCandidateForFootprintV1(footprint: DistributedMediumSnapshotV1['footprints'][number],
+  actionPopulations: ReadonlySet<string>):
   ContinuationCandidateV1 | null {
   const pulses = (footprint.pulseSiteIds ?? []).map((siteIds, index) =>
     unitWeightedPulseV1(unique(siteIds), `continuation-footprint-${index}`));
-  if (pulses.length < 2) return null;
+  if (pulses.length < 3) return null;
   const conditionDrives = pulses[0]!;
-  const preTerminal = pulses.length > 2 ? pulses.slice(1, -1) : pulses.slice(1);
+  let commandIndex = -1;
+  for (let index = 1; index + 2 < pulses.length - 1; index++) {
+    if (actionPopulations.has(JSON.stringify(pulses[index]!.map(drive => drive.siteId))))
+      commandIndex = index + 2;
+  }
+  // Keep exactly through the last real command. An action can have several
+  // observed result pulses; merely dropping the final pulse leaks the others.
+  if (commandIndex < 0) return null;
+  const preTerminal = pulses.slice(1, commandIndex + 1);
   if (preTerminal.length === 0 || preTerminal.some(pulse => pulse.length === 0)) return null;
   const terminal = pulses.at(-1)!;
   return { key: continuationCandidateKeyV1(conditionDrives, preTerminal),
@@ -676,6 +639,26 @@ export function distributedR2AConditionDifferentialV1(
     qualifies: memberPresence >= .8 && contrastPresence <= .2 };
 }
 
+/** Necessary evidence bound only; it never qualifies an attractor. A matched
+ * differential requires two distinct eight-member branches for the exact same
+ * final command, each spanning four contexts. Before that is possible, a
+ * consolidation pass cannot write any differential trace. */
+function hasPossibleMatchedConsolidationV1(inputs: readonly Pick<
+  DistributedR2AEventPhysicalInputV2, 'actionPulseSiteIds' | 'contextIds'>[]): boolean {
+  const cohorts = new Map<string, { count: number; contexts: Set<string> }>();
+  for (const input of inputs) {
+    const action = input.actionPulseSiteIds.at(-1);
+    if (!action?.length) continue;
+    const key = JSON.stringify(unique(action));
+    const cohort = cohorts.get(key) ?? { count: 0, contexts: new Set<string>() };
+    cohort.count++;
+    input.contextIds.forEach(context => cohort.contexts.add(context));
+    cohorts.set(key, cohort);
+    if (cohort.count >= 16 && cohort.contexts.size >= 4) return true;
+  }
+  return false;
+}
+
 /** Subtract shared physical excitation before identifying its connected
  * components. A condition's local population may touch a shared background
  * population; their connected union must not erase the actual difference.
@@ -833,8 +816,15 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       for (const value of state.evidenceEvents) this.#events.set(value.eventId, structuredClone(value));
       for (const value of state.eventInputs) {
         assertWeightedEventInputV1(value);
-        this.#eventInputs.set(value.eventId, r2aInputAtActionBoundaryV1(structuredClone(value),
-          this.#events.get(value.eventId)!));
+        const event = this.#events.get(value.eventId);
+        // Current checkpoints already retain the physical command boundary.
+        // Raw searchable event annotations are needed only to upgrade an old
+        // input, not to recreate a boundary that was saved at deposition.
+        assert(event !== undefined || (value.projectedCommandPulseIndices?.length
+          === value.actionPulseSiteIds.length && value.reachableContinuationPulseSiteIds !== undefined),
+        'R2A-audit-free-restore-requires-saved-command-boundary');
+        this.#eventInputs.set(value.eventId, event === undefined ? structuredClone(value)
+          : r2aInputAtActionBoundaryV1(structuredClone(value), event));
       }
     }
     this.#projection = new SparseInterlayerProjectionV1(this.medium,
@@ -1006,13 +996,23 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     return this.#restingQuerySubstrate().medium;
   }
 
-  #prescribedActionSiteIds(): readonly number[] {
-    return unique([...this.#eventInputs.values()].flatMap(input =>
-      this.#events.get(input.eventId)!.orderedExperienceIdentities.flatMap((identity, ordinal) =>
-        identity === PASSIVE_EXPERIENCE_IDENTITY_V1 ? [] : [
-          ...input.actionPulseSiteIds[ordinal]!,
-          ...input.projectedPulseSiteIds[input.projectedCommandPulseIndices![ordinal]!]!,
-        ])));
+  #prescribedActionSiteIds(footprints: readonly DistributedTraceFootprintV1[]): readonly number[] {
+    const actionPopulations = new Set([...this.#actionBindings.values()]
+      .filter(binding => binding.signalId !== PASSIVE_EXPERIENCE_IDENTITY_V1)
+      .map(binding => JSON.stringify(unique(binding.siteIds))));
+    const sites: number[] = [];
+    // The deposited route contains action wire → observed before → actual
+    // command. Read these physical ports from their existing bindings and
+    // ordered footprints, so erasing searchable event indexes cannot change
+    // the do(action) boundary. No result pulse or result label is consulted.
+    for (const footprint of footprints) {
+      const pulses = footprint.pulseSiteIds ?? [];
+      for (let index = 0; index + 2 < pulses.length; index++) {
+        if (!actionPopulations.has(JSON.stringify(unique(pulses[index]!)))) continue;
+        sites.push(...pulses[index]!, ...pulses[index + 2]!);
+      }
+    }
+    return unique(sites);
   }
 
   #restingSnapshot(): DistributedMediumSnapshotV1 {
@@ -1028,7 +1028,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     if (this.#restingQueryCache) return this.#restingQueryCache;
     const snapshot = this.#restingSnapshot();
     const value = { snapshot,
-      medium: DistributedPhysicalMedium3DV1.fromSnapshot(snapshot, this.#prescribedActionSiteIds()),
+      medium: DistributedPhysicalMedium3DV1.fromSnapshot(snapshot, this.#prescribedActionSiteIds(snapshot.footprints)),
       mediumSha256: canonicalStreamSha256(snapshot) } as const;
     this.#restingQueryCache = value;
     this.#restingQuerySubstrateBuildCount++;
@@ -1443,13 +1443,14 @@ export class DistributedR2APhysicalPatternLearnerV2 {
    */
   #aggregateObservedTerminalAttractors(medium: DistributedPhysicalMedium3DV1,
     inputs: readonly ContinuationCandidateV1[]): readonly DistributedAttractorReadoutV1[] {
-    const seeded = this.#aggregateAttractors(medium, inputs.map((input, index) => ({
+    const seeded = this.#aggregateAttractors(medium, inputs.map(input => ({
       terminalSites: input.terminalSites,
       terminalDrives: input.terminalDrives,
-      // The candidate key is an anonymous physical input identity.  Deriving
-      // the probe stream from it keeps calibration stable when event metadata
-      // or insertion order changes, without introducing a result label.
-      seedOffset: BigInt(`0x${sha(input.key).slice(0, 16)}`) ^ BigInt(index + 1),
+      // This measurement injects only the observed terminal population. Its
+      // seeds must depend on that input, not on the context/prefix or position
+      // in a growing candidate list. Identical measurements now share both
+      // their probe cohort and the existing immutable-substrate cache.
+      seedOffset: BigInt(`0x${sha(input.terminalDrives).slice(0, 16)}`),
     })));
     // A broad distributed terminal population can be a valid learned
     // assembly even when directly re-seeding all of its members does not
@@ -1458,10 +1459,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // observed pre-terminal route.  The route is real event evidence; the
     // terminal population remains a mask only, so this fallback cannot inject
     // an answer-shaped future into the field.
-    const needsRouteMeasurement = seeded.some(value => value.evidenceLevel === 'none'
+    const needsRouteMeasurement = seeded.map(value => value.evidenceLevel === 'none'
       || value.ambiguous || value.coreSiteIds.length === 0);
-    if (!needsRouteMeasurement) return seeded;
-    const routed = this.#aggregateContinuationAttractors(medium, inputs);
+    if (!needsRouteMeasurement.some(Boolean)) return seeded;
+    const routed = this.#aggregateContinuationAttractors(medium, inputs, needsRouteMeasurement);
     return seeded.map((value, index) => {
       if (value.evidenceLevel !== 'none' && !value.ambiguous
         && value.coreSiteIds.length > 0) return value;
@@ -1480,7 +1481,8 @@ export class DistributedR2APhysicalPatternLearnerV2 {
    * result that the reachable continuation did not visit.
    */
   #aggregateContinuationAttractors(medium: DistributedPhysicalMedium3DV1,
-    inputs: readonly ContinuationCandidateV1[]): readonly DistributedAttractorReadoutV1[] {
+    inputs: readonly ContinuationCandidateV1[], requiresMeasurement?: readonly boolean[]):
+    readonly DistributedAttractorReadoutV1[] {
     if (inputs.length === 0) return [];
     const jobs: Array<Parameters<typeof runDistributedMediumProbeBatchSyncV1>[1][number]> = [];
     const owners: number[] = [];
@@ -1489,6 +1491,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // become significant merely because a candidate is measured in isolation.
     const readoutDomainSiteIds = unique(inputs.flatMap(input => input.terminalSites));
     inputs.forEach((input, owner) => {
+      // A successful terminal calibration never consumes this fallback. Keep
+      // the original owners/seeds and complete readout domain, while omitting
+      // only the jobs whose results would be discarded unconditionally.
+      if (requiresMeasurement?.[owner] === false) return;
       if (input.seedPulses.length === 0 || input.seedPulses.some(pulse => pulse.length === 0)) return;
       const finalPulseIndex = input.seedPulses.length - 1;
       for (let probeIndex = 0; probeIndex < DISCOVERY_PROBES; probeIndex++) {
@@ -2071,70 +2077,71 @@ export class DistributedR2APhysicalPatternLearnerV2 {
       grade: contradictionRate > .2 ? 'repeated-correlation' : aggregate.grade });
   }
 
-  /**
-   * Delayed physical consolidation of condition differences.  Raw events first
-   * build their complete ordered R2A traces with no condition-to-result shortcut.
-   * Only after repeated terminal attractors exist do we compare anonymous
-   * condition basins across their real member footprints.  A basin present in
-   * at least 80% of one branch and at most 20% of a matched alternative is
-   * replayed as the corresponding real event subsequence.  Common and balanced
-   * pseudo-correlates therefore never receive a long-range result channel.
-   */
+  /** Replay repeated, actually observed contrasts before demanding a working
+   * predictor. Requiring both outcomes to be predictive-stable here made the
+   * learning gate circular: the missing condition pathway was also needed to
+   * stabilize the competing outcomes. These cohorts are training evidence
+   * only; they never become a branch, a relation grade or an execution permit.
+   * All production qualification still runs through the physical probes. */
   #consolidateStableConditionDifferences(): void {
     this.#consolidationPassCount++;
-    const prepared = this.#rediscoverPhysicalIndexes(false);
-    const stablePatterns = [...this.#patterns.values()].filter(value =>
-      evidenceRank(value.grade) >= evidenceRank('predictive-stable'));
-    if (stablePatterns.length < 2) {
-      // A condition difference needs at least two physically distinct stable
-      // result branches.  Rebuilding generic basin relations here would turn a
-      // single branch into its own counterfactual.
-      this.#relations.clear();
-      this.#indexesDirty = false;
-      return;
+    const active = [...this.#eventInputs.values()].filter(input =>
+      this.#r2Active(input.eventId) && this.medium.isFootprintActive(input.traceId));
+    if (!hasPossibleMatchedConsolidationV1(active)) return;
+    const groups = new Map<string, DistributedR2AEventPhysicalInputV2[]>();
+    for (const input of active) {
+      const key = JSON.stringify({ actions: input.actionPulseSiteIds.map(unique),
+        terminal: unique(input.terminalPulseSiteIds) });
+      const members = groups.get(key) ?? [];
+      members.push(input); groups.set(key, members);
     }
-    const snapshot = this.#readOnlyProbeSnapshot(prepared.medium);
-    const knownTraceIds = new Set(this.medium.snapshot().footprints.map(value => value.traceId));
+    const cohorts = [...groups.values()].filter(members => members.length >= 8
+      && uniqueStrings(members.flatMap(input => input.contextIds)).length >= 4)
+      .map(members => ({ members, terminal: unique(members[0]!.terminalPulseSiteIds),
+        action: unique(members[0]!.actionPulseSiteIds.at(-1) ?? []),
+        prefix: consensusWeightedPulseSequence(members.map(input => input.nextActionPrefixPulseDrives
+          ?? weightedPulsesForIdsV1(undefined, input.nextActionPrefixPulseSiteIds,
+            `R2A-replay-prefix-${input.eventId}`))).map(weightedPulseSiteIdsV1) }));
+    if (cohorts.length < 2) return;
+    const snapshot = this.#restingSnapshot();
+    const knownTraceIds = new Set(snapshot.footprints.map(value => value.traceId));
     let changed = false;
-    for (const pattern of stablePatterns) {
-      const members = pattern.memberR2EventIds
-        .map(eventId => this.#eventInputs.get(eventId)).filter(value => value !== undefined);
-      if (members.length < 8) continue;
-      for (const basin of this.#matchedDifferentialComponents(pattern, stablePatterns, snapshot)) {
+    for (const cohort of cohorts) {
+      const contrasts = cohorts.filter(other => other !== cohort
+        && cohort.prefix.length > 0 && cohort.prefix.length === other.prefix.length
+        && samePhysicalPopulation(cohort.action, other.action)
+        && cohort.prefix.every((pulse, index) => overlap(pulse, other.prefix[index]!) >= .8)
+        // Missing a channel is not an observed opposite value. Both terminal
+        // populations must contain their own measured physical component.
+        && cohort.terminal.some(site => !other.terminal.includes(site))
+        && other.terminal.some(site => !cohort.terminal.includes(site))
+        && overlap(cohort.terminal, other.terminal) < MATCHED_CONTRAST_MAX_TERMINAL_OVERLAP);
+      if (contrasts.length === 0) continue;
+      const factors = distributedR2APairwiseDifferentialComponentsV1(snapshot,
+        cohort.members.map(input => input.conditionSiteIds),
+        contrasts.map(other => other.members.map(input => input.conditionSiteIds)));
+      for (const basin of factors) {
         const factorIdentity = sha({ version: 'DistributedR2AStableDifferentialBasinV1',
           coreSiteIds: basin.coreSiteIds });
-        for (const input of members) {
-          const conditionDrives = input.conditionDrives
-            ?? unitWeightedPulseV1(input.conditionSiteIds, `R2A-legacy-condition-${input.eventId}`);
-          const factorDrives = conditionDrives.filter(drive => basin.coreSiteIds.includes(drive.siteId));
-          const factorSites = weightedPulseSiteIdsV1(factorDrives);
-          const actionDrives = input.actionPulseDrives?.at(-1)
-            ?? unitWeightedPulseV1(input.actionPulseSiteIds.at(-1) ?? [],
-              `R2A-legacy-action-${input.eventId}`);
-          const prefixDrives = input.nextActionPrefixPulseDrives
-            ?? weightedPulsesForIdsV1(undefined, input.nextActionPrefixPulseSiteIds,
-              `R2A-legacy-prefix-${input.eventId}`);
-          const terminalDrives = input.terminalPulseDrives
-            ?? unitWeightedPulseV1(input.terminalPulseSiteIds,
-              `R2A-legacy-terminal-${input.eventId}`);
-          if (coveredFraction(basin.coreSiteIds, factorSites) < .5
-            || prefixDrives.length === 0
-            || actionDrives.length === 0 || terminalDrives.length === 0) continue;
+        for (const input of cohort.members) {
+          const factorDrives = (input.conditionDrives
+            ?? unitWeightedPulseV1(input.conditionSiteIds, `R2A-replay-condition-${input.eventId}`))
+            .filter(drive => basin.coreSiteIds.includes(drive.siteId));
+          if (coveredFraction(basin.coreSiteIds, weightedPulseSiteIdsV1(factorDrives)) < .5) continue;
           const traceId = `r2a-differential-${input.eventId}-${factorIdentity}`;
           if (knownTraceIds.has(traceId)) continue;
+          const terminalDrives = input.terminalPulseDrives
+            ?? unitWeightedPulseV1(input.terminalPulseSiteIds, `R2A-replay-terminal-${input.eventId}`);
           this.#applyEpisodeWithEncodingGain(distributedR2ADifferentialEpisodeV1(
             traceId, factorDrives, terminalDrives));
           knownTraceIds.add(traceId); changed = true;
         }
       }
     }
+    // Derived queries remain lazy. Replaying an observed contrast changes the
+    // field, but taking a future query still cannot write another experience.
     if (changed) this.#invalidatePhysicalQueryCaches();
     this.#indexesDirty = true;
-    if (changed) this.#rediscoverPhysicalIndexes();
-    else {
-      this.#rebuildPhysicalRelations(prepared.medium, prepared.scan);
-      this.#indexesDirty = false;
-    }
   }
 
   observe(event: DistributedR2ContinuousEventV1): DistributedR2APhysicalObservationReceiptV2 {
@@ -2539,14 +2546,15 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     const mappedPrefix = unique(mappedPrefixDrives.map(value => value.siteId));
     const commandDrives = new Map<number, number>();
     if (exactActionIdentity !== null) {
-      for (const siteId of this.#actionBindings.get(exactActionIdentity)?.siteIds ?? [])
+      const actionSites = this.#actionBindings.get(exactActionIdentity)?.siteIds ?? [];
+      for (const siteId of actionSites)
         commandDrives.set(siteId, 1);
       // Lookup only the exact motor cue. No historical before/after state or
       // desired terminal supplies a future input.
       for (const input of this.#eventInputs.values()) {
-        const event = this.#events.get(input.eventId)!;
-        event.orderedExperienceIdentities.forEach((identity, ordinal) => {
-          if (identity !== exactActionIdentity) return;
+        input.actionPulseSiteIds.forEach((sites, ordinal) => {
+          if (actionSites.length === 0 || sites.length !== actionSites.length
+            || sites.some(siteId => !actionSites.includes(siteId))) return;
           const index = input.projectedCommandPulseIndices![ordinal]!;
           const drives = input.projectedPulseDrives?.[index]
             ?? unitWeightedPulseV1(input.projectedPulseSiteIds[index]!, 'R2A-projected-command');
@@ -2563,7 +2571,7 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // input amplitude, mode, step count and readout mask exactly; evidence and
     // goal scoring remain separate for each historical candidate.
     if (this.#currentActionClone === null) {
-      const ports = this.#prescribedActionSiteIds();
+      const ports = this.#restingQuerySubstrate().medium.prescribedActionSiteIds;
       this.#currentActionClone = new DistributedPredictionCloneV2(snapshot, ports,
         request => runDistributedPredictionCloneBatchSyncV1(snapshot, request,
           request.currentPerceptionSeedSiteIds.length > 0 && request.actionSeedSiteIds.length > 0
@@ -2623,8 +2631,10 @@ export class DistributedR2APhysicalPatternLearnerV2 {
     // immutable footprint can recover a pre-terminal route, but a singleton
     // footprint cannot establish a reachable branch.
     if (continuationGroups.size === 0) {
+      const actionPopulations = new Set([...this.#actionBindings.values()]
+        .map(binding => JSON.stringify(unique(binding.siteIds))));
       for (const footprint of restingSnapshot.footprints) {
-        const candidate = continuationCandidateForFootprintV1(footprint);
+        const candidate = continuationCandidateForFootprintV1(footprint, actionPopulations);
         if (candidate) addContinuation(candidate);
       }
     }

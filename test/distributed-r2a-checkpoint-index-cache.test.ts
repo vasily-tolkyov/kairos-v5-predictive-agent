@@ -58,3 +58,14 @@ test('a V4 weighted-readout identity is rediscovered instead of reused after ass
   assert.equal(restored.restoreIndexModeForAudit(), 'physical-rediscovery');
   assert.equal(sha(restored.rawPhysicalMediumSnapshotForAudit()), sha(current.medium));
 });
+
+test('a V20 audit-dependent action index is rediscovered without changing the physical medium', () => {
+  const current = new DistributedR2APhysicalPatternLearnerV2(() => true).snapshot();
+  const stale = { ...structuredClone(current), physicalIndexIdentity: {
+    ...current.physicalIndexIdentity,
+    algorithmIdentity: 'distributed-r2a-prescribed-action-boundary-v20',
+  } } as DistributedR2APhysicalStateV3;
+  const restored = DistributedR2APhysicalPatternLearnerV2.restore(stale, () => true);
+  assert.equal(restored.restoreIndexModeForAudit(), 'physical-rediscovery');
+  assert.equal(sha(restored.rawPhysicalMediumSnapshotForAudit()), sha(current.medium));
+});

@@ -5,16 +5,29 @@ import { assert } from '../util.js';
 
 type Baseline = Map<string, PublicValue | number | null>;
 
+function predictionField(predicate: GoalPredicateV1, observation: Observation): string {
+  const subject = predicate.subject;
+  const prefix = subject.kind === 'self' ? 'self' : subject.kind === 'public-object'
+    ? `object:${subject.id}` : observation.targetId ? `object:${observation.targetId}` : 'crosshair';
+  return `${prefix}/${predicate.observable}`;
+}
+
 export function groundedPublicObservableV1(predicate: GoalPredicateV1,
   observation: Observation): PublicValue | number | null | undefined {
   const grounded = predicate.subject;
   const key = predicate.observable;
+  if (observation.predictionSupport) {
+    const emptyGaze = grounded.kind === 'crosshair' && observation.targetId === null
+      && observation.predictionSupport.includes('targetId') && ['visible', 'type'].includes(key);
+    if (!emptyGaze && !observation.predictionSupport.includes(predictionField(predicate, observation))) return undefined;
+  }
   if (grounded.kind === 'crosshair') {
     const target = observation.objects.find(object => object.id === observation.targetId);
     if (key === 'type') return target?.type ?? null;
     if (key === 'visible') return target !== undefined;
     if (key === 'relativeDistance') return target ? Math.hypot(...target.relativePosition) : undefined;
     if (key.startsWith('relativePosition.')) return target?.relativePosition[Number(key.at(-1))];
+    if (key.startsWith('properties.')) return target?.properties[key.slice('properties.'.length)];
     return undefined;
   }
   const subject = grounded.kind === 'self'
@@ -48,7 +61,10 @@ function predicateList(expression: GoalExpressionV1): GoalPredicateV1[] {
 }
 
 function finiteNumber(value: unknown): value is number { return typeof value === 'number' && Number.isFinite(value); }
-function clamp01(value: number): number { return Math.max(0, Math.min(1, value)); }
+// A detour may exceed the initial gap. Hard clipping then erases every
+// improvement until the original baseline is reached again. Keep a bounded,
+// monotonic distance so missing evidence (residual 1) remains distinct.
+function remaining(value: number): number { return 1 - 1 / (1 + Math.max(0, value)); }
 
 export function evaluateGroundedPredicateValueV1(predicate: GoalPredicateV1,
   actual: PublicValue | number | null | undefined,
@@ -56,6 +72,9 @@ export function evaluateGroundedPredicateValueV1(predicate: GoalPredicateV1,
   if (actual === undefined) return { predicateId: predicate.id, status: 'unknown', residual: 1,
     actual: null, baseline, reason: 'public-observable-unavailable' };
   let satisfied = false, residual = 1;
+  if (predicate.residualScale !== undefined)
+    assert(finiteNumber(predicate.residualScale) && predicate.residualScale > 0, 'invalid-goal-residual-scale');
+  const scale = (initialGap: number, minimum = 1) => predicate.residualScale ?? Math.max(minimum, initialGap);
   switch (predicate.comparator) {
     case 'equals': satisfied = actual === predicate.target; residual = satisfied ? 0 : 1; break;
     case 'not-equals': satisfied = actual !== predicate.target; residual = satisfied ? 0 : 1; break;
@@ -64,7 +83,7 @@ export function evaluateGroundedPredicateValueV1(predicate: GoalPredicateV1,
         actual, baseline, reason: 'numeric-goal-received-non-number' };
       const tolerance = predicate.tolerance ?? 0;
       satisfied = actual > predicate.target - tolerance;
-      residual = satisfied ? 0 : clamp01((predicate.target - actual) / Math.max(1, Math.abs(predicate.target)));
+      residual = satisfied ? 0 : remaining((predicate.target - actual) / scale(finiteNumber(baseline) ? Math.abs(predicate.target - baseline) : 1));
       break;
     }
     case 'less-than': {
@@ -72,15 +91,16 @@ export function evaluateGroundedPredicateValueV1(predicate: GoalPredicateV1,
         actual, baseline, reason: 'numeric-goal-received-non-number' };
       const tolerance = predicate.tolerance ?? 0;
       satisfied = actual < predicate.target + tolerance;
-      residual = satisfied ? 0 : clamp01((actual - predicate.target) / Math.max(1, Math.abs(predicate.target)));
+      residual = satisfied ? 0 : remaining((actual - predicate.target) / scale(finiteNumber(baseline) ? Math.abs(predicate.target - baseline) : 1));
       break;
     }
     case 'within': {
       if (!finiteNumber(actual)) return { predicateId: predicate.id, status: 'unknown', residual: 1,
         actual, baseline, reason: 'numeric-goal-received-non-number' };
       satisfied = actual >= predicate.lower && actual <= predicate.upper;
-      residual = satisfied ? 0 : clamp01(Math.min(Math.abs(actual - predicate.lower), Math.abs(actual - predicate.upper))
-        / Math.max(1, predicate.upper - predicate.lower));
+      const initialGap = finiteNumber(baseline) ? Math.max(0, predicate.lower - baseline, baseline - predicate.upper) : 1;
+      residual = satisfied ? 0 : remaining(Math.min(Math.abs(actual - predicate.lower), Math.abs(actual - predicate.upper))
+        / scale(initialGap, Math.max(1, predicate.upper - predicate.lower)));
       break;
     }
     case 'increase': case 'decrease': {
@@ -88,7 +108,7 @@ export function evaluateGroundedPredicateValueV1(predicate: GoalPredicateV1,
         actual, baseline, reason: 'relative-goal-baseline-unavailable' };
       const delta = predicate.comparator === 'increase' ? actual - baseline : baseline - actual;
       satisfied = delta >= predicate.minimumDelta;
-      residual = satisfied ? 0 : clamp01((predicate.minimumDelta - delta) / Math.max(predicate.minimumDelta, 1e-9));
+      residual = satisfied ? 0 : remaining((predicate.minimumDelta - delta) / scale(predicate.minimumDelta, 1e-9));
       break;
     }
   }
@@ -128,8 +148,20 @@ export class GroundedGoalEvaluatorV1 {
   get goal(): GroundedGoalV1 | null { return this.#goal ? structuredClone(this.#goal) : null; }
   evaluate(observation: Observation): GoalEvaluationV1 {
     assert(this.#goal, 'goal-not-set');
-    const predicates = predicateList(this.#goal.expression).map(predicate => evaluateGroundedPredicateValueV1(predicate,
-      groundedPublicObservableV1(predicate, observation), this.#baseline.get(predicate.id) ?? null));
+    const predicates = predicateList(this.#goal.expression).map(predicate => {
+      const actual = groundedPublicObservableV1(predicate, observation), baseline = this.#baseline.get(predicate.id) ?? null;
+      const point = evaluateGroundedPredicateValueV1(predicate, actual, baseline);
+      const range = observation.predictionBounds?.[predictionField(predicate, observation)];
+      if (!range || typeof actual !== 'number') return point;
+      const candidates = [...range];
+      if (predicate.comparator === 'not-equals' && typeof predicate.target === 'number'
+        && predicate.target >= range[0] && predicate.target <= range[1]) candidates.push(predicate.target);
+      const outcomes = candidates.map(value => evaluateGroundedPredicateValueV1(predicate, value, baseline));
+      const satisfied = outcomes.every(value => value.status === 'satisfied');
+      return { ...point, status: satisfied ? 'satisfied' as const : 'mismatch' as const,
+        residual: Math.max(...outcomes.map(value => value.residual)),
+        reason: satisfied ? null : 'predicted-range-does-not-establish-goal' };
+    });
     const combined = combine(this.#goal.expression, new Map(predicates.map(predicate => [predicate.predicateId, predicate])));
     return { goalId: this.#goal.id, status: combined.status, residual: combined.residual,
       observationSequence: observation.sequence, predicates };

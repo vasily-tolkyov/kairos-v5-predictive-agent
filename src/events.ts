@@ -92,6 +92,10 @@ export function validateEvent(event: RealEvent): void {
     }
   }
   assert(event.provenance === 'executed-real-body' || event.provenance === 'observed-passive', 'non-real-event');
+  if (event.cue.kind === 'passive') assert(event.cue.targetRole === null
+    && Object.keys(event.cue.parameters).length === 1 && Number.isSafeInteger(event.cue.parameters.ticks)
+    && Number(event.cue.parameters.ticks) >= 1 && Number(event.cue.parameters.ticks) <= 100
+    && event.frames.length === Number(event.cue.parameters.ticks) + 1, 'passive-duration-does-not-match-measured-interval');
   if (event.provenance === 'executed-real-body') {
     assert(event.bodyResult?.executed && event.bodyResult.status === 'completed', 'unexecuted-event');
     const action = event.bodyResult.action, first = event.frames[0]!;
@@ -776,7 +780,7 @@ export function realEventHierarchyContinuityV1(event: RealEvent, sessionId: stri
     }
   }
   const noChange = eventRows(event).changes.flat().every(change => change.before === change.after);
-  const verification = action && (action.kind === 'observe' || action.kind === 'wait') && noChange;
+  const verification = action && (action.kind === 'observe' || action.kind === 'wait' || action.kind === 'passive') && noChange;
   if (action && ['look', 'move', 'jump'].includes(action.kind)) {
     const property = action.kind === 'look' ? 'orientation' : 'motion-state';
     const beforeValue = action.kind === 'look' ? [first.self.yaw, first.self.pitch] : first.self.position;
