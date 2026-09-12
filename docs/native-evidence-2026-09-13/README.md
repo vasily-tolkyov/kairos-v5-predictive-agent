@@ -14,6 +14,14 @@ autonomous trials. The main package and its source snapshot remain unchanged;
 the supplement contains the later R6 actor and diagnosis. The current source
 passes 131 integrated checks.
 
+Verified downloads are attached to the repository's
+[draft evidence Release](https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/untagged-058e772adc21382f71bc).
+[artifact.json](artifact.json) records exact sizes, local SHA256 and matching
+GitHub asset digests. Draft access requires the repository owner's access.
+The original 2,073,229,124-byte package contains 42,651 verified files; the
+2,701,785-byte motor supplement contains 327. Preserve both manifests when
+extracting the supplement over the main package.
+
 ## What the raw package preserves
 
 - Original reports, model snapshots, decision/receipt journals, active and passive
@@ -86,3 +94,12 @@ actor copies may instead add a default task. See the preserved launch deviation.
 The retention protocol separately replaces only learned state in an unused
 initial-world copy, preserving all nonlearning fields and world bytes. Its
 preparation record is not a new physical trial.
+
+Current harness runs can pin their exact selected input file using
+`--expected-session-sha256 HASH`. The bytes are checked before decoding or
+starting the game and the actual digest is recorded as `checkpointInput`.
+Wait for preparation to finish and verify the world files as well; a model
+digest alone cannot protect a concurrently changing world. The immutable R6
+harness predates this guard and motor-release journal forwarding. Its isolated
+calibration records releases directly, while the later task check relies on
+its completed external preflight and exact frozen actor hashes.

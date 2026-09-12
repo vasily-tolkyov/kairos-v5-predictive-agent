@@ -17,6 +17,7 @@ const { values } = parseArgs({ options: { java: { type: 'string' }, server: { ty
   output: { type: 'string' }, restore: { type: 'string' }, continue: { type: 'string' }, seed: { type: 'string', default: '317' },
   goal: { type: 'string' },
   'migrated-session': { type: 'string' },
+  'expected-session-sha256': { type: 'string' },
   steps: { type: 'string', default: '256' }, seconds: { type: 'string', default: '1800' },
   port: { type: 'string', default: '25587' }, 'goal-after': { type: 'string', default: '64' },
   'wall-depth': { type: 'string', default: '2' }, 'half-width': { type: 'string', default: '5' },
@@ -28,6 +29,8 @@ const { values } = parseArgs({ options: { java: { type: 'string' }, server: { ty
 if (!values.java || !values.server || !values.output) throw new Error('required: --java --server --output NEW_DIRECTORY');
 if (values.continue && values.restore) throw new Error('continue-and-transfer-restore-are-distinct');
 if (values['migrated-session'] && !values.continue) throw new Error('a-migrated-session-requires-its-stopped-predecessor');
+if (values['expected-session-sha256'] !== undefined && (!/^[a-f0-9]{64}$/.test(values['expected-session-sha256'])
+  || !values.continue && !values.restore)) throw new Error('expected-session-sha256-requires-a-checkpoint-and-valid-digest');
 if (!['enclosure', 'natural'].includes(values.environment)) throw new Error('invalid-environment');
 if (values.difficulty && !['peaceful', 'easy', 'normal', 'hard'].includes(values.difficulty)) throw new Error('invalid-difficulty');
 const number = key => {
@@ -62,9 +65,15 @@ const services = new Services(config, runtime, resolve(root, 'server-evidence'))
 let session = new ExperienceSession(new ExperienceMedium(number('seed')));
 const restorePath = values['migrated-session'] ? resolve(values['migrated-session'])
   : predecessor ? resolve(predecessor, 'session.json.gz') : values.restore ? resolve(values.restore) : null;
-let checkpointMigration = null;
+let checkpointMigration = null, checkpointInput = null;
 if (restorePath) {
   const bytes = await readFile(restorePath);
+  checkpointInput = { path: restorePath, sha256: createHash('sha256').update(bytes).digest('hex'),
+    expectedSha256: values['expected-session-sha256'] ?? null };
+  // Pin the exact bytes being decoded, not a second read that may see a later
+  // preparation result. A launch during preparation must fail before the game.
+  if (checkpointInput.expectedSha256 && checkpointInput.sha256 !== checkpointInput.expectedSha256)
+    throw new Error('restored-session-sha256-mismatch');
   let state = JSON.parse((bytes[0] === 31 ? await decompress(bytes) : bytes).toString());
   if (values['migrated-session']) {
     if (state.version !== 'ReencodedNativeCheckpoint1' || state.predecessor !== predecessor || state.newPhysicalTrials !== 0
@@ -94,7 +103,7 @@ if (requestedGoals?.some(goal => session.tasks.some(task => task.goal.id === goa
 if (requestedGoals) await save('requested-goals.json', requestedGoals);
 const report = { version: 'ContinuingMinecraftEvaluation1', started: new Date().toISOString(),
   runtimeRoot: runtime, predecessor,
-  checkpointMigration,
+  checkpointMigration, checkpointInput,
   commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), seed: number('seed'),
   protocol: { steps: number('steps'), seconds: number('seconds'), goalAfter: number('goal-after'), frozen: !!values.frozen,
     frozenScope: 'transferable dynamics and affordances; current task feedback remains active',
@@ -169,7 +178,7 @@ try {
   await save('static-setup.json', { commands, taskGeometryVisibleOnlyThroughBody: true }); await delay(1000);
   body = new MinecraftBodyConnection({ ...config.minecraft, worldId: 'continuous-evaluation',
     activeSecondsOffset: previousReport?.finalObservation?.activeSeconds ?? 0 }, (kind, value) => {
-    if (['body-frame-timeout', 'body-incomplete-window'].includes(kind)) {
+    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release'].includes(kind)) {
       diagnostics = diagnostics.then(() => log('body-diagnostics', { kind, at: new Date().toISOString(), value }))
         .catch(error => { diagnosticError = error; });
     }

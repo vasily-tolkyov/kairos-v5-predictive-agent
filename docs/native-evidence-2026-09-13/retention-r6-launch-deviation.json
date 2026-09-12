@@ -1,0 +1,14 @@
+{
+  "version": "ExcludedNativeLaunchDeviation1",
+  "run": "peaceful-retention-r6",
+  "status": "excluded-from-retention-comparison",
+  "cause": "The shell preparation returned a running session; the caller launched the evaluator without awaiting completion and despite a failed preflight model-hash check. It loaded the earlier 5098-write model. A PAUSE request stopped the run, and originals were preserved. A new archived-world fork and completed model/world verification precede the valid replacement.",
+  "newDecisions": 10,
+  "actualActions": 10,
+  "newLearningWrites": 0,
+  "stoppedAt": "2026-09-12T20:23:12.503Z",
+  "reportSha256": "f09fa5fcfa0b6bfa2813b1b796cb7d9cde1b5d32c280b11e8947302f756c7773",
+  "worldArchiveSha256": "831078cf56e7232a021a92fbed3cc680d1cf0123d2d9d3588f4233a7dc4f82b6",
+  "modelActuallyLoadedWrites": 5098,
+  "replacement": "peaceful-retention-r6-valid"
+}

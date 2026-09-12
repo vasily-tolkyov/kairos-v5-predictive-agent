@@ -4,6 +4,7 @@ import test from 'node:test';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { ExperienceSession } from '../dist/src/prototype.js';
 test('custom-goal continuation rejects implicit extra tasks before booting the game', async () => {
   await mkdir(resolve('evidence'), { recursive: true });
@@ -29,15 +30,25 @@ test('custom-goal continuation rejects implicit extra tasks before booting the g
   assert.notEqual(rejected.status, 0);
   assert.match(rejected.stderr, /continuing-custom-tasks-requires-explicit-goal-file/);
   assert(!existsSync(resolve(base, 'rejected/protocol.json')));
+  const digest = createHash('sha256').update(await readFile(resolve(base, 'session.json.gz'))).digest('hex');
+  const wrongModel = spawnSync(process.execPath, [...common, '--output', resolve(base, 'wrong-model'),
+    '--goal', resolve(base, 'goal.json'), '--expected-session-sha256', '0'.repeat(64)],
+    { encoding: 'utf8', timeout: 30000 });
+  assert.notEqual(wrongModel.status, 0);
+  assert.match(wrongModel.stderr, /restored-session-sha256-mismatch/);
+  assert(!existsSync(resolve(base, 'wrong-model/protocol.json')));
   const explicit = spawnSync(process.execPath, [...common, '--output', resolve(base, 'explicit'),
-    '--goal', resolve(base, 'goal.json')], { encoding: 'utf8', timeout: 30000 });
+    '--goal', resolve(base, 'goal.json'), '--expected-session-sha256', digest], { encoding: 'utf8', timeout: 30000 });
   assert.notEqual(explicit.status, 0);
   assert.doesNotMatch(explicit.stderr, /continuing-custom-tasks-requires-explicit-goal-file/);
   const protocol = JSON.parse(await readFile(resolve(base, 'explicit/protocol.json'), 'utf8'));
   assert.deepEqual(protocol.protocol.requestedGoals, [goal]);
   assert.equal(protocol.initialStats.pendingGoals, 1);
+  assert.equal(protocol.checkpointInput.sha256, digest);
+  assert.equal(protocol.checkpointInput.expectedSha256, digest);
   await writeFile(resolve(base, 'check.json'), JSON.stringify({ version: 'CustomGoalLaunchGuardCheck1',
     missingSelectionRejectedBeforeProtocol: true, explicitExistingGoalAccepted: true,
-    initialPendingGoals: 1, newPhysicalTrials: 0, javaDeliberatelyUnavailable: true,
+    initialPendingGoals: 1, wrongModelRejectedBeforeProtocol: true, exactModelBytesAccepted: true,
+    newPhysicalTrials: 0, javaDeliberatelyUnavailable: true,
     scope: 'Synthetic CLI boundary fixture, not native capability evidence' }, null, 2));
 });
