@@ -1,0 +1,11 @@
+{
+  "version": "WorldConsumptionDifferential1",
+  "status": "passed",
+  "oldBuild": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\execution-builds\\pr3-local-r8-window-statistics\\dist",
+  "newBuild": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\dist",
+  "checkedCompleteSnapshots": 720,
+  "checkedNoveltyQueries": 720,
+  "realActions": 0,
+  "newIndependentWindows": 0,
+  "scope": "Synthetic equality checks of existing remembered-surface association, not physical task or learning evidence."
+}

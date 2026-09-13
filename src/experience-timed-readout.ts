@@ -2,8 +2,8 @@ import type { Observation, PublicValue, RealEvent } from './contracts.js';
 import { EXPERIENCE_LIVE_LAW, isActualLiveState, isExperienceLiveState,
   actualObservationDigest, areConsecutiveActualStates, projectLiveChannels, type LiveStateV1 } from './experience-live-state.js';
 import { extractExperienceIntervals, type SourceExperienceIntervals } from './experience-intervals.js';
-import { sha } from './util.js';
 import { worldToBody } from './perception.js';
+import { actualEventDigest } from './experience-sealed-evidence.js';
 
 export const CONTINUOUS_READOUT = 'continuous-window-v1' as const;
 export interface ExperienceWindowLiveTraceV1 {
@@ -26,7 +26,7 @@ export function validateLivePredictionState(state: LiveStateV1, observation: Obs
 }
 export function validateExperienceLiveTrace(event: RealEvent, trace: ExperienceWindowLiveTraceV1): SourceExperienceIntervals {
   require(trace?.version === 'ExperienceWindowLiveTraceV1' && trace.parentWindowId === event.id
-    && trace.parentEventDigest === sha(event) && trace.states.length === event.frames.length, 'live-trace-source-mismatch');
+    && trace.parentEventDigest === actualEventDigest(event) && trace.states.length === event.frames.length, 'live-trace-source-mismatch');
   const epoch = trace.states[0]?.frame?.epoch;
   for (let i = 0; i < event.frames.length; i++) {
     const state = trace.states[i]!, frame = event.frames[i]!;

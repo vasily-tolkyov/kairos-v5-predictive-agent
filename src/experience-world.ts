@@ -9,7 +9,11 @@ export interface RememberedSurface {
 interface Place { position: XYZ; visits: number; headings: number[]; lastSeen: number }
 export interface ExperienceWorldSnapshot { version: 'ExperienceWorld1'; clock: number; serial: number;
   places: [string, Place][]; surfaces: RememberedSurface[]; placeCapacity: number; surfaceCapacity: number }
-const distance = (a: XYZ, b: XYZ) => Math.hypot(...a.map((v, i) => v - b[i]!));
+const distance = (a: XYZ, b: XYZ) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const cell = (position: XYZ) => position.map(Math.floor).join(',');
+const indexable = (position: XYZ, properties: Readonly<Record<string, PublicValue>>) =>
+  position.every(value => Number.isFinite(value) && Math.abs(value) < Number.MAX_SAFE_INTEGER - 2)
+  && ['red', 'green', 'blue'].every(key => typeof properties[key] !== 'number' || Number.isFinite(properties[key]));
 
 /** A bounded record of where sensing occurred and what surfaces were seen.
  * Remembered surfaces never get appended to Observation.objects: remembering
@@ -37,20 +41,48 @@ export class ExperienceWorld {
       this.#places.delete(this.#places.keys().next().value!);
     }
     for (const surface of this.#surfaces.values()) surface.visible = false;
+    // Rebuild a transient geometric index from the existing memory only. The
+    // largest unchanged association radius is .8, so a matching point must
+    // occupy one of the 27 neighboring unit cells. No nearest-k truncation.
+    const cells = new Map<string, Set<RememberedSurface>>(), order = new Map<string, number>();
+    let indexed = true;
+    const add = (surface: RememberedSurface) => {
+      const key = cell(surface.position), bucket = cells.get(key) ?? new Set<RememberedSurface>();
+      bucket.add(surface); cells.set(key, bucket);
+      if (!order.has(surface.id)) order.set(surface.id, order.size);
+      indexed &&= indexable(surface.position, surface.properties);
+    };
+    for (const surface of this.#surfaces.values()) add(surface);
     const claimed = new Set<string>();
     for (const object of observation.objects) {
       const track = observation.perception?.tracks.find(value => value.id === object.id);
       if (track && (track.ambiguity >= .65 || track.confidence < .5)) continue;
       const position = (track?.surface?.point ?? object.relativePosition)
         .map((v, i) => v + observation.self.position[i]!) as unknown as XYZ;
+      let candidates: Iterable<RememberedSurface> = this.#surfaces.values();
+      if (indexed && indexable(position, object.properties)) {
+        const nearby: RememberedSurface[] = [], [x, y, z] = position.map(Math.floor) as [number, number, number];
+        for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++)
+          for (const surface of cells.get(`${x + dx},${y + dy},${z + dz}`) ?? []) nearby.push(surface);
+        // Stable original Map order also preserves exact tie/ambiguity behavior.
+        candidates = nearby.sort((a, b) => order.get(a.id)! - order.get(b.id)!);
+      }
       let first: { surface: RememberedSurface; score: number } | undefined, second: typeof first;
-      for (const surface of this.#surfaces.values()) if (!claimed.has(surface.id)) {
-          const shared = ['red', 'green', 'blue'].filter(k => typeof surface.properties[k] === 'number'
-            && typeof object.properties[k] === 'number');
-          const appearance = shared.reduce((sum, k) => sum + Math.abs(Number(surface.properties[k]) - Number(object.properties[k])), 0);
+      for (const surface of candidates) if (!claimed.has(surface.id)) {
+          let appearance = 0;
+          for (const k of ['red', 'green', 'blue']) if (typeof surface.properties[k] === 'number'
+            && typeof object.properties[k] === 'number')
+            appearance += Math.abs(Number(surface.properties[k]) - Number(object.properties[k]));
           const sameTrack = surface.perceptId === object.id && surface.anchorEpoch === (track?.anchorEpoch ?? 0);
+          const limit = sameTrack ? .8 : .35;
+          // A coordinate distance already outside the original radius cannot
+          // pass with nonnegative appearance distance. Keep the full original
+          // score, insertion order and ambiguity test for every possible match.
+          if (appearance >= 0 && (Math.abs(surface.position[0] - position[0]) >= limit
+            || Math.abs(surface.position[1] - position[1]) >= limit
+            || Math.abs(surface.position[2] - position[2]) >= limit)) continue;
           const candidate = { surface, score: distance(surface.position, position) + appearance * 4 };
-          if (candidate.score >= (sameTrack ? .8 : .35)) continue;
+          if (candidate.score >= limit) continue;
           if (!first || candidate.score < first.score) { second = first; first = candidate; }
           else if (!second || candidate.score < second.score) second = candidate;
       }
@@ -58,10 +90,13 @@ export class ExperienceWorld {
       const surface: RememberedSurface = unambiguous ? first!.surface : {
         id: `remembered-${++this.#serial}`, perceptId: object.id, anchorEpoch: track?.anchorEpoch ?? 0,
         position, properties: {}, lastSeen: this.#clock, observations: 0, visible: true, confidence: .5 };
+      const oldCell = cell(surface.position);
+      cells.get(oldCell)?.delete(surface);
       Object.assign(surface, { position, properties: { ...object.properties }, lastSeen: this.#clock,
         observations: surface.observations + 1, visible: true, perceptId: object.id, anchorEpoch: track?.anchorEpoch ?? 0,
         confidence: Math.min(.99, .5 + .05 * surface.observations) });
       claimed.add(surface.id); this.#surfaces.set(surface.id, surface);
+      add(surface);
     }
     while (this.#surfaces.size > this.surfaceCapacity) {
       let oldest: RememberedSurface | undefined;

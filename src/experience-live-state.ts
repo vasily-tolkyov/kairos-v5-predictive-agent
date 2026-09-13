@@ -1,6 +1,7 @@
 import type { ActionCue, Observation, PublicValue, XYZ } from './contracts.js';
 import { worldToBody } from './perception.js';
 import { canonical, sha } from './util.js';
+import { freezeEvidenceData } from './immutable-evidence.js';
 
 /** An encoding basis, not learned physics or a native capability claim. No
  * theta, learner, calibration counter, goal or action selector lives here. */
@@ -91,7 +92,7 @@ const SEALED_OBSERVATIONS = new WeakMap<Observation, string>();
 export function sealRealObservation(observation: Observation): string {
   const registered = SEALED_OBSERVATIONS.get(observation); if (registered) return registered;
   validateObservation(observation, false);
-  immutable(observation);
+  freezeEvidenceData(observation);
   const digest = sha(observation); SEALED_OBSERVATIONS.set(observation, digest); return digest;
 }
 export function actualObservationDigest(observation: Observation): string {

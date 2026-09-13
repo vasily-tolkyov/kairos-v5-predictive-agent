@@ -4,6 +4,7 @@ import { extractExperienceIntervals } from './experience-intervals.js';
 import { ExperienceLiveState, sealRealObservation, actualObservationDigest,
   type ExperienceLiveSnapshotV1, type LiveMotorSignalV1, type LiveStateV1 } from './experience-live-state.js';
 import { assert, sha } from './util.js';
+import { sealRealEvent } from './experience-sealed-evidence.js';
 
 const UNKNOWN: LiveMotorSignalV1 = { state: 'unknown', provenance: 'unknown', cue: null };
 const signal = (value?: BodyMotorSignalV1): LiveMotorSignalV1 => {
@@ -125,6 +126,7 @@ export class ExperienceFrameFlow {
     const state = this.stateAt(observation); assert(state, 'live-prediction-boundary-state-unavailable'); return state;
   }
   window(event: RealEvent, batch?: PhysicalTelemetryBatchV1, onFrame: (frame: Observation) => void = () => {}) {
+    sealRealEvent(event);
     const intervals = extractExperienceIntervals(event);
     this.#ingest(event.frames, batch, onFrame);
     const states = event.frames.map(frame => this.stateAt(frame));

@@ -1,6 +1,8 @@
 import type { ActionCue, Observation, RealEvent, RealFrameClockV1 } from './contracts.js';
 import { validateEvent } from './events.js';
 import { assert, sha } from './util.js';
+import { actualEventDigest } from './experience-sealed-evidence.js';
+import { actualObservationDigest } from './experience-live-state.js';
 
 export interface ExperienceIntervalBoundary {
   readonly sequence: number;
@@ -95,7 +97,7 @@ export function extractExperienceIntervals(event: RealEvent,
     assert(Number.isSafeInteger(preceding.sequence) && preceding.sequence >= 0
       && /^[a-f0-9]{64}$/.test(preceding.frameDigest), 'invalid-experience-shared-boundary');
     assert(first.sequence === preceding.sequence, 'experience-shared-frame-gap-or-backward-sequence');
-    assert(sha(first) === preceding.frameDigest, 'conflicting-experience-shared-frame');
+    assert(actualObservationDigest(first) === preceding.frameDigest, 'conflicting-experience-shared-frame');
     assert(sha(clocks[0] ?? null) === sha(preceding.physicalClock), 'conflicting-experience-shared-clock');
   }
   const present = clocks.filter(Boolean).length;
@@ -109,7 +111,7 @@ export function extractExperienceIntervals(event: RealEvent,
     if (clock) assert(clock.physicsTick === edge.physicsTick && clock.monotonicMs <= edge.monotonicMs,
       'experience-motor-edge-clock-conflict');
   }
-  const parentEventDigest = sha(event), source = { parentWindowId: event.id, parentEventDigest };
+  const parentEventDigest = actualEventDigest(event), source = { parentWindowId: event.id, parentEventDigest };
   // A later interruption determines actualTicks only after earlier intervals.
   // Do not leak that final whole-window duration into an earlier motor input.
   // The original request/receipt remain in the parent source; this signal is
@@ -157,7 +159,7 @@ export function extractExperienceIntervals(event: RealEvent,
         reason: receipt ? 'motor-edge-inside-interval' : 'unknown-motor-edges' });
   }
   return { version: 'SourceExperienceIntervals1', ...source, sourceFrameCount: event.frames.length,
-    clockStatus, transitions, boundary: { sequence: last.sequence, frameDigest: sha(last),
+    clockStatus, transitions, boundary: { sequence: last.sequence, frameDigest: actualObservationDigest(last),
       physicalClock: clocks.at(-1) ? { ...clocks.at(-1)! } : null },
     learningWrites: 0, newIndependentCalibrationWindows: 0 };
 }

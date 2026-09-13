@@ -6,7 +6,8 @@ import { ExperienceMedium, experienceInputs, motorIdentity, type ExperienceMediu
 import { LearnedAffordances, type LearnedAffordancesSnapshot } from './learned-affordances.js';
 import { ExperienceWorld, type ExperienceWorldSnapshot } from './experience-world.js';
 import { ExperienceFrameFlow } from './experience-frame-flow.js';
-import type { ExperienceLiveSnapshotV1, LiveStateV1 } from './experience-live-state.js';
+import { actualObservationDigest, type ExperienceLiveSnapshotV1, type LiveStateV1 } from './experience-live-state.js';
+import { actualEventDigest, sealRealEvent } from './experience-sealed-evidence.js';
 import { cueIdentity, validateEvent } from './events.js';
 import { sha } from './util.js';
 
@@ -178,14 +179,15 @@ export class ExperienceSession {
       measuredBoundary(boundary);
       if (previousPassiveEnd && (previousPassiveEnd.sequence > boundary.sequence || previousPassiveEnd.activeSeconds > boundary.activeSeconds))
         throw new Error(reason);
-      // Keep the previously validated digest, not a cache keyed by mutable
-      // frame objects. Equal sequence numbers must identify the full same frame.
-      const measuredDigest = () => boundaryDigest ??= sha(boundary);
+      // Cache only recursively frozen original evidence. A mutable or cloned
+      // object is still hashed in full; equal sequence numbers alone mean nothing.
+      const measuredDigest = () => boundaryDigest ??= actualObservationDigest(boundary);
       if (previousPassiveEnd?.sequence === boundary.sequence && previousPassiveEnd.digest !== measuredDigest())
         throw new Error('passive-shared-frame-conflict');
       let lastEnd = previousPassiveEnd;
       const unique = events.filter(event => {
-        const digest = sha(event), consumed = consumedPassive.get(event.id);
+        const digest = event.frames[0]?.physicalClock ? sealRealEvent(event) : actualEventDigest(event);
+        const consumed = consumedPassive.get(event.id);
         if (consumed !== undefined && consumed !== digest) throw new Error('event-id-conflict');
         if (consumed !== undefined) return false;
         validateEvent(event);
@@ -194,8 +196,8 @@ export class ExperienceSession {
         const first = event.frames[0]!, last = event.frames.at(-1)!;
         if (last.sequence > boundary.sequence || last.activeSeconds > boundary.activeSeconds
           || lastEnd && (first.sequence < lastEnd.sequence || first.activeSeconds < lastEnd.activeSeconds)) throw new Error(reason);
-        const endDigest = sha(last);
-        if (lastEnd?.sequence === first.sequence && lastEnd.digest !== sha(first)
+        const endDigest = actualObservationDigest(last);
+        if (lastEnd?.sequence === first.sequence && lastEnd.digest !== actualObservationDigest(first)
           || last.sequence === boundary.sequence && endDigest !== measuredDigest()) throw new Error('passive-shared-frame-conflict');
         lastEnd = { sequence: last.sequence, activeSeconds: last.activeSeconds, digest: endDigest };
         consumedPassive.set(event.id, digest); return true;
@@ -209,7 +211,7 @@ export class ExperienceSession {
     measuredBoundary(observation);
     if (previousPassiveEnd && (previousPassiveEnd.sequence > observation.sequence || previousPassiveEnd.activeSeconds > observation.activeSeconds))
       throw new Error('passive-experience-does-not-precede-initial-observation');
-    const planningFrameDigest = sha(observation);
+    const planningFrameDigest = actualObservationDigest(observation);
     if (previousPassiveEnd?.sequence === observation.sequence && previousPassiveEnd.digest !== planningFrameDigest)
       throw new Error('passive-shared-frame-conflict');
     const liveState = this.#boundary(observation, environment);
@@ -349,7 +351,7 @@ export class ExperienceSession {
         || motorIdentity(start.offer.cue) !== motorIdentity(offer.cue)
         || start.availableOffers.some(value => value.observationSequence !== start.observation.sequence))
         throw new Error('invalid-measured-action-start');
-      actionStartDigest = sha(start.observation);
+      actionStartDigest = actualObservationDigest(start.observation);
       const preceding = uniquePassive(start.precedingPassiveEvents, start.observation, 'passive-experience-does-not-precede-action-start', actionStartDigest);
       actionStart = { ...start, precedingPassiveEvents: preceding };
       const validatedAt = performance.now();
@@ -420,7 +422,7 @@ export class ExperienceSession {
         || result.event.frames[0]!.sequence < observation.sequence
         || result.event.frames.at(-1)!.sequence !== result.observation.sequence)
         throw new Error('body-feedback-does-not-match-commanded-window');
-      if (actionStart && sha(result.event.frames[0]!) !== actionStartDigest)
+      if (actionStart && actualObservationDigest(result.event.frames[0]!) !== actionStartDigest)
         throw new Error('body-feedback-does-not-match-action-start-prediction');
       if (result.availableOffers) {
         if (result.availableOffers.some(value => value.observationSequence !== result.event!.frames[0]!.sequence))

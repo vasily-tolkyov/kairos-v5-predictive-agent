@@ -1,5 +1,6 @@
 import type { ActionCue, Observation, PublicObject, PublicValue, RealEvent, XYZ } from './contracts.js';
 import { measuredMotorCueV1, validateEvent } from './events.js';
+import { actualEventDigest } from './experience-sealed-evidence.js';
 import { bodyToWorld, worldToBody } from './perception.js';
 import { sha } from './util.js';
 import { ContextualReadout, type ContextualReadoutSnapshot, type ContextualWindowRow } from './contextual-readout.js';
@@ -504,7 +505,7 @@ export class ExperienceMedium {
       || event.bodyResult && (event.bodyResult.startSequence !== event.frames[0]!.sequence
         || event.bodyResult.endSequence !== event.frames.at(-1)!.sequence)) throw new Error('experience-feedback-window-mismatch');
     const liveIntervals = options.liveTrace ? validateExperienceLiveTrace(event, options.liveTrace) : undefined;
-    const digest = sha(event), previous = this.#ledger.check(event.id, digest);
+    const digest = actualEventDigest(event), previous = this.#ledger.check(event.id, digest);
     if (previous !== 'new') {
       return { learned: false, correctBeforeUpdate: null, writes: this.#writes, measuredChannels: 0, maskedObjects: 0, skipped: previous };
     }
