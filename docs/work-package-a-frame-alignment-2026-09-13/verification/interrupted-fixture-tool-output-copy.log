@@ -1,0 +1,26 @@
+Tool-output copy. Source: exec_command session 23005, initial chunk f83a26.
+Command: node --test --test-concurrency=1 dist/test/worker-action-start.test.js dist/test/body-motor-window.test.js dist/test/action-start.test.js
+The new respawn fixture omitted body.ready(), so its mock loading acknowledgment never completed. The run was explicitly interrupted with Ctrl-C after inspection. write_stdin final chunk 1a199f exit 1, no additional output. This is not a completed gate.
+
+✔ the adapter binds a fresh synchronous forecast before the physical motor and honors a veto (4.0879ms)
+✔ session comparisons and recorded first predictions use the action-start frame, before outcome learning (37.2401ms)
+✔ preceding passive evidence is consumed once before the fresh forecast, then the action is learned (16.875ms)
+✔ a previously supported plan is refused when its actual start context loses support (1.2017ms)
+✔ legacy delayed receipts cannot earn stale prediction, progress or local refutation credit (1.3557ms)
+✔ a fresh failed action is refuted in its actual starting context, independent of planning drift (1.6025ms)
+✔ a callback cannot certify a different actual action-start frame (1.8263ms)
+✔ an asynchronous callback cannot authorize a motor across a scheduling gap (0.3015ms)
+✔ rebinding preserves a hypothesis as an untrusted probe after waiting-time drift (2.2761ms)
+✔ a worker-shaped body keeps advancing across async passive drain without a false synchronous forecast (0.4652ms)
+✔ a changed retina invalidates a claimed action-start frame even when its sequence and body channels agree (1.3047ms)
+✔ a future passive window cannot train an allegedly pre-execution forecast (1.7396ms)
+✔ retransmitting consumed passive evidence under its old ID cannot hide changed content (4.0485ms)
+✔ a bounded next-frame wait returns a copied real successor and removes its listeners (30.1756ms)
+✔ a bounded silent-clock wait expires without fabricating a frame and removes its listeners (8.1792ms)
+▶ aborted, faulted and closed observation waits settle once and release listeners
+  ✔ abort (3.0265ms)
+  ✔ fault (1.7241ms)
+  ✔ close (1.2347ms)
+✔ aborted, faulted and closed observation waits settle once and release listeners (6.7595ms)
+✖ pending preparation cancellation preserves measured passive evidence with no token or motor (4.2734ms)
+✖ superseding a pending frame wait cancels it without stealing the succeeding preparation interval (5.06ms)
