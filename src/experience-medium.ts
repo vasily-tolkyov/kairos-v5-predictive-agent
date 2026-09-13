@@ -1,14 +1,26 @@
 import type { ActionCue, Observation, PublicObject, PublicValue, RealEvent, XYZ } from './contracts.js';
-import { validateEvent } from './events.js';
+import { measuredMotorCueV1, validateEvent } from './events.js';
+import { actualEventDigest } from './experience-sealed-evidence.js';
 import { bodyToWorld, worldToBody } from './perception.js';
 import { sha } from './util.js';
-import { ContextualReadout, type ContextualReadoutSnapshot } from './contextual-readout.js';
+import { ContextualReadout, type ContextualReadoutSnapshot, type ContextualWindowRow } from './contextual-readout.js';
 import { ExperienceLedger } from './experience-ledger.js';
 import { addRanges, hull, pointRange, rotateRanges, scaleRange, type NumericRange, type NumericRanges } from './numeric-ranges.js';
+import { EXPERIENCE_LIVE_LAW, ExperienceLiveBranch, type LiveStateV1 } from './experience-live-state.js';
+import { CONTINUOUS_READOUT, continuousReadoutField, continuousReadoutInput, measuredPairTargets,
+  validateExperienceLiveTrace, validateLivePredictionState, type ExperienceWindowLiveTraceV1 } from './experience-timed-readout.js';
+import type { IntervalMotor, SourceExperienceIntervals } from './experience-intervals.js';
+export type { ExperienceWindowLiveTraceV1 } from './experience-timed-readout.js';
 
 type State = Record<string, PublicValue>;
 const INPUTS = 32, HIDDEN = 16, SIZE = 1 + INPUTS + HIDDEN;
 export const motorIdentity = (cue: ActionCue) => sha({ kind: cue.kind, parameters: cue.parameters });
+// Passive packets have no requested duration. Their retrospective packaging
+// length cannot select a horizon-specific endpoint circuit.
+export const continuousEndpointIdentity = (cue: ActionCue) => `continuous-v1/endpoint/${motorIdentity(cue.kind === 'passive'
+  ? { ...cue, parameters: {} } : cue)}`;
+export const continuousIntervalIdentity = (motor: IntervalMotor) => `continuous-v1/interval/${sha(motor.state === 'held'
+  ? { state: 'held', ...motor.signal } : { state: 'off' })}`;
 interface Head {
   key: string; numeric: boolean; values: PublicValue[]; readout: number[][]; covariance: number[][];
   observations: number; correct: number; error: number; integral: boolean;
@@ -17,14 +29,34 @@ interface Head {
   numericMeans: number[];
 }
 interface MotionEstimate { mean: number[]; covariance: number[][]; information: number[][]; variance: number;
-  observations: number; correct: number; error: number }
+  observations: number; correct: number; error: number;
+  calibration?: { windowId: string; error: number; residual: number }[] }
 interface Network { inputs: string[]; ranges: [number, number][]; weights: number[][]; bias: number[]; heads: Head[];
-  observations: number; motion?: MotionEstimate }
+  observations: number; motion?: MotionEstimate; encoding?: typeof EXPERIENCE_LIVE_LAW }
+type PredictionHead = Omit<Head, 'covariance'>;
+type WindowReadout = Pick<Network, 'inputs' | 'ranges' | 'weights' | 'bias' | 'encoding'>
+  & { heads: PredictionHead[]; motion?: Pick<MotionEstimate, 'mean'> };
+function windowReadout(network?: Network): WindowReadout | undefined {
+  if (!network) return undefined;
+  // The pre-window prediction needs readout parameters, not the much larger
+  // fitting covariance matrices. Keep an independent copy of every value
+  // that decoding actually reads; live fitting matrices remain untouched.
+  return structuredClone({ inputs: network.inputs, ranges: network.ranges,
+    weights: network.weights, bias: network.bias,
+    ...(network.encoding ? { encoding: network.encoding } : {}),
+    heads: network.heads.map(({ covariance: _covariance, ...head }) => head),
+    ...(network.motion ? { motion: { mean: network.motion.mean } } : {}) });
+}
 export interface ExperienceMediumSnapshot {
-  version: 'KairosExperienceMediumV9' | 'KairosExperienceMediumV10' | 'KairosExperienceMediumV11'; seed: number; random: number;
+  version: 'KairosExperienceMediumV9' | 'KairosExperienceMediumV10' | 'KairosExperienceMediumV11' | 'KairosExperienceMediumV12'; seed: number; random: number;
   networks: [string, Network][]; events: [string, string][]; writes: number;
+  /** Verified zero-duration motor exposures retained by the ledger, not training writes. */
+  untrainedMotorWindows?: number;
+  /** Source-retained live windows with no fully verified physical clock. */
+  untrainedLiveWindows?: number;
   contexts?: ContextualReadoutSnapshot;
   ledger?: { capacity: number; retired: string; streams?: [string, number][] };
+  semantics?: typeof CONTINUOUS_READOUT;
 }
 export interface ExperiencePrediction {
   observation: Observation | null; accepted: boolean; reason: string | null;
@@ -34,6 +66,17 @@ export interface ExperiencePrediction {
   hypothesizedFields?: readonly string[];
   /** Identity-free predicted gaze measurement, compared to the later gaze. */
   predictedGazeRole?: string;
+  /** Private next state. Timed motor-on/off rollout is not yet implemented. */
+  state?: LiveStateV1;
+  timing?: { semantics: 'window-endpoint-v1';
+    returnPhysicalTicks: { range: NumericRange | null; supported: boolean };
+    intervalRolloutSupported: false };
+}
+export interface ExperienceIntervalReadout {
+  readonly semantics: 'teacher-forced-one-interval-v1';
+  readonly deltaSeconds: number; readonly wholeWindowSupported: false; readonly thetaWrites: 0;
+  readonly outputs: readonly { field: string; value: PublicValue; absolute: boolean;
+    range: NumericRange | null; supported: boolean; independentCalibrationWindows: number }[];
 }
 /** Audit/search identity only. These object IDs and world coordinates NEVER
  * parameterize a learned circuit or its receptor layout. */
@@ -172,6 +215,9 @@ function features(state: State): [string, number][] {
 export class ExperienceMedium {
   #seed: number; #random: number; #networks = new Map<string, Network>();
   #ledger = new ExperienceLedger(); #contexts = new ContextualReadout(); #writes = 0;
+  #untrainedMotorWindows = 0;
+  #untrainedLiveWindows = 0;
+  #continuous = false;
   #attentionPredictions = new WeakMap<Observation, Map<string, ExperiencePrediction>>();
   #attentionBase = new WeakMap<Observation, Map<string, number>>();
   constructor(seed = 1) {
@@ -180,17 +226,20 @@ export class ExperienceMedium {
   }
   get writes(): number { return this.#writes; }
   #uniform(): number { let x = this.#random; x ^= x << 13; x ^= x >>> 17; x ^= x << 5; this.#random = x >>> 0; return this.#random / 4294967296; }
-  #network(id: string): Network {
+  #network(id: string, encoding?: typeof EXPERIENCE_LIVE_LAW): Network {
     let network = this.#networks.get(id);
     if (!network) {
-      network = { inputs: [], ranges: [], weights: Array.from({ length: HIDDEN }, () =>
+      network = encoding ? { encoding, inputs: [], ranges: [], weights: Array.from({ length: HIDDEN }, () => Array(INPUTS).fill(0)),
+        bias: Array(HIDDEN).fill(0), heads: [], observations: 0 } : { inputs: [], ranges: [], weights: Array.from({ length: HIDDEN }, () =>
         Array.from({ length: INPUTS }, () => (this.#uniform() - .5) * 2)),
       bias: Array.from({ length: HIDDEN }, () => this.#uniform() - .5), heads: [], observations: 0 };
       this.#networks.set(id, network);
     }
+    if (network.encoding !== encoding) throw new Error('experience-readout-semantic-collision');
     return network;
   }
-  #field(network: Network, state: State, learn = false): number[] {
+  #field(network: Pick<Network, 'inputs' | 'ranges' | 'weights' | 'bias' | 'encoding'>, state: State, learn = false): number[] {
+    if (network.encoding) return continuousReadoutField(state);
     const field = Array(INPUTS).fill(0) as number[];
     for (const [name, value] of features(state)) {
       let site = network.inputs.indexOf(name);
@@ -213,7 +262,7 @@ export class ExperienceMedium {
     });
     return [1, ...field, ...hidden];
   }
-  #read(head: Head, field: number[], bounds?: readonly NumericRange[]) {
+  #read(head: PredictionHead, field: number[], bounds?: readonly NumericRange[]) {
     const category = !head.numeric && head.categoryCorrect >= head.regressionCorrect - .02;
     const readout = category ? head.categoryReadout : head.readout;
     const scores = readout.map(row => row.reduce((sum, w, i) => sum + w * field[i]!, 0));
@@ -235,13 +284,28 @@ export class ExperienceMedium {
       supported: head.observations >= 8 && quality >= .8
         && (head.numeric ? uncertainty <= .05 : margin > 1e-8) };
   }
-  #learnMotion(network: Network, normal: readonly number[], displacement: number, sensorResidual: number): boolean {
+  #learnMotion(network: Network, normal: readonly number[], displacement: number, sensorResidual: number,
+    windowId: string, rows: ContextualWindowRow[], state: State, prior?: Pick<MotionEstimate, 'mean'>): boolean {
     const estimate = network.motion ??= { mean: [0, 0, 0], covariance: [[1000, 0, 0], [0, 1000, 0], [0, 0, 1000]],
       information: [[0, 0, 0], [0, 0, 0], [0, 0, 0]], variance: 0, observations: 0, correct: 0, error: 0 };
     // n·motion = measured plane displacement. Different views add independent
     // constraints; one plane never supplies its unobservable tangent motion.
     const error = displacement - normal.reduce((sum, v, i) => sum + v * estimate.mean[i]!, 0);
-    const correct = estimate.observations > 0 && Math.abs(error) <= tolerance(displacement);
+    const residual = prior ? Math.max(sensorResidual,
+      Math.abs(displacement - normal.reduce((sum, v, i) => sum + v * prior.mean[i]!, 0))) : null;
+    // A plane's two normal signs encode the same measured constraint.
+    const sign = normal.find(v => Math.abs(v) > 1e-10)! < 0 ? -1 : 1;
+    rows.push({ input: { ...state, ...Object.fromEntries(normal.map((v, i) => ['plane/normal/' + i, v * sign])) },
+      targets: [['plane/motion', 0, displacement * sign]],
+      ...(residual === null ? {} : { externalErrors: { 'plane/motion': Math.min(20, residual / tolerance(displacement)) } }) });
+    if (residual !== null) {
+      const calibration = estimate.calibration ??= [], existing = calibration.find(row => row.windowId === windowId);
+      if (existing) { existing.error = Math.max(existing.error, residual / tolerance(displacement));
+        existing.residual = Math.max(existing.residual, residual); }
+      else calibration.push({ windowId, error: residual / tolerance(displacement), residual });
+      if (calibration.length > 32) calibration.shift();
+    }
+    const correct = residual !== null && residual <= tolerance(displacement);
     estimate.correct += .15 * (Number(correct) - estimate.correct);
     estimate.error += .15 * (Math.abs(error) - estimate.error); estimate.observations++;
     estimate.variance += .15 * (Math.max(error * error, sensorResidual * sensorResidual) - estimate.variance);
@@ -252,12 +316,18 @@ export class ExperienceMedium {
     estimate.covariance = updatedCovariance(estimate.covariance, product, denominator);
     return correct;
   }
-  #learn(network: Network, state: State, targets: [string, PublicValue, PublicValue][], id: string): boolean[] {
+  #learn(network: Network, state: State, targets: [string, PublicValue, PublicValue][],
+    rows: ContextualWindowRow[], prior?: WindowReadout): boolean[] {
+    const priorField = prior ? this.#field(prior, state) : undefined;
     const field = this.#field(network, state, true), results: boolean[] = []; network.observations++;
     const externalErrors: Record<string, number> = {};
     for (const [name, before, after] of targets) {
       const numeric = typeof before === 'number' && typeof after === 'number';
       const target = numeric ? after - before : after;
+      // Decode with the window-start receptors and category vocabulary. A new
+      // after-label cannot become a candidate before its forecast is scored.
+      const priorHead = prior?.heads.find(value => value.key === name);
+      const priorPrediction = priorHead && priorHead.numeric === numeric ? this.#read(priorHead, priorField!) : null;
       let head = network.heads.find(value => value.key === name);
       if (!head) {
         head = { key: name, numeric, values: numeric ? [] : [after],
@@ -275,13 +345,12 @@ export class ExperienceMedium {
         head.values.push(after); head.readout.push(Array(SIZE).fill(0));
         head.categoryReadout.push(Array(SIZE).fill(0));
       }
-      const predicted = this.#read(head, field);
-      const numericResult = Number(predicted.value) + (predicted.absolute ? 0 : Number(before));
-      const error = numeric ? Math.abs(numericResult - Number(after)) : Number(predicted.value !== after);
-      const decodedError = numeric && head.integral && Number.isInteger(before) && Number.isInteger(after)
+      const numericResult = priorPrediction ? Number(priorPrediction.value) + (priorPrediction.absolute ? 0 : Number(before)) : Number(before);
+      const error = numeric ? Math.abs(numericResult - Number(after)) : Number(!priorPrediction || priorPrediction.value !== after);
+      const decodedError = numeric && priorHead?.integral && Number.isInteger(before) && Number.isInteger(after)
         ? Math.abs(Math.round(numericResult) - Number(after)) : error;
-      const correct = head.observations > 0 && decodedError <= (numeric ? tolerance(Number(target)) : 0);
-      if (head.observations > 0) externalErrors[name] = numeric ? Math.min(20, decodedError / tolerance(Number(target)))
+      const correct = priorPrediction !== null && decodedError <= (numeric ? tolerance(Number(target)) : 0);
+      if (priorPrediction) externalErrors[name] = numeric ? Math.min(20, decodedError / tolerance(Number(target)))
         : correct ? 0 : 2;
       results.push(correct); head.observations++;
       head.correct += .15 * (Number(correct) - head.correct); head.error += .15 * (error - head.error);
@@ -329,11 +398,87 @@ export class ExperienceMedium {
       });
       head.covariance = updatedCovariance(head.covariance, px, denominator);
     }
-    this.#contexts.observe(id, state, targets, externalErrors);
+    rows.push({ input: state, targets, externalErrors });
     return results;
   }
-  observe(event: RealEvent): { learned: boolean; correctBeforeUpdate: boolean | null; writes: number; measuredChannels: number; maskedObjects: number;
-    skipped?: 'duplicate' | 'retired-or-collision' } {
+  #observeContinuous(event: RealEvent, digest: string, trace: ExperienceWindowLiveTraceV1, intervals: SourceExperienceIntervals) {
+    if (intervals.clockStatus !== 'verified') {
+      this.#continuous = true;
+      this.#ledger.commit(event.id, digest); this.#untrainedLiveWindows++;
+      return { learned: false, correctBeforeUpdate: null, writes: this.#writes, measuredChannels: 0, maskedObjects: 0,
+        skipped: 'no-verified-live-clock' as const };
+    }
+    const first = event.frames[0]!, last = event.frames.at(-1)!;
+    const endpointPhysicalTicks = last.physicalClock!.physicsTick - first.physicalClock!.physicsTick;
+    if (endpointPhysicalTicks === 0 && event.provenance === 'observed-passive') {
+      // A terminal sample may carry a real change with no physics interval.
+      // z already assimilated that measurement; passive dynamics get no row.
+      this.#continuous = true; this.#ledger.commit(event.id, digest); this.#untrainedLiveWindows++;
+      return { learned: false, correctBeforeUpdate: null, writes: this.#writes, measuredChannels: 0, maskedObjects: 0,
+        skipped: 'no-positive-physical-interval' as const,
+        continuous: { semantics: CONTINUOUS_READOUT, endpointIndependentWindows: 0, intervalRows: 0,
+          assimilationRows: intervals.transitions.filter(row => row.kind === 'assimilation-only').length,
+          untrainableRows: 0, newIndependentIntervalWindows: 0, intervalRolloutSupported: false as const,
+          endpointPhysicalTicks, zeroTimeEndpoint: true } };
+    }
+    if (typeof event.attentionId === 'string' && !first.objects.some(object => object.id === event.attentionId))
+      throw new Error('attention-subject-not-observed-before-action');
+    type Job = { id: string; input: State; targets: [string, PublicValue, PublicValue][]; endpoint: boolean };
+    const jobs: Job[] = [];
+    let maskedObjects = 0, intervalRows = 0;
+    const addPair = (before: Observation, after: Observation, state: LiveStateV1, motor: string,
+      endpoint: boolean, extra: State = {}) => {
+      const targets = measuredPairTargets(before, after, endpoint ? event.attentionId : undefined);
+      maskedObjects += targets.maskedObjects;
+      const beforeInputs = inputState(before), afterInputs = inputState(after);
+      for (const [name, value] of Object.entries(beforeInputs)) if (name.startsWith('view/') && afterInputs[name] !== undefined)
+        targets.self.push([`context/${name}`, value, afterInputs[name]!]);
+      if (endpoint) targets.self.push(['return/physicalTicks', 0,
+        after.physicalClock!.physicsTick - before.physicalClock!.physicsTick]);
+      jobs.push({ id: `${motor}/self`, input: continuousReadoutInput(state, beforeInputs, extra), targets: targets.self, endpoint });
+      for (const row of targets.objects) jobs.push({ id: `${motor}/object`,
+        input: continuousReadoutInput(state, inputState(before, row.object), extra), targets: row.targets, endpoint });
+    };
+    // The original requested motor is knowable at prediction time. Actual
+    // interruption/settling duration appears only as an after-label.
+    // Receipt-free discrete actions can change an observed endpoint at zero
+    // physics dt (for example a measured camera update). Retain that endpoint
+    // measurement; it certifies no physical interval and uses no future-dt key.
+    addPair(first, last, trace.states[0]!, continuousEndpointIdentity(event.cue), true);
+    for (const row of intervals.transitions) if (row.kind === 'dynamics') {
+      intervalRows++;
+      addPair(event.frames[row.beforeFrameIndex]!, event.frames[row.afterFrameIndex]!, trace.states[row.beforeFrameIndex]!,
+        continuousIntervalIdentity(row.motor), false, { 'interval/dt': row.deltaSeconds, 'interval/motor': row.motor.state });
+    }
+    // Prepare every affected readout BEFORE fitting any row. An interval is
+    // teacher-forced by a real earlier z; it is not another independent window
+    // and cannot calibrate the direct endpoint circuit or a future rollout.
+    const prior = new Map([...new Set(jobs.map(job => job.id))].map(id => [id, windowReadout(this.#networks.get(id))]));
+    const rows = new Map<string, ContextualWindowRow[]>(), endpointCorrect: boolean[] = [];
+    this.#continuous = true;
+    let measuredChannels = 0;
+    for (const job of jobs) {
+      const group = rows.get(job.id) ?? []; rows.set(job.id, group);
+      const correct = this.#learn(this.#network(job.id, EXPERIENCE_LIVE_LAW), job.input, job.targets, group, prior.get(job.id));
+      measuredChannels += correct.length; if (job.endpoint) endpointCorrect.push(...correct);
+    }
+    for (const [id, group] of rows) this.#contexts.observeWindow(id, event.id, group);
+    this.#ledger.commit(event.id, digest); this.#writes++;
+    this.#attentionPredictions = new WeakMap(); this.#attentionBase = new WeakMap();
+    return { learned: true, correctBeforeUpdate: endpointCorrect.length ? endpointCorrect.every(Boolean) : null,
+      writes: this.#writes, measuredChannels, maskedObjects,
+      continuous: { semantics: CONTINUOUS_READOUT, endpointIndependentWindows: 1, intervalRows,
+        assimilationRows: intervals.transitions.filter(row => row.kind === 'assimilation-only').length,
+        untrainableRows: intervals.transitions.filter(row => row.kind === 'untrainable').length,
+        newIndependentIntervalWindows: 0, intervalRolloutSupported: false as const,
+        endpointPhysicalTicks, zeroTimeEndpoint: endpointPhysicalTicks === 0 } };
+  }
+  observe(event: RealEvent, options: { liveTrace?: ExperienceWindowLiveTraceV1 } = {}): {
+    learned: boolean; correctBeforeUpdate: boolean | null; writes: number; measuredChannels: number; maskedObjects: number;
+    skipped?: 'duplicate' | 'retired-or-collision' | 'no-measured-motor-interval' | 'no-verified-live-clock' | 'no-positive-physical-interval';
+    continuous?: { semantics: typeof CONTINUOUS_READOUT; endpointIndependentWindows: number; intervalRows: number;
+      assimilationRows: number; untrainableRows: number; newIndependentIntervalWindows: number; intervalRolloutSupported: false;
+      endpointPhysicalTicks?: number; zeroTimeEndpoint?: boolean } } {
     validateEvent(event);
     for (const frame of event.frames) {
       if (frame.predictionSupport !== undefined || frame.predictionContext !== undefined || frame.predictionBounds !== undefined)
@@ -359,11 +504,30 @@ export class ExperienceMedium {
     if (event.provenance === 'observed-passive' && (event.bodyResult !== null || event.cue.kind !== 'passive')
       || event.bodyResult && (event.bodyResult.startSequence !== event.frames[0]!.sequence
         || event.bodyResult.endSequence !== event.frames.at(-1)!.sequence)) throw new Error('experience-feedback-window-mismatch');
-    const digest = sha(event), previous = this.#ledger.check(event.id, digest);
+    const liveIntervals = options.liveTrace ? validateExperienceLiveTrace(event, options.liveTrace) : undefined;
+    const digest = actualEventDigest(event), previous = this.#ledger.check(event.id, digest);
     if (previous !== 'new') {
       return { learned: false, correctBeforeUpdate: null, writes: this.#writes, measuredChannels: 0, maskedObjects: 0, skipped: previous };
     }
-    const first = event.frames[0]!, last = event.frames.at(-1)!, motor = motorIdentity(event.cue);
+    // This zero-exposure refusal applies BEFORE either semantic path. The
+    // terminal frame still belongs to actual z and the source ledger, but a
+    // requested hold with no measured physical hold cannot train motor theta.
+    const measuredCue = measuredMotorCueV1(event);
+    if (measuredCue === null) {
+      if (options.liveTrace) this.#continuous = true;
+      this.#ledger.commit(event.id, digest);
+      this.#untrainedMotorWindows++;
+      return { learned: false, correctBeforeUpdate: null, writes: this.#writes,
+        measuredChannels: 0, maskedObjects: 0, skipped: 'no-measured-motor-interval',
+        ...(liveIntervals ? { continuous: { semantics: CONTINUOUS_READOUT, endpointIndependentWindows: 0, intervalRows: 0,
+          assimilationRows: liveIntervals.transitions.filter(row => row.kind === 'assimilation-only').length,
+          untrainableRows: liveIntervals.transitions.filter(row => row.kind === 'untrainable').length,
+          newIndependentIntervalWindows: 0, intervalRolloutSupported: false as const } } : {}) };
+    }
+    // Continuous endpoints use the knowable request, never the hindsight
+    // measured duration. Receipt-free legacy windows keep their old semantics.
+    if (options.liveTrace) return this.#observeContinuous(event, digest, options.liveTrace, liveIntervals!);
+    const first = event.frames[0]!, last = event.frames.at(-1)!, motor = motorIdentity(measuredCue);
     if (typeof event.attentionId === 'string' && !first.objects.some(object => object.id === event.attentionId))
       throw new Error('attention-subject-not-observed-before-action');
     this.#attentionPredictions = new WeakMap(); this.#attentionBase = new WeakMap();
@@ -393,7 +557,12 @@ export class ExperienceMedium {
           targets.push([`appearance/property/${key}`, typeof value === 'number' ? 0 : null, value]);
       }
     }
-    const correct = this.#learn(this.#network(`${motor}/self`), inputState(first), targets, `${motor}/self`);
+    // Only the two affected motor circuits are copied. All rows still fit the
+    // live networks, but none can calibrate against another row in this window.
+    const priorSelf = windowReadout(this.#networks.get(`${motor}/self`));
+    const priorObject = windowReadout(this.#networks.get(`${motor}/object`));
+    const selfRows: ContextualWindowRow[] = [], objectRows: ContextualWindowRow[] = [], planeRows: ContextualWindowRow[] = [];
+    const correct = this.#learn(this.#network(`${motor}/self`), inputState(first), targets, selfRows, priorSelf);
     let maskedObjects = 0;
     for (const object of first.objects.filter(object => focus.has(object.id))) {
       const after = last.objects.find(value => value.id === object.id);
@@ -401,7 +570,7 @@ export class ExperienceMedium {
         // Missing after an action is an observed failure to acquire a later
         // measurement. It is not evidence of destruction or zero motion.
         correct.push(...this.#learn(this.#network(`${motor}/object`), inputState(first, object),
-          [['measurement', true, false]], `${motor}/object`));
+          [['measurement', true, false]], objectRows, priorObject));
         maskedObjects++; continue;
       }
       const movement = worldToBody(after.relativePosition.map((v, i) => v - object.relativePosition[i]!
@@ -418,27 +587,70 @@ export class ExperienceMedium {
         if (['confidence', 'ambiguity'].includes(name)) continue;
         if (after.properties[name] !== undefined) measured.push([`property/${name}`, before, after.properties[name]!]);
       }
-      correct.push(...this.#learn(this.#network(`${motor}/object`), inputState(first, object), measured, `${motor}/object`));
+      correct.push(...this.#learn(this.#network(`${motor}/object`), inputState(first, object), measured, objectRows, priorObject));
       const objectNetwork = this.#network(`${motor}/object`), plane = beforeTrack?.surface, nextPlane = afterTrack?.surface;
       if (plane && nextPlane && beforeTrack!.anchorEpoch === afterTrack!.anchorEpoch
         && Math.abs(plane.normal.reduce((sum, v, i) => sum + v * nextPlane.normal[i]!, 0)) > .999) {
         const delta = nextPlane.point.map((v, i) => v - plane.point[i]! + last.self.position[i]! - first.self.position[i]!);
         correct.push(this.#learnMotion(objectNetwork, worldToBody(plane.normal, first.self.yaw),
-          plane.normal.reduce((sum, v, i) => sum + v * delta[i]!, 0), (plane.residual ?? 0) + (nextPlane.residual ?? 0)));
+          plane.normal.reduce((sum, v, i) => sum + v * delta[i]!, 0), (plane.residual ?? 0) + (nextPlane.residual ?? 0),
+          event.id, planeRows, inputState(first, object), priorObject?.motion));
       }
     }
+    this.#contexts.observeWindow(`${motor}/self`, event.id, selfRows);
+    if (objectRows.length) this.#contexts.observeWindow(`${motor}/object`, event.id, objectRows);
+    if (planeRows.length) this.#contexts.observeWindow(`${motor}/plane`, event.id, planeRows);
     this.#ledger.commit(event.id, digest); this.#writes++;
     return { learned: true, correctBeforeUpdate: correct.length ? correct.every(Boolean) : null,
       writes: this.#writes, measuredChannels: correct.length, maskedObjects };
   }
+  /** Independent audit/readout of one known interval from a real starting z.
+   * No future real state is supplied and no rollout/return support is minted. */
+  readInterval(observation: Observation, options: { state: LiveStateV1; motor: IntervalMotor;
+    deltaSeconds: number }): ExperienceIntervalReadout {
+    validateLivePredictionState(options.state, observation);
+    if (options.state.origin !== 'real' || !Number.isFinite(options.deltaSeconds)
+      || options.deltaSeconds <= 0 || options.deltaSeconds > 100) throw new Error('interval-readout-requires-real-start-and-bounded-duration');
+    const motor = options.motor;
+    if (!motor || !['held', 'off'].includes(motor.state) || motor.state === 'held'
+      && (motor.basis !== 'measured-motor-receipt' || ['ticks', 'holdTicks'].some(key => Object.hasOwn(motor.signal.parameters, key))))
+      throw new Error('interval-readout-requires-duration-free-motor');
+    const namespace = continuousIntervalIdentity(motor), outputs: ExperienceIntervalReadout['outputs'][number][] = [];
+    const read = (subject: string, object?: PublicObject) => {
+      const id = `${namespace}/${object ? 'object' : 'self'}`, network = this.#networks.get(id); if (!network) return;
+      const input = continuousReadoutInput(options.state, inputState(observation, object),
+        { 'interval/dt': options.deltaSeconds, 'interval/motor': motor.state });
+      const field = this.#field(network, input);
+      for (const head of network.heads) {
+        const local = this.#contexts.read(id, head.key, input), global = this.#read(head, field);
+        const value = local?.supported ? { value: local.value, absolute: local.absolute,
+          range: local.bounds?.[local.absolute ? 'absolute' : 'delta'], supported: true } : global;
+        if (!local?.supported) value.supported &&= local?.externalSupported === true;
+        if (!local || local.externalCalibrated >= 8 && local.externalAccuracy < .8 && !local.supported) value.supported = false;
+        if (value.range && !local?.supported && local?.externalErrorRadius != null)
+          value.range = [value.range[0] - local.externalErrorRadius, value.range[1] + local.externalErrorRadius];
+        if (value.range && local?.bounds) value.range = hull([value.range, local.bounds[value.absolute ? 'absolute' : 'delta']]);
+        if (this.#contexts.counterexample(id, head.key, input, value.value, value.absolute)) value.supported = false;
+        outputs.push({ field: `${subject}/${head.key}`, value: value.value, absolute: value.absolute,
+          range: value.range ?? null, supported: value.supported, independentCalibrationWindows: local?.externalCalibrated ?? 0 });
+      }
+    };
+    read('self'); for (const object of observation.objects) read(`object:${object.id}`, object);
+    return structuredClone({ semantics: 'teacher-forced-one-interval-v1', deltaSeconds: options.deltaSeconds,
+      wholeWindowSupported: false, thetaWrites: 0, outputs });
+  }
   predict(cue: ActionCue | null, observation: Observation,
-    options: { probe?: boolean; requestedFields?: readonly string[] } = {}): ExperiencePrediction {
+    options: { probe?: boolean; requestedFields?: readonly string[]; state?: LiveStateV1 } = {}): ExperiencePrediction {
     const unknown = (reason: string): ExperiencePrediction => ({ observation: null, accepted: false, reason,
       activationMargin: 0, prequentialAccuracy: 0, observedSamples: 0, settled: false, supportedFields: [] });
     if (!cue) return unknown('unobserved-action');
-    const motor = motorIdentity(cue), network = this.#networks.get(`${motor}/self`);
+    if (options.state) validateLivePredictionState(options.state, observation);
+    const motor = options.state ? continuousEndpointIdentity(cue) : motorIdentity(cue), network = this.#networks.get(`${motor}/self`);
     if (!network) return unknown('unobserved-action');
-    const { sensation: _sensation, perception: _perception, hotbarSensation: _hotbar, bodySensation: _body, ...measured } = observation;
+    const conditioned = (object?: PublicObject) => options.state
+      ? continuousReadoutInput(options.state, inputState(observation, object)) : inputState(observation, object);
+    const { sensation: _sensation, perception: _perception, hotbarSensation: _hotbar, bodySensation: _body,
+      physicalClock: _physicalClock, motorSignal: _motorSignal, ...measured } = observation;
     const result = structuredClone(measured) as any, support: string[] = []; result.objects = [];
     const predictedBounds: Record<string, NumericRange> = {}; result.predictionBounds = predictedBounds;
     const priorRange = (field: string, value: number) => observation.predictionBounds?.[field] ?? pointRange(value);
@@ -518,7 +730,10 @@ export class ExperienceMedium {
           sum[1] + Math.max(w * inputBounds[i]![0], w * inputBounds[i]![1])], [model.bias[index]!, model.bias[index]!]);
         return [Math.tanh(limits[0]), Math.tanh(limits[1])];
       });
-      const bounds: NumericRange[] = [[1, 1], ...inputBounds, ...hiddenBounds];
+      // The new field is already a bounded 32+16 state. Imagined uncertain
+      // channels were explicitly masked by its private branch; that masking
+      // alone does NOT certify multi-step state or dynamics below.
+      const bounds: NumericRange[] = model.encoding ? field.map(pointRange) : [[1, 1], ...inputBounds, ...hiddenBounds];
       for (let i = 0; i < SIZE; i++) field[i] = (bounds[i]![0] + bounds[i]![1]) / 2;
       return new Map(model.heads.map(head => {
         const conditional = this.#contexts.read(id, head.key, state, stateBounds);
@@ -544,13 +759,16 @@ export class ExperienceMedium {
         // calibrated constant readout. Its small average error says nothing
         // about which incompatible response is possible here.
         if (!conditional) value.supported = false;
+        // First slice has direct real-start endpoint calibration only. No
+        // recurrent uncertainty/timed rollout certificate exists yet.
+        if (options.state?.origin === 'imagined') value.supported = false;
         if (locallyRefuted && !conditional.supported) return [head.key, { ...value,
           supported: false, refuted: true, head }];
         const contrary = this.#contexts.counterexample(id, head.key, state, value.value, value.absolute);
         return [head.key, { ...value, ...(contrary ? { supported: false, refuted: true } : {}), head }];
       }));
     };
-    const self = read(network, inputState(observation), `${motor}/self`, experienceInputBounds(observation), 'self');
+    const self = read(network, conditioned(), `${motor}/self`, experienceInputBounds(observation), 'self');
     const usable = (value: { supported: boolean; refuted?: boolean; head: Head } | undefined) =>
       value && !value.refuted && (value.supported || options.probe && value.head.observations >= 1);
     const known = (key: string) => !observation.predictionSupport || observation.predictionSupport.includes(key);
@@ -606,25 +824,35 @@ export class ExperienceMedium {
     const motionInformation = objectNetwork?.motion ? inverseInformation(objectNetwork.motion.information) : null;
     const gazeCandidates: string[] = []; let gazeMeasured = 0;
     if (objectNetwork) for (const object of observation.objects) {
-      const values = read(objectNetwork, inputState(observation, object), `${motor}/object`, experienceInputBounds(observation, object), `object:${object.id}`);
+      const values = read(objectNetwork, conditioned(object), `${motor}/object`, experienceInputBounds(observation, object), `object:${object.id}`);
       const measurement = values.get('measurement');
       if (usable(measurement) && measurement!.value === false) continue;
       const estimate = objectNetwork.motion;
+      const fallbackRadii: (number | null)[] = [null, null, null];
       const motion = [0, 1, 2].map(i => {
         const value = values.get(`motion/${i}`);
         if (usable(value)) return Number(value!.value);
+        if (value?.refuted) return null;
         // Coefficient covariance has units of inverse information, not blocks.
         // Convert it with measured pre-update/sensor variance. Include residual
         // outcome variation, and require measured rank (no regularizing prior).
-        return estimate && motionInformation && estimate.correct >= .8 && estimate.observations >= 8
-          && 4 * Math.sqrt(estimate.variance * (1 + motionInformation[i]![i]!)) <= .05
-          ? estimate.mean[i]! : null;
+        const calibration = estimate?.calibration ?? [];
+        const domain = this.#contexts.read(`${motor}/plane`, 'plane/motion', { ...conditioned(object),
+          ...Object.fromEntries([0, 1, 2].map(axis => ['plane/normal/' + axis, Number(axis === i)])) },
+          experienceInputBounds(observation, object));
+        const radius = estimate && motionInformation ? Math.max(domain?.externalErrorRadius ?? Infinity,
+          4 * Math.sqrt(estimate.variance * (1 + motionInformation[i]![i]!))) : Infinity;
+        if (estimate && motionInformation && calibration.length >= 8
+          && calibration.filter(row => row.error <= 1).length / calibration.length >= .8
+          && domain?.externalSupported === true
+          && radius <= .05) { fallbackRadii[i] = radius; return estimate.mean[i]!; }
+        return null;
       });
       const motionRanges = rotateRanges(motion.map((value, i) => {
         if (value === null) return null;
         const learned = values.get(`motion/${i}`);
         if (usable(learned) && learned!.range) return learned!.range;
-        const radius = 4 * Math.sqrt(estimate!.variance * (1 + motionInformation![i]![i]!));
+        const radius = fallbackRadii[i]!;
         return [value - radius, value + radius] as NumericRange;
       }), yawRange);
       const predicted = { ...object, properties: { ...object.properties } };
@@ -673,7 +901,9 @@ export class ExperienceMedium {
           ...[0, 1, 2].map(axis => `object:${id}/relativePosition.${axis}`));
       }
     }
-    const supported = [...new Set(support)];
+    // Structural empty-gaze bookkeeping is not a learned rollout certificate.
+    // Every field, including targetId, remains untrusted after an imagined z.
+    const supported = options.state?.origin === 'imagined' && !options.probe ? [] : [...new Set(support)];
     for (const object of result.objects as PublicObject[]) {
       const ranges = [0, 1, 2].map(axis => predictedBounds[`object:${object.id}/relativePosition.${axis}`]);
       if (ranges.every(range => range)) predictedBounds[`object:${object.id}/relativeDistance`] = [
@@ -682,14 +912,39 @@ export class ExperienceMedium {
     }
     result.predictionSupport = options.probe ? [] : supported;
     const accepted = !options.probe && supported.length > 0;
+    const returnTicks = self.get('return/physicalTicks');
+    const timing: ExperiencePrediction['timing'] = options.state ? { semantics: 'window-endpoint-v1',
+      returnPhysicalTicks: { range: returnTicks?.range ? [Math.max(0, returnTicks.range[0]), Math.max(0, returnTicks.range[1])] : null,
+        supported: !options.probe && Boolean(returnTicks?.supported && !returnTicks.refuted) }, intervalRolloutSupported: false } : undefined;
+    // Variable motor-on/off exposure cannot be reconstructed from an endpoint
+    // duration estimate. Advance a private explicitly timing-unknown branch;
+    // this is useful as an untrusted probe state, never a real clock or rollout
+    // support. Preserve the original real z and all theta/calibration state.
+    const state = options.state ? new ExperienceLiveBranch(options.state, { frameCapacity: 64, cueCapacity: 32,
+      maximumChannels: 4096, maximumSnapshotBytes: 16_777_216 }).advance(result,
+      { kind: 'unknown', reason: 'branch-unknown' }, { state: 'unknown', provenance: 'unknown', cue: null }) : undefined;
     return { observation: result, accepted, reason: options.probe ? 'exploratory-hypothesis'
       : accepted ? null : 'insufficient-observed-predictive-support',
       activationMargin: accepted ? 1 : 0, prequentialAccuracy: network.heads.reduce((sum, head) => sum + head.correct, 0) / Math.max(1, network.heads.length),
       observedSamples: network.observations, settled: true, supportedFields: options.probe ? [] : supported,
       ...(predictedGazeRole ? { predictedGazeRole } : {}),
+      ...(state ? { state, timing } : {}),
       ...(options.probe ? { hypothesizedFields: supported } : {}) };
   }
-  explorationDrive(cue: ActionCue, observation: Observation, attentionId = observation.perception?.attendedId): number {
+  explorationDrive(cue: ActionCue, observation: Observation, attentionId = observation.perception?.attendedId, state?: LiveStateV1): number {
+    if (state) {
+      validateLivePredictionState(state, observation);
+      const motor = continuousEndpointIdentity(cue), network = this.#networks.get(`${motor}/self`);
+      if (!network) return 2;
+      const input = continuousReadoutInput(state, inputState(observation));
+      const quality = this.#contexts.keys(`${motor}/self`).map(key => this.#contexts.read(`${motor}/self`, key, input));
+      const progress = quality.reduce((sum, value) => sum + (value?.progress ?? 0) / (1 + (value?.error ?? 0)), 0);
+      const errors = network.heads.reduce((sum, head) => sum + head.error / (1 + head.error), 0);
+      // Generic measured learning progress and uncertainty. No named motor
+      // effect, old receptor cache or imagined duration enters this drive.
+      return 1 / Math.sqrt(1 + network.observations)
+        + .15 * progress / Math.max(1, network.heads.length) + .05 * errors / Math.max(1, network.heads.length);
+    }
     const motor = motorIdentity(cue), network = this.#networks.get(`${motor}/self`);
     if (!network) return 2;
     const uncertainty = (model: Network, state: State) => {
@@ -759,26 +1014,50 @@ export class ExperienceMedium {
   }
   snapshot(): ExperienceMediumSnapshot {
     const { recent, ...ledger } = this.#ledger.snapshot();
-    return structuredClone({ version: 'KairosExperienceMediumV11', seed: this.#seed,
+    return structuredClone({ version: this.#continuous ? 'KairosExperienceMediumV12' : 'KairosExperienceMediumV11', seed: this.#seed,
       random: this.#random, networks: [...this.#networks], events: recent, writes: this.#writes,
+      ...(this.#untrainedMotorWindows ? { untrainedMotorWindows: this.#untrainedMotorWindows } : {}),
+      ...(this.#untrainedLiveWindows ? { untrainedLiveWindows: this.#untrainedLiveWindows } : {}),
+      ...(this.#continuous ? { semantics: CONTINUOUS_READOUT } : {}),
       contexts: this.#contexts.snapshot(), ledger });
   }
   static restore(state: ExperienceMediumSnapshot): ExperienceMedium {
-    if (!['KairosExperienceMediumV9', 'KairosExperienceMediumV10', 'KairosExperienceMediumV11'].includes(state.version)) throw new Error('experience-medium-version-mismatch');
-    if (state.version !== 'KairosExperienceMediumV11' && (state.contexts?.circuits.some(([, circuit]) =>
+    if (!['KairosExperienceMediumV9', 'KairosExperienceMediumV10', 'KairosExperienceMediumV11', 'KairosExperienceMediumV12'].includes(state.version)) throw new Error('experience-medium-version-mismatch');
+    const continuous = state.version === 'KairosExperienceMediumV12';
+    if (continuous ? state.semantics !== CONTINUOUS_READOUT : state.semantics !== undefined)
+      throw new Error('experience-medium-semantic-version-mismatch');
+    if (!continuous && state.version !== 'KairosExperienceMediumV11' && (state.contexts?.circuits.some(([, circuit]) =>
       circuit.samples.some(row => Object.hasOwn(row.input, 'self/oxygen') && Object.keys(row.input).some(key => key.startsWith('view/'))))
       || state.networks.some(([, network]) => network.inputs.includes('self/oxygen') && network.inputs.some(key => key.startsWith('view/')))))
       throw new Error('unowned-native-body-channel-requires-original-event-reencoding');
     const copy = structuredClone(state), medium = new ExperienceMedium(copy.seed);
     if (!Number.isSafeInteger(copy.random) || copy.random < 1 || copy.random > 0xffffffff)
       throw new Error('experience-medium-invalid-random-state');
-    if (!Number.isSafeInteger(copy.writes) || copy.writes < 0 || copy.events.length > copy.writes
+    const untrainedMotorWindows = copy.untrainedMotorWindows ?? 0;
+    const untrainedLiveWindows = copy.untrainedLiveWindows ?? 0;
+    if (!Number.isSafeInteger(untrainedMotorWindows) || untrainedMotorWindows < 0
+      || untrainedMotorWindows > 0 && copy.version !== 'KairosExperienceMediumV11' && !continuous
+      || !Number.isSafeInteger(untrainedLiveWindows) || untrainedLiveWindows < 0 || untrainedLiveWindows > 0 && !continuous
+      || !Number.isSafeInteger(copy.writes + untrainedMotorWindows + untrainedLiveWindows)) throw new Error('experience-medium-invalid-populations');
+    if (!Number.isSafeInteger(copy.writes) || copy.writes < 0 || copy.events.length > copy.writes + untrainedMotorWindows + untrainedLiveWindows
       || copy.version === 'KairosExperienceMediumV9' && copy.events.length !== copy.writes
       || copy.version !== 'KairosExperienceMediumV9' && (!copy.ledger || !copy.contexts)
       || new Set(copy.events.map(([id]) => id)).size !== copy.events.length
       || new Set(copy.networks.map(([id]) => id)).size !== copy.networks.length) throw new Error('experience-medium-invalid-populations');
-    for (const [, network] of copy.networks) {
+    if (copy.contexts?.circuits.some(([id]) => id.startsWith('continuous-v1/') && !continuous))
+      throw new Error('experience-medium-semantic-version-mismatch');
+    for (const [id, network] of copy.networks) {
+      const encoded = id.startsWith('continuous-v1/');
+      if (encoded ? !continuous || network.encoding !== EXPERIENCE_LIVE_LAW
+        || !/^continuous-v1\/(endpoint|interval)\/[a-f0-9]{64}\/(self|object)$/.test(id)
+        || network.inputs.length !== 0 || network.ranges.length !== 0 || network.motion !== undefined
+        || [...network.weights.flat(), ...network.bias].some(value => value !== 0)
+        : network.encoding !== undefined) throw new Error('experience-medium-readout-encoding-mismatch');
       const motion = network.motion;
+      if (motion?.calibration && (motion.calibration.length > 32
+        || new Set(motion.calibration.map(row => row.windowId)).size !== motion.calibration.length
+        || motion.calibration.some(row => !row.windowId || !Number.isFinite(row.error) || row.error < 0
+          || !Number.isFinite(row.residual) || row.residual < 0))) throw new Error('invalid-motion-window-calibration');
       if (motion && (motion.mean.length !== 3 || motion.covariance.length !== 3 || motion.information.length !== 3
         || [...motion.covariance, ...motion.information].some(row => row.length !== 3)
         || [...motion.mean, ...motion.covariance.flat(), ...motion.information.flat(), motion.variance, motion.correct, motion.error].some(v => !Number.isFinite(v))
@@ -803,6 +1082,9 @@ export class ExperienceMedium {
           .some(value => !Number.isFinite(value))) throw new Error('experience-medium-invalid-conductances');
     }
     medium.#random = copy.random; medium.#networks = new Map(copy.networks); medium.#writes = copy.writes;
+    medium.#untrainedMotorWindows = untrainedMotorWindows;
+    medium.#untrainedLiveWindows = untrainedLiveWindows;
+    medium.#continuous = continuous;
     if (copy.ledger) medium.#ledger = new ExperienceLedger(copy.ledger.capacity, copy.ledger.retired, copy.events, copy.ledger.streams);
     else for (const [id, digest] of copy.events) medium.#ledger.commit(id, digest);
     if (copy.contexts) medium.#contexts = ContextualReadout.restore(copy.contexts);

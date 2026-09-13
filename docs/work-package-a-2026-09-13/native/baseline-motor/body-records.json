@@ -1,0 +1,224 @@
+[
+  {
+    "kind": "body-spawn",
+    "value": {
+      "observationSequence": 0
+    }
+  },
+  {
+    "kind": "client-load-acknowledged",
+    "value": {
+      "observationSequence": 3
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 28,
+      "releaseSequence": 32,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 28,
+      "endSequence": 43,
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 62,
+      "releaseSequence": 66,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 62,
+      "endSequence": 77,
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 96,
+      "releaseSequence": 100,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 96,
+      "endSequence": 111,
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 130,
+      "releaseSequence": 134,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 130,
+      "endSequence": 145,
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 164,
+      "releaseSequence": 168,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 164,
+      "endSequence": 179,
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 198,
+      "releaseSequence": 202,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 198,
+      "endSequence": 213,
+      "terminationReason": "stable"
+    }
+  }
+]

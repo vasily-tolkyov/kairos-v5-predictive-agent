@@ -1,0 +1,72 @@
+{
+  "version": "NativePartitionScoreProtocol1",
+  "registeredBeforeLaunch": true,
+  "scope": "Development follow-up to the R9 consumer-backlog fault. Exact candidate-loss optimization plus truthful initialization and fault archives. No sustained-learning acceptance.",
+  "source": "evidence/pr3-local-native-smoke",
+  "sourceReportSha256": "e5b27d491e502f36e9454862dff932c4bd4efd72eda457047572e90de769ee99",
+  "sourceSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+  "sourceWorld": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+  "sourceWorldArchiveSha256": "8d7fb3423ef8778f7f49374e5d07ecfa52646f626a68ad2bcb938e9ca228ccb1",
+  "sourceWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+  "sourceLearningDigestUnderR4R5": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+  "goal": "evidence/pr3-local-timing-goal.json",
+  "goalSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+  "terminalGoal": "Original smoke development goal self position.2 < -5.5. Does not replace the original natural-world task goal < -14.5.",
+  "java": "D:/Kairos-Minecraft/runtime/jdk-21/bin/java.exe",
+  "server": "D:/Kairos-Minecraft/server/1.21.4/server.jar",
+  "environment": "natural",
+  "difficulty": "peaceful",
+  "worldSeed": "129604783",
+  "modelSeed": 317,
+  "port": 25638,
+  "steps": 32,
+  "seconds": 180,
+  "goalAfter": 0,
+  "taskOnly": false,
+  "frozenActor": "evidence/execution-builds/pr3-local-r10-partition-score",
+  "pendingPinRecord": "docs/partition-score-native-2026-09-13/launch-pins.json",
+  "conditionsInOrder": [
+    {
+      "condition": "online",
+      "initialFork": "evidence/pr3-local-partition-score-start",
+      "output": "evidence/pr3-local-partition-score",
+      "frozen": false
+    },
+    {
+      "condition": "frozen",
+      "initialFork": "evidence/pr3-local-partition-score-frozen-start",
+      "output": "evidence/pr3-local-partition-score-frozen",
+      "frozen": true
+    }
+  ],
+  "attemptsPerCondition": 1,
+  "change": "Score candidate partitions with only the exact original fit loss and window-grouped external calibration loss. Chosen leaves retain full statistics. Candidate thresholds/order/gains/periodic update boundaries unchanged. Preserve R9 evidence sealing and memory matching. Archive actual initialization prefix records, reject incomplete initialization, keep missing final observations/tails unknown, and close faulted transports without promoting cached data to a fresh observation.",
+  "tradeoff": "No intended learned-state/support change. Initial evidence recording adds real overhead, and faults now have explicit unavailable final observations. No initial raw frame is converted into an independent learning window. Continuous full transport/recurrence proof remains outside the present auditor.",
+  "fixed": [
+    "terminal predicate and multi-frame confirmation",
+    "actual motor holds and release/stabilization behavior",
+    "atomic exact-frame expiry refusal",
+    "100/50 ms search budgets and node limits",
+    "independent original-window support thresholds",
+    "autonomous action selection",
+    "source world and model"
+  ],
+  "startGate": "Compile and full 326-test active software gate pass. Require exact 192-window/3072-query fixed R9 differential, complex R9 retained-cohort private differential with 168 reads, original R6 actual final-model replay equality, worker fault and initialization-prefix negative controls. Commit source, freeze and verify all execution/build/dependency/model/world/session/goal identities before launch.",
+  "stopAndAudit": "No concurrent CPU experiments or uploads. Preserve every outcome and overrun under the original 32-decision/180-second soft bounds. Archive the stopped world and audit capture/frame-state/freshness/coverage/restore; frozen theta must equal the original starting parameters. Initialization-prefix and final-observation gaps now explicitly fail completeness. Only if the first stopped integrity permits it launch the registered frozen pair. A failure keeps its attempt and skips the dependent pair; no invisible retry.",
+  "measures": [
+    "execution and refusal counts over all 32 decisions",
+    "callback validation, real-frame processing, prediction, and deferred fitting durations separately",
+    "original deferred window IDs and exact theta write delta",
+    "all raw frame clocks, edges, source bindings, gaps and consumption watermarks",
+    "theta/affordance equality when frozen; actual window writes when online",
+    "supported executed forecast coverage and actual goal state",
+    "source/model/world hashes, RSS, state/checkpoint bytes and original stopped raw evidence"
+  ],
+  "interpretation": "R9 online had four executed and five refused completed decisions, then consumer backlog and incomplete telemetry at 320.136 seconds; no goal/support. Its frozen pair was skipped. Do not interpret 4/9 as an availability improvement or compare missing conditions as trials. This R10 pair remains development evidence only; useful A, retention, complete timed rollouts, causal composition and sustained autonomy remain open.",
+  "preregisteredBaseline": {
+    "online": "evidence/pr3-local-sealed-consumption",
+    "frozen": null,
+    "frozenNotLaunchedReason": "R9 integrity prerequisite failed",
+    "actorSource": "f21ed79728a6c17ad99a970b2e672d72ea15eb9c"
+  }
+}

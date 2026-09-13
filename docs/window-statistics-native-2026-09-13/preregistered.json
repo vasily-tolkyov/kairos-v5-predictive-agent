@@ -1,0 +1,71 @@
+{
+  "version": "NativeWindowStatisticsProtocol1",
+  "registeredBeforeLaunch": true,
+  "scope": "Development follow-up to R7; software coalescing of internal leaf-statistic recomputations. No held-out or sustained-learning acceptance.",
+  "source": "evidence/pr3-local-native-smoke",
+  "sourceReportSha256": "e5b27d491e502f36e9454862dff932c4bd4efd72eda457047572e90de769ee99",
+  "sourceSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+  "sourceWorld": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+  "sourceWorldArchiveSha256": "8d7fb3423ef8778f7f49374e5d07ecfa52646f626a68ad2bcb938e9ca228ccb1",
+  "sourceWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+  "sourceLearningDigestUnderR4R5": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+  "goal": "evidence/pr3-local-timing-goal.json",
+  "goalSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+  "terminalGoal": "Original smoke development goal self position.2 < -5.5. Does not replace the original natural-world task goal < -14.5.",
+  "java": "D:/Kairos-Minecraft/runtime/jdk-21/bin/java.exe",
+  "server": "D:/Kairos-Minecraft/server/1.21.4/server.jar",
+  "environment": "natural",
+  "difficulty": "peaceful",
+  "worldSeed": "129604783",
+  "modelSeed": 317,
+  "port": 25638,
+  "steps": 32,
+  "seconds": 180,
+  "goalAfter": 0,
+  "taskOnly": false,
+  "frozenActor": "evidence/execution-builds/pr3-local-r8-window-statistics",
+  "pendingPinRecord": "docs/window-statistics-native-2026-09-13/launch-pins.json",
+  "conditionsInOrder": [
+    {
+      "condition": "online",
+      "initialFork": "evidence/pr3-local-window-statistics-start",
+      "output": "evidence/pr3-local-window-statistics",
+      "frozen": false
+    },
+    {
+      "condition": "frozen",
+      "initialFork": "evidence/pr3-local-window-statistics-frozen-start",
+      "output": "evidence/pr3-local-window-statistics-frozen",
+      "frozen": true
+    }
+  ],
+  "attemptsPerCondition": 1,
+  "change": "Coalesce internal posterior leaf-statistic refreshes within one original window after all its prior errors have been computed. Keep every row, original window ID, periodic split boundary, sample eviction order and empty-branch pruning. Fully refresh before the synchronous observeWindow call returns. Keep R7 real-frame assimilation and post-authorization theta update schedule.",
+  "tradeoff": "No intended learned-state or support change. Fixed-input differential and actual stopped-model replay must agree exactly before launch. Native timing can change subsequently sampled frames and trajectories, so native results are not an identical-model wall-time microbenchmark.",
+  "fixed": [
+    "terminal predicate and multi-frame confirmation",
+    "actual motor holds and release/stabilization behavior",
+    "atomic exact-frame expiry refusal",
+    "100/50 ms search budgets and node limits",
+    "independent original-window support thresholds",
+    "autonomous action selection",
+    "source world and model"
+  ],
+  "startGate": "Full active software gate must pass. Require 192-window/3072-query differential equality at capacities 32/48/192, and exact replay equality with the original 150-window R6 native final model. Commit source, freeze new actor and verify all source/build/goal/world/session/dependency identities and both original model digests in launch-pins before first launch. Offline replay is private and supplies zero native actions or independent evidence.",
+  "stopAndAudit": "No concurrent CPU experiments. Preserve every outcome and overrun, stop under the original decision/time bounds, archive the stopped world, then run capture/frame-state/freshness/coverage and frozen-parameter equality audits. Only after the first stopped run's integrity permits it run the registered frozen pair. An integrity failure retains the attempt and requires a separately registered corrected actor, never an invisible retry.",
+  "measures": [
+    "execution and refusal counts over all 32 decisions",
+    "callback validation, real-frame processing, prediction, and deferred fitting durations separately",
+    "original deferred window IDs and exact theta write delta",
+    "all raw frame clocks, edges, source bindings, gaps and consumption watermarks",
+    "theta/affordance equality when frozen; actual window writes when online",
+    "supported executed forecast coverage and actual goal state",
+    "source/model/world hashes, RSS, state/checkpoint bytes and original stopped raw evidence"
+  ],
+  "interpretation": "R7 reference outcomes were online 1/22 actions (time bound reached) and frozen 5/32, with no supported executed forecasts or goals. Preserve both. More actions alone indicate availability only, not useful prediction, history dependence, retention, timed rollout, prerequisite composition or sustained autonomy. Keep working on those remaining objectives.",
+  "preregisteredBaseline": {
+    "online": "evidence/pr3-local-deferred",
+    "frozen": "evidence/pr3-local-deferred-frozen",
+    "actorSource": "2b37116b2cfd25181746f8d24a92c7e48686d8a6"
+  }
+}

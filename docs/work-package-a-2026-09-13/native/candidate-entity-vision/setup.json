@@ -1,0 +1,16 @@
+{
+  "commands": [
+    "difficulty normal",
+    "gamerule doMobSpawning false",
+    "time set day",
+    "fill -4 63 -6 4 63 4 bedrock",
+    "fill -4 67 -6 4 67 4 bedrock",
+    "summon zombie_villager .5 64 -2 {NoAI:1b,Silent:1b,PersistenceRequired:1b}",
+    "tp KairosOptics .5 64 .5 180 0",
+    "fill 0 64 -1 0 66 -1 stone",
+    "fill 0 64 -1 0 66 -1 air",
+    "data get entity @e[type=minecraft:zombie_villager,limit=1] Health",
+    "data get entity @e[type=minecraft:zombie_villager,limit=1] Health"
+  ],
+  "scope": "native base-texture visibility, occlusion and motor binding apparatus; zero autonomous learning trials"
+}

@@ -1,0 +1,1 @@
+{"kind":"body-motor-release","at":"2026-09-13T02:54:46.899Z","value":{"version":"MeasuredMotorRelease1","action":{"kind":"use-item","parameters":{"holdTicks":40}},"requestedTicks":40,"startSequence":85,"releaseSequence":125,"observedIntervals":40,"reason":"interval-complete"}}

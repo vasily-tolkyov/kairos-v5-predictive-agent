@@ -1,0 +1,101 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-partition-score-recovery/compile-01.log",
+      "path": "compile-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/compile-02.log",
+      "path": "compile-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/differential-01.json",
+      "path": "differential-01.json",
+      "bytes": 1266,
+      "sha256": "03da56e0b5404ebed29893ec976b05b3cacf2d97249e80165ae14c1dceb8ed68"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/differential-01.log",
+      "path": "differential-01.log",
+      "bytes": 1095,
+      "sha256": "feadafee14f7a1c974155137ecf74ff35cdf97f384b63542af77cae7e099e06f"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/evidence-fault-tests-01.log",
+      "path": "evidence-fault-tests-01.log",
+      "bytes": 3025,
+      "sha256": "895aa0b909e6fe30c1c561dc4a8f632a8f3f57412820b95bb2bc5937dc60a428"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/evidence-fault-tests-02.log",
+      "path": "evidence-fault-tests-02.log",
+      "bytes": 2016,
+      "sha256": "6960900985a2bed4ed10c5aeae04fd2fbe3fd5986459228dc638dc8734230c70"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/full-gate-01.log",
+      "path": "full-gate-01.log",
+      "bytes": 32746,
+      "sha256": "2170ebfb142387a48cb2d89cfe2b2ad919f8bd518d46c5d33beaee7550a52e47"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/initial-prefix-diagnostic-01.log",
+      "path": "initial-prefix-diagnostic-01.log",
+      "bytes": 1157,
+      "sha256": "ed748b6aa1d0fd09c746e34c5a1528b80fcbce05330b64ddbaf6b9a40120587f"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/model-replay-01.cpuprofile",
+      "path": "model-replay-01.cpuprofile",
+      "bytes": 173804,
+      "sha256": "9705456c1ef609b791670d48798eded5c6a3d6bae3b6018a9c13ab3db86ceeb3"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/model-replay-01.json",
+      "path": "model-replay-01.json",
+      "bytes": 55241,
+      "sha256": "6288bb5677dfe50dbb8e49f3301879f1c4bb36b49f40fd49026da0a1d1aac891"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/model-replay-01.log",
+      "path": "model-replay-01.log",
+      "bytes": 4268,
+      "sha256": "3436035e4e56bd07b62e5dbe7c6d778bdea428167768009b10b013a419d949dc"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/native-retained-partitions-01.log",
+      "path": "native-retained-partitions-01.log",
+      "bytes": 633,
+      "sha256": "149966a3bc189ff60a00bfba974ca9fdaee879f0da7c37fd892eba8589af6f93"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/native-retained-partitions-02.log",
+      "path": "native-retained-partitions-02.log",
+      "bytes": 625,
+      "sha256": "99a79c1e2b5ae66bf3e9c790d2aa67ef2f463d7c5d40b1705c68b42bdb0dbb30"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/native-retained-partitions-03.json",
+      "path": "native-retained-partitions-03.json",
+      "bytes": 13751,
+      "sha256": "d7c6fe96733b5c1933d49f3ad10ada318ca60640b84255ddb56c363bad47d3e4"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/native-retained-partitions-03.log",
+      "path": "native-retained-partitions-03.log",
+      "bytes": 1795,
+      "sha256": "71b6cedb18715f5efc3baa239e57d4936616fbfc47c0ad2d6e93cd04ff4ae65f"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/worker-fault-tests-01.log",
+      "path": "worker-fault-tests-01.log",
+      "bytes": 362,
+      "sha256": "110b7b3f9f7088eba703dc0df8a68fffc7936a939856bfa37d0b71164c2ade2b"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "version": "MatchedNativeReadoutCopyProtocol1",
+  "control": "evidence/pr3-local-timing",
+  "sourceWorld": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+  "sourceSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+  "sourceWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+  "newFork": "evidence/pr3-local-readout-copy-start",
+  "output": "evidence/pr3-local-readout-copy",
+  "steps": 32,
+  "seconds": 180,
+  "port": 25638,
+  "difficulty": "peaceful",
+  "modelSeed": 317,
+  "attempts": 1,
+  "learning": true,
+  "treatment": "Copy only immutable pre-window prediction parameters, omitting fitting covariance matrices that prediction never reads. Prior 97-window replay must match the actual final model digest exactly.",
+  "primaryMeasures": ["accepted actions / all decisions", "action-start passive-learning time", "prediction support and measured goal result", "archive continuity and exact frame binding"],
+  "concurrentCpuExperiments": false,
+  "limitation": "One paired development comparison, ordered control then candidate. It does not estimate a general speedup, knowledge-retention benefit or multistage capability. All refusals and failures are retained."
+}

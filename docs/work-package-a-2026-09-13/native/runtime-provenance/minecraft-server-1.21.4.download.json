@@ -1,0 +1,9 @@
+{
+  "source": "https://piston-data.mojang.com/v1/objects/4707d00eb834b446575d89a61a11b5d548d8c001/server.jar",
+  "path": "/workspace/scratch/5d0f85e4c822/evidence/runtime/minecraft-server-1.21.4.jar",
+  "bytes": 56880250,
+  "sha1": "4707d00eb834b446575d89a61a11b5d548d8c001",
+  "sha256": "1066970b09e9c671844572291c4a871cc1ac2b85838bf7004fa0e778e10f1358",
+  "officialDigestVerified": true,
+  "downloadSeconds": 14.735559024000395
+}

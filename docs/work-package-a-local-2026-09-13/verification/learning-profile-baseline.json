@@ -1,0 +1,969 @@
+{
+  "version": "NativeLearningReplayProfile1",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-timing",
+  "build": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\execution-builds\\pr3-local-r2-timing\\dist",
+  "initialCheckpoint": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-native-smoke\\session.json.gz",
+  "realActions": 0,
+  "offlineReplayUpdates": 97,
+  "actualDigest": "d7658685ae7a510e45bf472d4eeb89cf88bf693a6b7287d531f2b15d6a14c825",
+  "replayDigest": "d7658685ae7a510e45bf472d4eeb89cf88bf693a6b7287d531f2b15d6a14c825",
+  "exactFinalModelMatch": true,
+  "topSelfMilliseconds": [
+    {
+      "name": "structuredClone @ node:internal/worker/js_transferable:112",
+      "milliseconds": 1737.57
+    },
+    {
+      "name": "canonical @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/util.js:5",
+      "milliseconds": 201.811
+    },
+    {
+      "name": "updatedCovariance @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:122",
+      "milliseconds": 140.966
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:360",
+      "milliseconds": 130.758
+    },
+    {
+      "name": "post @ node:inspector:115",
+      "milliseconds": 96.405
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/util.js:6",
+      "milliseconds": 77.226
+    },
+    {
+      "name": "(garbage collector) @ :0",
+      "milliseconds": 41.884
+    },
+    {
+      "name": "grouped @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/contextual-readout.js:27",
+      "milliseconds": 40.551
+    },
+    {
+      "name": "summary @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/contextual-readout.js:6",
+      "milliseconds": 36.517
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:297",
+      "milliseconds": 31.556
+    },
+    {
+      "name": "#learn @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:281",
+      "milliseconds": 29.221
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:123",
+      "milliseconds": 24.188
+    },
+    {
+      "name": "update @ :0",
+      "milliseconds": 19.585
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:232",
+      "milliseconds": 19.564
+    },
+    {
+      "name": "observe @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:376",
+      "milliseconds": 19.017
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/util.js:10",
+      "milliseconds": 15.865
+    },
+    {
+      "name": "experienceInputs @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/experience-medium.js:27",
+      "milliseconds": 13.541
+    },
+    {
+      "name": "structuredClone @ :0",
+      "milliseconds": 13.168
+    },
+    {
+      "name": "estimate @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/contextual-readout.js:8",
+      "milliseconds": 12.211
+    },
+    {
+      "name": "#fit @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r2-timing/dist/src/contextual-readout.js:100",
+      "milliseconds": 11.711
+    }
+  ],
+  "timings": [
+    {
+      "file": "passive-events/0000001.json.gz",
+      "sha256": "bf7cf28af46d241c9e1e3073614645215440da0626cad6eb5be63eb1c77fd644",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-1",
+      "milliseconds": 41.33370000000002,
+      "frames": 11,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000002.json.gz",
+      "sha256": "0161c72508f243a0b5a6ef806d73c7d59efa83c6c494875f74574f8e6604c20b",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-2",
+      "milliseconds": 33.83420000000001,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000003.json.gz",
+      "sha256": "86a68adbe46f9dd9a74a154e399a1c7e3435a1170678a29fb127959d033252ea",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-3",
+      "milliseconds": 20.789600000000064,
+      "frames": 8,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000004.json.gz",
+      "sha256": "3ab57a275a6a71b874f8f647f09364b3e5c6c396829a8eefd1e8e255a54ae9ba",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-4",
+      "milliseconds": 32.88009999999997,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000005.json.gz",
+      "sha256": "b73ae0081c473a18987832789065ea723b59cc201edc419efd18acc18a8742ab",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-5",
+      "milliseconds": 28.044199999999933,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000006.json.gz",
+      "sha256": "84b0a4659a1343fc566ee7d054a0fcdf9a51a46c4987a00433fba7c12c7595fd",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-6",
+      "milliseconds": 21.82249999999999,
+      "frames": 6,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000007.json.gz",
+      "sha256": "1cc0103cc52d92aeef1fbe21872874dd7fa364af5d0789a1bb0e727214cf871e",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-7",
+      "milliseconds": 27.63639999999998,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000008.json.gz",
+      "sha256": "52eba2516dc499b3eb2e375e7a367a472dc1ac0ab4cfe8f06f2cfaba65b022db",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-8",
+      "milliseconds": 27.725000000000023,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000009.json.gz",
+      "sha256": "a855defdf6ce421cf4cf35b8c0503fb4f9ddf6e5d44b8d40833f3a0859df6e49",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-9",
+      "milliseconds": 17.717599999999948,
+      "frames": 7,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000010.json.gz",
+      "sha256": "c92d120e6a758c04232071b6460e4e9855973e6f007db7f40e23bc40fd8af3d3",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-10",
+      "milliseconds": 27.49339999999995,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000011.json.gz",
+      "sha256": "ee1345cec3f2c8c801a9db7cb9a430a619818e5fbdbf8b3334da3865ca757d4c",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-11",
+      "milliseconds": 25.447400000000016,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000012.json.gz",
+      "sha256": "dc5aa881646cd937bdd9047ae5df93410390f524d0bcecc451b9f4975ecd7591",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-12",
+      "milliseconds": 26.8904,
+      "frames": 6,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000013.json.gz",
+      "sha256": "5f51debbadc7bfb7e7f2822cd40b3d746d5677d061aac7b3fdc2b803ae159aa3",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-13",
+      "milliseconds": 28.89409999999998,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000014.json.gz",
+      "sha256": "671c258c460db037ef70b980155c67d32fcbfd4020eebc445353cfd4d7dd1de3",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-14",
+      "milliseconds": 27.067100000000096,
+      "frames": 5,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000015.json.gz",
+      "sha256": "6286fdeb1fef04b650bd6e9b5f07c6d2ac22a2bd7d481915aa5e5d917d51c2e4",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-15",
+      "milliseconds": 29.10520000000008,
+      "frames": 8,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000016.json.gz",
+      "sha256": "2a72c7389bc386368afa7b704e3017c66a22406a101a07a6c21d56ec854a8642",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-16",
+      "milliseconds": 25.348800000000097,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000017.json.gz",
+      "sha256": "de8e91f0ce496df5ccaab238a46e2698fe710a9d2c246711da78b21131d04a83",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-17",
+      "milliseconds": 25.61500000000001,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000018.json.gz",
+      "sha256": "cbaf41f0da32371b45fef2ae36b1e44bee698fee6d909dbffc5e0c1994050402",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-18",
+      "milliseconds": 28.567199999999957,
+      "frames": 6,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000019.json.gz",
+      "sha256": "5b41e3942603c8cba094b71b65715dad3ce6c63465e4762fd927a46eae39df34",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-19",
+      "milliseconds": 24.53340000000003,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000020.json.gz",
+      "sha256": "cf123992475bf939cf8882707d8e45725e0b11d194d0e3bab3ace71e66607663",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-20",
+      "milliseconds": 28.206500000000005,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000021.json.gz",
+      "sha256": "679161c11f50b0d6fd18be659abb0f7104f3fd193e2e02d6a586f3a3463b8d56",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-21",
+      "milliseconds": 28.490400000000136,
+      "frames": 6,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000022.json.gz",
+      "sha256": "48d1621ec9826379a2d66f8465de82ba79f637e0e3a7ab3ca162b574d7294162",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-22",
+      "milliseconds": 26.12279999999987,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000023.json.gz",
+      "sha256": "2eaac4d49e087d956ff10fdf8629f31e4b29bc7d5988832e189588ff5d024206",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-23",
+      "milliseconds": 26.016799999999876,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000024.json.gz",
+      "sha256": "001ff849f5b0a635e8c760b2f92a310ca33b5a7445291d232a09d176669ace94",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-24",
+      "milliseconds": 25.793100000000095,
+      "frames": 5,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000025.json.gz",
+      "sha256": "8c9e76d2acac9fca830a2fd89e02dc1d15b6fa866ebf42efcf603be227a816a7",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-25",
+      "milliseconds": 26.23810000000003,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000026.json.gz",
+      "sha256": "8f4ce86406a20bd2c7f20ad0058afbcb6c45e8e3ad0c261b2ddf806c3e47528d",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-26",
+      "milliseconds": 25.485099999999875,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000027.json.gz",
+      "sha256": "e06c9f9b49e345ba2f497e8bd01cae3064c9f109497216a8bee2a605f322cc49",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-27",
+      "milliseconds": 27.72960000000012,
+      "frames": 5,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000028.json.gz",
+      "sha256": "39c8351bdce841fa99ff903b1caeac3c0f13c72b3205ce844f4d3c47091457f2",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-28",
+      "milliseconds": 24.685999999999922,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000029.json.gz",
+      "sha256": "53e55d73590bf88036cea92420b0e44aaa1a74170c538a46b69fa3cc47441b89",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-29",
+      "milliseconds": 25.776299999999992,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000030.json.gz",
+      "sha256": "d6a56a9d40137a2f8782cb132eebacd8c0f9d2a3ac97ff3f63f6b4febae727e2",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-30",
+      "milliseconds": 24.83459999999991,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000031.json.gz",
+      "sha256": "6a53bc7ca64bfba07f10e5df81e393ca5daea2b1d9ff400073363a200ff6976f",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-31",
+      "milliseconds": 26.130600000000186,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000032.json.gz",
+      "sha256": "c0f327d8358ac11cf880c9d6208133f2cee29efbecc4526129699bf578ee421e",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-32",
+      "milliseconds": 24.24440000000004,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000033.json.gz",
+      "sha256": "3c18c9faab792e3acd975697661c6bd1ac3484bac27a1dca57b12b9f64053368",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-33",
+      "milliseconds": 26.783999999999878,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000034.json.gz",
+      "sha256": "83c4d4fc9fa30ef420064400744884260c1922ee6d6d6a22373990f63d75507b",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-34",
+      "milliseconds": 28.026200000000017,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000035.json.gz",
+      "sha256": "c7c2776ed064b8a4c4c7102f71d488d65d102429d18a0c74284bb2938a9cf95f",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-35",
+      "milliseconds": 26.492700000000013,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000036.json.gz",
+      "sha256": "8c753af706497ade1f97c04d7119090af648890bf2d401346f18db2eef11d437",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-36",
+      "milliseconds": 27.63279999999986,
+      "frames": 5,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000037.json.gz",
+      "sha256": "461a0b926532b34bf2f304920698e1f847d2a71869790034d9dec4d87acb6db3",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-37",
+      "milliseconds": 26.952400000000125,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000038.json.gz",
+      "sha256": "8499b024a77b7a161a3acf99eb3e820c57165da74eaa29ead878da47e6955d81",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-38",
+      "milliseconds": 26.481700000000046,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000039.json.gz",
+      "sha256": "7eed6923ad20d2822e89636b2d6ebb9b7109b112ea508259fc906005e5a47493",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-39",
+      "milliseconds": 26.72440000000006,
+      "frames": 5,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000040.json.gz",
+      "sha256": "15fab0622116f8daa7a10cf3c22ddadfc7000ca6ec33f5878e023b5442408fbd",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-40",
+      "milliseconds": 27.237199999999802,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000041.json.gz",
+      "sha256": "ee779c106c44213954123aedc89f38f7e5dee50b2028fcc759551c2a8255f298",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-41",
+      "milliseconds": 28.557800000000043,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000042.json.gz",
+      "sha256": "f1adfc8d24eeb7986db876ceda83d758206641683e27867a54cf85b5fed640e1",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-42",
+      "milliseconds": 26.648699999999963,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000043.json.gz",
+      "sha256": "8fc8d2e55af7e4f36aa587c96bccde2a0feb9f166f3341997c90ab2e051a4eab",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-43",
+      "milliseconds": 26.462999999999965,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000044.json.gz",
+      "sha256": "e13a96d75720f188a016ba730bac9e4a9354e237972151caa7fb0f2ea920db68",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-44",
+      "milliseconds": 26.353399999999965,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000045.json.gz",
+      "sha256": "33ee42ed25d8e15f99af196ab02916266059f7e27f37943b107d74860d0e3d70",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-45",
+      "milliseconds": 24.822800000000143,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000046.json.gz",
+      "sha256": "925b23732a66cc23686727d700b73f5d003edbf34fdff06093f20e18e18251a7",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-46",
+      "milliseconds": 27.38689999999997,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000047.json.gz",
+      "sha256": "94efb24cfab434af27ab6cc9a43265fbd3f92d196f53ef3d1f67d172bfebb516",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-47",
+      "milliseconds": 26.01890000000003,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000048.json.gz",
+      "sha256": "4b701fd7dd054efd869a3c176a9a848f46b05312498279f613bea55e26f0a517",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-48",
+      "milliseconds": 29.607200000000148,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000049.json.gz",
+      "sha256": "7d76d3a19e001f852393be105aef17a1c282d3f679ab67856fa1707f85d302c4",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-49",
+      "milliseconds": 22.753200000000106,
+      "frames": 11,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000050.json.gz",
+      "sha256": "df202f7063a5efce6d41126b35d45a7d3f5b114c97d04ddbc8130fb7cea8f489",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-50",
+      "milliseconds": 29.17529999999988,
+      "frames": 6,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000051.json.gz",
+      "sha256": "96af8a66e60f7b2705643f7cd34c53c67c9f89c7f1955c57f4cf8f2f1845342c",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-51",
+      "milliseconds": 29.31179999999995,
+      "frames": 5,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000052.json.gz",
+      "sha256": "7587becab36a509d33450096c1ffd4e29ced90ee2dd97799df07ed6712849ea9",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-52",
+      "milliseconds": 30.21510000000012,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000053.json.gz",
+      "sha256": "e71beff42e35ff4cd4e73d4173fa329cc2873fbd2951a0c49c19e54ed7b37294",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-53",
+      "milliseconds": 34.21529999999984,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000054.json.gz",
+      "sha256": "2b3a3049f07104679d310db98847b93a7c31bab3a920aecdc1a595ed146c83f8",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-54",
+      "milliseconds": 28.97759999999994,
+      "frames": 5,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "events/0000001.json.gz",
+      "sha256": "ae4ffb627f522a628b74db4f1160bda860a702d909f6ad5bfdb8d06d73c2fa2d",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:event-1",
+      "milliseconds": 31.87830000000008,
+      "frames": 11,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000055.json.gz",
+      "sha256": "ce7a5c946f5c1bf0fd110c5947e556f7818ebf97c2267437acfc266a8ae33057",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-55",
+      "milliseconds": 28.407799999999725,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000056.json.gz",
+      "sha256": "6a580c2db0feb8a2d444d660c074a369ceb86f243efe4311c12dcb841a139490",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-56",
+      "milliseconds": 30.297100000000228,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "events/0000002.json.gz",
+      "sha256": "1222591d31cbdb11fc3a9dc90e5b76d8d47c5adde473cd107e5c4c6831b9c878",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:event-2",
+      "milliseconds": 40.3119999999999,
+      "frames": 17,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000057.json.gz",
+      "sha256": "b776d8c69edf6a13bf06832c4506d1ac7610e4b2465579c63566f1969cc0462c",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-57",
+      "milliseconds": 30.285100000000057,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000058.json.gz",
+      "sha256": "e63608d6ff88db73c05e72a62b7dede9ea0eb41da90fb30989ea0ab2cfa968ac",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-58",
+      "milliseconds": 30.120300000000043,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000059.json.gz",
+      "sha256": "9f344557ebf9a3fb7f1e1b91da734c7ced389a7696ef9b0059533716c3b51fc5",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-59",
+      "milliseconds": 29.202499999999873,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000060.json.gz",
+      "sha256": "e18134730cb2f8d493ee1709a1ff72a2cced6fd608955b441daa90ac8fc562e3",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-60",
+      "milliseconds": 29.92410000000018,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000061.json.gz",
+      "sha256": "10db7cc586a2407c990a85ed443d8a75047c3686d89b3af24ccb063847cdcd47",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-61",
+      "milliseconds": 31.547700000000077,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000062.json.gz",
+      "sha256": "ac9c236d2e2139d4fa8bcf278dec9e49dd6b536b08e4d54d53a7043cc62bf2e1",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-62",
+      "milliseconds": 32.771600000000035,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000063.json.gz",
+      "sha256": "c8bcb8c60ed299ba227b22c6545ca20e3a70d38a3fb092b8245c0f472ffa289e",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-63",
+      "milliseconds": 28.550900000000183,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000064.json.gz",
+      "sha256": "e495f5074017870e5b861972bf076208120d1acc975d98560f48da28f37f9e0a",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-64",
+      "milliseconds": 30.318900000000212,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000065.json.gz",
+      "sha256": "c1c9cf05d069769a32b85fd4aeb7e021316cc8c9d968452e0e1e80c7a38252e3",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-65",
+      "milliseconds": 34.48540000000003,
+      "frames": 2,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000066.json.gz",
+      "sha256": "bdcca4fa2ba4dca5ec728fa4d0866d8dc303652bd7c99c527f2f5a06d48e7c38",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-66",
+      "milliseconds": 30.695400000000063,
+      "frames": 3,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000067.json.gz",
+      "sha256": "bc2c2b9a29880cb587718a7669408d08ad5acb3960782154581472d26bd63d22",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-67",
+      "milliseconds": 32.867499999999836,
+      "frames": 4,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "events/0000003.json.gz",
+      "sha256": "ce96b39c3a17ca350d074c053463f434ac0f85d5f61d2f8c6dad129a1d22c488",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:event-3",
+      "milliseconds": 34.489500000000135,
+      "frames": 17,
+      "objects": 23,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000068.json.gz",
+      "sha256": "3e3294c5c90f52237c8ebda81070f71fe55e0afd90dacf3f407fb76fb880b4c4",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-68",
+      "milliseconds": 32.59979999999996,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000069.json.gz",
+      "sha256": "1d3b370acfe4e5bab4d68fce96ef3925daf55482609c3263418bd205aad6ceac",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-69",
+      "milliseconds": 32.83860000000004,
+      "frames": 5,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000070.json.gz",
+      "sha256": "8c52d4b5b858d333a22ab52859115a8de9d299b7d9413b1f0e7e284c59bdda20",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-70",
+      "milliseconds": 30.582800000000134,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000071.json.gz",
+      "sha256": "f35369a32d461f94aefaeceb7d88f0f21f1018a015f11768d542dee1e70a0f2b",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-71",
+      "milliseconds": 31.345600000000104,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000072.json.gz",
+      "sha256": "fda2c2894b1515d25a38e392e4be70c537a2fda0eacf60f2a643fc7c9457a7e1",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-72",
+      "milliseconds": 32.43219999999974,
+      "frames": 3,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000073.json.gz",
+      "sha256": "ca95a3ac73b862984c18288ed940ac7fba17fdc83cccae3a6859f822e3b44c56",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-73",
+      "milliseconds": 29.647899999999936,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000074.json.gz",
+      "sha256": "d2e9826b3e7faf28109f711d7526fb6643e363263790ff1983086cc63da2b25a",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-74",
+      "milliseconds": 29.797599999999875,
+      "frames": 3,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000075.json.gz",
+      "sha256": "10df32e5a87a748c641e5b889bbe763dbb71f3d3b405bb749cfd9f717f988b3f",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-75",
+      "milliseconds": 29.385800000000017,
+      "frames": 4,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000076.json.gz",
+      "sha256": "714c33a933b5b7d7d6c926c9b754bdfec58fe8d83f2783c802956ed3aba0836a",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-76",
+      "milliseconds": 30.29780000000028,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000077.json.gz",
+      "sha256": "ee4cad6122fe21e53f64a6c4b3ea95d71af01039f8eaf0177463c993329493f6",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-77",
+      "milliseconds": 28.999799999999595,
+      "frames": 3,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000078.json.gz",
+      "sha256": "fc77396260d71569bd28aae31414dbac97ff2347a62f2c3bebfbe0bc88c6cbb4",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-78",
+      "milliseconds": 31.83369999999968,
+      "frames": 4,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000079.json.gz",
+      "sha256": "19bb661f3966bb39761c6b74503a82ff5406dd2e5e6b68e484a6bd8b8dc1b5fa",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-79",
+      "milliseconds": 29.26070000000027,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000080.json.gz",
+      "sha256": "c3a65ad9ffa5d469d82c75fc766f711b11d0962c1e4731d0df47c711f6c3d279",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-80",
+      "milliseconds": 29.819100000000162,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000081.json.gz",
+      "sha256": "69595acc6bcf8ae3d46959cc6c618470d3b359fdaf05b4579c827a0af2c0e5ff",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-81",
+      "milliseconds": 28.652700000000095,
+      "frames": 4,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000082.json.gz",
+      "sha256": "8dca74e69bc9c7b2179f214e77782ea33368e9b9c1c12cfcda22da1a2378c8dc",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-82",
+      "milliseconds": 27.96690000000035,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000083.json.gz",
+      "sha256": "9bb9d5ee7b195ff811e16d294ff966806346715adf9474bce0b3c7a329e97aba",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-83",
+      "milliseconds": 34.20060000000012,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000084.json.gz",
+      "sha256": "e10f6f88578032ecf524145ced6f1c7542388a556e02a35be6d89e8066483400",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-84",
+      "milliseconds": 30.162399999999707,
+      "frames": 5,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000085.json.gz",
+      "sha256": "bba0ae350bf2a9aa80a648409bdee86e5531704ffca89519b1a2ba84b7a8ec96",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-85",
+      "milliseconds": 30.941100000000006,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000086.json.gz",
+      "sha256": "1364ad64f864b9d849e275f058d79e95fe3f18a237720e69b35bfd28db1dbb50",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-86",
+      "milliseconds": 30.481199999999717,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000087.json.gz",
+      "sha256": "2c04a64beb8f7b46324de63e77cabb3acd9a0fca794cf29ac8fb2cba1203a9ba",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-87",
+      "milliseconds": 31.334400000000187,
+      "frames": 4,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000088.json.gz",
+      "sha256": "36caafadd80177ce84bd5031b5f37394d4932f0c0b8cdbebb1d9a17c917e5d92",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-88",
+      "milliseconds": 29.065599999999904,
+      "frames": 3,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000089.json.gz",
+      "sha256": "3ba24b7f2cdb16a66521cf8ed94ac6422516ac78cc9f6e5d9318571a58a375de",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-89",
+      "milliseconds": 31.206699999999728,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000090.json.gz",
+      "sha256": "d385aa7ce8c333bb1c99a0ab2d8f5635f727ebec912879ac6a0b107388937f6f",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-90",
+      "milliseconds": 29.49270000000024,
+      "frames": 4,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000091.json.gz",
+      "sha256": "78550d863c67b802ce994eb5db3a9178f2cae794f46fce361840a170eb2bdb94",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-91",
+      "milliseconds": 27.737500000000182,
+      "frames": 3,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000092.json.gz",
+      "sha256": "17debff576755f33704da985c504c45ecd6b72cf9c6e5c46762037077f4ee778",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-92",
+      "milliseconds": 36.00729999999976,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000093.json.gz",
+      "sha256": "9a19b15a8bcd9dfe14922d5aa0afa8c45a89ae1cf0bd1d56e7dfccf2bbea0f50",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-93",
+      "milliseconds": 30.427000000000135,
+      "frames": 3,
+      "objects": 18,
+      "learned": true
+    },
+    {
+      "file": "passive-events/0000094.json.gz",
+      "sha256": "7ab29e4a23749d44b980f3a38d56257019eed8772a62eb9d807a8612bdea366c",
+      "event": "5d629eab-9a17-468f-ad57-9d06d8f469e9:passive:event-94",
+      "milliseconds": 29.939499999999953,
+      "frames": 2,
+      "objects": 18,
+      "learned": true
+    }
+  ],
+  "scope": "Fresh private replay of archived real windows for CPU diagnosis; updates are not new independent evidence or actual-machine action trials."
+}

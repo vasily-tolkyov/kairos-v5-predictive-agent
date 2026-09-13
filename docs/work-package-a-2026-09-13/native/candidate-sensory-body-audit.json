@@ -1,0 +1,57 @@
+{
+  "version": "NativeSensoryBodyReceiptAudit1",
+  "status": "passed",
+  "source": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-sensory-body",
+  "auditedAt": "2026-09-13T02:06:39.759Z",
+  "motorReceipt": {
+    "version": "MotorReceiptV1",
+    "requestedTicks": 40,
+    "durationParameter": "holdTicks",
+    "requestedAt": {
+      "observationSequence": 143,
+      "physicsTick": 143,
+      "activeSeconds": 7.15,
+      "monotonicMs": 14725.768392
+    },
+    "pressedAt": {
+      "observationSequence": 143,
+      "physicsTick": 143,
+      "activeSeconds": 7.15,
+      "monotonicMs": 14726.129817
+    },
+    "releasedAt": {
+      "observationSequence": 183,
+      "physicsTick": 183,
+      "activeSeconds": 9.15,
+      "monotonicMs": 16721.076967
+    },
+    "pressSucceeded": true,
+    "releaseSucceeded": true,
+    "actualTicks": 40,
+    "actualSeconds": 2,
+    "elapsedMonotonicMs": 1994.9471500000018,
+    "observedIntervals": 40,
+    "frameRange": {
+      "startSequence": 143,
+      "endSequence": 183
+    },
+    "releaseReason": "interval-complete"
+  },
+  "foodBefore": 5,
+  "foodAfter": 9,
+  "countBefore": 3,
+  "countAfter": 2,
+  "engineFood": 9,
+  "engineEntityHealthBefore": 20,
+  "engineEntityHealthAfter": 19.06,
+  "evidenceSha256": {
+    "results.json": "7c1811ebb137740a442bee9a5beecfdaee9fab200cc1db9eb5d26a375c9bf0ef",
+    "attack-event.json.gz": "f22f96e5ac00ca2a2c7eba1ff0c04cab50dffa3822f405555a4791e3eafd45c8",
+    "use-item-event.json.gz": "8d869c08aa13e7bd0430c6cb1b3c74b87ff00dac6281540d21c5170fb0c7a99e",
+    "server-evidence/minecraft-server.log": "c2af3c31ef3cb88d3721e048c477bd75b5d46d02786a219972fdf36ff4af51b4"
+  },
+  "evaluatorSelectedPhysicalActions": 2,
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "limitation": "Isolated apparatus-selected entity contact and held-item use; no learned survival/task result and no native held-item CPU catch-up or interruption trial."
+}

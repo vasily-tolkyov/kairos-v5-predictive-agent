@@ -1,0 +1,163 @@
+✖ unseen categories cannot inherit either local or regression support (20.097198ms)
+✖ category spelling, value type and presentation order do not determine support (9.988655ms)
+✖ new real categorical observations earn their own calibration instead of borrowing a sibling count (8.05191ms)
+✖ missing relevant context never silently becomes a known branch, including after new incomplete measurements (8.493554ms)
+✔ unrelated extra or absent fields do not invalidate measured response domains (9.940234ms)
+✖ numeric points, missing values and intervals share one observed-domain gate (7.656996ms)
+✖ categorical and numeric support domains survive snapshot restoration without added evidence (8.694421ms)
+✖ an unseen category cannot certify a plan but remains available for an explicitly unsupported probe (217.129521ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 1
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 380.696932
+
+✖ failing tests:
+
+test at ../../../../tmp/kairos-support-dist/test/contextual-support-domain.test.js:18:1
+✖ unseen categories cannot inherit either local or regression support (20.097198ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/contextual-support-domain.test.js:27:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../tmp/kairos-support-dist/test/contextual-support-domain.test.js:32:1
+✖ category spelling, value type and presentation order do not determine support (9.988655ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/contextual-support-domain.test.js:40:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../tmp/kairos-support-dist/test/contextual-support-domain.test.js:44:1
+✖ new real categorical observations earn their own calibration instead of borrowing a sibling count (8.05191ms)
+  AssertionError [ERR_ASSERTION]: one new C window is not eight calibrated C windows
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/contextual-support-domain.test.js:47:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../tmp/kairos-support-dist/test/contextual-support-domain.test.js:56:1
+✖ missing relevant context never silently becomes a known branch, including after new incomplete measurements (8.493554ms)
+  AssertionError [ERR_ASSERTION]: an unlocalized measurement must not erase the response dependency or inherit global calibration
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/contextual-support-domain.test.js:63:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../tmp/kairos-support-dist/test/contextual-support-domain.test.js:82:1
+✖ numeric points, missing values and intervals share one observed-domain gate (7.656996ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/contextual-support-domain.test.js:90:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../tmp/kairos-support-dist/test/contextual-support-domain.test.js:100:1
+✖ categorical and numeric support domains survive snapshot restoration without added evidence (8.694421ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/contextual-support-domain.test.js:108:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../tmp/kairos-support-dist/test/contextual-support-domain.test.js:112:1
+✖ an unseen category cannot certify a plan but remains available for an explicitly unsupported probe (217.129521ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(!prediction.supportedFields.includes('self/position.2'))
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/contextual-support-domain.test.js:134:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

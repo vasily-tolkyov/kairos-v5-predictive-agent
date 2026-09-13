@@ -1,0 +1,9 @@
+file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r9-sealed-consumption/dist/src/contextual-readout.js:456
+                throw new Error('invalid-contextual-snapshot');
+                      ^
+
+Error: invalid-contextual-snapshot
+    at ContextualReadout.restore (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r9-sealed-consumption/dist/src/contextual-readout.js:456:23)
+    at file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/compare-native-retained-partitions.mjs:23:64
+
+Node.js v24.14.0

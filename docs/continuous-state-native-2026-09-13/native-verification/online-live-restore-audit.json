@@ -1,0 +1,33 @@
+{
+  "version": "NativeLiveRestoreAudit1",
+  "status": "passed",
+  "actorDist": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\execution-builds\\pr3-local-r6-continuous\\dist",
+  "inputs": [
+    {
+      "path": "results.json",
+      "bytes": 108934,
+      "sha256": "bd1a6074a43868a0e80b9645ef21fc33c2c916b40fcbb2e12808049f9a870d2f"
+    },
+    {
+      "path": "session.json.gz",
+      "bytes": 2081489,
+      "sha256": "277fc064b8a902a6d48873f07fc3899e124551286f24775cf81115596159ea59"
+    },
+    {
+      "path": "passive-events/0000001.json.gz",
+      "bytes": 8166,
+      "sha256": "0067c85a651a2f37c213c99303eda91406cd9929a109c08468f064807ab27548"
+    }
+  ],
+  "originalSessionSha256": "277fc064b8a902a6d48873f07fc3899e124551286f24775cf81115596159ea59",
+  "dynamicsAffordancesAndTaskStateUnchanged": true,
+  "clearedCurrentFrameAndPhysicsClock": true,
+  "clearedRecurrentActivationAndVisibleBindings": true,
+  "retainedOnlyUnanchoredCueMemories": 1,
+  "duplicateCheck": {
+    "id": "c6e5a10a-1bf6-4c21-8c3b-a255394ecc22:passive:event-1",
+    "rejectedWithoutStateChange": true
+  },
+  "duplicateCheckScope": "One archived original window already present in the retained ledger.",
+  "scope": "Offline checkpoint restore only. No native restart, action, environment change or capability result."
+}

@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1/scripts/audit-native-motor-receipts.mjs",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-motor-v1",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-motor-v1-audit.json"
+  ],
+  "exitCode": 0,
+  "stdout": "{\"status\":\"passed\",\"output\":\"/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-motor-v1-audit.json\",\"pressedTicks\":[4,4,4,4,4,4]}\n",
+  "stderr": "",
+  "completedAt": "2026-09-13T02:57:15.670725+00:00"
+}

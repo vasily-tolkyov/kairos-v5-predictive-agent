@@ -1,0 +1,71 @@
+✖ the asynchronous adapter predicts from its prepared frame and atomically executes that exact frame once (2.742397ms)
+✖ a frame advancing during prediction refuses one attempt and returns every passive interval (0.441543ms)
+✖ a controller veto cancels its token without issuing a motor or losing preparation-time passive evidence (0.325721ms)
+✔ full-frame comparison rejects changed sensations with the same sequence (7.607394ms)
+✔ superseded and unprepared execution tokens cannot later execute, while their passive evidence remains available (1.346482ms)
+✔ a failed motor consumes its token and preserves preparation evidence for a later drain (1.168288ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 3
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 95.192832
+
+✖ failing tests:
+
+test at evidence/worker-action-start-dist/test/worker-action-start.test.js:42:1
+✖ the asynchronous adapter predicts from its prepared frame and atomically executes that exact frame once (2.742397ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  -   'predict-2',
+      'motor-2'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/worker-action-start-dist/test/worker-action-start.test.js:52:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'motor-2' ],
+    expected: [ 'predict-2', 'motor-2' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at evidence/worker-action-start-dist/test/worker-action-start.test.js:62:1
+✖ a frame advancing during prediction refuses one attempt and returns every passive interval (0.441543ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/worker-action-start-dist/test/worker-action-start.test.js:71:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at evidence/worker-action-start-dist/test/worker-action-start.test.js:78:1
+✖ a controller veto cancels its token without issuing a motor or losing preparation-time passive evidence (0.325721ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/worker-action-start-dist/test/worker-action-start.test.js:83:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

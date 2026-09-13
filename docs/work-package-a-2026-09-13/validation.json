@@ -1,0 +1,96 @@
+{
+  "version": "WorkPackageAValidation1",
+  "baseCommit": "fb3c40a8e172e092ca6ba9a69eebc2836e255b36",
+  "baseTree": "0979f2304ea42a589c6b4aacc0df8dfce4863458",
+  "baseline": {
+    "node": "24.19.0",
+    "typescript": "5.9.3",
+    "build": "passed",
+    "tests": 135,
+    "passed": 135,
+    "failed": 0,
+    "skipped": 0,
+    "log": "baseline-gate.log"
+  },
+  "candidate": {
+    "command": "npm run test:next-stage",
+    "tests": 184,
+    "passed": 184,
+    "failed": 0,
+    "skipped": 0,
+    "log": "worker-fresh/integrated-gate.log",
+    "assertionsRelaxed": false,
+    "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+    "sourceTree": "a2bbb21c8934eaab7f4b55df2316128fb7b318dc",
+    "cancelled": 0
+  },
+  "newNativeEvidence": {
+    "apparatusRuns": 6,
+    "evaluatorSelectedActions": 27,
+    "workerSmokeRuns": 2,
+    "autonomousSelectedActions": 12,
+    "passiveWindows": 30,
+    "learningWrites": 42,
+    "deaths": 0,
+    "newGoalSuccesses": 0,
+    "refusedDecisions": 4,
+    "scope": "Totals across separate runs; two independent worker models each have21 writes and are not merged."
+  },
+  "workerSmoke": {
+    "status": "budget-paused",
+    "goal": "pending",
+    "supportedPlans": 0,
+    "freshActionForecasts": 0,
+    "staleForecastsExcluded": 8,
+    "audit": "native-worker-smoke-audit.json",
+    "checkpointCheck": "native-worker-restore.json",
+    "scope": "Short integration smoke test; not retention, transfer or multistage acceptance"
+  },
+  "acceptance": {
+    "A": "Implementation and software gates passed including one-shot asynchronous frame binding; strict original-model/world comparison and native task forecast support/reliability acceptance remain open",
+    "B": "not started: prerequisite gate unmet",
+    "C": "not started: prerequisite gate unmet",
+    "D": "not started: prerequisite gate unmet",
+    "E": "not started: prerequisite gate unmet",
+    "overall": "not met"
+  },
+  "originalEvidenceAccess": "Draft release metadata verified; binary assets unavailable via exposed authenticated interface; direct download returned404. No original model/world replacement.",
+  "modelCompatibility": {
+    "snapshot": "KairosExperienceMediumV11",
+    "contextSnapshot": "ContextualReadout2",
+    "newEventReceipt": "MotorReceiptV1",
+    "additiveSnapshotField": "untrainedMotorWindows (absent means0)",
+    "legacyWindows": "readable; no timing receipt manufactured",
+    "oldWeightsReencoded": false
+  },
+  "firstDeliveryCommit": "091f0ccfa6d541ab70b6d6eb78bc3944d766491c",
+  "workerFreshnessSmoke": {
+    "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+    "status": "budget-paused",
+    "decisions": 8,
+    "executed": 4,
+    "refused": 4,
+    "refusalReasons": {
+      "action-start-expired": 4
+    },
+    "freshExecutedStarts": 4,
+    "preparedFrameDigestMatches": 4,
+    "supportedResultFields": 0,
+    "comparedResultFields": 0,
+    "supportedTaskPlans": 0,
+    "goal": "pending",
+    "passiveWindows": 17,
+    "learningWrites": 21,
+    "deaths": 0,
+    "initialUnrecordedIntervals": 1,
+    "initialGap": [
+      31,
+      32
+    ],
+    "laterBetweenActionIntervalsCovered": 27,
+    "scope": "One-shot transport freshness and finite native integration; no claim of task prediction reliability or task success.",
+    "launchAttempts": 2,
+    "preGameLaunchFailures": 1,
+    "enteredWorldRuns": 1
+  }
+}

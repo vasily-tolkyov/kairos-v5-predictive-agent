@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/frozen-auditor/scripts/audit-native-motor-receipts.mjs",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-motor",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-motor-audit.json"
+  ],
+  "auditScriptSha256": "b1b82b42d1fe4068ba7f8b4286b2b92b4bce5e88dbdf45f81eac88c57cb452dc",
+  "unchangedRepositoryScript": true,
+  "eventValidatorSha256": "ce55bebd103c40219369ac86e7f4eaff5a723175c11f747739c788b8647c7f7e",
+  "validatorBuild": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/apparatus-candidate",
+  "exitCode": 0,
+  "stdout": "{\"status\":\"passed\",\"output\":\"/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-motor-audit.json\",\"pressedTicks\":[4,4,4,4,4,4]}\n",
+  "stderr": "",
+  "auditedAt": "2026-09-13T02:03:47.950982+00:00"
+}

@@ -1,0 +1,64 @@
+✔ a completed autonomous intention remains independently auditable after its live state is cleared (11.65458ms)
+✔ actual recovery after a setback remains productive before regaining the historical best (169.388003ms)
+✔ bounded contextual learning retains opposing unrehearsed mechanisms and rejects missing context (35.135555ms)
+✔ irreducible sensory noise does not become supported prediction or persistent learning progress (12.51822ms)
+✔ incremental context fitting resumes exactly between split updates and immediately retains a contradiction (17.311152ms)
+✔ a bounded repeated search eventually checks a useful measured response beyond its first action prefix (57.547151ms)
+✔ a question recalls a jointly measured response without choosing its desired outcome (0.415034ms)
+✔ a newly measured channel can guide an untrusted probe despite closer episodes that never measured it (17.970087ms)
+✔ numeric context boundaries tolerate ordinary roundoff in a predicted familiar measurement (11.13257ms)
+✔ global accuracy cannot certify a rare unpredictable context with the same mean response (909.541978ms)
+✔ retired event identities cannot be learned again after exact audit compaction (24.021559ms)
+✔ re-reading one offer frame cannot manufacture confidence (1.410317ms)
+✔ intrinsic exploration revisits a less favored learned motor without learning from its own choices (51.471161ms)
+✔ a matching physical counterexample immediately withdraws an old confident effect (31.385094ms)
+✔ more parameter choices for one unlearned actuator do not multiply its exploration prior (17.880494ms)
+✔ a stationary continuing session does not replace exploration with repeated highest-score actions (35.027703ms)
+✔ uncertainty orthogonal to a measured displacement does not erase that direction or become zero (29.301602ms)
+✔ a supported approach can execute beyond the search horizon without claiming a complete plan (31.054495ms)
+✔ frozen execution withdraws a disproved local hypothesis across restart without changing transferable experience (42.985947ms)
+✔ irrelevant sliding cannot give an unsupported goal hypothesis an unlimited execution budget (49.217196ms)
+✔ a persistent mild maintenance deficit gives a pending external goal a bounded service opportunity (1.047449ms)
+✔ persistent maintenance shares real learned actions and later task confirmation with frozen experience (411.72149ms)
+✔ intention arbitration resumes its service turn in the same world and clears ownership on transfer (16.19525ms)
+✔ persistent maintenance preserves submitted external-goal order and distinct actual confirmations (1.328376ms)
+✔ body conditions interrupt and resume an external task using learned, permuted motor effects (149.061365ms)
+✔ a frozen learner can become locally familiar with a newly available motor without starving other choices (161.793243ms)
+✔ a tiny supported forecast cannot perpetually count as goal progress when the body stays still (21.12155ms)
+✔ an older progress metric is rebased without crediting software changes and still recognizes later physical progress (2.075912ms)
+✔ twenty thousand repetitive updates stay numerically finite and retain bounded audit state (15020.215104ms)
+✔ world memory survives occlusion and restart without forging a visible object (1.288797ms)
+✔ a sequence jump cannot masquerade as multiple observed goal confirmations (0.835596ms)
+✔ learned sparse measurements continue beyond the compact receptor layout (123.990408ms)
+✔ body consequences can depend on the anonymous surface actually under the cursor (303.262613ms)
+✔ a learned sensory change enables a later motor effect without a body-state shortcut (904.593636ms)
+✖ ten causal stages are composed from isolated experience with changing action availability (1592.492171ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 34
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20382.018003
+
+✖ failing tests:
+
+test at evidence/action-start-dist/test/open-world.test.js:894:1
+✖ ten causal stages are composed from isolated experience with changing action availability (1592.492171ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'unknown'
+  - 'goal-verified'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/action-start-dist/test/open-world.test.js:940:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'unknown',
+    expected: 'goal-verified',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

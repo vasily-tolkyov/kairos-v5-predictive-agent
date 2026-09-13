@@ -1,0 +1,365 @@
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vec3' imported from /tmp/kairos-support-dist/test/block-optics.test.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/block-optics.test.js (74.989456ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'mineflayer' imported from /tmp/kairos-support-dist/src/body.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/body-action-requirements.test.js (73.693438ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'mineflayer' imported from /tmp/kairos-support-dist/test/body-motor-window.test.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/body-motor-window.test.js (72.991871ms)
+✔ unseen categories cannot inherit either local or regression support (57.935214ms)
+✔ category spelling, value type and presentation order do not determine support (55.852403ms)
+✔ new real categorical observations earn their own calibration instead of borrowing a sibling count (15.849739ms)
+✔ missing relevant context never silently becomes a known branch, including after new incomplete measurements (8.71943ms)
+✔ unrelated extra or absent fields do not invalidate measured response domains (27.24597ms)
+✔ numeric points, missing values and intervals share one observed-domain gate (21.304661ms)
+✔ numeric support allows floating-point roundoff but does not silently extend the measured domain (9.500597ms)
+✔ categorical and numeric support domains survive snapshot restoration without added evidence (20.794005ms)
+✔ an unseen category cannot certify a plan but remains available for an explicitly unsupported probe (309.708791ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'mineflayer' imported from /tmp/kairos-support-dist/test/dig-action-window.test.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/dig-action-window.test.js (116.401602ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'mineflayer' imported from /tmp/kairos-support-dist/src/body.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/entity-retina.test.js (104.328785ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vec3' imported from /tmp/kairos-support-dist/test/exact-public-block-hit.test.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/exact-public-block-hit.test.js (66.153467ms)
+✔ independent measured planes identify motion without inventing unobserved components (242.034342ms)
+✔ chosen attention learns the selected measurement and rejects an outcome-only subject (47.773424ms)
+✔ learns a nonlinear conditional response from real transitions (7.876013ms)
+✔ goals, queries, chronology labels and snapshots do not train the medium (49.737629ms)
+✔ without a motor input or any learned readout there is no executable prediction (14.87609ms)
+✔ goal-directed probes stay untrusted and require actual feedback to verify a goal (68.843017ms)
+✔ retains learned weights across a mechanism change and repairs predictions from new feedback (949.671819ms)
+✔ restore preserves the exact subsequent learning update and replay randomness (68.001697ms)
+✔ learning another motor response retains an unrehearsed earlier capability (841.397355ms)
+✔ rejects gaps, non-real windows and corrupt conductances without changing memory (57.911433ms)
+✔ missing objects mask their channels without discarding measurable self channels (1.022292ms)
+✔ renaming objects and translating the world preserves learned local predictions (0.411399ms)
+✔ an unsupported copied value cannot become an input to the next imagined action (0.789758ms)
+✔ real later observations verify a goal even with no motor budget (14.081163ms)
+✔ a transient or stale terminal observation cannot certify success (12.64539ms)
+✔ plans and verifies three numeric stages learned only as isolated transitions (311.776349ms)
+✔ numeric receptors preserve distinguishable values above sixteen (604.355906ms)
+✔ grounded goals freeze their baseline and missing or ambiguous public subjects remain unknown (1.748838ms)
+✔ crosshair target type is a public, verifiable body-affordance goal (0.323519ms)
+✔ translating a goal and its measured trajectory cannot change progress estimates (0.691433ms)
+✔ measured approach to a distant narrow region remains visible before reaching its boundary (0.2297ms)
+✔ approach after a setback remains measurable beyond the original goal baseline (0.701918ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'mineflayer' imported from /tmp/kairos-support-dist/test/interact-observation-window.test.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/interact-observation-window.test.js (51.688901ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'mineflayer' imported from /tmp/kairos-support-dist/src/body.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/minecraft-experience.test.js (55.671955ms)
+node:internal/modules/cjs/loader:1517
+  const err = new Error(message);
+              ^
+
+Error: Cannot find module 'prismarine-viewer/package.json'
+Require stack:
+- /tmp/kairos-support-dist/src/adapters/minecraft/retina.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)
+    at require.resolve (node:internal/modules/helpers:171:31)
+    at file:///tmp/kairos-support-dist/src/adapters/minecraft/retina.js:9:36
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ '/tmp/kairos-support-dist/src/adapters/minecraft/retina.js' ]
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/new-visible-surface.test.js (67.302302ms)
+✔ a completed autonomous intention remains independently auditable after its live state is cleared (11.596398ms)
+✔ actual recovery after a setback remains productive before regaining the historical best (161.629148ms)
+✔ bounded contextual learning retains opposing unrehearsed mechanisms and rejects missing context (31.468309ms)
+✔ irreducible sensory noise does not become supported prediction or persistent learning progress (11.129326ms)
+✔ incremental context fitting resumes exactly between split updates and immediately retains a contradiction (16.581503ms)
+✔ a bounded repeated search eventually checks a useful measured response beyond its first action prefix (57.79422ms)
+✔ a question recalls a jointly measured response without choosing its desired outcome (0.461563ms)
+✔ a newly measured channel can guide an untrusted probe despite closer episodes that never measured it (16.869088ms)
+✔ numeric context boundaries tolerate ordinary roundoff in a predicted familiar measurement (11.816413ms)
+✔ global accuracy cannot certify a rare unpredictable context with the same mean response (907.944808ms)
+✔ retired event identities cannot be learned again after exact audit compaction (25.269157ms)
+✔ re-reading one offer frame cannot manufacture confidence (1.229879ms)
+✔ intrinsic exploration revisits a less favored learned motor without learning from its own choices (49.488159ms)
+✔ a matching physical counterexample immediately withdraws an old confident effect (31.289865ms)
+✔ more parameter choices for one unlearned actuator do not multiply its exploration prior (18.037688ms)
+✔ a stationary continuing session does not replace exploration with repeated highest-score actions (35.368128ms)
+✔ uncertainty orthogonal to a measured displacement does not erase that direction or become zero (29.363615ms)
+✔ a supported approach can execute beyond the search horizon without claiming a complete plan (30.910244ms)
+✔ frozen execution withdraws a disproved local hypothesis across restart without changing transferable experience (39.149293ms)
+✔ irrelevant sliding cannot give an unsupported goal hypothesis an unlimited execution budget (42.637534ms)
+✔ a persistent mild maintenance deficit gives a pending external goal a bounded service opportunity (1.104965ms)
+✔ persistent maintenance shares real learned actions and later task confirmation with frozen experience (526.62219ms)
+✔ intention arbitration resumes its service turn in the same world and clears ownership on transfer (17.362398ms)
+✔ persistent maintenance preserves submitted external-goal order and distinct actual confirmations (1.297249ms)
+✔ body conditions interrupt and resume an external task using learned, permuted motor effects (150.400685ms)
+✔ a frozen learner can become locally familiar with a newly available motor without starving other choices (106.304372ms)
+✔ a tiny supported forecast cannot perpetually count as goal progress when the body stays still (21.092378ms)
+✔ an older progress metric is rebased without crediting software changes and still recognizes later physical progress (2.144713ms)
+✔ twenty thousand repetitive updates stay numerically finite and retain bounded audit state (15567.94527ms)
+✔ world memory survives occlusion and restart without forging a visible object (1.91955ms)
+✔ a sequence jump cannot masquerade as multiple observed goal confirmations (1.291541ms)
+✔ learned sparse measurements continue beyond the compact receptor layout (164.479134ms)
+✔ body consequences can depend on the anonymous surface actually under the cursor (304.354932ms)
+✔ a learned sensory change enables a later motor effect without a body-state shortcut (916.968774ms)
+✔ ten causal stages are composed from isolated experience with changing action availability (3250.760205ms)
+✔ passive capture excludes motor intervals, keeps actual boundaries and refuses observation gaps (1.804901ms)
+✔ passive evidence is learned before its following action, with separate counts and exact resume (52.244419ms)
+✔ frozen observation records passive exposure without changing learning, and rejects a mislabeled motor (5.744348ms)
+✔ isolated passive experience composes between two learned motor effects without a supplied task recipe (737.502855ms)
+✔ clutter cannot evict a small surface at the actual gaze from bounded perception (22.335636ms)
+✔ groups raw samples and preserves identity under measured observer motion (2.792652ms)
+✔ a checkpoint preserves temporal correspondence, attention and a shared boundary frame exactly (4.925177ms)
+✔ occlusion is unknown and reappearance refreshes actual properties (0.91222ms)
+✔ same appearance does not collapse separated surfaces to one identity (0.400212ms)
+✔ revealing another part of a surface does not move its tracked anchor (0.728338ms)
+✔ invalid sensations and backwards time are rejected (0.332101ms)
+✔ a boundaryless plane does not supply tangential motion evidence (0.754236ms)
+✔ repeated observer motion cannot integrate unmeasured plane sliding into a visible object position (87.371661ms)
+✔ occluding borders do not become the hidden surface own boundaries (0.972379ms)
+✔ an oblique plane does not identify separate coordinate components (0.576443ms)
+✔ observed stationary outcomes remain possible throughout a multistep forecast (92.686924ms)
+✔ small consistently measured motion can still compose a valid goal without an arbitrary dead zone (61.680619ms)
+✔ uncertain geometry obeys the measured coordinate transform and includes all possible yaw rotations (1.21673ms)
+✔ a future action cannot select the convenient side of an uncertain prerequisite (13.65903ms)
+✔ a globally accurate small mean cannot overrule a missing context with incompatible responses (115.270508ms)
+✔ grounded gaze goals use the predicted visible role and its numeric possibility range (0.421854ms)
+✔ imagined numeric envelopes cannot be learned as additional physical evidence (0.721657ms)
+✔ a sparse local response cannot borrow global regression calibration and can become supported through learning (921.452811ms)
+✔ regression cannot bypass the observed context range, including an uncertain future input (328.211331ms)
+✔ supported numeric ranges include measured pre-update residuals on a smooth held-out response (502.315279ms)
+✖ a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response (489.168833ms)
+✔ prototype public surface has no live Minecraft dependency (12.4294ms)
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'mineflayer' imported from /tmp/kairos-support-dist/src/body.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+✖ /tmp/kairos-support-dist/test/public-action-requirement-bridge.test.js (56.854579ms)
+ℹ tests 103
+ℹ suites 0
+ℹ pass 92
+ℹ fail 11
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32269.709121
+
+✖ failing tests:
+
+test at ../../../../tmp/kairos-support-dist/test/block-optics.test.js:1:1
+✖ /tmp/kairos-support-dist/test/block-optics.test.js (74.989456ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/body-action-requirements.test.js:1:1
+✖ /tmp/kairos-support-dist/test/body-action-requirements.test.js (73.693438ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/body-motor-window.test.js:1:1
+✖ /tmp/kairos-support-dist/test/body-motor-window.test.js (72.991871ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/dig-action-window.test.js:1:1
+✖ /tmp/kairos-support-dist/test/dig-action-window.test.js (116.401602ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/entity-retina.test.js:1:1
+✖ /tmp/kairos-support-dist/test/entity-retina.test.js (104.328785ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/exact-public-block-hit.test.js:1:1
+✖ /tmp/kairos-support-dist/test/exact-public-block-hit.test.js (66.153467ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/interact-observation-window.test.js:1:1
+✖ /tmp/kairos-support-dist/test/interact-observation-window.test.js (51.688901ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/minecraft-experience.test.js:1:1
+✖ /tmp/kairos-support-dist/test/minecraft-experience.test.js (55.671955ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/new-visible-surface.test.js:1:1
+✖ /tmp/kairos-support-dist/test/new-visible-surface.test.js (67.302302ms)
+  'test failed'
+
+test at ../../../../tmp/kairos-support-dist/test/prediction-ranges.test.js:190:1
+✖ a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response (489.168833ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(prediction.supportedFields.includes('self/position.2'))
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/prediction-ranges.test.js:196:5)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at ../../../../tmp/kairos-support-dist/test/public-action-requirement-bridge.test.js:1:1
+✖ /tmp/kairos-support-dist/test/public-action-requirement-bridge.test.js (56.854579ms)
+  'test failed'

@@ -1,0 +1,10 @@
+✔ faulted transport keeps its exact cached evidence separate from live observations and still closes gracefully (36.2523ms)
+✔ an exited worker rejects the pending operation and cleanup does not wait for an impossible reply (29.0492ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 563.7174

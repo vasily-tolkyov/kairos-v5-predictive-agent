@@ -4,19 +4,21 @@ import { hull, type NumericRange, type NumericRanges } from './numeric-ranges.js
 export type SensoryState = Readonly<Record<string, PublicValue>>;
 export type MeasuredTarget = readonly [string, PublicValue, PublicValue];
 interface Sample { input: SensoryState; targets: Record<string, readonly [PublicValue, PublicValue]>;
-  errors: Record<string, number>; externalErrors?: Record<string, number>; serial: number }
+  errors: Record<string, number>; externalErrors?: Record<string, number>; serial: number; windowId?: string }
+export interface ContextualWindowRow { input: SensoryState; targets: readonly MeasuredTarget[]; externalErrors?: Record<string, number> }
 interface Leaf { kind: 'leaf'; numeric: boolean; absolute: boolean; value: PublicValue; loss: number;
+  rows: readonly Sample[];
   samples: number; calibrated: number; accuracy: number; error: number; progress: number;
   errorRadius: number | null; externalErrorRadius: number | null;
   externalCalibrated: number; externalAccuracy: number;
   bounds?: { delta: NumericRange; absolute: NumericRange } }
 interface Branch { kind: 'branch'; key: string; threshold: PublicValue; numeric: boolean;
-  lower: number; upper: number; left: Tree; right: Tree }
+  lower: number; upper: number; categories: readonly PublicValue[]; left: Tree; right: Tree }
 type Tree = Leaf | Branch;
 type TreeShape = null | { kind: 'branch'; key: string; threshold: PublicValue; numeric: boolean;
   left: TreeShape; right: TreeShape };
 interface Circuit { samples: Sample[]; writes: number }
-export interface ContextualReadoutSnapshot { version: 'ContextualReadout1' | 'ContextualReadout2'; capacity: number;
+export interface ContextualReadoutSnapshot { version: 'ContextualReadout1' | 'ContextualReadout2' | 'ContextualReadout3'; capacity: number;
   circuits: [string, Circuit][]; structures?: [string, [string, TreeShape][]][] }
 export interface ConditionalValue { value: PublicValue; absolute: boolean; supported: boolean;
   samples: number; accuracy: number; error: number; progress: number; dependencies: readonly string[];
@@ -29,7 +31,9 @@ const tolerance = (a: PublicValue, b: PublicValue) => typeof a === 'number' && t
   ? .025 + .075 * Math.max(1, Math.abs(b - a)) : 0;
 const goesLeft = (value: PublicValue, split: Pick<Branch, 'numeric' | 'threshold'>) => split.numeric
   ? typeof value === 'number' && value <= Number(split.threshold) : Object.is(value, split.threshold);
-function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: number; calibrationLoss: number } {
+function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: number; calibrationLoss: number };
+function summary(rows: readonly Sample[], key: string, scoreOnly: true): { loss: number; calibrationLoss: number };
+function summary(rows: readonly Sample[], key: string, scoreOnly = false): { leaf?: Leaf; loss: number; calibrationLoss: number } {
   const numeric = rows.every(row => row.targets[key]!.every(v => typeof v === 'number'));
   const estimate = (absolute: boolean) => {
     const values = rows.map(row => numeric ? Number(row.targets[key]![1])
@@ -43,34 +47,58 @@ function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: numb
   };
   const delta = estimate(!numeric), absolute = estimate(true);
   const fit = absolute.loss + 1e-10 < delta.loss ? absolute : delta;
+  if (scoreOnly) {
+    // Candidate partitions consume only these two losses. Keep exactly the
+    // same fit and independent-window error aggregation, without building
+    // an unused leaf's quantiles, envelopes, progress or recent calibration.
+    // Accepted partitions still construct their complete original leaf below.
+    const windows = new Map<string, number>();
+    for (const row of rows) {
+      const error = row.externalErrors?.[key];
+      if (row.windowId !== undefined && error !== undefined)
+        windows.set(row.windowId, Math.max(windows.get(row.windowId) ?? 0, error));
+    }
+    const errors = [...windows.values()];
+    const accuracy = errors.reduce((sum, error) => sum + Number(error <= 1), 0) / Math.max(1, errors.length);
+    return { loss: fit.loss, calibrationLoss: errors.length * accuracy * (1 - accuracy) };
+  }
   // Confidence concerns recent predictions in this region. Early errors from
   // an obsolete partition remain in the evidence, but cannot permanently
   // disqualify a subsequently stable response. Outcome bounds still use ALL
   // retained observations, including the latest contradictory measurement.
-  const calibratedRows = rows.filter(row => Object.hasOwn(row.errors, key)).slice(-32);
-  const errors = calibratedRows.map(row => row.errors[key]!);
-  const externalRows = rows.filter(row => row.externalErrors?.[key] !== undefined);
-  const allExternal = externalRows.map(row => row.externalErrors![key]!);
-  const external = allExternal.slice(-32);
+  // Multiple objects in one physical window share one pre-update model.
+  // Count independent windows, with the worst error AND raw residual in each.
+  // Legacy rows retain their fits/errors but lack verified source-window IDs.
+  const grouped = (external: boolean) => {
+    const windows = new Map<string, { error: number; residual: number }>();
+    for (const row of rows) {
+      const error = (external ? row.externalErrors : row.errors)?.[key];
+      if (row.windowId === undefined || error === undefined) continue;
+      const [a, b] = row.targets[key]!, prior = windows.get(row.windowId);
+      const residual = numeric ? error < 0 || error >= 20 ? Infinity : error * tolerance(a, b) : 0;
+      windows.set(row.windowId, { error: Math.max(prior?.error ?? 0, error),
+        residual: Math.max(prior?.residual ?? 0, residual) });
+    }
+    return [...windows.values()];
+  };
+  const calibrated = grouped(false).slice(-32), externalWindows = grouped(true);
+  const errors = calibrated.map(row => row.error);
+  const allExternal = externalWindows.map(row => row.error), external = allExternal.slice(-32);
   // Scores are stored in tolerance units, while prediction ranges use the
   // observable's units. Use the recent 90th-percentile measured residual,
   // not the tolerance itself. An isolated obsolete forecast must not inflate
   // a now stable response indefinitely; ALL retained outcomes remain in the
   // envelope below. This empirical radius is not a coverage guarantee.
   // A clipped score is only a lower bound and cannot supply a finite radius.
-  const residualRadius = (samples: readonly Sample[], external: boolean): number | null => {
+  const residualRadius = (samples: readonly { residual: number }[]): number | null => {
     if (!numeric) return 0;
     if (!samples.length) return null;
-    const residuals = samples.map(row => {
-      const error = (external ? row.externalErrors! : row.errors)[key]!;
-      const [before, after] = row.targets[key]!;
-      return error < 0 || error >= 20 ? Infinity : error * tolerance(before, after);
-    }).sort((a, b) => a - b);
+    const residuals = samples.map(row => row.residual).sort((a, b) => a - b);
     const radius = residuals[Math.ceil(.9 * residuals.length) - 1]!;
     return Number.isFinite(radius) ? radius : null;
   };
-  const errorRadius = residualRadius(calibratedRows, false);
-  const externalErrorRadius = residualRadius(externalRows.slice(-32), true);
+  const errorRadius = residualRadius(calibrated);
+  const externalErrorRadius = residualRadius(externalWindows.slice(-32));
   const envelope = (ranges: NumericRange[]): NumericRange => {
     const range = hull(ranges), margin = errorRadius ?? 0;
     return [range[0] - margin, range[1] + margin];
@@ -83,7 +111,7 @@ function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: numb
   // weight and can suppress a real conditional effect altogether.
   const splitAccuracy = mean(allExternal.map(error => Number(error <= 1)));
   return { loss: fit.loss, calibrationLoss: allExternal.length * splitAccuracy * (1 - splitAccuracy),
-    leaf: { kind: 'leaf', numeric, ...fit, samples: rows.length,
+    leaf: { kind: 'leaf', numeric, ...fit, rows, samples: rows.length,
     calibrated: errors.length, accuracy: mean(errors.map(v => Number(v <= 1))), error: mean(errors),
     progress: errors.length >= 8 ? Math.max(0, mean(errors.slice(0, half)) - mean(errors.slice(half))) : 0,
     externalCalibrated: external.length, externalAccuracy, errorRadius, externalErrorRadius,
@@ -98,6 +126,10 @@ function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: numb
 export class ContextualReadout {
   #circuits = new Map<string, Circuit>();
   #trees = new Map<string, Map<string, Tree>>();
+  // Derived query summaries have no learning authority. Only nonempty real
+  // categorical cohorts are cached, so each leaf has at most rows.length
+  // entries; replaced tree leaves and their caches are garbage-collectable.
+  #conditionalLeaves = new WeakMap<Leaf, Map<string, Leaf>>();
   #matching = new WeakMap<SensoryState, Map<string, readonly Sample[]>>();
   #recallBounds = new Map<string, Record<string, [number, number]>>();
   constructor(readonly capacity = 192) {
@@ -109,9 +141,14 @@ export class ContextualReadout {
     let best: { split: Omit<Branch, 'left' | 'right'>; left: Sample[]; right: Sample[]; gain: number } | null = null;
     const keys = [...new Set(rows.flatMap(row => Object.keys(row.input)))].sort();
     for (const feature of keys) {
-      if (rows.some(row => !Object.hasOwn(row.input, feature))) continue;
-      const values = [...new Set(rows.map(row => row.input[feature]!))];
+      // A missing measurement has no observed side of this partition. It
+      // remains retained evidence, but cannot erase the dependency or be
+      // assigned to the convenient complement of a category.
+      const observed = rows.filter(row => Object.hasOwn(row.input, feature));
+      const values = [...new Set(observed.map(row => row.input[feature]!))];
       if (values.length < 2) continue;
+      const compared = observed.length === rows.length ? base : summary(observed, key, true);
+      if (compared.loss < 1e-8) continue;
       const numeric = values.every(value => typeof value === 'number');
       if (numeric) values.sort((a, b) => Number(a) - Number(b));
       // A split belongs between measured values. Placing it on an observed
@@ -121,15 +158,16 @@ export class ContextualReadout {
       const candidates = boundaries.filter((_, i) => i % Math.max(1, Math.ceil(boundaries.length / 12)) === 0);
       for (const threshold of candidates) {
         const split = { kind: 'branch' as const, key: feature, threshold, numeric,
-          lower: numeric ? Number(values[0]) : 0, upper: numeric ? Number(values.at(-1)) : 0 };
+          lower: numeric ? Number(values[0]) : 0, upper: numeric ? Number(values.at(-1)) : 0,
+          categories: numeric ? [] : values };
         const left: Sample[] = [], right: Sample[] = [];
-        for (const row of rows) (goesLeft(row.input[feature]!, split) ? left : right).push(row);
+        for (const row of observed) (goesLeft(row.input[feature]!, split) ? left : right).push(row);
         if (left.length < 6 || right.length < 6) continue;
-        const a = summary(left, key), b = summary(right, key);
+        const a = summary(left, key, true), b = summary(right, key, true);
         // Equal mean effects may have very different reliability. A region
         // with unpredictable outcomes cannot borrow another region's score.
-        const gain = 1 - (a.loss + b.loss) / base.loss + (base.calibrationLoss > 1e-8
-          ? 1 - (a.calibrationLoss + b.calibrationLoss) / base.calibrationLoss : 0);
+        const gain = observed.length / rows.length * (1 - (a.loss + b.loss) / compared.loss + (compared.calibrationLoss > 1e-8
+          ? 1 - (a.calibrationLoss + b.calibrationLoss) / compared.calibrationLoss : 0));
         if (gain > (best?.gain ?? 0) + .06) best = { split, left, right, gain };
       }
     }
@@ -145,14 +183,17 @@ export class ContextualReadout {
     // Every new observation immediately refreshes outcomes, uncertainty and
     // prequential calibration. Only the costly search for NEW splits is
     // periodic. An old accurate mean cannot hide a fresh contradiction.
-    if (!tree || tree.kind === 'leaf' || rows.some(row => !Object.hasOwn(row.input, tree.key)
-      || tree.numeric && typeof row.input[tree.key] !== 'number')) return summary(rows, key).leaf;
-    const left = rows.filter(row => goesLeft(row.input[tree.key]!, tree)), right = rows.filter(row => !goesLeft(row.input[tree.key]!, tree));
+    if (!tree || tree.kind === 'leaf') return summary(rows, key).leaf;
+    const observed = rows.filter(row => Object.hasOwn(row.input, tree.key)
+      && (!tree.numeric || typeof row.input[tree.key] === 'number'));
+    if (!observed.length) return summary(rows, key).leaf;
+    const left = observed.filter(row => goesLeft(row.input[tree.key]!, tree)), right = observed.filter(row => !goesLeft(row.input[tree.key]!, tree));
     if (!left.length) return this.#refresh(tree.right, right, key);
     if (!right.length) return this.#refresh(tree.left, left, key);
-    const values = tree.numeric ? rows.map(row => Number(row.input[tree.key])) : [0];
+    const values = tree.numeric ? observed.map(row => Number(row.input[tree.key])) : [0];
     return { kind: 'branch', key: tree.key, threshold: tree.threshold, numeric: tree.numeric,
       lower: Math.min(...values), upper: Math.max(...values),
+      categories: tree.numeric ? [] : [...new Set(observed.map(row => row.input[tree.key]!))],
       left: this.#refresh(tree.left, left, key), right: this.#refresh(tree.right, right, key) };
   }
   #refreshCircuit(id: string, shapes: ReadonlyMap<string, Tree | TreeShape>): void {
@@ -160,24 +201,80 @@ export class ContextualReadout {
     this.#trees.set(id, new Map(keys.map(key => [key, this.#refresh(shapes.get(key) ?? null,
       samples.filter(row => key in row.targets), key)])));
   }
+  #pruneCircuit(id: string): void {
+    // While a single original window is appended, no posterior is read: all
+    // its pre-update errors were already measured. Eviction needs partition
+    // shape/order only. Preserve the exact pruning of empty branches without
+    // repeatedly computing every leaf's independent-window error statistics.
+    const old = this.#trees.get(id) ?? new Map<string, Tree>(), samples = this.#circuits.get(id)!.samples;
+    const firstLeaf = (tree: Tree): Leaf => tree.kind === 'leaf' ? tree : firstLeaf(tree.left);
+    const prune = (tree: Tree | undefined, rows: readonly Sample[], key: string): Tree => {
+      if (!tree) return summary(rows, key).leaf;
+      if (tree.kind === 'leaf') return tree;
+      const observed = rows.filter(row => Object.hasOwn(row.input, tree.key)
+        && (!tree.numeric || typeof row.input[tree.key] === 'number'));
+      if (!observed.length) return firstLeaf(tree);
+      const left = observed.filter(row => goesLeft(row.input[tree.key]!, tree));
+      const right = observed.filter(row => !goesLeft(row.input[tree.key]!, tree));
+      if (!left.length) return prune(tree.right, right, key);
+      if (!right.length) return prune(tree.left, left, key);
+      return { ...tree, left: prune(tree.left, left, key), right: prune(tree.right, right, key) };
+    };
+    const keys = [...new Set(samples.flatMap(row => Object.keys(row.targets)))];
+    this.#trees.set(id, new Map(keys.map(key => [key, prune(old.get(key), samples.filter(row => key in row.targets), key)])));
+  }
   read(id: string, key: string, input: SensoryState, bounds: NumericRanges = {}): ConditionalValue | null {
     const root = this.#trees.get(id)?.get(key);
     if (!root) return null;
     const dependencies = new Set<string>();
     let outside = false;
-    const visit = (tree: Tree): Leaf[] => {
-      if (tree.kind === 'leaf') return [tree];
+    const visit = (tree: Tree, categories: readonly (readonly [string, PublicValue])[] = [],
+      numericDomain?: string): Leaf[] => {
+      if (tree.kind === 'leaf') {
+        // A newly observed category may share a response leaf with an older
+        // one. Its own real pre-update errors must earn support; merely
+        // entering the observed set cannot inherit its sibling's count.
+        if (!categories.length) return [tree];
+        const identity = JSON.stringify(categories), cached = this.#conditionalLeaves.get(tree)?.get(identity);
+        if (cached) return [cached];
+        const rows = tree.rows.filter(row => categories.every(([feature, value]) =>
+          Object.hasOwn(row.input, feature) && Object.is(row.input[feature], value)));
+        if (!rows.length) { outside = true; return [tree]; }
+        const local = rows.length === tree.rows.length ? tree : summary(rows, key).leaf;
+        if (!outside) {
+          const cohorts = this.#conditionalLeaves.get(tree) ?? new Map<string, Leaf>();
+          cohorts.set(identity, local); this.#conditionalLeaves.set(tree, cohorts);
+        }
+        return [local];
+      }
       dependencies.add(tree.key);
       const value = input[tree.key];
-      if (value === undefined) return [...visit(tree.left), ...visit(tree.right)];
-      const range = bounds[tree.key];
-      if (tree.numeric && range) {
-        if (range[0] < tree.lower - .1 || range[1] > tree.upper + .1) outside = true;
-        if (range[0] <= Number(tree.threshold) && range[1] > Number(tree.threshold))
-          return [...visit(tree.left), ...visit(tree.right)];
+      if (!Object.hasOwn(input, tree.key) || value === undefined) {
+        outside = true;
+        return [...visit(tree.left, categories, numericDomain), ...visit(tree.right, categories, numericDomain)];
       }
-      if (tree.numeric && (typeof value !== 'number' || value < tree.lower - .1 || value > tree.upper + .1)) outside = true;
-      return visit(goesLeft(value, tree) ? tree.left : tree.right);
+      const range = bounds[tree.key];
+      // The domain covers measured values with machine roundoff allowance,
+      // not an arbitrary physical 0.1-unit extrapolation at every split.
+      const roundoff = 8 * Number.EPSILON * Math.max(1, Math.abs(tree.lower), Math.abs(tree.upper));
+      // Consecutive thresholds on one numeric coordinate partition its already
+      // observed hull. Rechecking each child's sample extrema would reject
+      // ordinary interpolation in the gap between two bracketing samples.
+      // A different dependency starts a separately observed local hull.
+      const checkDomain = numericDomain !== tree.key;
+      const nextDomain = tree.numeric ? tree.key : undefined;
+      if (tree.numeric && range) {
+        if (range.length !== 2 || !range.every(Number.isFinite) || range[0] > range[1] || typeof value !== 'number'
+          || value < range[0] - roundoff || value > range[1] + roundoff) outside = true;
+        if (checkDomain && (range[0] < tree.lower - roundoff || range[1] > tree.upper + roundoff)) outside = true;
+        if (range[0] <= Number(tree.threshold) && range[1] > Number(tree.threshold))
+          return [...visit(tree.left, categories, nextDomain), ...visit(tree.right, categories, nextDomain)];
+      }
+      if (tree.numeric && (typeof value !== 'number' || !Number.isFinite(value)
+        || checkDomain && (value < tree.lower - roundoff || value > tree.upper + roundoff))) outside = true;
+      if (!tree.numeric && (!tree.categories.some(observed => Object.is(observed, value)) || range)) outside = true;
+      return visit(goesLeft(value, tree) ? tree.left : tree.right,
+        tree.numeric ? categories : [...categories, [tree.key, value]], nextDomain);
     };
     const leaves = visit(root), first = leaves[0]!;
     const same = leaves.every(leaf => leaf.absolute === first.absolute && (leaf.numeric && first.numeric
@@ -257,25 +354,43 @@ export class ContextualReadout {
     return best ? { input: best.row.input, targets: best.row.targets, distance: best.distance } : null;
   }
   observe(id: string, input: SensoryState, targets: readonly MeasuredTarget[], externalErrors?: Record<string, number>): void {
-    if (!targets.length) return;
+    this.observeWindow(id, 'context-call:' + ((this.#circuits.get(id)?.writes ?? 0) + 1), [{ input, targets, externalErrors }]);
+  }
+  observeWindow(id: string, windowId: string, rows: readonly ContextualWindowRow[]): void {
+    if (!windowId.length) throw new Error('invalid-context-window-id');
+    // The real-event ledger protects retired/duplicate events in the medium.
+    // Also reject a still-retained ID here, before any posterior can be read.
+    if (this.#circuits.get(id)?.samples.some(row => row.windowId === windowId)) throw new Error('duplicate-context-window');
+    const prepared = rows.filter(row => row.targets.length).map(({ input, targets, externalErrors }) => {
+      if ([...Object.values(input), ...targets.flatMap(([, a, b]) => [a, b]), ...Object.values(externalErrors ?? {})]
+        .some(v => typeof v === 'number' && !Number.isFinite(v))) throw new Error('non-finite-context-measurement');
+      const errors: Record<string, number> = {};
+      for (const [key, before, after] of targets) {
+        const prior = this.read(id, key, input); if (!prior) continue;
+        const numeric = typeof before === 'number' && typeof after === 'number' && typeof prior.value === 'number';
+        const predicted = numeric ? Number(prior.value) + (prior.absolute ? 0 : before) : prior.value;
+        errors[key] = numeric ? Math.min(20, Math.abs(Number(predicted) - after) / tolerance(before, after))
+          : Object.is(predicted, after) ? 0 : 2;
+      }
+      return { input, targets, externalErrors, errors };
+    });
+    let pendingRefresh = false;
+    for (const row of prepared) pendingRefresh = this.#append(id, windowId, row, prepared.length > 1);
+    if (pendingRefresh) this.#refreshCircuit(id, this.#trees.get(id) ?? new Map());
+  }
+  #append(id: string, windowId: string, { input, targets, externalErrors, errors }:
+    ContextualWindowRow & { errors: Record<string, number> }, deferLeafStatistics = false): boolean {
+    if (!targets.length) return false;
     if ([...Object.values(input), ...targets.flatMap(([, a, b]) => [a, b]), ...Object.values(externalErrors ?? {})]
       .some(v => typeof v === 'number' && !Number.isFinite(v))) throw new Error('non-finite-context-measurement');
     this.#matching = new WeakMap();
     this.#recallBounds.delete(id);
     const circuit = this.#circuits.get(id) ?? { samples: [], writes: 0 };
-    const errors: Record<string, number> = {};
-    for (const [key, before, after] of targets) {
-      const prior = this.read(id, key, input);
-      if (!prior) continue;
-      const numeric = typeof before === 'number' && typeof after === 'number' && typeof prior.value === 'number';
-      const predicted = numeric ? Number(prior.value) + (prior.absolute ? 0 : before) : prior.value;
-      errors[key] = numeric ? Math.min(20, Math.abs(Number(predicted) - after) / tolerance(before, after))
-        : Object.is(predicted, after) ? 0 : 2;
-    }
     circuit.samples.push({ input: structuredClone(input), targets: Object.fromEntries(targets.map(([k, a, b]) => [k, [a, b]])),
-      errors, ...(externalErrors ? { externalErrors: { ...externalErrors } } : {}), serial: ++circuit.writes });
+      errors, ...(externalErrors ? { externalErrors: { ...externalErrors } } : {}), serial: ++circuit.writes, windowId });
     this.#circuits.set(id, circuit);
-    if (circuit.samples.length > this.capacity) {
+    const retiring = circuit.samples.length > this.capacity;
+    if (retiring) {
       // Protect sparsely encountered response contexts. The oldest row in the
       // most populated learned region is expendable before an unrehearsed one.
       const informative = [...(this.#trees.get(id)?.values() ?? [])].filter(t => t.kind === 'branch').slice(0, 8);
@@ -292,18 +407,20 @@ export class ContextualReadout {
     // Full split induction can take longer than the real sampling interval.
     // Reuse its partition between bounded structural updates; all retained
     // measurements still participate in the refreshed leaf statistics.
-    if (circuit.writes <= 16 || circuit.writes % 16 === 0) this.#rebuild(id);
-    else this.#refreshCircuit(id, this.#trees.get(id) ?? new Map());
+    if (circuit.writes <= 16 || circuit.writes % 16 === 0) { this.#rebuild(id); return false; }
+    if (!deferLeafStatistics) { this.#refreshCircuit(id, this.#trees.get(id) ?? new Map()); return false; }
+    if (retiring) this.#pruneCircuit(id);
+    return true;
   }
   keys(id: string): readonly string[] { return [...(this.#trees.get(id)?.keys() ?? [])]; }
   snapshot(): ContextualReadoutSnapshot {
     const shape = (tree: Tree): TreeShape => tree.kind === 'leaf' ? null : { kind: 'branch', key: tree.key,
       threshold: tree.threshold, numeric: tree.numeric, left: shape(tree.left), right: shape(tree.right) };
-    return structuredClone({ version: 'ContextualReadout2', capacity: this.capacity, circuits: [...this.#circuits],
+    return structuredClone({ version: 'ContextualReadout3', capacity: this.capacity, circuits: [...this.#circuits],
       structures: [...this.#trees].map(([id, trees]) => [id, [...trees].map(([key, tree]) => [key, shape(tree)])]) });
   }
   static restore(state: ContextualReadoutSnapshot): ContextualReadout {
-    if (!['ContextualReadout1', 'ContextualReadout2'].includes(state.version)) throw new Error('contextual-readout-version-mismatch');
+    if (!['ContextualReadout1', 'ContextualReadout2', 'ContextualReadout3'].includes(state.version)) throw new Error('contextual-readout-version-mismatch');
     const model = new ContextualReadout(state.capacity);
     const structures = new Map(state.structures ?? []);
     const validShape = (shape: TreeShape, depth = 0): boolean => shape === null || Boolean(shape && depth < 6
@@ -312,7 +429,7 @@ export class ContextualReadout {
         : shape.threshold === null || ['string', 'boolean'].includes(typeof shape.threshold)
           || typeof shape.threshold === 'number' && Number.isFinite(shape.threshold))
       && validShape(shape.left, depth + 1) && validShape(shape.right, depth + 1));
-    if (state.version === 'ContextualReadout2' && (!state.structures || structures.size !== state.circuits.length
+    if (state.version !== 'ContextualReadout1' && (!state.structures || structures.size !== state.circuits.length
       || structures.size !== state.structures.length || state.structures.some(([, rows]) =>
         new Set(rows.map(([key]) => key)).size !== rows.length || rows.some(([, shape]) => !validShape(shape)))))
       throw new Error('invalid-contextual-structure-checkpoint');
@@ -320,6 +437,7 @@ export class ContextualReadout {
       if (model.#circuits.has(id) || !Number.isSafeInteger(circuit.writes) || circuit.writes < 1
         || circuit.samples.length > state.capacity || !circuit.samples.length
         || circuit.samples.some(row => !Number.isSafeInteger(row.serial) || row.serial < 1 || row.serial > circuit.writes
+          || row.windowId !== undefined && (state.version !== 'ContextualReadout3' || typeof row.windowId !== 'string' || !row.windowId.length)
           || [...Object.values(row.input), ...Object.values(row.targets).flat(), ...Object.values(row.errors), ...Object.values(row.externalErrors ?? {})]
             .some(v => typeof v === 'number' && !Number.isFinite(v)))) throw new Error('invalid-contextual-snapshot');
       model.#circuits.set(id, circuit);

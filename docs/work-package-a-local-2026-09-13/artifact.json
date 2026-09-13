@@ -1,0 +1,19 @@
+{
+  "version": "PublishedPR3LocalEvidence1",
+  "repository": "vasily-tolkyov/kairos-v5-predictive-agent",
+  "pullRequest": 3,
+  "releaseId": 387688738,
+  "releaseRemainsDraft": true,
+  "releaseUrl": "https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/releases/tag/untagged-9e21a6982b1b0305ec71",
+  "assetId": 560790107,
+  "name": "kairos-pr3-local-recovery-20260913.zip",
+  "bytes": 25656741,
+  "sha256": "c909936ab02a3fb151dd85c64b71f4e01a48fb16eef379c8d356c9b50a698093",
+  "verifiedMembers": 3202,
+  "localPath": "D:/Kairos project/.kairos/worktrees/pr3-native-20260913/evidence/kairos-pr3-local-recovery-20260913.zip",
+  "packageSourceCommit": "06427d9dc4955d56e8aa74e372367764a4ceb5b5",
+  "actorSourceCommits": ["fe5d912e3e996b06d4084961debb0d230b753724", "99cadb7795c32c5eb031a5b5fc2af2b932b68512", "bf1854a9d0ed22d9c81cec87da658bf12913c1b5"],
+  "hashSidecar": { "assetId": 560790105, "bytes": 407, "sha256": "4175fc419ca385fafaca41e43e527da2b3c36f93be3258a7de34f6a199264e7b" },
+  "githubSizeAndDigestMatchLocal": true,
+  "scope": "New native raw windows, stopped worlds, initial model forks, immutable execution builds, software failures, independent audits and original-model diagnostics. The original three large ZIP assets are unchanged. No new long-term or multistage success is claimed."
+}

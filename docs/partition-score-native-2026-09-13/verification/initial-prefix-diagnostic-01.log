@@ -1,0 +1,30 @@
+✖ initialization surplus requires exact archived frames; a marker cannot fill a missing frame (18.8251ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 110.9102
+
+✖ failing tests:
+
+test at scripts\test-audit-native-frame-state.mjs:55:1
+✖ initialization surplus requires exact archived frames; a marker cannot fill a missing frame (18.8251ms)
+  AssertionError [ERR_ASSERTION]: [{"code":"native-live-acceptance-exceeds-delivered-record-order","severity":"failed","index":11}]
+  
+  'failed' !== 'passed'
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/test-audit-native-frame-state.mjs:67:38)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'passed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

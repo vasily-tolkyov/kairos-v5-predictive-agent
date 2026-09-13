@@ -1,0 +1,65 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-continuous-profile/r6-baseline.cpuprofile",
+      "path": "r6-baseline.cpuprofile",
+      "bytes": 287380,
+      "sha256": "f4cabf346237233aecca4916bfdd5d9f5a8db9847ae039bc0a3593874bb3ffa3"
+    },
+    {
+      "source": "evidence/pr3-continuous-profile/r6-baseline.json",
+      "path": "r6-baseline.json",
+      "bytes": 56708,
+      "sha256": "abda0377bbf75674c085ce6b91c2a629f8926ae62199cf547b8e8228073ff1b8"
+    },
+    {
+      "source": "evidence/pr3-continuous-profile/r6-baseline.log",
+      "path": "r6-baseline.log",
+      "bytes": 5660,
+      "sha256": "f62c86b41d61068bb6693058605404679a50cffecae510bb930b6d920fbedf32"
+    },
+    {
+      "source": "evidence/pr3-continuous-profile/window-statistics-candidate.cpuprofile",
+      "path": "window-statistics-candidate.cpuprofile",
+      "bytes": 232111,
+      "sha256": "6ba7cfded8005964ea532cb2753b4c5056be5a6abdc021c74bd15dfcd521a5d3"
+    },
+    {
+      "source": "evidence/pr3-continuous-profile/window-statistics-candidate.json",
+      "path": "window-statistics-candidate.json",
+      "bytes": 55317,
+      "sha256": "502ecdaa1ada0f52bddeeddf59051867bd326b593916b669bbaaeadb3a163719"
+    },
+    {
+      "source": "evidence/pr3-continuous-profile/window-statistics-candidate.log",
+      "path": "window-statistics-candidate.log",
+      "bytes": 4329,
+      "sha256": "85728e2a8abf39c65a991f15bb5c97ac902202fed5331f2a6e1436ac4da7202f"
+    },
+    {
+      "source": "evidence/pr3-window-statistics-recovery/compile-01.log",
+      "path": "compile-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-window-statistics-recovery/differential-01.json",
+      "path": "differential-01.json",
+      "bytes": 1256,
+      "sha256": "884e78e3d6ea0df6d73ca9d7a29949d715b33dfd922271856b6f767a38bd7b0e"
+    },
+    {
+      "source": "evidence/pr3-window-statistics-recovery/differential-01.log",
+      "path": "differential-01.log",
+      "bytes": 1085,
+      "sha256": "f009d6fe6cc2136228f8dd2f36c201703fbbef5802c56031eb05e9223a40b36d"
+    },
+    {
+      "source": "evidence/pr3-window-statistics-recovery/full-gate-01.log",
+      "path": "full-gate-01.log",
+      "bytes": 31782,
+      "sha256": "0f07973ab130131315235b38ac4aa4c368dc1299066677c1aaa4ad236161804d"
+    }
+  ]
+}

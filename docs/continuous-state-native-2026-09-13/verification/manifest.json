@@ -1,0 +1,47 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-continuous-state-recovery/compile-01.log",
+      "path": "compile-01.log",
+      "bytes": 1963,
+      "sha256": "daf29d0624844b27d8e2efc5aa2bb47e4ae8692d01c055efeaf09f64447e2fe4"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/compile-02.log",
+      "path": "compile-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/compile-03.log",
+      "path": "compile-03.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/full-gate-01.log",
+      "path": "full-gate-01.log",
+      "bytes": 31313,
+      "sha256": "822776b628cd0da1a62213753a8d27127790eab795c77c425d93bb802de5501a"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/history-diagnostic-01.log",
+      "path": "history-diagnostic-01.log",
+      "bytes": 6056,
+      "sha256": "1bd9f49d94967547558570211a44ad8a958db3bab2d8c2a54a3385a649ca7bba"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/targeted-01.log",
+      "path": "targeted-01.log",
+      "bytes": 15076,
+      "sha256": "17c546232bab65b662eda9b397871c605e9fb2e5a181efc15648435139e16146"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/targeted-02.log",
+      "path": "targeted-02.log",
+      "bytes": 10970,
+      "sha256": "88febf319d5421790c710066c67f2929038bac6172224e72cb072577d70b8eb7"
+    }
+  ]
+}

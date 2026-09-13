@@ -1,0 +1,27 @@
+✔ unseen categories cannot inherit either local or regression support (34.965815ms)
+✔ category spelling, value type and presentation order do not determine support (42.104157ms)
+✔ new real categorical observations earn their own calibration instead of borrowing a sibling count (12.426696ms)
+✔ missing relevant context never silently becomes a known branch, including after new incomplete measurements (7.847852ms)
+✔ unrelated extra or absent fields do not invalidate measured response domains (8.913348ms)
+✔ numeric points, missing values and intervals share one observed-domain gate (6.399849ms)
+✔ categorical and numeric support domains survive snapshot restoration without added evidence (19.523337ms)
+✔ an unseen category cannot certify a plan but remains available for an explicitly unsupported probe (319.256603ms)
+✔ observed stationary outcomes remain possible throughout a multistep forecast (78.390858ms)
+✔ small consistently measured motion can still compose a valid goal without an arbitrary dead zone (39.711307ms)
+✔ uncertain geometry obeys the measured coordinate transform and includes all possible yaw rotations (0.882316ms)
+✔ a future action cannot select the convenient side of an uncertain prerequisite (11.80003ms)
+✔ a globally accurate small mean cannot overrule a missing context with incompatible responses (86.736145ms)
+✔ grounded gaze goals use the predicted visible role and its numeric possibility range (0.360424ms)
+✔ imagined numeric envelopes cannot be learned as additional physical evidence (0.545076ms)
+✔ a sparse local response cannot borrow global regression calibration and can become supported through learning (769.386956ms)
+✔ regression cannot bypass the observed context range, including an uncertain future input (269.177021ms)
+✔ supported numeric ranges include measured pre-update residuals on a smooth held-out response (457.549299ms)
+✔ a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response (403.773864ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2740.259984

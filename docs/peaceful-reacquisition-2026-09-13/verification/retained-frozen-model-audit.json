@@ -1,0 +1,30 @@
+{
+  "version": "NativeFrozenLearningAudit1",
+  "status": "passed",
+  "inputs": [
+    {
+      "path": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-peaceful-reacquisition-retained-frozen\\results.json",
+      "bytes": 115428,
+      "sha256": "fa4dc84bdbb3852026095a652f10e632c04be0b3426e65021b8e3d8fa6117aa1"
+    },
+    {
+      "path": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-peaceful-reacquisition-frozen-start\\session.json.gz",
+      "bytes": 21069956,
+      "sha256": "7843f02d3847981add411088ffec587a603fdf36d901464fc4c687ebc61defcb"
+    },
+    {
+      "path": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-peaceful-reacquisition-retained-frozen\\session.json.gz",
+      "bytes": 21370740,
+      "sha256": "aa9305bf5e4c2637ce623ce9b7b5c3c97c4b5af70b0951672611499b9435c5fb"
+    }
+  ],
+  "initialLearningDigest": "d4fc1a9139dd7a9ff1f8d658165b8e346035fc59986db98bfc310384a170f96c",
+  "finalLearningDigest": "d4fc1a9139dd7a9ff1f8d658165b8e346035fc59986db98bfc310384a170f96c",
+  "dynamicsAndAffordancesExactlyUnchanged": true,
+  "newDecisions": 192,
+  "newExecuted": 161,
+  "newLearningWrites": 0,
+  "initialLive": null,
+  "finalLive": null,
+  "scope": "Original stopped checkpoint equality only. Current task/world/live state can change. No actions, model queries or learning writes; no task-capability claim."
+}

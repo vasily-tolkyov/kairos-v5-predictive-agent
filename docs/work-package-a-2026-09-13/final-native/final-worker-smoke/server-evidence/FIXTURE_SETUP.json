@@ -1,0 +1,1 @@
+{"commands":["gamerule spawnRadius 0","gamerule doMobSpawning false","gamerule doDaylightCycle false","time set noon","forceload add -16 -16 16 32","fill -12 63 -8 12 63 24 minecraft:smooth_stone","fill -12 64 -8 12 71 24 air","setworldspawn 2 64 12"],"controllerAccess":false,"dynamicRuleCallbacks":false,"kind":"empty-evaluation-world"}

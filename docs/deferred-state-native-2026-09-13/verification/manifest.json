@@ -1,0 +1,29 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-deferred-state-recovery/compile-01.log",
+      "path": "compile-01.log",
+      "bytes": 2384,
+      "sha256": "da7e9b4232b316c47e3b9bca248af2522ef9d7fafbad10cdd08e31eaef1bf969"
+    },
+    {
+      "source": "evidence/pr3-deferred-state-recovery/compile-02.log",
+      "path": "compile-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-deferred-state-recovery/full-gate-01.log",
+      "path": "full-gate-01.log",
+      "bytes": 31755,
+      "sha256": "787375abaa63dcd4e0b7fb9090e4b2d391129cf7c2afd9337a5be06055d6c593"
+    },
+    {
+      "source": "evidence/pr3-deferred-state-recovery/targeted-01.log",
+      "path": "targeted-01.log",
+      "bytes": 7503,
+      "sha256": "a1e72a0e6ddad7e7ab32ab7dc4c06e2f87ddbfd1765b4b19a4fac6396c924712"
+    }
+  ]
+}

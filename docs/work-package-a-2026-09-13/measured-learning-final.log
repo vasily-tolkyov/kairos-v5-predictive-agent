@@ -1,0 +1,25 @@
+✔ interrupted measured presses train their actual duration without relabeling the original request (99.601175ms)
+✖ a press with no measured physics interval is retained by identity without creating an action effect (3.086937ms)
+✔ legacy windows remain readable without manufacturing measured motor receipts (4.289066ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 194.679228
+
+✖ failing tests:
+
+test at evidence/learning-green-dist/test/measured-motor-learning.test.js:50:1
+✖ a press with no measured physics interval is retained by identity without creating an action effect (3.086937ms)
+  Error: experience-medium-invalid-populations
+      at ExperienceMedium.restore (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/experience-medium.js:875:19)
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/test/measured-motor-learning.test.js:57:39)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)

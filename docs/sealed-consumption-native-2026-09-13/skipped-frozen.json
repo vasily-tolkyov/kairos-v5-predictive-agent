@@ -1,0 +1,11 @@
+{
+  "version": "NativeSkippedCondition1",
+  "recordedAt": "2026-09-13T12:59:23.901Z",
+  "condition": "frozen",
+  "status": "not-launched",
+  "initialFork": "evidence/pr3-local-sealed-consumption-frozen-start",
+  "output": "evidence/pr3-local-sealed-consumption-frozen",
+  "reason": "Registered online integrity prerequisite failed: consumer backlog, telemetry loss and missing final observation. Preserve the failed attempt; do not run the dependent pair or silently retry.",
+  "predecessorReportSha256": "49a374a2c0e0eb442a998c51d65fce4b4ec65618efa6b792da86a763d4a03411",
+  "integrityAuditSha256": "72a2ade5cab45cc9b123b1a37a45fbee348075c4ff6681d6793cab3059533c9f"
+}

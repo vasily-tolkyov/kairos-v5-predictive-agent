@@ -1,0 +1,71 @@
+{
+  "version": "NativeSealedConsumptionProtocol1",
+  "registeredBeforeLaunch": true,
+  "scope": "Development follow-up to R8: immutable original-evidence digest reuse and exact geometric candidate indexing. No held-out or sustained-learning acceptance.",
+  "source": "evidence/pr3-local-native-smoke",
+  "sourceReportSha256": "e5b27d491e502f36e9454862dff932c4bd4efd72eda457047572e90de769ee99",
+  "sourceSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+  "sourceWorld": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+  "sourceWorldArchiveSha256": "8d7fb3423ef8778f7f49374e5d07ecfa52646f626a68ad2bcb938e9ca228ccb1",
+  "sourceWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+  "sourceLearningDigestUnderR4R5": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+  "goal": "evidence/pr3-local-timing-goal.json",
+  "goalSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+  "terminalGoal": "Original smoke development goal self position.2 < -5.5. Does not replace the original natural-world task goal < -14.5.",
+  "java": "D:/Kairos-Minecraft/runtime/jdk-21/bin/java.exe",
+  "server": "D:/Kairos-Minecraft/server/1.21.4/server.jar",
+  "environment": "natural",
+  "difficulty": "peaceful",
+  "worldSeed": "129604783",
+  "modelSeed": 317,
+  "port": 25638,
+  "steps": 32,
+  "seconds": 180,
+  "goalAfter": 0,
+  "taskOnly": false,
+  "frozenActor": "evidence/execution-builds/pr3-local-r9-sealed-consumption",
+  "pendingPinRecord": "docs/sealed-consumption-native-2026-09-13/launch-pins.json",
+  "conditionsInOrder": [
+    {
+      "condition": "online",
+      "initialFork": "evidence/pr3-local-sealed-consumption-start",
+      "output": "evidence/pr3-local-sealed-consumption",
+      "frozen": false
+    },
+    {
+      "condition": "frozen",
+      "initialFork": "evidence/pr3-local-sealed-consumption-frozen-start",
+      "output": "evidence/pr3-local-sealed-consumption-frozen",
+      "frozen": true
+    }
+  ],
+  "attemptsPerCondition": 1,
+  "change": "Reuse digests only for fully validated recursively frozen plain original data; preserve all mutable-clone and state-ownership checks. Index all existing surface positions in temporary unit cells and check all neighboring cells in original insertion order, keeping every possible match under unchanged .8/.35 radii, appearance score, ambiguity and eviction. Preserve R7 theta order and R8 window statistics.",
+  "tradeoff": "No intended learned/state/world change. All actual frame processing, first sealing validation and full evidence auditing still cost CPU. No expired frame is authorized and no support or motor budget is relaxed.",
+  "fixed": [
+    "terminal predicate and multi-frame confirmation",
+    "actual motor holds and release/stabilization behavior",
+    "atomic exact-frame expiry refusal",
+    "100/50 ms search budgets and node limits",
+    "independent original-window support thresholds",
+    "autonomous action selection",
+    "source world and model"
+  ],
+  "startGate": "Compile and full active software gate pass. Require 720 complete world-snapshot/novelty differential checks; 161 original R8 windows with exact trace and world equality plus checked owner-normalized retained snapshots; exact 150-window original R6 final-model replay. Commit source, freeze actor, verify source/build/dependency/goal/world/session identities, both original model digests, and the completed evidence upload before native launch.",
+  "stopAndAudit": "No concurrent CPU experiments or evidence uploads during this pair. Preserve all outcomes, bounds and overruns. Archive the stopped world then run stopped/capture/frame-state/freshness/coverage/live-restore audits and frozen theta equality. Preserve and report any initially accepted frames preceding the archived initial observation, as in R8 1/4; this development trial does not establish complete initialization reconstruction. First stopped integrity permits the registered frozen pair; no invisible retry.",
+  "measures": [
+    "execution and refusal counts over all 32 decisions",
+    "callback validation, real-frame processing, prediction, and deferred fitting durations separately",
+    "original deferred window IDs and exact theta write delta",
+    "all raw frame clocks, edges, source bindings, gaps and consumption watermarks",
+    "theta/affordance equality when frozen; actual window writes when online",
+    "supported executed forecast coverage and actual goal state",
+    "source/model/world hashes, RSS, state/checkpoint bytes and original stopped raw evidence"
+  ],
+  "interpretation": "R8 was online 0/32 and frozen 12/32, zero supported forecasts or goals, with a low-CPU upload running. Compare availability descriptively, not as an isolated causal speed estimate. Retention, history dependence, complete initial capture, timed rollout, causal composition and sustained autonomy remain open.",
+  "preregisteredBaseline": {
+    "online": "evidence/pr3-local-window-statistics",
+    "frozen": "evidence/pr3-local-window-statistics-frozen",
+    "actorSource": "4b1adba4d9a70940ed8c8f96c3e77b1de954c98d"
+  }
+}

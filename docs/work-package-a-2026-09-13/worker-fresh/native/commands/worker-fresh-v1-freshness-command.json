@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1/scripts/audit-native-worker-freshness.mjs",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1-freshness-audit.json"
+  ],
+  "exitCode": 0,
+  "stdout": "{\"output\":\"/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1-freshness-audit.json\",\"status\":\"passed\",\"decisions\":8,\"executedActions\":4,\"refusedDecisions\":4,\"refusalReasons\":{\"action-start-expired\":4},\"freshExecutedForecasts\":4}\n",
+  "stderr": "",
+  "completedAt": "2026-09-13T02:55:52.651103+00:00"
+}
