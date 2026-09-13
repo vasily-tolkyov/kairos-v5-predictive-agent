@@ -1,0 +1,1099 @@
+{
+  "version": "StageOneNativeAudit2",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-stage-one-pair-08-erased",
+  "status": "audited",
+  "reportSha256": "3e94407835abf0f7cb88f0f3afc5b105599bda561401cf0a539139862b48135b",
+  "sessionSha256": "1e4c14825f81fe5190a592aacdfd92aec9265d24c4c98d36e412210e72979190",
+  "auditScriptSha256": "2187a4d93f98e2a5fa489c9dbd4d7041e7b66e9e22f15da864cdc283ee7b5d96",
+  "failures": [],
+  "scope": "Stopped native action/forecast audit plus private discarded chronological replay for accounting and CPU diagnosis. Replay supplies zero new physical actions, independent experience or capability.",
+  "replayNewPhysicalActions": 0,
+  "replayNewIndependentWindows": 0,
+  "capabilityEstablished": false,
+  "privateReplay": {
+    "exactFinalModel": true,
+    "finalDigest": "66bb68ccf0722783813d9b2e118cbd87cc2d4b3cb6a50f37a62fa2bef8b7098a",
+    "totalLearningMs": 0,
+    "topSelfMilliseconds": [
+      [
+        "equal @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/audit-stage-one-movement.mjs:28",
+        191.59899999999993
+      ],
+      [
+        "utf8Slice @ :0",
+        89.29500000000002
+      ],
+      [
+        "post @ node:inspector:115",
+        40.842
+      ],
+      [
+        "writeSync @ :0",
+        35.68
+      ],
+      [
+        " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-stage-one-r2/dist/src/util.js:10",
+        13.627000000000002
+      ],
+      [
+        "(garbage collector) @ :0",
+        13.387
+      ],
+      [
+        "update @ :0",
+        8.379
+      ],
+      [
+        "_copyActual @ node:buffer:258",
+        6.712000000000001
+      ],
+      [
+        "toString @ node:buffer:862",
+        6.6690000000000005
+      ],
+      [
+        "allocate @ node:buffer:460",
+        6.414
+      ],
+      [
+        "(idle) @ :0",
+        4.912999999999999
+      ],
+      [
+        " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/audit-stage-one-movement.mjs:0",
+        3.423
+      ],
+      [
+        "canonical @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-stage-one-r2/dist/src/util.js:5",
+        3.354
+      ],
+      [
+        "createUnsafeBuffer @ node:internal/buffer:1088",
+        2.838
+      ],
+      [
+        "dispatch @ :0",
+        2.13
+      ],
+      [
+        "openFileHandle @ :0",
+        1.739
+      ],
+      [
+        "processChunkSync @ node:zlib:400",
+        1.726
+      ],
+      [
+        "validateEvent @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-stage-one-r2/dist/src/events.js:76",
+        1.675
+      ],
+      [
+        "readFileHandle @ node:internal/fs/promises:510",
+        1.635
+      ],
+      [
+        "(program) @ :0",
+        1.586
+      ]
+    ]
+  },
+  "serverPosition": [
+    -1.5000000000000024,
+    64,
+    0.1284908404906576
+  ],
+  "finalPositionDifference": 0,
+  "metrics": {
+    "decisions": 48,
+    "executed": 48,
+    "refused": 0,
+    "executedFraction": 1,
+    "writes": 0,
+    "qualifiedOriginalMoves": 48,
+    "seconds": 37.4619678,
+    "choicePreparationP95Ms": 1.6324000000022352,
+    "learningP95Ms": 0,
+    "supportedPredictions": 0,
+    "supportedCorrect": 0,
+    "missingPredictions": 48,
+    "unsupportedPredictions": 0,
+    "allAvailablePredictions": 0,
+    "allAvailableCorrect": 0,
+    "blocked": 6,
+    "moving": 42,
+    "rawFrames": 750,
+    "rawRecords": 750,
+    "telemetryGaps": 0,
+    "byDirection": {
+      "forward": 18,
+      "back": 16,
+      "left": 7,
+      "right": 7
+    },
+    "learnedTaskChoices": 0
+  },
+  "acquisitionGate": null,
+  "acquisitionGatePassed": null,
+  "outcomes": [
+    {
+      "decision": 1,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-1",
+      "file": "events/0000001.json.gz",
+      "sha256": "fe920884b733b98c083e36ca09d440c0fcc74fb384a6ce8875d0ec8e61a546b7",
+      "direction": "right",
+      "actual": [
+        0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 2,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-2",
+      "file": "events/0000002.json.gz",
+      "sha256": "2bcbaa36f6ebf1e946968d18d8d238ad09cb1c4883036a4486577a336cf7c0bb",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364463
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 3,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-3",
+      "file": "events/0000003.json.gz",
+      "sha256": "9c6a59741f2efeffb7d0347530adf3a13f064dbf24dfaa82c8896253f150cfac",
+      "direction": "right",
+      "actual": [
+        0.8571697198364465,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 4,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-4",
+      "file": "events/0000004.json.gz",
+      "sha256": "9a42846334eb0ccd58b717c83413603328655a9e03297a4549e1219473050f5a",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.057169719836446475
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 5,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-5",
+      "file": "events/0000005.json.gz",
+      "sha256": "17337bfe85d7d81cef170e9e3c9491f8ed868abe218259fbd8ec4d94387e9541",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 6,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-6",
+      "file": "events/0000006.json.gz",
+      "sha256": "82718c56db8ca3ebf37daa61dc16d0072ea08692d07a7332f9ea46b0a4d9f9c5",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 7,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-7",
+      "file": "events/0000007.json.gz",
+      "sha256": "7e12bdb7888aa9ed893d70efc32430909e3af1bd87ff079fa015f2416b9d26ab",
+      "direction": "right",
+      "actual": [
+        0.8571697198364467,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 8,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-8",
+      "file": "events/0000008.json.gz",
+      "sha256": "774c71acf2b5e95c3e4518443737c576304384cb17984506610e903ee3e5c575",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 9,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-9",
+      "file": "events/0000009.json.gz",
+      "sha256": "4213930c4deb3f031da9beab69bfe7c6626b7c135b0bc5db1eab1b4dfa47fd9e",
+      "direction": "left",
+      "actual": [
+        -0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 10,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-10",
+      "file": "events/0000010.json.gz",
+      "sha256": "6b217eb7a5c803cb5609dd74cd577b92d3b35495016d04e64f61474610ac4d04",
+      "direction": "right",
+      "actual": [
+        0.8571697198364465,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 11,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-11",
+      "file": "events/0000011.json.gz",
+      "sha256": "63e4bcb3eab810fe80015da94638a774400b810efb6e65aa23d33e6d8b884793",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 12,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-12",
+      "file": "events/0000012.json.gz",
+      "sha256": "7e25cad5ce08712596bf8f4126dd888a4a3b0d6a4e750a354bd7a4be23e152cc",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 13,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-13",
+      "file": "events/0000013.json.gz",
+      "sha256": "4e1ea637979d423477e461c8a57372495c7794fd94dfc3c440132d06427c858b",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 14,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-14",
+      "file": "events/0000014.json.gz",
+      "sha256": "a2bfe4aae44151870595364c83cfcf0f84c06b51fa7f65b7765a8c2d25918dc7",
+      "direction": "right",
+      "actual": [
+        0.8571697198364465,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 15,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-15",
+      "file": "events/0000015.json.gz",
+      "sha256": "a8526cde242959b4b2e608e72aa9d9214aecfb3391486d0257e0f38d4ae56bf7",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 16,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-16",
+      "file": "events/0000016.json.gz",
+      "sha256": "bea7451147c7b6bd91d38f570b52aa50648e3ce0ea3fbb966016d6ae290fa876",
+      "direction": "left",
+      "actual": [
+        -0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 17,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-17",
+      "file": "events/0000017.json.gz",
+      "sha256": "0a8fd003128d1fa4b651dfcb6b3685d0a2b6387a9e0fed6ac28796b340f534bd",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 18,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-18",
+      "file": "events/0000018.json.gz",
+      "sha256": "9a8765ee77161b27e7cf8f52abd2646d7ff54c343bdfaaebbf46870656977d47",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 19,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-19",
+      "file": "events/0000019.json.gz",
+      "sha256": "c58596abaa09d12811f79bb1825973ef269768ba47d271e738ee6927f9bbf4f5",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 20,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-20",
+      "file": "events/0000020.json.gz",
+      "sha256": "3154b0b7610c0e8eb8dad72a9c35b2d76f92103177b352aadcd3e117271cb43b",
+      "direction": "left",
+      "actual": [
+        -0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 21,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-21",
+      "file": "events/0000021.json.gz",
+      "sha256": "32a1996a2d27344e3af40a44d4bc4bf128d546ffd64d1290972f7bb7dd7944bd",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 22,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-22",
+      "file": "events/0000022.json.gz",
+      "sha256": "dab6cb64a6866c29e39fb3ec9354a1a46a16120bc8483df79358875046fe6c85",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 23,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-23",
+      "file": "events/0000023.json.gz",
+      "sha256": "d48a35aa6d93821ea55aad2b98854fcaedffad8d0a606f6af6c581b24d8ca654",
+      "direction": "right",
+      "actual": [
+        0.8571697198364465,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 24,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-24",
+      "file": "events/0000024.json.gz",
+      "sha256": "470e66495ceda90faec8729831ec818c05daa01d72aa32ca931ee8ad1f321ea1",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.40000000000000036
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 25,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-25",
+      "file": "events/0000025.json.gz",
+      "sha256": "042e275b7c2cd0dd11b144974fcda38cd7222d3365c5f01f14c023e93c4f12c6",
+      "direction": "right",
+      "actual": [
+        0.8571697198364465,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 26,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-26",
+      "file": "events/0000026.json.gz",
+      "sha256": "865cabcdfdd474d3ce00924cad4387743eff951c169b6096dea2378071784eb0",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 27,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-27",
+      "file": "events/0000027.json.gz",
+      "sha256": "e2ddc4436e8d37bbbf94c1bc4b7cc5273fe3633ade3c4c3d3a1c29d1a99cd7b9",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 28,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-28",
+      "file": "events/0000028.json.gz",
+      "sha256": "2a304cd6162f89d52f709ce37487b5c7878631252855af7003f51092ebca0834",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 29,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-29",
+      "file": "events/0000029.json.gz",
+      "sha256": "69b54ea8fafbd013757b9329809d7ca36480d77601a88be17384b6d116bf226f",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 30,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-30",
+      "file": "events/0000030.json.gz",
+      "sha256": "1f2df763ad95fb44e10904512d9fcbd671a0ce8e00ac3119547439ecd939bfd0",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 31,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-31",
+      "file": "events/0000031.json.gz",
+      "sha256": "0f8633eb49c2985cc1cb945a040f283a53404239245758eecb134a7854c438d2",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364472
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 32,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-32",
+      "file": "events/0000032.json.gz",
+      "sha256": "cb78dfdf1a78e3d64f862356686f6e993cbab84c14e773489d487e6e5f9c31d4",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364469
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 33,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-33",
+      "file": "events/0000033.json.gz",
+      "sha256": "ef7709fee6bf9252e6f99a802c33147f4b8dab8a07dedb6e4391f2bdeba97963",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364464
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 34,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-34",
+      "file": "events/0000034.json.gz",
+      "sha256": "de5f38167a77c369ef3fb80b33b73c8dcf0822999550d094a90c3b22734d3d30",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364465
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 35,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-35",
+      "file": "events/0000035.json.gz",
+      "sha256": "1aec58fbd993a6c77dfd7538f694d21d27c4de6362856ac45d04fae86635cb09",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364472
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 36,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-36",
+      "file": "events/0000036.json.gz",
+      "sha256": "3a5172418f576bfe374e120e1d3cbb74f5e9cd231a1767fa7fca4ee3af51353b",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364469
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 37,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-37",
+      "file": "events/0000037.json.gz",
+      "sha256": "5044a7eb7fc1f933d9ff456393973423fd997ff20479f482f26e50fb47c22ce1",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364469
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 38,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-38",
+      "file": "events/0000038.json.gz",
+      "sha256": "f14daaf0a674753145d00179d46a504343ef0cd539e20d7892aded50514c1365",
+      "direction": "left",
+      "actual": [
+        -0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 39,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-39",
+      "file": "events/0000039.json.gz",
+      "sha256": "a97c51ba2dd3000621536063b109964ec476e2b0e87c06a37769de56a2e3fd85",
+      "direction": "left",
+      "actual": [
+        -0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 40,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-40",
+      "file": "events/0000040.json.gz",
+      "sha256": "38eeb1e42d32f5a7b42b5ae5e3b8ddbe6c08b885ba15e568c9efae647acfe3f3",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.857169719836447
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 41,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-41",
+      "file": "events/0000041.json.gz",
+      "sha256": "d1d7ffaf4ad3afb5f289490e5bf07d5535a3139da43e1beb3dc515afb769ff61",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 42,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-42",
+      "file": "events/0000042.json.gz",
+      "sha256": "0e4824c1e898e7b099fe483c263a16f43dd2d866c8682c687a59b1565ec88b8e",
+      "direction": "left",
+      "actual": [
+        -0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 43,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-43",
+      "file": "events/0000043.json.gz",
+      "sha256": "21d574207eedd91db4fd58544537cacc76496f95d82625053958c760f096da22",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 44,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-44",
+      "file": "events/0000044.json.gz",
+      "sha256": "5753595501a4cfdca24c13e63cf892e3d0b4805b1f505d17b5ed5d75e25495e2",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 45,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-45",
+      "file": "events/0000045.json.gz",
+      "sha256": "ce6022b63b97568f9b7a0df8dbf7c53f139627bee4f4c4dc8f705a3c0d6d036b",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364466
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 46,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-46",
+      "file": "events/0000046.json.gz",
+      "sha256": "fdb70f628f110f653f7bc15067c231738e0962e8eba34292ddb2e1c9269d7284",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364469
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 47,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-47",
+      "file": "events/0000047.json.gz",
+      "sha256": "addeb37834f96f514530e985545de781ad4d5ff10dbc9037a1e440b40a050d14",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364466
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 48,
+      "eventId": "8ba0f63f-822f-498a-ba08-7a9e2eeb1056:event-48",
+      "file": "events/0000048.json.gz",
+      "sha256": "ba0828a70f49f1b2216c0603fe34733ff7474b2557953d968f5aa58b47f568db",
+      "direction": "left",
+      "actual": [
+        -0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    }
+  ]
+}

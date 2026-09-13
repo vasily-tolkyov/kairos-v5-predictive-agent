@@ -1,0 +1,3 @@
+{"decisions":16,"executed":16,"writes":0,"position":[-0.8428302801635532,64,1.8428302801635534],"seconds":11.577886399999999}
+{"decisions":32,"executed":32,"writes":0,"position":[1.4143394396728934,64,0.9856605603271056],"seconds":24.649987099999997}
+{"status":"goal-verified","decisions":47,"executed":47,"writes":0,"passiveWindows":48,"seconds":36.385568899999996}

@@ -1,0 +1,30 @@
+{
+  "version": "StageOneEvidenceCopies1",
+  "note": "R3 final software gate is full-gate-02; an earlier draft also balanced task probes and was narrowed to training only before any native run. Raw checks are preserved.",
+  "files": [
+    {
+      "source": "evidence/pr3-stage-one-preparation/r3-compile-01.log",
+      "path": "software/r3-compile-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/r3-compile-02.log",
+      "path": "software/r3-compile-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/r3-full-gate-01.log",
+      "path": "software/r3-full-gate-01.log",
+      "bytes": 33294,
+      "sha256": "46903ae0123858ec77531a79b4266cd3ac7dafe231b3324a1dc87b6e0ab5ad12"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/r3-full-gate-02.log",
+      "path": "software/r3-full-gate-02.log",
+      "bytes": 33300,
+      "sha256": "4dd089dbee37d34adbfcd545f748ef167e984df6cb897259addc9f0f809fcd30"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"decisions":16,"executed":16,"writes":0,"position":[2.157169719836446,64,2.7],"seconds":12.032523699999999}
+{"decisions":32,"executed":32,"writes":0,"position":[1.2999999999999994,64,2.089859965319371],"seconds":23.3264046}
+{"decisions":48,"executed":48,"writes":0,"position":[1.3,64,0.9856605603271056],"seconds":35.146417}
+{"status":"budget-paused","decisions":48,"executed":48,"writes":0,"passiveWindows":49,"seconds":35.1465365}

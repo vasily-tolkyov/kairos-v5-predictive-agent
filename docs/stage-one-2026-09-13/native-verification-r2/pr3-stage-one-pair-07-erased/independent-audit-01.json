@@ -1,0 +1,663 @@
+{
+  "version": "StageOneNativeAudit2",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-stage-one-pair-07-erased",
+  "status": "audited",
+  "reportSha256": "3e52c6ca99e49dc928e95058b066c12e6dc838d89483c85eec3432abefa7b62a",
+  "sessionSha256": "4e0fa7c8357604fae14a2385238f2d63b36db473b0456832619362a3cc11617b",
+  "auditScriptSha256": "2187a4d93f98e2a5fa489c9dbd4d7041e7b66e9e22f15da864cdc283ee7b5d96",
+  "failures": [],
+  "scope": "Stopped native action/forecast audit plus private discarded chronological replay for accounting and CPU diagnosis. Replay supplies zero new physical actions, independent experience or capability.",
+  "replayNewPhysicalActions": 0,
+  "replayNewIndependentWindows": 0,
+  "capabilityEstablished": false,
+  "privateReplay": {
+    "exactFinalModel": true,
+    "finalDigest": "66bb68ccf0722783813d9b2e118cbd87cc2d4b3cb6a50f37a62fa2bef8b7098a",
+    "totalLearningMs": 0,
+    "topSelfMilliseconds": [
+      [
+        "equal @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/audit-stage-one-movement.mjs:28",
+        114.92600000000002
+      ],
+      [
+        "utf8Slice @ :0",
+        50.294
+      ],
+      [
+        "post @ node:inspector:115",
+        29.099
+      ],
+      [
+        " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-stage-one-r2/dist/src/util.js:10",
+        10.045
+      ],
+      [
+        "(garbage collector) @ :0",
+        10.021
+      ],
+      [
+        "writeSync @ :0",
+        9.887
+      ],
+      [
+        "_copyActual @ node:buffer:258",
+        8.245000000000001
+      ],
+      [
+        "(idle) @ :0",
+        6.562
+      ],
+      [
+        "toString @ node:buffer:862",
+        6.44
+      ],
+      [
+        "allocate @ node:buffer:460",
+        3.367
+      ],
+      [
+        "update @ :0",
+        3.364
+      ],
+      [
+        "createUnsafeBuffer @ node:internal/buffer:1088",
+        1.682
+      ],
+      [
+        "normalizeString @ node:path:92",
+        1.663
+      ],
+      [
+        "Gunzip @ node:zlib:749",
+        1.647
+      ],
+      [
+        "dispatch @ :0",
+        1.579
+      ],
+      [
+        "getHighWaterMark @ node:internal/streams/state:33",
+        1.576
+      ]
+    ]
+  },
+  "serverPosition": [
+    1.728678879345787,
+    64,
+    -1.5858485991822346
+  ],
+  "finalPositionDifference": 0,
+  "metrics": {
+    "decisions": 27,
+    "executed": 27,
+    "refused": 0,
+    "executedFraction": 1,
+    "writes": 0,
+    "qualifiedOriginalMoves": 27,
+    "seconds": 21.123931600000002,
+    "choicePreparationP95Ms": 2.73240000000078,
+    "learningP95Ms": 0,
+    "supportedPredictions": 0,
+    "supportedCorrect": 0,
+    "missingPredictions": 27,
+    "unsupportedPredictions": 0,
+    "allAvailablePredictions": 0,
+    "allAvailableCorrect": 0,
+    "blocked": 5,
+    "moving": 22,
+    "rawFrames": 424,
+    "rawRecords": 424,
+    "telemetryGaps": 0,
+    "byDirection": {
+      "forward": 9,
+      "back": 6,
+      "left": 7,
+      "right": 5
+    },
+    "learnedTaskChoices": 0
+  },
+  "acquisitionGate": null,
+  "acquisitionGatePassed": null,
+  "outcomes": [
+    {
+      "decision": 1,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-1",
+      "file": "events/0000001.json.gz",
+      "sha256": "4f7c1f154bde114a9f139c00cd4cc8c54074a14f9fece94221888e0952fd6102",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364472
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 2,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-2",
+      "file": "events/0000002.json.gz",
+      "sha256": "55332e3407b8d6316b1acbf3372c4e7396c7c776158bc2eb5e34a5d37a91f231",
+      "direction": "left",
+      "actual": [
+        -0.19999999999999996,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 3,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-3",
+      "file": "events/0000003.json.gz",
+      "sha256": "c605eb3ec3aa59073d48ff365ab3ed35c7a9dee9594ea7c71806bee4391d968a",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 4,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-4",
+      "file": "events/0000004.json.gz",
+      "sha256": "36f6b4444658cd270f754693009a8df80a2b72072ff949e393d10a2cefad51da",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 5,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-5",
+      "file": "events/0000005.json.gz",
+      "sha256": "2d123f962070852a701108eb7c61234114038c60779bc5a6861174ecac25c93c",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 6,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-6",
+      "file": "events/0000006.json.gz",
+      "sha256": "37da3eacb03879c892be08f363b98de13fc156b8694fb2f357ea52d6eef64ebe",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.857169719836447
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 7,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-7",
+      "file": "events/0000007.json.gz",
+      "sha256": "c1b9c520db7d57e553aa4cdf711b6cc72c175edb842083d40268e36deb6c37ad",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 8,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-8",
+      "file": "events/0000008.json.gz",
+      "sha256": "2f0194cc3615b5886f8da2a75943d4cd6539a9287c57a6abd8de70b2ecca5309",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 9,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-9",
+      "file": "events/0000009.json.gz",
+      "sha256": "ae4f68c041c40daaf91796de3469115e8aefad1b6ff20f651850fa8a001462e3",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364461
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 10,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-10",
+      "file": "events/0000010.json.gz",
+      "sha256": "c7f8773b1042ddce0b05c25cf7ba8b83bcc944ff9b7718da5c3d05709c574718",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.3428302801635543
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 11,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-11",
+      "file": "events/0000011.json.gz",
+      "sha256": "b4abe338faf32f0b05315dad69f7908f6de14a9b0adce905ce4272fbff188096",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 12,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-12",
+      "file": "events/0000012.json.gz",
+      "sha256": "86561a2ba92727f52234ebb9f7f95c862ec040e86fc266471e0194db023a06f7",
+      "direction": "right",
+      "actual": [
+        0.8571697198364467,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 13,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-13",
+      "file": "events/0000013.json.gz",
+      "sha256": "a2d1b8fb57487170c74027884408b4c23c939613195c365bd03508dea216190e",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364472
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 14,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-14",
+      "file": "events/0000014.json.gz",
+      "sha256": "a9d699e7e0d2f4b4f5cb26b5089fbb62cadd198ae842bc5abe0e4e0d3cdc3c84",
+      "direction": "left",
+      "actual": [
+        -0.8571697198364467,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 15,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-15",
+      "file": "events/0000015.json.gz",
+      "sha256": "9065fdfdf0ee6a5ed2ee523782236435b3f7b03c6bd4f822e9294bdd0019a9b7",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364469
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 16,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-16",
+      "file": "events/0000016.json.gz",
+      "sha256": "877eb19cede9144ac49dd2efcb260933ce2de27f0552735908728e44130262da",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364469
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 17,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-17",
+      "file": "events/0000017.json.gz",
+      "sha256": "c111fe614d6384598177038070ad9df489dc1f9e81c650624128e8494da9adf5",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 18,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-18",
+      "file": "events/0000018.json.gz",
+      "sha256": "aa341cc0f87979db336c5a5ea1f3190aa75a8f6dc8a3dff4b493f8f44cc96775",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        0
+      ],
+      "blocked": true,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 19,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-19",
+      "file": "events/0000019.json.gz",
+      "sha256": "7cbeb6235038be157fe3daffe6b573ff72621ad5159340cc0e405ec4b90fdb59",
+      "direction": "right",
+      "actual": [
+        0.8571697198364467,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 20,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-20",
+      "file": "events/0000020.json.gz",
+      "sha256": "8670eefd2874a71111fe11cf17310448ed7b84efc388fa2f39f5490eb15ba0be",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364466
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 21,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-21",
+      "file": "events/0000021.json.gz",
+      "sha256": "7ac6ea3acd9345ea0beb911ff17623bc6b467181715559ee2b35d5a25f3c7885",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364469
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 22,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-22",
+      "file": "events/0000022.json.gz",
+      "sha256": "e781c76abee3d3a34c25063067f65f945c2eaa53462e49bf6c3244584c14c2cf",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.857169719836447
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 23,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-23",
+      "file": "events/0000023.json.gz",
+      "sha256": "6698a9672de77da892063fba782f19519f0e355edce3d8f7870107096cb67365",
+      "direction": "back",
+      "actual": [
+        0,
+        0,
+        0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 24,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-24",
+      "file": "events/0000024.json.gz",
+      "sha256": "789549d1a57019c44050a4563e8a2b0eeb06288c3517af2449ab2149db27bdae",
+      "direction": "right",
+      "actual": [
+        0.8571697198364469,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 25,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-25",
+      "file": "events/0000025.json.gz",
+      "sha256": "7d2f7078324e37b0e8874e950d92df414f906ae96487e418aba64db50093a9aa",
+      "direction": "right",
+      "actual": [
+        0.8571697198364469,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 26,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-26",
+      "file": "events/0000026.json.gz",
+      "sha256": "a995f483c6dc947cf797cbb667ddfb5810fcc31cdf159d4044b091ec0d8c1b54",
+      "direction": "forward",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 27,
+      "eventId": "744d1bda-1326-433a-9a06-6f7d47ffd0de:event-27",
+      "file": "events/0000027.json.gz",
+      "sha256": "ab6cdecca11f6fe0cbcfed5568c37760797b27b5d75df77eb80aa69082e2e5ae",
+      "direction": "right",
+      "actual": [
+        0.8571697198364465,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": null,
+      "selectionSupported": false,
+      "selectionError": null,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import type { Observation, RealEvent, XYZ } from './contracts.js';
+import type { ActionCue, Observation, RealEvent, XYZ } from './contracts.js';
 import { createHash } from 'node:crypto';
 import type { ActionOfferV1 } from './control/contracts.js';
 import { ContextualReadout, type ContextualReadoutSnapshot } from './contextual-readout.js';
@@ -83,7 +83,12 @@ export class StageOneMovement {
 
 export class StageOneController {
   #choices = 0;
+  #executed = new Map<string, number>();
   constructor(readonly model: StageOneMovement, readonly seed: number) {}
+  recordExecution(cue: ActionCue): void {
+    if (cue.kind !== 'move' || cue.parameters.ticks !== 4) throw new Error('invalid-stage-one-exposure');
+    const key = identity({ cue }); this.#executed.set(key, (this.#executed.get(key) ?? 0) + 1);
+  }
   choose(observation: Observation, available: readonly ActionOfferV1[], goal: XYZ | null) {
     const ordinal = this.#choices++, distance = (position: XYZ) => goal
       ? Math.hypot(position[0] - goal[0], position[2] - goal[2]) : 0;
@@ -91,7 +96,13 @@ export class StageOneController {
       const prediction = this.model.predict(observation, offer);
       const next = prediction.displacement ? observation.self.position.map((value, i) => value + prediction.displacement![i]!) as unknown as XYZ : null;
       return { offer, prediction, gain: next && prediction.supported ? distance(observation.self.position) - distance(next) : null,
-        curiosity: 1 / (1 + prediction.samples) + Number(!prediction.supported),
+        // A poorly calibrated leaf must not monopolize all remaining probes.
+        // Balance actual motor exposures in this episode; no result, route,
+        // goal label or imagined event increments these four counters.
+        // Keep the terminal-task policy identical to the prior actor so this
+        // experiment changes acquisition coverage, not both sides of testing.
+        curiosity: goal === null ? 1 / (1 + (this.#executed.get(prediction.motor) ?? 0))
+          : 1 / (1 + prediction.samples) + Number(!prediction.supported),
         tie: sha({ seed: this.seed, ordinal, motor: prediction.motor }) };
     });
     // A terminal-only goal ranks learned, supported one-step effects. When

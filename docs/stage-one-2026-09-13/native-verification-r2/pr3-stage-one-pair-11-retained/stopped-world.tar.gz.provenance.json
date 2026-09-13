@@ -1,0 +1,9 @@
+{
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-stage-one-pair-11-retained",
+  "stoppedAt": "2026-09-13T14:19:21.557Z",
+  "levelName": "world-v5-physical-control",
+  "regions": 4,
+  "output": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-stage-one-pair-11-retained\\stopped-world.tar.gz",
+  "bytes": 447956,
+  "sha256": "b68cd62d8c8e27e5079408993082ad50fb8ce0426449cb97e2c486c7254abf87"
+}

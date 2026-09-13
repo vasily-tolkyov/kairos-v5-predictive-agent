@@ -45,7 +45,11 @@ const controller = new StageOneController(model, Number(values.seed));
 const predecessor = values.continue ? JSON.parse(await readFile(resolve(values.continue, 'results.json'))) : null;
 if (predecessor) {
   assert(predecessor.stoppedAt && predecessor.status === 'prepared');
-  assert.equal(predecessor.stageCase, values.case); assert.equal(predecessor.protocolSha256, hash(protocolBytes));
+  assert.equal(predecessor.stageCase, values.case);
+  assert.equal(predecessor.protocolSha256, protocol.preparedProtocolSha256 ?? hash(protocolBytes));
+  assert.deepEqual(predecessor.protocol.setupCommands, protocol.setupCommands);
+  assert.equal(predecessor.protocol.worldSeed, protocol.worldSeed);
+  assert.deepEqual(predecessor.protocol.testCases.find(value => value.id === values.case), spec);
   assert.equal(predecessor.final.executed, 0); assert.equal(predecessor.final.writes, 0);
 }
 const runtimeRoot = predecessor?.runtimeRoot ?? resolve(output, 'runtime');
@@ -123,6 +127,7 @@ try {
     decisions++; await archivePassive(receipt.precedingPassiveEvents ?? []);
     let comparison = null, learning = null, learningMs = 0, eventPath = null;
     if (receipt.event) {
+      controller.recordExecution(receipt.event.cue);
       executed++; eventPath = 'events/' + String(executed).padStart(7, '0') + '.json.gz';
       await writeFile(resolve(output, eventPath), await zip(JSON.stringify(receipt.event)), { flag: 'wx' });
       const first = receipt.event.frames[0], last = receipt.event.frames.at(-1);

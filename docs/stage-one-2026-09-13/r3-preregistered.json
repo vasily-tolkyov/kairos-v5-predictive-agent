@@ -1,0 +1,145 @@
+{
+  "version": "StageOneMovementProtocol1",
+  "registeredAt": "2026-09-13T14:33:28.462897+00:00",
+  "registeredBeforeFirstNativeRun": false,
+  "scope": "New independent stage-one task. Historical original z < -14.5 task and all old failures are unchanged. Endpoint movement learning only.",
+  "hypothesis": "Balancing actual primitive exposures during the same goal-free 128-decision acquisition improves coverage of movement/obstruction relationships and the fixed retained-versus-erased task benefit. Frozen-test choice logic remains identical to R2.",
+  "worldSeed": 9132701,
+  "difficulty": "peaceful",
+  "setupCommands": [
+    "fill -3 63 -3 3 63 3 minecraft:smooth_stone",
+    "fill -3 64 -3 3 68 3 minecraft:air",
+    "fill -3 64 -3 -3 65 3 minecraft:stone",
+    "fill 3 64 -3 3 65 3 minecraft:stone",
+    "fill -3 64 -3 3 65 -3 minecraft:stone",
+    "fill -3 64 3 3 65 3 minecraft:stone",
+    "fill 0 64 0 0 65 1 minecraft:stone",
+    "setworldspawn 1 64 1"
+  ],
+  "training": {
+    "id": "acquisition-01",
+    "start": [
+      1.5,
+      64,
+      1.5
+    ],
+    "yawDegrees": 180,
+    "goal": null,
+    "selection": "Own least-executed motor priority among the four original movement offers, deterministic seeded ties; zero training goal or prescribed route."
+  },
+  "trainingBudget": {
+    "decisions": 128,
+    "seconds": 240
+  },
+  "testBudget": {
+    "decisions": 48,
+    "seconds": 90
+  },
+  "goal": [
+    1.5,
+    64,
+    -1.5
+  ],
+  "goalTolerance": 0.55,
+  "goalConfirmations": 3,
+  "predictionErrorTolerance": 0.15,
+  "blockedDisplacementThreshold": 0.05,
+  "controllerSeeds": [
+    317,
+    503,
+    911
+  ],
+  "testCases": [
+    {
+      "id": "pose-1",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 0
+    },
+    {
+      "id": "pose-2",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 90
+    },
+    {
+      "id": "pose-3",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 180
+    },
+    {
+      "id": "pose-4",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 270
+    }
+  ],
+  "firstLaunch": {
+    "condition": "training",
+    "case": "acquisition-01",
+    "controllerSeed": 317,
+    "attempts": 1,
+    "output": "evidence/pr3-stage-one-acquisition-03"
+  },
+  "acquisitionGate": {
+    "completedDecisions": 128,
+    "minimumExecuted": 116,
+    "minimumQualifiedOriginalWrites": 80,
+    "maximumChoicePlusPreparationP95Ms": 20,
+    "maximumLearningP95Ms": 20,
+    "telemetryGaps": 0,
+    "faults": 0,
+    "supportAndPredictionErrors": "Report all pre-update actual-start forecasts including absent, unsupported and wrong; not a threshold relaxation or native task benefit claim."
+  },
+  "pairedTestGate": "Only after acquisition integrity/timeliness passes and the stopped model is pinned. Prepare one stopped zero-action body/world checkpoint per registered pose; fork the same original for every condition/seed. Frozen retained uses the same pretest donor, erased starts with empty StageOneMovement. No test fitting or exposure donated between tests. Alternate condition order by pair index; 4 poses x 3 seeds = 12 pairs. Do not run a missing dependent condition after integrity failure.",
+  "stageAcceptance": {
+    "integrity": "All 24 stopped test runs have complete original windows, bound actual-start forecasts, peaceful native engine confirmation and unchanged frozen model digests. Missing/faulted attempts remain in reporting and prohibit acceptance.",
+    "retainedSuccessesAtLeast": 9,
+    "pairs": 12,
+    "successRateGainAtLeast": 0.25,
+    "pairedSuccessSignTestOneSidedPAtMost": 0.05,
+    "penalizedActionCost": "Every failure costs the full 48-decision cap; learned median paired cost must improve, report actual wall time too.",
+    "executedFractionAtLeast": 0.9,
+    "supportedKeyPredictionCoverageAtLeast": 0.7,
+    "supportedPlanarPredictionMatchedFractionAtLeast": 0.85,
+    "guidedPredictions": "Score actual-start predictions and separately compare selection-frame forecast to avoid masking stale action guidance. Report missing/unsupported/wrong over all executed moves; .15 block Euclidean planar error fixed.",
+    "obstructionEvidence": "At least 8 genuinely blocked and 8 clearly moving training windows; report pre-update and frozen-test errors by measured blocked/moving groups. Conditional relationship must be data-induced; never inject collision law or material label."
+  },
+  "sourcePolicy": "StageOneMovement2 has no old ExperienceMedium calibration. Reuse existing ContextualReadout threshold rules (8 original-window calibration, .8 accuracy and .05 fit error). Only selected original executed four-tick movement windows train. Passive windows/telemetry remain original archival evidence and supply no theta updates in this separate endpoint prototype. Queries and frozen controls never fit.",
+  "budgetsAndControls": "Per motor retain at most 128 rows, total at most 4 motors/512 rows, 8 measured inputs/2 outputs. Ledger capacity512 with existing bounded retired filter. No continuous-state or long-term budget claim. No concurrent CPU work or uploads during native. No hidden retries, expiry relaxation, repeated evidence credit, external model or route solver.",
+  "twoRoundStop": "If the initial result identifies an obstacle, preregister a targeted change and same metrics. After two targeted changes to the same obstacle fail to improve its key metric, stop and deliver causes and an alternative design for user decision. Do not expand budget, mechanism count or scene complexity to continue.",
+  "registeredBeforeThisNativeRun": true,
+  "baseline": "evidence/pr3-stage-one-paired-summary-01.json",
+  "change": "Only goal-free probe priority changes: least actually executed four-tick motor first, seeded ties. Count after actual execution only, never a refused or imagined motor. The four counters are episode-local sampling bookkeeping, carry no effects and are not read by terminal-goal selection. StageOneMovement2 fitting, original-byte identities, sensors, controller task policy, world, goals, 128/240 acquisition and 48/90 tests remain unchanged.",
+  "baselineMetrics": {
+    "retainedSuccesses": 6,
+    "erasedSuccesses": 3,
+    "pairs": 12,
+    "supportedPredictions": 228,
+    "supportedCorrect": 87,
+    "supportedAccuracy": 0.3815789473684211,
+    "supportCoverage": 0.6785714285714286,
+    "pairedP": 0.1875,
+    "acquisitionExecuted": 127,
+    "acquisitionWrites": 127,
+    "nativeAcceptance": false
+  },
+  "startGate": "Final full 331-test software gate and explicit sampling/refusal/frozen-task-policy checks pass; commit source and freeze before native acquisition. Require acquisition integrity/timing before the paired set.",
+  "targetedBehaviorChangeNumber": 1,
+  "preparedProtocolSha256": "3bebdf86fac6436f12a576a07182d92c13cf0eb70c9e87dfba5ca4b14f3bdec7",
+  "meaningfulBehaviorImprovement": "Judge the full fixed 12-pair set and original stage thresholds. In the same task-policy comparison, seek increased retained success and predictive correctness with adequate coverage; do not count mere sampling balance or theta writes as task benefit. Keep failed timing/integrity rounds and do not claim a missing pair passed.",
+  "plannedPairedOutputs": "evidence/pr3-stage-one-r3-pair-01 through -12, each retained and erased, same order/poses/seeds/original prepared worlds as the baseline. Pin donor and exact output plan after the registered acquisition gate passes."
+}

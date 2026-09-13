@@ -68,3 +68,25 @@ test('stage-one V2 identifies original archived bytes and conservatively rejects
   assert.throws(() => model.observe(reordered), /conflict/);
   assert.equal(model.writes, 1);
 });
+
+test('stage-one probes balance actual motor exposures without fitting or counting refusals', () => {
+  const model = new StageOneMovement(), controller = new StageOneController(model, 317), observation = frame(1);
+  const offers = ['forward', 'back', 'left', 'right'].map(direction => {
+    const action: Action = { kind: 'move', parameters: { direction, ticks: 4 } };
+    return { ...offer(observation), action, cue: cueFor(action, observation), offerId: direction };
+  });
+  const counts: Record<string, number> = {};
+  for (let i = 0; i < 16; i++) {
+    const selected = controller.choose(observation, offers, null)!;
+    controller.recordExecution(selected.offer.cue);
+    const key = String(selected.offer.action.parameters.direction); counts[key] = (counts[key] ?? 0) + 1;
+  }
+  assert.deepEqual(counts, Object.fromEntries(Object.keys(counts).map(key => [key, 4])));
+  const before = sha(model.snapshot());
+  for (let i = 0; i < 8; i++) controller.choose(observation, offers, null);
+  const afterRefusals = controller.choose(observation, offers, null)!;
+  assert(afterRefusals.candidates.every(candidate => candidate.curiosity === 1 / 5));
+  assert.equal(model.writes, 0); assert.equal(sha(model.snapshot()), before);
+  const taskChoice = controller.choose(observation, offers, [0, 64, -2])!;
+  assert(taskChoice.candidates.every(candidate => candidate.curiosity === 2), 'the fixed frozen-test policy does not read training exposure counters');
+});

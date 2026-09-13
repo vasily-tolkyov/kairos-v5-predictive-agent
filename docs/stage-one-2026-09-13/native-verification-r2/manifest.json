@@ -1,0 +1,468 @@
+{
+  "version": "StageOneEvidenceCopies1",
+  "note": "R3 final software gate is full-gate-02; an earlier draft also balanced task probes and was narrowed to training only before any native run. Raw checks are preserved.",
+  "files": [
+    {
+      "source": "evidence/pr3-stage-one-acquisition-02/independent-audit-01.json",
+      "path": "acquisition-02/independent-audit-01.json",
+      "bytes": 73271,
+      "sha256": "bedfdadf7f091e516ff50b0baad8fdc1adfb03c36eb32ae635c7370e83a6e719"
+    },
+    {
+      "source": "evidence/pr3-stage-one-acquisition-02/stopped-world.tar.gz.provenance.json",
+      "path": "acquisition-02/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "3808ed01152e4083911caf9996e7d5ee96e3dc2cdb58d92b38b2cc2d7516b364"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/acquisition-02-run.log",
+      "path": "acquisition-02/acquisition-02-run.log",
+      "bytes": 1039,
+      "sha256": "85817530ffb337e5eb08b93ce69b486098195b77362255f86ebf1ea43e1f856d"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-01-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-01-retained/independent-audit-01.json",
+      "bytes": 8328,
+      "sha256": "c0eff39bc98fe655eedfe815601def0ffbe45ac22d6cc2c632341312b0e3aec0"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-01-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-01-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "7bbd550b60a37ee38c6f23b32fe0c4a8416cffa111f892ce698efa7bf927475a"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-01-retained-run.log",
+      "path": "pr3-stage-one-pair-01-retained/pr3-stage-one-pair-01-retained-run.log",
+      "bytes": 108,
+      "sha256": "8b517087e8523a01e19ab2910ae56444dfb2eb522d778152ab30c6af15ff25a0"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-01-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-01-erased/independent-audit-01.json",
+      "bytes": 29373,
+      "sha256": "ac8bb0a6b42b3ce77f29093fcbade99000afb129e6d5d156976b1366b86ccfd8"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-01-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-01-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "345b3b9ac8fcd9edcdb75682d9c910c4cfdd69e0ae14ff406e62ffc716ec2006"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-01-erased-run.log",
+      "path": "pr3-stage-one-pair-01-erased/pr3-stage-one-pair-01-erased-run.log",
+      "bytes": 438,
+      "sha256": "6243f1a77e3b2df161781a0050af98474fdde1c18e4695fd78a798b12397430f"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-02-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-02-erased/independent-audit-01.json",
+      "bytes": 29508,
+      "sha256": "41a1de3de2f79f2b5343fddd566c1787a0f6d65556be4b6cd928bed94a77470d"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-02-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-02-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "3aae7a99a3a68ba4db9600cfe444b59337e1530b3b844bd1a82590deb6262268"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-02-erased-run.log",
+      "path": "pr3-stage-one-pair-02-erased/pr3-stage-one-pair-02-erased-run.log",
+      "bytes": 441,
+      "sha256": "11df208dbbc01588f5a768ff879435e77d7d9169096df734d2e1e265a92927b3"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-02-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-02-retained/independent-audit-01.json",
+      "bytes": 8182,
+      "sha256": "6df5bbdabd1c3137efe2b65769bcf946220c40ea9ed7463564b03c59647a9699"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-02-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-02-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "3fa658539181bc24884a65aa464445b235b10466cbc468abf7f7d1137b999c2c"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-02-retained-run.log",
+      "path": "pr3-stage-one-pair-02-retained/pr3-stage-one-pair-02-retained-run.log",
+      "bytes": 116,
+      "sha256": "8277a2a1837b440965e2c75be7cf2417741dace867c0851fc29aba84f4c31ff4"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-03-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-03-retained/independent-audit-01.json",
+      "bytes": 8460,
+      "sha256": "55cefb9dd2dec92449d3561c4d2fda528de62027b55595c472ae871c4c5bb149"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-03-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-03-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "9ac96fe21de82528592be8d8177d3323b0a9c35363d6457bb178db7b30725178"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-03-retained-run.log",
+      "path": "pr3-stage-one-pair-03-retained/pr3-stage-one-pair-03-retained-run.log",
+      "bytes": 117,
+      "sha256": "f93a62076b88e84562d6627daf06b3cbd418fcc2aef41e8e97dc84f8f703080d"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-03-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-03-erased/independent-audit-01.json",
+      "bytes": 28919,
+      "sha256": "0c3e86d10085ba625a23e6e29fa020c6a8bbd810ef9e0d24b69911e5821ee77c"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-03-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-03-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "e495b565302a312f30648e434670a54cbf14fe5ff47587f3b685ce13c691038c"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-03-erased-run.log",
+      "path": "pr3-stage-one-pair-03-erased/pr3-stage-one-pair-03-erased-run.log",
+      "bytes": 370,
+      "sha256": "67921b00556ada26b3bdea6cda708258ddc95825ce226ad1a6dd3ee3e5bfb4ad"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-04-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-04-erased/independent-audit-01.json",
+      "bytes": 28930,
+      "sha256": "183eb673d5e9d592fece560afd7c41740e45cf5926c91df7b81717ee99ed85f5"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-04-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-04-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "f98f3987fde661f30dff2eb9f6219f5be751e6ee5718671afeb1c94f5ae934ee"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-04-erased-run.log",
+      "path": "pr3-stage-one-pair-04-erased/pr3-stage-one-pair-04-erased-run.log",
+      "bytes": 446,
+      "sha256": "ac7eb84ca4721f760421088399d77e4e462cc66138ff6bcbdf16bcbce1314379"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-04-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-04-retained/independent-audit-01.json",
+      "bytes": 29679,
+      "sha256": "016a82cb3c05144a13d2706d725c0552878e26df0f111ef8806dfe733129b457"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-04-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-04-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "a349bdc546f0992c28188feb1e0027d262d53d76bcf5e7e029712a302bf11a2e"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-04-retained-run.log",
+      "path": "pr3-stage-one-pair-04-retained/pr3-stage-one-pair-04-retained-run.log",
+      "bytes": 398,
+      "sha256": "ea70aced0b318fa56ad1e264d3b09fc0d477d41e2c2b2dc23b223e621dd8f554"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-05-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-05-retained/independent-audit-01.json",
+      "bytes": 29848,
+      "sha256": "550acdc1e2330fa7776bb56390fbcd552a67f0bbf4027773b087aa3c5393d5ae"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-05-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-05-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "78836fc707e45a5b4bc47c79f817116808d7a8bad078ad2c12ed9766ac19d5e9"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-05-retained-run.log",
+      "path": "pr3-stage-one-pair-05-retained/pr3-stage-one-pair-05-retained-run.log",
+      "bytes": 390,
+      "sha256": "d11baf1f68a195942a0bf12dca0d9342c21b70f91afdb48dc4afb5db46b1d7a8"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-05-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-05-erased/independent-audit-01.json",
+      "bytes": 29341,
+      "sha256": "0695dec605882c85b0eb09368b7dd405f205a3b6226510b26bee35d762149186"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-05-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-05-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "3d97306ce8c9f31ca7142691e80bb04a6297da4fa08f48685d7dd0c682d843fe"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-05-erased-run.log",
+      "path": "pr3-stage-one-pair-05-erased/pr3-stage-one-pair-05-erased-run.log",
+      "bytes": 452,
+      "sha256": "252c6e9d15f98792b1f7573578c96af796498036f142c6fdf315eeb691d00002"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-06-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-06-erased/independent-audit-01.json",
+      "bytes": 29427,
+      "sha256": "9138dae1b5ad0a20f9630d8eb7a8f6c7f6c6ef10ae3474cfa9f0ba260e691622"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-06-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-06-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "44f972f7c66a9a69cc4a4088e74a16eb08d571b73e1a85114d382ba82a518905"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-06-erased-run.log",
+      "path": "pr3-stage-one-pair-06-erased/pr3-stage-one-pair-06-erased-run.log",
+      "bytes": 473,
+      "sha256": "d4a03571910af70a5471692529df38427ee78f6f4e3f6a3a7e57baa836459c0d"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-06-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-06-retained/independent-audit-01.json",
+      "bytes": 29913,
+      "sha256": "54a681e5b9bf97926c3730f8b16e2a9782338b0e029680a044ab6a518a29d190"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-06-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-06-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "e5a5e7b8874914454e626e46cacf7061e9ab5c16e940084c7bef881842d13bb2"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-06-retained-run.log",
+      "path": "pr3-stage-one-pair-06-retained/pr3-stage-one-pair-06-retained-run.log",
+      "bytes": 391,
+      "sha256": "37d268d7aceb14e17f14d6ce6a6ad024f5e32cfd735ef1f3aeac62e35eef5a88"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-07-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-07-retained/independent-audit-01.json",
+      "bytes": 31179,
+      "sha256": "e9862613cc0d783f115ca3cf249837288ae7f8c3be31812b9fee7f73f39aab29"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-07-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-07-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "e4275cb103a4792cd5d64c73f16d534c33c74d8ce5dd15b26c0d91f4cd629f1d"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-07-retained-run.log",
+      "path": "pr3-stage-one-pair-07-retained/pr3-stage-one-pair-07-retained-run.log",
+      "bytes": 445,
+      "sha256": "0e95662c1b0ad0809bb2ab6173e7318d8c0879a0950be91cd19166713c1f6703"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-07-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-07-erased/independent-audit-01.json",
+      "bytes": 17529,
+      "sha256": "fe78ca3134665b5693db1796c5540fc4c4d3eeecfdfd179968ef4aab81e8adff"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-07-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-07-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "ed85b0d370b3d85a3f2956fd24e26d72fad65aa2366e7849cb3462a3af012126"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-07-erased-run.log",
+      "path": "pr3-stage-one-pair-07-erased/pr3-stage-one-pair-07-erased-run.log",
+      "bytes": 230,
+      "sha256": "91c1fd9b7ea8d41fb5b41872d06ca1c5aaba71669fc6fe4943eebe10e30f9379"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-08-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-08-erased/independent-audit-01.json",
+      "bytes": 29408,
+      "sha256": "357093c14ffcd652a27860b3b3bf2902fcd7b6ad6d36c039e19e4ff46ba5c416"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-08-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-08-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "1577cc5a1cb3e0905ce3138fa0336470592ac5e8684d2965630dce5bded2e959"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-08-erased-run.log",
+      "path": "pr3-stage-one-pair-08-erased/pr3-stage-one-pair-08-erased-run.log",
+      "bytes": 466,
+      "sha256": "c77fc5c9fc515673152935d7f07dc9286c88c4812b72350c1341a37f9cdbae99"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-08-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-08-retained/independent-audit-01.json",
+      "bytes": 30881,
+      "sha256": "9a81882b1f618e1a0645fe3c9f2f9af855ea36dc12288c44095123a2f0216b4f"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-08-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-08-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "5591a1ab5dc22cf907e2824ece982f2fb0991a7c178e1f8abc06ad0935455b4b"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-08-retained-run.log",
+      "path": "pr3-stage-one-pair-08-retained/pr3-stage-one-pair-08-retained-run.log",
+      "bytes": 437,
+      "sha256": "37cfb32d9a0a6dbe54013274397693153816ba5d423714d701c3ce86954b8c76"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-09-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-09-retained/independent-audit-01.json",
+      "bytes": 31392,
+      "sha256": "8d276482afa301d48db0d6f0109aecc982d4fc87931fef0f0e171a78b6ac01df"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-09-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-09-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "2f35a6e026d5c80bd4dfc956848a964b49689a015824805809114e38bd3bc29b"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-09-retained-run.log",
+      "path": "pr3-stage-one-pair-09-retained/pr3-stage-one-pair-09-retained-run.log",
+      "bytes": 445,
+      "sha256": "c8ea48b885ea7c7886181a1d39652ed81e1800de310d6482e64c3366e87cb904"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-09-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-09-erased/independent-audit-01.json",
+      "bytes": 29410,
+      "sha256": "d2e909f9e3c3be1435797257d713cf478191a00bf63ffab4da042bc5e9328609"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-09-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-09-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "314f60ebf2d3263e58e7b3ad45c5755355cd1c684808c51b218f1c62e8153c0f"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-09-erased-run.log",
+      "path": "pr3-stage-one-pair-09-erased/pr3-stage-one-pair-09-erased-run.log",
+      "bytes": 453,
+      "sha256": "0aad6cb0d496b441c68c495d72b910ccd7de5a4bfbdd5f422dd9e53b09eae7d9"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-10-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-10-erased/independent-audit-01.json",
+      "bytes": 12020,
+      "sha256": "1c49fbe49ddc72f10ac6a4643ad0b9f86de916a4d34084bffd62f0eb96f9d565"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-10-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-10-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "8a2c15c89a8e23e749b375383962b1794ba4a809f49ae73dc4e820663ff4e2e1"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-10-erased-run.log",
+      "path": "pr3-stage-one-pair-10-erased/pr3-stage-one-pair-10-erased-run.log",
+      "bytes": 220,
+      "sha256": "cf5c5fc9e62e7b802b7eca7b40b951873d4da95e7cd8a5ae9b999761f1d514a3"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-10-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-10-retained/independent-audit-01.json",
+      "bytes": 7002,
+      "sha256": "62e659204337d011fb18bd405681df95deede0d77362cda3132c1244cec12ce4"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-10-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-10-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "15f2587a9936b0c5af60a25e0b08de8cc07a42438319fe9e71fe14c1cd9c9873"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-10-retained-run.log",
+      "path": "pr3-stage-one-pair-10-retained/pr3-stage-one-pair-10-retained-run.log",
+      "bytes": 115,
+      "sha256": "7a05743624eb5e84b97c383b5605b8464d3ab75feefb28ebb900d435d1c3acd8"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-11-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-11-retained/independent-audit-01.json",
+      "bytes": 6977,
+      "sha256": "5dfa584e0c395f998421236778a2152cf1d99b25a857bb94e27ccb60a3724d79"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-11-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-11-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "91840fdbc5ad0b077b0bfbd1d41105c9dc23c8d0d37bd1d8ec013052a313a404"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-11-retained-run.log",
+      "path": "pr3-stage-one-pair-11-retained/pr3-stage-one-pair-11-retained-run.log",
+      "bytes": 115,
+      "sha256": "58edd87104064b0dbdf123f8d3f8a2f55a37f8b14d662da1d9a920ee735ad665"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-11-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-11-erased/independent-audit-01.json",
+      "bytes": 29039,
+      "sha256": "b4e4097e39a6506dfdb0cecb76d5e9e32d645ef0f09aef63e57cef90f7136662"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-11-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-11-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "05d04864491b6efdfbd1e89690c5372d7d1111722e3c165cdc55b2687d0a02c5"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-11-erased-run.log",
+      "path": "pr3-stage-one-pair-11-erased/pr3-stage-one-pair-11-erased-run.log",
+      "bytes": 437,
+      "sha256": "e6f0571c281797b95603686ad714ebd56369d91cc75a4607c5e504598afe9282"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-12-erased/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-12-erased/independent-audit-01.json",
+      "bytes": 29348,
+      "sha256": "8352c3a65e0295e6ccf7d1f61ec39605f8710a3d5e429f663929cc8bc55b35ea"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-12-erased/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-12-erased/stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "f4c15c9473fc773cefbde90efe3e008990a15e4ad89b4e52f1d098fe80d11758"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-12-erased-run.log",
+      "path": "pr3-stage-one-pair-12-erased/pr3-stage-one-pair-12-erased-run.log",
+      "bytes": 463,
+      "sha256": "4cb0e07eb3ff0ed2f39be635dbd12eab3c80192ecb6c7eafa221f40b113a0024"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-12-retained/independent-audit-01.json",
+      "path": "pr3-stage-one-pair-12-retained/independent-audit-01.json",
+      "bytes": 7039,
+      "sha256": "275b315973b0537f2fe1c6f43bdc57568a23f8abea4cfa346ec38cabb869600c"
+    },
+    {
+      "source": "evidence/pr3-stage-one-pair-12-retained/stopped-world.tar.gz.provenance.json",
+      "path": "pr3-stage-one-pair-12-retained/stopped-world.tar.gz.provenance.json",
+      "bytes": 468,
+      "sha256": "4e435655a930ab7edd8f8094faff73999be5e801f9a9ac396ba93a86b0082d64"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/pr3-stage-one-pair-12-retained-run.log",
+      "path": "pr3-stage-one-pair-12-retained/pr3-stage-one-pair-12-retained-run.log",
+      "bytes": 115,
+      "sha256": "ad8c5c0e9117567d5db49ef3c9e0526362e0ebe946aa20aba6d56f971c1bfd53"
+    },
+    {
+      "source": "evidence/pr3-stage-one-paired-summary-01.json",
+      "path": "summary/pr3-stage-one-paired-summary-01.json",
+      "bytes": 37641,
+      "sha256": "29b61dbb60a46a64b7933e19a2b560f09e8f05ea994c12a601a0005dd9cdfa28"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/observed-domain-diagnosis-01.json",
+      "path": "summary/observed-domain-diagnosis-01.json",
+      "bytes": 65281,
+      "sha256": "4eb8f72fbf7a29f656d160c8ff7f86ff1307cf3740720079eaa2cfe6a5cf48f5"
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "version": "StageOneNativeAudit2",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-stage-one-pair-12-retained",
+  "status": "audited",
+  "reportSha256": "7e49a15b55cd7693921188f48140ed991f2fa5ef359dce7f83a784e5f8c4d7bb",
+  "sessionSha256": "88b3ef17a4e610e6df219fa90d3cc39cae6028ac128f586a9eb0cd8464bbcb8e",
+  "auditScriptSha256": "2187a4d93f98e2a5fa489c9dbd4d7041e7b66e9e22f15da864cdc283ee7b5d96",
+  "failures": [],
+  "scope": "Stopped native action/forecast audit plus private discarded chronological replay for accounting and CPU diagnosis. Replay supplies zero new physical actions, independent experience or capability.",
+  "replayNewPhysicalActions": 0,
+  "replayNewIndependentWindows": 0,
+  "capabilityEstablished": false,
+  "privateReplay": {
+    "exactFinalModel": true,
+    "finalDigest": "805c5b94006d68afae5717b51dc575d3829eb43d7bfa2340a71bab5af67d134e",
+    "totalLearningMs": 0,
+    "topSelfMilliseconds": [
+      [
+        "equal @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/audit-stage-one-movement.mjs:28",
+        32.461000000000006
+      ],
+      [
+        "post @ node:inspector:115",
+        23.362
+      ],
+      [
+        "utf8Slice @ :0",
+        14.803999999999998
+      ],
+      [
+        " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-stage-one-r2/dist/src/util.js:10",
+        11.686
+      ],
+      [
+        "writeSync @ :0",
+        5.945
+      ],
+      [
+        "(garbage collector) @ :0",
+        3.298
+      ],
+      [
+        "(idle) @ :0",
+        1.708
+      ],
+      [
+        "createUnsafeBuffer @ node:internal/buffer:1088",
+        1.654
+      ],
+      [
+        "validateEvent @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-stage-one-r2/dist/src/events.js:76",
+        1.648
+      ],
+      [
+        "predict @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-stage-one-r2/dist/src/stage-one-movement.js:40",
+        1.623
+      ],
+      [
+        "slice @ node:buffer:1212",
+        1.608
+      ],
+      [
+        "dispatch @ :0",
+        1.599
+      ]
+    ]
+  },
+  "serverPosition": [
+    1.0715091595093402,
+    64,
+    -1.7
+  ],
+  "finalPositionDifference": 0,
+  "metrics": {
+    "decisions": 7,
+    "executed": 7,
+    "refused": 0,
+    "executedFraction": 1,
+    "writes": 0,
+    "qualifiedOriginalMoves": 7,
+    "seconds": 6.029619500000001,
+    "choicePreparationP95Ms": 4.107399999998961,
+    "learningP95Ms": 0,
+    "supportedPredictions": 0,
+    "supportedCorrect": 0,
+    "missingPredictions": 0,
+    "unsupportedPredictions": 7,
+    "allAvailablePredictions": 7,
+    "allAvailableCorrect": 3,
+    "blocked": 0,
+    "moving": 7,
+    "rawFrames": 122,
+    "rawRecords": 122,
+    "telemetryGaps": 0,
+    "byDirection": {
+      "forward": 3,
+      "back": 0,
+      "left": 4,
+      "right": 0
+    },
+    "learnedTaskChoices": 0
+  },
+  "acquisitionGate": null,
+  "acquisitionGatePassed": null,
+  "outcomes": [
+    {
+      "decision": 1,
+      "eventId": "9eb15447-524f-4a86-8a21-e37dd67a3019:event-1",
+      "file": "events/0000001.json.gz",
+      "sha256": "24f2c8742b6d16ded38ecca1417bf46591fc0ba25386fb6bbd1b7bccae683fcc",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364472
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": 0.2393159348160031,
+      "selectionSupported": false,
+      "selectionError": 0.2393159348160031,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 2,
+      "eventId": "9eb15447-524f-4a86-8a21-e37dd67a3019:event-2",
+      "file": "events/0000002.json.gz",
+      "sha256": "5cb62921201eab94883fdb050b9bec5baa2b2dfb96ee7964aa7383c2d00f84c5",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        -0.8571697198364467
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": 0.23931593481600266,
+      "selectionSupported": false,
+      "selectionError": 0.23931593481600266,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 3,
+      "eventId": "9eb15447-524f-4a86-8a21-e37dd67a3019:event-3",
+      "file": "events/0000003.json.gz",
+      "sha256": "c3010dedf713e30b9d20017f6cf3055bd83db4b4646e5fdf936c9948728cf481",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        -0.857169719836447
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": 3.684115446053966e-16,
+      "selectionSupported": false,
+      "selectionError": 3.684115446053966e-16,
+      "matched": true,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 4,
+      "eventId": "9eb15447-524f-4a86-8a21-e37dd67a3019:event-4",
+      "file": "events/0000004.json.gz",
+      "sha256": "bc9d3499f435d84574a0e5da6a9ef7621fea3a8ee1341822911d77c9d2e273b6",
+      "direction": "left",
+      "actual": [
+        0,
+        0,
+        -0.6284908404906591
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": 0.010637055470214984,
+      "selectionSupported": false,
+      "selectionError": 0.010637055470214984,
+      "matched": true,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 5,
+      "eventId": "9eb15447-524f-4a86-8a21-e37dd67a3019:event-5",
+      "file": "events/0000005.json.gz",
+      "sha256": "c0fce2ab003f74acf3bb992c126b9212ac82b9c1a9057b2a95225d7f4742f568",
+      "direction": "forward",
+      "actual": [
+        0.857169719836447,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": 0.05476414331970425,
+      "selectionSupported": false,
+      "selectionError": 0.05476414331970425,
+      "matched": true,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 6,
+      "eventId": "9eb15447-524f-4a86-8a21-e37dd67a3019:event-6",
+      "file": "events/0000006.json.gz",
+      "sha256": "d11fd9e86960ac21d1ed6fe3e29c5f33552211b1775eb32c500c063c2e40ec45",
+      "direction": "forward",
+      "actual": [
+        0.8571697198364465,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": 0.8571697198364465,
+      "selectionSupported": false,
+      "selectionError": 0.8571697198364465,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    },
+    {
+      "decision": 7,
+      "eventId": "9eb15447-524f-4a86-8a21-e37dd67a3019:event-7",
+      "file": "events/0000007.json.gz",
+      "sha256": "2f2c3a60f510a9008e72af87fa60bcad8a611378ca26b68b7bc0688604ca8e6c",
+      "direction": "forward",
+      "actual": [
+        0.8571697198364467,
+        0,
+        0
+      ],
+      "blocked": false,
+      "supported": false,
+      "error": 0.8571697198364467,
+      "selectionSupported": false,
+      "selectionError": 0.8571697198364467,
+      "matched": false,
+      "measured": true,
+      "learned": false
+    }
+  ]
+}
