@@ -4,12 +4,14 @@ import { EventEmitter } from 'node:events';
 import { setImmediate as turn } from 'node:timers/promises';
 import mineflayer, { type Bot } from 'mineflayer';
 import { Vec3 } from 'vec3';
-import { MinecraftBody } from '../src/body.js';
+import { MinecraftBody, PhysicalTelemetryQueue } from '../src/body.js';
 import { validateAction } from '../src/action-contract.js';
 import { validateEvent } from '../src/events.js';
 import * as eventTools from '../src/events.js';
-import type { MotorReceiptV1, RealEvent } from '../src/contracts.js';
+import type { MotorEdgeV1, MotorReceiptV1, RealEvent } from '../src/contracts.js';
+import { experienceInputs } from '../src/experience-medium.js';
 import { MinecraftActionStartProtocol } from '../src/adapters/minecraft/action-start.js';
+import { MinecraftExperienceEnvironment } from '../src/adapters/minecraft/experience.js';
 
 class MotorBot extends EventEmitter {
   entity = { id: 1, position: new Vec3(0, 64, 0), velocity: new Vec3(0, 0, 0), yaw: 0, pitch: 0, onGround: false };
@@ -21,6 +23,7 @@ class MotorBot extends EventEmitter {
   _client = Object.assign(new EventEmitter(), { write: (name: string) => assert.equal(name, 'player_loaded') });
   entityAtCursor() { return null; }
   setControlState(key: string, pressed: boolean) { this.controls.set(key, pressed); }
+  setQuickBarSlot(slot: number) { this.quickBarSlot = slot; }
   clearControlStates() { this.controls.clear(); }
   stopDigging() {} quit() {} targetDigBlock = null;
   usingHeldItem = false; activations = 0; releases = 0;
@@ -46,6 +49,168 @@ function fixture(t: TestContext) {
   };
   t.after(() => body.close()); return { bot, body, tick, records };
 }
+
+test('actual frame clocks distinguish physics from a zero-physics terminal sample without changing sequence time', async t => {
+  const h = fixture(t); await h.tick(2);
+  const before = h.body.latest(), clock = before.physicalClock; assert(clock);
+  assert.equal(before.physicalClock?.version, 'RealFrameClockV1');
+  assert.equal(before.physicalClock?.physicsTick, 2); assert.equal(before.physicalClock?.secondsPerTick, .05);
+  assert.equal(before.physicalClock?.sample, 'physics'); assert(Object.isFrozen(before.physicalClock));
+  h.bot.health = 0; h.bot.emit('death'); const terminal = h.body.latest();
+  assert.equal(terminal.sequence, before.sequence + 1);
+  assert.equal(terminal.activeSeconds, before.activeSeconds + .05, 'legacy sequence time is preserved, not relabelled as physical time');
+  assert.equal(terminal.physicalClock?.physicsTick, clock.physicsTick);
+  assert.equal(terminal.physicalClock?.sample, 'terminal');
+  assert(terminal.physicalClock!.monotonicMs >= clock.monotonicMs);
+  assert.equal(terminal.self.properties.health, 0); assert.equal(h.body.physicalCalls, 0);
+  assert.equal(before.motorSignal?.state, 'unknown');
+});
+
+test('motor edge telemetry preserves the last held tick and releases before the next catch-up sample', async t => {
+  const h = fixture(t); await h.tick(1);
+  const action = { kind: 'jump', parameters: { forward: true, holdTicks: 4 } } as const;
+  const pending = h.body.execute(action); void pending.catch(() => {});
+  for (let i = 0; i < 9; i++) h.bot.emit('physicsTick');
+  await turn(); await h.tick(3); const { event } = await pending; assert(event);
+  const receipt = actualReceipt(event), edges = h.records.filter(value => value.kind === 'body-motor-edge').map(value => value.value as MotorEdgeV1);
+  assert.deepEqual(edges.map(edge => [edge.edgeSequence, edge.kind, edge.signal.state, edge.succeeded]), [[1, 'press', 'held', true], [2, 'release', 'off', true]]);
+  assert.deepEqual(edges[0]!.clock, receipt.pressedAt); assert.deepEqual(edges[1]!.clock, receipt.releasedAt);
+  assert.equal(receipt.actualTicks, 4); assert.equal(receipt.requestedTicks, 4);
+  const lastHeld = event.frames.find(value => value.physicalClock!.physicsTick === receipt.releasedAt.physicsTick)!;
+  const next = event.frames.find(value => value.physicalClock!.physicsTick === receipt.releasedAt.physicsTick + 1)!;
+  assert.equal(lastHeld.motorSignal?.state, 'held'); assert.equal(next.motorSignal?.state, 'off');
+  assert.equal(lastHeld.physicalClock?.sample, 'physics');
+  assert(lastHeld.physicalClock!.monotonicMs <= edges[1]!.clock.monotonicMs);
+  const finalFrameAt = h.records.findIndex(value => value.kind === 'frame' && value.value.sequence === lastHeld.sequence);
+  const releaseAt = h.records.findIndex(value => value.kind === 'body-motor-edge' && value.value.kind === 'release');
+  const nextFrameAt = h.records.findIndex(value => value.kind === 'frame' && value.value.sequence === next.sequence);
+  assert(finalFrameAt < releaseAt && releaseAt < nextFrameAt);
+  await h.tick(1); assert.equal(lastHeld.motorSignal?.state, 'held', 'later telemetry cannot rewrite an archived sample');
+  assert.equal(edges[0]!.signal.cue?.targetRole, null); assert.equal(Object.hasOwn(edges[0]!.signal.cue!, 'targetId'), false);
+  assert.equal(h.bot.controls.size, 0); assert.equal(h.body.physicalCalls, 1);
+});
+
+test('move stabilization retains its original duration while its post-release frames report controls off', async t => {
+  const h = fixture(t); await h.tick(1);
+  const pending = h.body.execute({ kind: 'move', parameters: { direction: 'forward', ticks: 4 } }); void pending.catch(() => {});
+  await h.tick(16); const { event } = await pending; assert(event);
+  const receipt = actualReceipt(event); assert.equal(receipt.actualTicks, 4);
+  assert.equal(event.frames.at(-1)!.physicalClock!.physicsTick - event.frames[0]!.physicalClock!.physicsTick, 9);
+  assert.equal(event.bodyResult?.terminationReason, 'stable');
+  const released = event.frames.filter(frame => frame.physicalClock!.physicsTick > receipt.releasedAt.physicsTick);
+  assert.equal(released.length, 5); assert(released.every(frame => frame.motorSignal?.state === 'off'));
+  assert.equal(event.cue.parameters.ticks, 4); assert.equal(h.body.physicalCalls, 1);
+});
+
+test('unmeasured impulse controls remain explicitly unknown and do not acquire a fabricated motor receipt', async t => {
+  const h = fixture(t); await h.tick(1);
+  const pending = h.body.execute({ kind: 'select-hotbar', parameters: { slot: 2 } }); void pending.catch(() => {});
+  await h.tick(12); const { event } = await pending; assert(event);
+  assert.equal(event.bodyResult?.motorReceipt, undefined);
+  assert(event.frames.every(frame => frame.motorSignal?.state === 'unknown'));
+  const edges = h.records.filter(value => value.kind === 'body-motor-edge').map(value => value.value as MotorEdgeV1);
+  assert.equal(edges.length, 1); assert.equal(edges[0]!.kind, 'unmeasured');
+  assert.equal(edges[0]!.signal.state, 'unknown'); assert.equal(edges[0]!.signal.cue, null); assert.equal(edges[0]!.succeeded, null);
+  assert.equal(h.bot.quickBarSlot, 2); assert.equal(h.body.physicalCalls, 1);
+});
+
+test('capture clocks and actuator telemetry are not sensory predictor inputs', async t => {
+  const h = fixture(t); await h.tick(1); const observed = h.body.latest();
+  const inputs = experienceInputs(observed);
+  const changed = { ...observed, physicalClock: { ...observed.physicalClock!, physicsTick: 999, monotonicMs: 99_999 },
+    motorSignal: { version: 'BodyMotorSignalV1' as const, scope: 'instrumented-held-controls' as const, state: 'held' as const,
+      cue: { kind: 'move' as const, parameters: { direction: 'right', ticks: 4 }, targetRole: null } } };
+  assert.deepEqual(experienceInputs(changed), inputs);
+  const { physicalClock: _clock, motorSignal: _motor, ...legacy } = observed;
+  assert.equal(Object.hasOwn(legacy, 'physicalClock'), false); assert.deepEqual(experienceInputs(legacy), inputs);
+});
+
+test('the ordered telemetry inbox bounds records and serialized bytes and reports dropped ranges explicitly', async t => {
+  const h = fixture(t); await h.tick(1); const observed = h.body.latest();
+  const edge: MotorEdgeV1 = { version: 'MotorEdgeV1', edgeSequence: 1, kind: 'unmeasured',
+    clock: { observationSequence: observed.sequence, physicsTick: 1, activeSeconds: observed.activeSeconds, monotonicMs: performance.now() },
+    signal: { version: 'BodyMotorSignalV1', scope: 'instrumented-held-controls', state: 'unknown', cue: null }, succeeded: null, releaseReason: null };
+  const queue = new PhysicalTelemetryQueue({ records: 2, serializedPayloadBytes: 8 * 1024 * 1024 });
+  queue.push({ kind: 'frame', observation: observed }, 10); queue.push({ kind: 'motor-edge', edge }, 11);
+  queue.push({ kind: 'frame', observation: observed }, 12);
+  const batch = queue.take(); assert.deepEqual(batch.records.map(value => [value.order, value.kind]), [[2, 'motor-edge'], [3, 'frame']]);
+  assert.deepEqual(batch.gap, { firstOrder: 1, lastOrder: 1, records: 1, frames: 1, motorEdges: 0, reason: 'payload-or-record-capacity' });
+  assert.equal(batch.serializedPayloadBytes, batch.records.reduce((sum, value) => sum + Buffer.byteLength(JSON.stringify(value)), 0));
+  assert.equal(batch.receivedThroughOrder, 3); assert.equal(batch.deliveredThroughOrder, 3);
+  const empty = queue.take(); assert.deepEqual(empty.records, []); assert.equal(empty.gap, null); assert.equal(empty.serializedPayloadBytes, 0);
+  assert.equal(empty.deliveredThroughOrder, 3);
+  const one = new PhysicalTelemetryQueue(); one.push({ kind: 'frame', observation: observed }, 10);
+  const measured = one.take();
+  const tooSmall = new PhysicalTelemetryQueue({ records: 2, serializedPayloadBytes: measured.serializedPayloadBytes - 1 });
+  tooSmall.push({ kind: 'frame', observation: observed }, 10); const oversized = tooSmall.take();
+  assert.deepEqual(oversized.records, []); assert.equal(oversized.serializedPayloadBytes, 0); assert.equal(oversized.gap?.records, 1);
+  assert.equal(oversized.deliveredThroughOrder, 1); assert.equal(oversized.receivedThroughOrder, 1);
+});
+
+test('exact-frame telemetry drains preserve later release edges, duplicate boundaries and future frames', async t => {
+  const h = fixture(t); await h.tick(2); const first = h.body.frames[0]!, second = h.body.frames[1]!;
+  const edge: MotorEdgeV1 = { version: 'MotorEdgeV1', edgeSequence: 1, kind: 'release',
+    clock: { observationSequence: first.sequence, physicsTick: 1, activeSeconds: first.activeSeconds, monotonicMs: performance.now() },
+    signal: { version: 'BodyMotorSignalV1', scope: 'instrumented-held-controls', state: 'off', cue: null }, succeeded: true, releaseReason: 'interval-complete' };
+  const queue = new PhysicalTelemetryQueue();
+  queue.push({ kind: 'frame', observation: first, source: 'cached-anchor' }, 10);
+  queue.push({ kind: 'motor-edge', edge }, 11); queue.push({ kind: 'frame', observation: second, source: 'worker-frame' }, 12);
+  const conflict = { ...first, self: { ...first.self, properties: { ...first.self.properties, health: 99 } } };
+  assert.throws(() => queue.takeThroughObservation(conflict), /physical-telemetry-boundary-conflict/);
+  const initial = queue.takeThroughObservation(structuredClone(first));
+  assert.deepEqual(initial.records.map(record => record.kind), ['frame']); assert.equal(initial.deliveredThroughOrder, 1);
+  assert.equal(initial.records[0]!.receivedMonotonicMs, 10);
+  assert.equal(initial.records[0]!.kind === 'frame' && initial.records[0]!.source, 'cached-anchor');
+  assert.deepEqual(queue.takeThroughObservation(first).records, []);
+  assert.throws(() => queue.takeThroughObservation(conflict), /physical-telemetry-boundary-conflict/);
+  const next = queue.takeThroughObservation(second);
+  assert.deepEqual(next.records.map(record => [record.order, record.kind]), [[2, 'motor-edge'], [3, 'frame']]);
+  assert.equal(next.deliveredThroughOrder, 3); assert.equal(next.boundaryMissing, undefined);
+  assert.deepEqual(queue.take().records, []);
+});
+
+test('a lost exact telemetry boundary returns an explicit gap while retaining future frames', async t => {
+  const h = fixture(t); await h.tick(2); const first = h.body.frames[0]!, second = h.body.frames[1]!;
+  const queue = new PhysicalTelemetryQueue({ records: 1, serializedPayloadBytes: 8 * 1024 * 1024 });
+  queue.push({ kind: 'frame', observation: first }, 10); queue.push({ kind: 'frame', observation: second }, 11);
+  const missing = queue.takeThroughObservation(first);
+  assert.equal(missing.boundaryMissing, true); assert.equal(missing.gap?.frames, 1); assert.deepEqual(missing.records, []);
+  const future = queue.takeThroughObservation(second);
+  assert.equal(future.boundaryMissing, undefined); assert.equal(future.records.length, 1);
+  assert.equal(future.records[0]!.kind === 'frame' && future.records[0]!.observation.sequence, second.sequence);
+});
+
+test('the environment explicitly starts telemetry at initialization and anonymously drains only the exact raw boundary', async t => {
+  const h = fixture(t); await h.tick(1); const queue = new PhysicalTelemetryQueue();
+  let enabled = false, starts = 0;
+  const record = h.body.record.bind(h.body);
+  t.mock.method(h.body, 'record', (kind: string, value: unknown) => {
+    record(kind, value);
+    if (enabled && kind === 'frame') queue.push({ kind: 'frame', observation: value as ReturnType<typeof h.body.latest>, source: 'worker-frame' });
+    if (enabled && kind === 'body-motor-edge') queue.push({ kind: 'motor-edge', edge: value as MotorEdgeV1 });
+  });
+  const environment = new MinecraftExperienceEnvironment({
+    latest: () => h.body.latest(), startObservation: () => h.body.startObservation(),
+    listActionOffers: observation => h.body.listActionOffers(observation),
+    describeActionRequirement: (cue, observation) => h.body.describeActionRequirement(cue, observation),
+    execute: (action, scope) => h.body.execute(action, scope),
+    waitForObservationAfter: sequence => h.body.waitForObservationAfter(sequence),
+    startPhysicalTelemetry: () => { starts++; enabled = true; queue.push({ kind: 'frame', observation: h.body.latest(), source: 'cached-anchor' }, 10); },
+    takePhysicalTelemetryThrough: observation => queue.takeThroughObservation(observation),
+  });
+  assert.equal(environment.takePhysicalTelemetryThrough(await environment.observe()), undefined); assert.equal(starts, 0);
+  const initial = await environment.initialize(); assert.equal(starts, 1);
+  assert.strictEqual(await environment.initialize(), initial); assert.equal(starts, 1);
+  await h.tick(2);
+  const first = environment.takePhysicalTelemetryThrough(initial)!;
+  assert.deepEqual(first.records.filter(record => record.kind === 'frame').map(record => record.observation.sequence), [1]);
+  assert(first.records.every(record => record.kind !== 'frame' || record.observation.contextId === 'anonymous-sensing'));
+  const latest = await environment.observe(), tail = environment.takePhysicalTelemetryThrough(latest)!;
+  assert.deepEqual(tail.records.filter(record => record.kind === 'frame').map(record => record.observation.sequence), [2, 3]);
+  assert(tail.records.every(record => record.kind !== 'frame' || !Object.hasOwn(record.observation.self.properties, 'heldItem')));
+  assert.deepEqual(environment.takePhysicalTelemetryThrough(latest)!.records, []);
+  assert.throws(() => environment.takePhysicalTelemetryThrough(structuredClone(latest)), /requires-an-actually-observed-frame/);
+});
 
 test('a bounded next-frame wait returns a copied real successor and removes its listeners', async t => {
   const h = fixture(t); await h.tick(1);
@@ -335,6 +500,16 @@ test('zero-tick death cannot be learned as a completed positive motor interval',
   h.bot.health = 0; h.bot.emit('death');
   const { event } = await pending; assert(event); validateEvent(event);
   assert.equal(actualReceipt(event).actualTicks, 0); assert.equal(actualCue(event), null);
+  const first = event.frames[0]!, terminal = event.frames.at(-1)!;
+  assert.equal(terminal.physicalClock?.sample, 'terminal');
+  assert.equal(terminal.physicalClock?.physicsTick, first.physicalClock?.physicsTick);
+  assert.equal(terminal.motorSignal?.state, 'held');
+  const edges = h.records.filter(value => value.kind === 'body-motor-edge').map(value => value.value as MotorEdgeV1);
+  assert.deepEqual(edges.map(edge => edge.kind), ['press', 'release']);
+  assert.equal(edges[0]!.clock.physicsTick, edges[1]!.clock.physicsTick);
+  assert.equal(edges[1]!.signal.state, 'off'); assert.equal(edges[1]!.releaseReason, 'death');
+  assert(h.records.findIndex(value => value.kind === 'frame' && value.value.sequence === terminal.sequence)
+    < h.records.findIndex(value => value.kind === 'body-motor-edge' && value.value.kind === 'release'));
 });
 
 test('invalid or inconsistent motor receipts are rejected at the real-event boundary', async t => {

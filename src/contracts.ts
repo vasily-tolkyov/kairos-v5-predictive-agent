@@ -8,6 +8,11 @@ export interface PublicObject {
   readonly properties: Readonly<Record<string, PublicValue>>;
 }
 export interface Observation {
+  /** Actual capture instrumentation only; absent legacy clocks stay unknown.
+   * Neither absolute clocks nor sampled control metadata are sensory features. */
+  readonly physicalClock?: RealFrameClockV1;
+  /** State at capture, before any motor edge emitted after this same frame. */
+  readonly motorSignal?: BodyMotorSignalV1;
   /** Provenance of body-side measurements, never a predictive input. An
    * absent channel remains unknown across login/respawn boundaries. */
   readonly bodySensation?: { readonly version: 'OwnedBodySignals1'; readonly oxygen?: {
@@ -61,6 +66,45 @@ export interface MotorClockV1 {
   readonly activeSeconds: number;
   /** Process-monotonic milliseconds, not wall time or a learned input. */
   readonly monotonicMs: number;
+}
+export interface RealFrameClockV1 {
+  readonly version: 'RealFrameClockV1'; readonly physicsTick: number;
+  readonly secondsPerTick: 0.05; readonly monotonicMs: number;
+  readonly sample: 'physics' | 'terminal';
+}
+/** Only controls with measured hold transitions have a known state. This is
+ * an actuator signal, never a claim about motion, effect or physical rest. */
+export type BodyMotorSignalV1 =
+  | { readonly version: 'BodyMotorSignalV1'; readonly scope: 'instrumented-held-controls';
+      readonly state: 'unknown'; readonly cue: null }
+  | { readonly version: 'BodyMotorSignalV1'; readonly scope: 'instrumented-held-controls';
+      readonly state: 'off'; readonly cue: null }
+  | { readonly version: 'BodyMotorSignalV1'; readonly scope: 'instrumented-held-controls';
+      readonly state: 'held'; readonly cue: ActionCue };
+export interface MotorEdgeV1 {
+  readonly version: 'MotorEdgeV1'; readonly edgeSequence: number;
+  readonly kind: 'press' | 'release' | 'unmeasured'; readonly clock: MotorClockV1;
+  readonly signal: BodyMotorSignalV1; readonly succeeded: boolean | null;
+  readonly releaseReason: MotorReceiptV1['releaseReason'] | null;
+}
+export type PhysicalTelemetryRecordV1 = { readonly order: number; readonly receivedMonotonicMs: number } & (
+  | { readonly kind: 'frame'; readonly observation: Observation; readonly source?: 'worker-frame' | 'cached-anchor' }
+  | { readonly kind: 'motor-edge'; readonly edge: MotorEdgeV1 });
+export interface PhysicalTelemetryGapV1 {
+  readonly firstOrder: number; readonly lastOrder: number;
+  readonly records: number; readonly frames: number; readonly motorEdges: number;
+  readonly reason: 'payload-or-record-capacity';
+}
+export interface PhysicalTelemetryBatchV1 {
+  readonly version: 'PhysicalTelemetryBatchV1'; readonly records: readonly PhysicalTelemetryRecordV1[];
+  readonly gap: PhysicalTelemetryGapV1 | null;
+  readonly receivedThroughOrder: number; readonly deliveredThroughOrder: number;
+  /** Exact raw transport JSON payload bytes before adapter anonymization,
+   * not a heap/RSS guarantee and not the size of the transformed records. */
+  readonly serializedPayloadBytes: number;
+  readonly limits: { readonly records: number; readonly serializedPayloadBytes: number };
+  /** The requested exact frame was unavailable; never certify continuity. */
+  readonly boundaryMissing?: true;
 }
 export interface MotorReceiptV1 {
   readonly version: 'MotorReceiptV1';

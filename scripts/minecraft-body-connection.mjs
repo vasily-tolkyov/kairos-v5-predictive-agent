@@ -1,5 +1,5 @@
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
-import { MinecraftBody, describeActionRequirement } from '../dist/src/body.js';
+import { MinecraftBody, PhysicalTelemetryQueue, describeActionRequirement } from '../dist/src/body.js';
 import { MinecraftActionStartProtocol } from '../dist/src/adapters/minecraft/action-start.js';
 
 // The physical connection has its own clock. Expensive learning, cloning and
@@ -29,9 +29,13 @@ export class MinecraftBodyConnection {
   #pending = new Map();
   #sequence = 0;
   #observation = null;
+  #observationReceivedMonotonicMs = null;
   #fatal = null;
   #closing = false;
+  #telemetry = null;
+  #record;
   constructor(configuration, record = () => {}) {
+    this.#record = record;
     this.#worker = new Worker(new URL(import.meta.url), { workerData: configuration });
     const fail = error => {
       if (this.#closing) return;
@@ -42,9 +46,17 @@ export class MinecraftBodyConnection {
     this.#worker.on('error', fail);
     this.#worker.on('exit', code => fail(new Error('minecraft-body-worker-exited:' + code)));
     this.#worker.on('message', message => {
-      if (message.kind === 'frame') this.#acceptObservation(message.value);
+      if (message.kind === 'frame') {
+        this.#acceptObservation(message.value);
+        if (this.#telemetry) try { this.#telemetry.push({ kind: 'frame', observation: message.value, source: 'worker-frame' }); }
+        catch (error) { fail(error); }
+      }
       else if (message.kind === 'fault') fail(new Error(message.error));
-      else if (message.kind) record(message.kind, message.value);
+      else if (message.kind) {
+        if (message.kind === 'body-motor-edge' && this.#telemetry)
+          try { this.#telemetry.push({ kind: 'motor-edge', edge: message.value }); } catch (error) { fail(error); }
+        record(message.kind, message.value);
+      }
       else {
         const pending = this.#pending.get(message.id);
         if (!pending) return;
@@ -55,7 +67,9 @@ export class MinecraftBodyConnection {
     });
   }
   #acceptObservation(observation) {
-    if (!this.#observation || observation.sequence > this.#observation.sequence) this.#observation = observation;
+    if (!this.#observation || observation.sequence > this.#observation.sequence) {
+      this.#observation = observation; this.#observationReceivedMonotonicMs = performance.now();
+    }
   }
   #call(method, ...args) {
     if (this.#fatal) return Promise.reject(this.#fatal);
@@ -69,6 +83,33 @@ export class MinecraftBodyConnection {
     if (this.#fatal) throw this.#fatal;
     if (!this.#observation) throw new Error('no-real-public-frame');
     return this.#observation;
+  }
+  // Off by default: legacy consumers keep only latest and do not accumulate a
+  // silently unconsumed frame inbox. The cached anchor retains its original
+  // receipt time and is explicitly distinguished from subsequent worker frames.
+  startPhysicalTelemetry(limits) {
+    if (this.#telemetry) throw new Error('physical-telemetry-already-started');
+    this.#telemetry = new PhysicalTelemetryQueue(limits);
+    if (this.#observation) this.#telemetry.push({ kind: 'frame', observation: this.#observation, source: 'cached-anchor' },
+      this.#observationReceivedMonotonicMs);
+    return { version: 'PhysicalTelemetryStartV1', afterObservationSequence: this.#observation?.sequence ?? null,
+      limits: this.#telemetry.limits };
+  }
+  takePhysicalTelemetry() {
+    if (!this.#telemetry) throw new Error('physical-telemetry-not-started');
+    const batch = this.#telemetry.take();
+    if (batch.gap) this.#record('physical-telemetry-gap', batch.gap);
+    return batch;
+  }
+  takePhysicalTelemetryThrough(observation) {
+    if (!this.#telemetry) throw new Error('physical-telemetry-not-started');
+    const batch = this.#telemetry.takeThroughObservation(observation);
+    if (batch.gap || batch.boundaryMissing) this.#record('physical-telemetry-gap', {
+      ...batch.gap, boundaryMissing: batch.boundaryMissing ?? false, requestedSequence: observation.sequence });
+    return batch;
+  }
+  stopPhysicalTelemetry() {
+    const batch = this.takePhysicalTelemetry(); this.#telemetry = null; return batch;
   }
   ready() { return this.#call('ready'); }
   startObservation() { return this.#call('startObservation'); }

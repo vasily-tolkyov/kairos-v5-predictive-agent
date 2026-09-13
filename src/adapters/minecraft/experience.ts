@@ -1,5 +1,5 @@
 import type { MinecraftBody } from '../../body.js';
-import type { Observation, PublicValue, RealEvent } from '../../contracts.js';
+import type { Observation, PhysicalTelemetryBatchV1, PublicValue, RealEvent } from '../../contracts.js';
 import type { ActionOfferV1, GroundedGoalV1 } from '../../control/contracts.js';
 import type { BeforeExperienceAction, ExperienceEnvironment } from '../../experience-agent.js';
 import { cueFor } from '../../events.js';
@@ -30,6 +30,7 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
   #rawFrames = new WeakMap<Observation, Observation>();
   #undeliveredPassive: readonly RealEvent[] = [];
   #initialization: Promise<Observation> | null = null;
+  #telemetryStarted = false;
   #anonymous(raw: Observation): Observation {
     const observation = anonymousObservation(raw); this.#rawFrames.set(observation, raw); return observation;
   }
@@ -44,6 +45,8 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
   constructor(readonly body: Pick<MinecraftBody,
     'latest' | 'listActionOffers' | 'describeActionRequirement' | 'execute' | 'waitForObservationAfter'>
     & { takePassiveEvents?(): readonly RealEvent[] | Promise<readonly RealEvent[]>;
+      startPhysicalTelemetry?(): unknown;
+      takePhysicalTelemetryThrough?(observation: Observation): PhysicalTelemetryBatchV1;
       /** Only an in-process body can guarantee capture before its first await. */
       readonly synchronousActionStart?: boolean } & Partial<Omit<ConditionalMinecraftBody, 'startObservation'>>
       & { startObservation?(): { observation: Observation; precedingPassiveEvents: readonly RealEvent[] }
@@ -51,12 +54,23 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
   initialize(): Promise<Observation> {
     return this.#initialization ??= (async () => {
       if (!this.body.startObservation) throw new Error('atomic-initial-observation-unavailable');
+      if (this.body.startPhysicalTelemetry && this.body.takePhysicalTelemetryThrough) {
+        this.body.startPhysicalTelemetry(); this.#telemetryStarted = true;
+      }
       const captured = await this.body.startObservation();
       this.#undeliveredPassive = [...this.#undeliveredPassive, ...captured.precedingPassiveEvents.map(event => this.#passive(event))];
       // The transport may already have cached a later frame. Preserve the
       // exact acquisition boundary returned by the worker operation.
       return this.#anonymous(captured.observation);
     })();
+  }
+  takePhysicalTelemetryThrough(observation: Observation): PhysicalTelemetryBatchV1 | undefined {
+    if (!this.#telemetryStarted || !this.body.takePhysicalTelemetryThrough) return undefined;
+    const raw = this.#rawFrames.get(observation);
+    if (!raw) throw new Error('physical-telemetry-requires-an-actually-observed-frame');
+    const batch = this.body.takePhysicalTelemetryThrough(raw);
+    return { ...batch, records: batch.records.map(record => record.kind === 'frame'
+      ? { ...record, observation: this.#anonymous(record.observation) } : record) };
   }
   #passive(event: RealEvent): RealEvent {
     const frames = event.frames.map(frame => this.#anonymous(frame));

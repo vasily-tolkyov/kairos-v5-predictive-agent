@@ -178,7 +178,8 @@ try {
   await save('static-setup.json', { commands, taskGeometryVisibleOnlyThroughBody: true }); await delay(1000);
   body = new MinecraftBodyConnection({ ...config.minecraft, worldId: 'continuous-evaluation',
     activeSecondsOffset: previousReport?.finalObservation?.activeSeconds ?? 0 }, (kind, value) => {
-    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release', 'body-motor-receipt', 'body-action-start'].includes(kind)) {
+    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release', 'body-motor-receipt', 'body-motor-edge',
+      'body-action-start', 'physical-telemetry-gap'].includes(kind)) {
       diagnostics = diagnostics.then(() => log('body-diagnostics', { kind, at: new Date().toISOString(), value }))
         .catch(error => { diagnosticError = error; });
     }
@@ -195,6 +196,7 @@ try {
   initial = await base.initialize(); await save('initial-observation.json', initial);
   await checkpoint();
   environment = { maintenanceGoals: base.maintenanceGoals,
+    takePhysicalTelemetryThrough: observation => base.takePhysicalTelemetryThrough(observation),
     drainPassiveEvents: async () => recordPassive(await base.drainPassiveEvents()),
     observe: () => base.observe(), listActionOffers: observation => base.listActionOffers(observation),
     waitForObservationAfter: sequence => base.waitForObservationAfter(sequence), executeOffer: async (offer, beforeExecute) => {

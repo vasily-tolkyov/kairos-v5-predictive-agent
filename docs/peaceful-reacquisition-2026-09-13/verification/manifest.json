@@ -1,0 +1,119 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/capture-audit.json",
+      "path": "capture-audit.json",
+      "bytes": 501438,
+      "sha256": "e0b6a66030e31f8b15274ef06c7d3acfa7d29de4fc2237e57beff2ce05d23dc7"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/erased-frozen-capture-audit.json",
+      "path": "erased-frozen-capture-audit.json",
+      "bytes": 138922,
+      "sha256": "cb273d300549124831f5f4a455e2aaee3d0f0b15d9b9d9f2178ef9ec79b877a1"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/erased-frozen-coverage.json",
+      "path": "erased-frozen-coverage.json",
+      "bytes": 689413,
+      "sha256": "6591246a2c5a54b69c485a0757bf0f7cd3ea611247052800e8f4b7eaf68ac8a5"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/erased-frozen-model-audit.json",
+      "path": "erased-frozen-model-audit.json",
+      "bytes": 1398,
+      "sha256": "f5fd3eb0fa357d4af561f574700a5acad501a82a7656be2c1631b23d38630511"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/erased-frozen-run.log",
+      "path": "erased-frozen-run.log",
+      "bytes": 4490,
+      "sha256": "679dc6f44a2b5454bd0037eb8b0b585b973d0fe3ce6e3d4048a3b5120176d259"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/erased-frozen-stopped-audit.json",
+      "path": "erased-frozen-stopped-audit.json",
+      "bytes": 190692,
+      "sha256": "a434ecc951acc75a90e687a59b4645ff150cee17200af0acac5a7db7893a230c"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/learning-coverage.json",
+      "path": "learning-coverage.json",
+      "bytes": 2919883,
+      "sha256": "9ebea887527d8c0592c5130dea23f497d0e8aec38a4625f9942d169ad1b89579"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/restore-audit.json",
+      "path": "restore-audit.json",
+      "bytes": 748,
+      "sha256": "c2b202b776a7067152d38889ef6e0c93bedeceb849e4a1536650c093b5dfc459"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-frozen-capture-audit.json",
+      "path": "retained-frozen-capture-audit.json",
+      "bytes": 218937,
+      "sha256": "d96d2009badaf317798865b71f43c591180eb4728364d5c9308a883d5db7284f"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-frozen-coverage.json",
+      "path": "retained-frozen-coverage.json",
+      "bytes": 3432205,
+      "sha256": "bb2151d6ec3bfd5fc8795d62ea40144a2ff8ca7fbf67142f824fbff829e43678"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-frozen-model-audit.json",
+      "path": "retained-frozen-model-audit.json",
+      "bytes": 1409,
+      "sha256": "2bdeb162ea6f14247cf1e9e719e5901ea26d5ed96184f584b8ca4dea7ab1eb97"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-frozen-run.log",
+      "path": "retained-frozen-run.log",
+      "bytes": 4564,
+      "sha256": "a4b30d9238ab59489d30c206fc129d634ae8fc0b0b2807211413b4829adc5a06"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-frozen-stopped-audit.json",
+      "path": "retained-frozen-stopped-audit.json",
+      "bytes": 268990,
+      "sha256": "505ffc4806b6501e21fe19dc0d46b4397b2f1620a30944350dea2ee55db1265d"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-online-capture-audit.json",
+      "path": "retained-online-capture-audit.json",
+      "bytes": 297723,
+      "sha256": "3e2164ceffeaf2440bf2059b7f66fec96278a838e5206ebea8bec06603ef1900"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-online-coverage.json",
+      "path": "retained-online-coverage.json",
+      "bytes": 1829623,
+      "sha256": "183b4a0cd9d50ef7bac8b87ae6ff32a83fd23784000528792ddf744b209f50a4"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-online-restore-audit.json",
+      "path": "retained-online-restore-audit.json",
+      "bytes": 748,
+      "sha256": "638a6a607db159686793f65e1b1d3831b203d94c4e89583329f40d7f704ffd76"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-online-run.log",
+      "path": "retained-online-run.log",
+      "bytes": 3125,
+      "sha256": "00e8c5ac12eb866c7d71f49564bbd29dbdded8fca0691a30b4be6839eb364179"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/retained-online-stopped-audit.json",
+      "path": "retained-online-stopped-audit.json",
+      "bytes": 317392,
+      "sha256": "d1e9022cd99a92ac5fa5354f612b57ccda8bc1c60969d4653dfe677c81e5a4d2"
+    },
+    {
+      "source": "evidence/pr3-peaceful-reacquisition-verification/stopped-audit.json",
+      "path": "stopped-audit.json",
+      "bytes": 541475,
+      "sha256": "344b07a435023199ca0a98abb3b5373980205086aadddffa5bccf990961435f5"
+    }
+  ]
+}

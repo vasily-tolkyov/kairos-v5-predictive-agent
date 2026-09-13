@@ -1,0 +1,24 @@
+{
+  "version": "NativeSmokeRestoreCheck1",
+  "status": "passed",
+  "sessionSha256": "3078b473c126818a9bca7d443f65b8225f5f6930a7fdc51ca976ad2ceaa7c5dd",
+  "stats": {
+    "decisions": 2243,
+    "executed": 1973,
+    "writes": 8228,
+    "passiveWindows": 4293,
+    "passiveWrites": 4293,
+    "pendingGoals": 1,
+    "verifiedGoals": [],
+    "investigating": null,
+    "retainedPlaces": 16,
+    "retainedSurfaces": 512,
+    "observations": 155,
+    "visibleSurfaces": 0
+  },
+  "modelAndTaskStateUnchanged": true,
+  "transientVisibleBindingsCleared": 512,
+  "predictionReadOnly": true,
+  "duplicateWindowRejected": true,
+  "scope": "Offline check of an actual stopped checkpoint. No new actions or learning writes; no claim of native restart success."
+}

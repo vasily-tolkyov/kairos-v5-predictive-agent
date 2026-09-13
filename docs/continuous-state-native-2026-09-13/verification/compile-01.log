@@ -1,0 +1,12 @@
+test/experience-frame-flow.test.ts(30,36): error TS2345: Argument of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "held"; readonly cue: ActionCue; }' is not assignable to parameter of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "off"; readonly cue: null; }'.
+  Types of property 'state' are incompatible.
+    Type '"held"' is not assignable to type '"off"'.
+test/experience-frame-flow.test.ts(30,56): error TS2345: Argument of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "held"; readonly cue: ActionCue; }' is not assignable to parameter of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "off"; readonly cue: null; }'.
+  Types of property 'state' are incompatible.
+    Type '"held"' is not assignable to type '"off"'.
+test/experience-frame-flow.test.ts(102,108): error TS2345: Argument of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "held"; readonly cue: ActionCue; }' is not assignable to parameter of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "off"; readonly cue: null; }'.
+  Types of property 'state' are incompatible.
+    Type '"held"' is not assignable to type '"off"'.
+test/experience-frame-flow.test.ts(113,36): error TS2345: Argument of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "held"; readonly cue: ActionCue; }' is not assignable to parameter of type '{ readonly version: "BodyMotorSignalV1"; readonly scope: "instrumented-held-controls"; readonly state: "off"; readonly cue: null; }'.
+  Types of property 'state' are incompatible.
+    Type '"held"' is not assignable to type '"off"'.
