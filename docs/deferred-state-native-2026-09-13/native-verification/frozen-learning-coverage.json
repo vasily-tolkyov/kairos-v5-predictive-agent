@@ -1,0 +1,5824 @@
+{
+  "version": "NativeLearningCoverageAudit1",
+  "status": "passed",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-deferred-frozen",
+  "actorCommit": "974f14b147f9ba4ba110389b276d719626ac7d99",
+  "stoppedAt": "2026-09-13T11:47:20.635Z",
+  "runStatus": "budget-paused",
+  "scriptSha256": "1b05562f26dbd4da0c94227a1cbc0e9cc304369d756c6ae231d368f20bfe05ce",
+  "inputs": {
+    "results.json": {
+      "bytes": 107243,
+      "sha256": "0ca0818f8e3ea1afef40f71d530372ad0e9db6a3c4df9f50c5ea61b58ecc3e6f"
+    },
+    "decisions.jsonl": {
+      "bytes": 94226,
+      "sha256": "b298631144fe5277e0b72d2f59ebf7b82b343b7b5d24f9fe37512bc503313dd5"
+    },
+    "physical-actions.jsonl": {
+      "bytes": 276177,
+      "sha256": "aaece2354c480e62b1a9bbbf47cc614428d370c7ff0116b13dc0afe4d3dc2179"
+    },
+    "passive-windows.jsonl": {
+      "bytes": 18166,
+      "sha256": "f8ed1aeb066a1f31f111e3dd5c630554d16a873396bff93774fb6198d918eeb6"
+    },
+    "session.json.gz": {
+      "bytes": 455722,
+      "sha256": "dbf1495bc9227361d4a15478a94090342a3e2734882a55c6c82041bb65c4d681"
+    },
+    "events/0000001.json.gz": {
+      "bytes": 13006,
+      "sha256": "702251f4fe6f64e7c90b249010cb8910e6462aa078d092818034fe5189a90283"
+    },
+    "events/0000002.json.gz": {
+      "bytes": 23380,
+      "sha256": "e3f7e5390097d7588739e8c1d1645bf170fb0abca6b8f80995ca48977071552c"
+    },
+    "events/0000003.json.gz": {
+      "bytes": 44951,
+      "sha256": "2f895934b53e0c6d5a664f367efc91eb91fe97232979e429b3bf0721b2d44e57"
+    },
+    "events/0000004.json.gz": {
+      "bytes": 103681,
+      "sha256": "1ba45d1f7abb0f78abc97a87365b069055e975565478aa8c36a1bf15ead91050"
+    },
+    "events/0000005.json.gz": {
+      "bytes": 75888,
+      "sha256": "9bdb39bdb1607635f16bf5aaa976b78ad2aa32be1762818ab10a01ee0ef7db72"
+    },
+    "passive-events/0000001.json.gz": {
+      "bytes": 8172,
+      "sha256": "cf6ae58523294e66ca50c5b11ad371dc8151f1ecf0c42e90f2b971279aeda96d"
+    },
+    "passive-events/0000002.json.gz": {
+      "bytes": 7861,
+      "sha256": "5b45ad98f69d3055721c0d6f77315afb76fd5ac9f63e1d251d38e7049fe8d082"
+    },
+    "passive-events/0000003.json.gz": {
+      "bytes": 7249,
+      "sha256": "640a2c422de2f02649a92d80f9155bccb23c37058bcc500248c477c125e55949"
+    },
+    "passive-events/0000004.json.gz": {
+      "bytes": 5967,
+      "sha256": "9c08abe418dd0425ec2960cc41b10b17a290e51a0123902f169a3f3ab09bc78c"
+    },
+    "passive-events/0000005.json.gz": {
+      "bytes": 5269,
+      "sha256": "23d6aaac47cacd708cbe7086a707a25bcdf38b79be30febf09de00c81fe11114"
+    },
+    "passive-events/0000006.json.gz": {
+      "bytes": 5626,
+      "sha256": "ba4cf4474d2fe10f64e7b7793b184e1cdad2133f5b5dbe07facf450783cc62d4"
+    },
+    "passive-events/0000007.json.gz": {
+      "bytes": 5626,
+      "sha256": "2ef117922fe3f2130047fd73bbf0dfe713a7d0fe8b89ac96eaf1d3ea293b944c"
+    },
+    "passive-events/0000008.json.gz": {
+      "bytes": 5964,
+      "sha256": "3b2e5c2853744f29b7d776f3dfb99bc7f88d3b91efa9e4ed2e37fc92e399879c"
+    },
+    "passive-events/0000009.json.gz": {
+      "bytes": 5266,
+      "sha256": "a0cab6fddb00d954ddf5dfbaba5b6d635812531bbee48b2da1e401cba4c296d6"
+    },
+    "passive-events/0000010.json.gz": {
+      "bytes": 5270,
+      "sha256": "62fc11b0a26781ac484686d0fe886ff05086e43b20179df4666b3b9987846e0f"
+    },
+    "passive-events/0000011.json.gz": {
+      "bytes": 5274,
+      "sha256": "9eee35b1a23d9eea61035e5ce89a9543ec5ac199d055e6d8e24423c137cce569"
+    },
+    "passive-events/0000012.json.gz": {
+      "bytes": 5628,
+      "sha256": "a2f309d37dee61791b37583cdb54a6264e7fc26d960b27ca455a683383b10c4c"
+    },
+    "passive-events/0000013.json.gz": {
+      "bytes": 5630,
+      "sha256": "5660e8b04d5de24f57e12cac884c04e84fd1c7bcb49e8ea900d277981627abfa"
+    },
+    "passive-events/0000014.json.gz": {
+      "bytes": 5624,
+      "sha256": "6ae79d470f41f83c77ab9f1f75628bb0ba239917bdd4b1b4ed3c7eb78281a5a2"
+    },
+    "passive-events/0000015.json.gz": {
+      "bytes": 5624,
+      "sha256": "5bb740963ea271deabcd3abe5b9e9c066ea27211abd31745978c49c184bf1044"
+    },
+    "passive-events/0000016.json.gz": {
+      "bytes": 5978,
+      "sha256": "77699f466ee826b6ef1b9c5dceb9086f87f0e148360567fbd3b46ca38aaefafd"
+    },
+    "passive-events/0000017.json.gz": {
+      "bytes": 5971,
+      "sha256": "f19df0f1158d19adf9b92515995740f8fe2e4598b668db5561bdabff259f87cd"
+    },
+    "passive-events/0000018.json.gz": {
+      "bytes": 6623,
+      "sha256": "fea642317eb091988f2f49ecc1cae65b11b35d8f6b9e0a01224bfa949ed728dd"
+    },
+    "passive-events/0000019.json.gz": {
+      "bytes": 6934,
+      "sha256": "c0f3f729c75e4cdb3c302495287bf1008f6eee70584e84c275aae1c59eb31e5f"
+    },
+    "passive-events/0000020.json.gz": {
+      "bytes": 7248,
+      "sha256": "3d4a4e9fb1c9a8c50117e5bb6340372c5eacebcda0d3927d74e4ca85f17ee4bb"
+    },
+    "passive-events/0000021.json.gz": {
+      "bytes": 5625,
+      "sha256": "ea7d747034182564bbe5b9771cbd6c6227fa8206e103c2fb26a396392aab568c"
+    },
+    "passive-events/0000022.json.gz": {
+      "bytes": 5625,
+      "sha256": "7ca742b78b1c9c1e06b36cd75acbb96ef5db36fa4fbae6d9fb7377a166600fdd"
+    },
+    "passive-events/0000023.json.gz": {
+      "bytes": 5965,
+      "sha256": "8368e0a1f32ddecb3f7d807beecb8dd5da88af37b8f4585a54ca7d33d96d71cf"
+    },
+    "passive-events/0000024.json.gz": {
+      "bytes": 5974,
+      "sha256": "cb6f3c144ed492f831a4ffb3c58bdeefffb11044b2a145e5a9b5d653f45d549a"
+    },
+    "passive-events/0000025.json.gz": {
+      "bytes": 5269,
+      "sha256": "a134c1440a6a34beb1b692f4a0d4155cc655b64321e0f8c8d5e35ac86a97110e"
+    },
+    "passive-events/0000026.json.gz": {
+      "bytes": 5617,
+      "sha256": "eb555ca46ee562d6d341b28f4d78448d32c7545ac7b4f4d528695b8e416b7a44"
+    },
+    "passive-events/0000027.json.gz": {
+      "bytes": 6616,
+      "sha256": "2fde9656dd2b071bd3afd93a627c063e794b3c452aa769c3c633453cfd796476"
+    },
+    "passive-events/0000028.json.gz": {
+      "bytes": 6296,
+      "sha256": "f810f37801c59bd5a5fea7411c9dc8d438e442a8a2ff39795598288a208f76a2"
+    },
+    "passive-events/0000029.json.gz": {
+      "bytes": 5267,
+      "sha256": "e963b1b888e7a5194152b546be0673cafc0bf0d27b8d18c5935ccaaf0b60704c"
+    },
+    "passive-events/0000030.json.gz": {
+      "bytes": 5628,
+      "sha256": "e4a5ea17ca34927be51c1e1961bfbd9221fa303215d26f54288e05564dc13a1d"
+    },
+    "passive-events/0000031.json.gz": {
+      "bytes": 5271,
+      "sha256": "1273165d31bbecdaee0a69e28bc896a5b3d52d32be5e34c3a9e90b9a482d6ffd"
+    },
+    "passive-events/0000032.json.gz": {
+      "bytes": 5968,
+      "sha256": "a4c5fcc53a6219109cc84a85328cb8dd5c218aea299ac43a17a65acbb39134e8"
+    },
+    "passive-events/0000033.json.gz": {
+      "bytes": 5270,
+      "sha256": "3ef87d6edac22bacb40b1bf903fd60bab7db52e9cc8a1e550bbf8f44f51b2cdb"
+    },
+    "passive-events/0000034.json.gz": {
+      "bytes": 5965,
+      "sha256": "e0de979a3be3ce234fddb9f385cf6e3090fd7967309862a4cb974cb116b046da"
+    },
+    "passive-events/0000035.json.gz": {
+      "bytes": 5625,
+      "sha256": "0ca92e2559ec503395ab36db98192f1c603b7b0f446527510ccde5c4dcdd378f"
+    },
+    "passive-events/0000036.json.gz": {
+      "bytes": 5977,
+      "sha256": "534ebe02193df51f2bf8116a98f3ed12dfc4f02b200cab8268d0a3380a265afa"
+    },
+    "passive-events/0000037.json.gz": {
+      "bytes": 5628,
+      "sha256": "6ae83dc0baceaf16a86e464b16e69b187f23f9c8c61c488cf3a0895f702524d3"
+    },
+    "passive-events/0000038.json.gz": {
+      "bytes": 5268,
+      "sha256": "41b85ce4dfa342428746350692c854712d84a18b37c3942e67d143848af3fe3e"
+    },
+    "passive-events/0000039.json.gz": {
+      "bytes": 5622,
+      "sha256": "f7f28918921260d557746a66569894ea5756af3462e64ca78f62afc4fdcd25b6"
+    },
+    "passive-events/0000040.json.gz": {
+      "bytes": 5969,
+      "sha256": "c5cac343068bc967fa83822bcbc00b33fb1d275641152360da37fdb90ebe9446"
+    },
+    "passive-events/0000041.json.gz": {
+      "bytes": 5267,
+      "sha256": "f902503b8d1d1f0818138dcedf39819b42a936194aadd2de4b9652bd88e83369"
+    },
+    "passive-events/0000042.json.gz": {
+      "bytes": 5632,
+      "sha256": "ef3e233b993e2200b374140892ca1e427421e662ca7056df874af4b58b44787a"
+    },
+    "passive-events/0000043.json.gz": {
+      "bytes": 5269,
+      "sha256": "7e37a07602f3150be02124eb6872cf53ee7d2ca7c0e483158b11215fa8709978"
+    },
+    "passive-events/0000044.json.gz": {
+      "bytes": 5966,
+      "sha256": "492848215710056905e46f4527f3a2c2603b59f7454d92e217e130b605e2d145"
+    },
+    "passive-events/0000045.json.gz": {
+      "bytes": 5262,
+      "sha256": "51ee142bdd05b37836101a42a6956324a94785c8c6262229953ad5361cce97e1"
+    },
+    "passive-events/0000046.json.gz": {
+      "bytes": 5625,
+      "sha256": "9882bbda126b2ede453003945ea31b429c6073b14aa153f6abdfde0d6d183854"
+    },
+    "passive-events/0000047.json.gz": {
+      "bytes": 5631,
+      "sha256": "e8d22e460a6b28b489060960ce9f21a2f6b56b0720397ea6fcf984c98220fa62"
+    },
+    "passive-events/0000048.json.gz": {
+      "bytes": 5965,
+      "sha256": "cf07b051d5b727a4621b19a28fe48b026669641198b3860e30a494b020f2bb8d"
+    },
+    "passive-events/0000049.json.gz": {
+      "bytes": 5271,
+      "sha256": "3517cb3a45d75b4c4944334407c9ceff01311c31af3110b9038156bad654ca17"
+    },
+    "passive-events/0000050.json.gz": {
+      "bytes": 5272,
+      "sha256": "8d73fd8e2fd0c101c33607497d8286eb8eb0e3159774196bed12a2ba00656a09"
+    },
+    "passive-events/0000051.json.gz": {
+      "bytes": 5622,
+      "sha256": "7a4ebb955f67fdde844e567297d6579544385ba69108090181fc415704c52d36"
+    },
+    "passive-events/0000052.json.gz": {
+      "bytes": 5628,
+      "sha256": "8625a35209330ce0b2bf614d1c469392e61edaba2f88e34af929f89a146b67f9"
+    },
+    "passive-events/0000053.json.gz": {
+      "bytes": 5634,
+      "sha256": "19e034bc9790af892aabb74254ba15d6a6aa25e7c1b98d534a26261274edb53b"
+    },
+    "passive-events/0000054.json.gz": {
+      "bytes": 5269,
+      "sha256": "ddda7e6bcefb6eaa0733ea0b8199041f0de817840b52681d5615cbc954b0ca49"
+    },
+    "passive-events/0000055.json.gz": {
+      "bytes": 5625,
+      "sha256": "eb473a5bb1fcb555f6cdc78cf22e4896e5a5dd033d1f7c38239d772eb596e24d"
+    },
+    "passive-events/0000056.json.gz": {
+      "bytes": 5628,
+      "sha256": "2b106e6dce35d3c416db2f1b00d3200738b6afc95e1adced10b5dad181588bbb"
+    },
+    "passive-events/0000057.json.gz": {
+      "bytes": 10388,
+      "sha256": "29369e0216124a3360999141706f45e867ab03ad3437f014f7ec4e08534ff437"
+    },
+    "passive-events/0000058.json.gz": {
+      "bytes": 6295,
+      "sha256": "dd47a3d6a0eca1946c4ed7954f730ea7abd60da9950ef0736a9d6453482a8638"
+    },
+    "passive-events/0000059.json.gz": {
+      "bytes": 10303,
+      "sha256": "531bddfd9fce46fb403211013289fe0bae27213a8920ea0d35d2088ef1e4545e"
+    },
+    "passive-events/0000060.json.gz": {
+      "bytes": 8589,
+      "sha256": "2d73c8a74363929fe8709366d1dba82c9a410cbdd28458e59ccccf60034e2a4e"
+    },
+    "passive-events/0000061.json.gz": {
+      "bytes": 10298,
+      "sha256": "d3ec599794cc6a8b98126dbcf99f11f51776de7ffc53b033caaa2f7b1eb3a780"
+    },
+    "passive-events/0000062.json.gz": {
+      "bytes": 7712,
+      "sha256": "850ea6bff1e1e506f55b6dc76aa83ec035106342cb007a5ee56aa99f55467a6d"
+    },
+    "passive-events/0000063.json.gz": {
+      "bytes": 7254,
+      "sha256": "fe70a6dcfc57aae11a83a84516544741b4cbe8b92baf2dc40728a65b756a6af7"
+    },
+    "passive-events/0000064.json.gz": {
+      "bytes": 7249,
+      "sha256": "8a49a60fa92bc1819a91f6fd7b03fd0cafdce0adf8049ea6166d8294fea5c865"
+    },
+    "passive-events/0000065.json.gz": {
+      "bytes": 6790,
+      "sha256": "6afe6e632c9ce5fb71394ec7c370c8868ed40dbb6eeb58524a4319cbee747e04"
+    },
+    "passive-events/0000066.json.gz": {
+      "bytes": 6300,
+      "sha256": "73dda18af7037f19f69f99fd3cd57044f680bc660d9932cc2ddafed1c9d34a76"
+    },
+    "passive-events/0000067.json.gz": {
+      "bytes": 8099,
+      "sha256": "0ea29a8bdb81b36baaeda6af0c333ebf3f5048999b87ef89de231cc5b840eccd"
+    },
+    "passive-events/0000068.json.gz": {
+      "bytes": 8050,
+      "sha256": "dcd320e6cd92b05c23d690761f3ae53d2e910f09ffad18e543a986e2525b604c"
+    },
+    "passive-events/0000069.json.gz": {
+      "bytes": 5499,
+      "sha256": "2d5f02a6bbe7e38915e7be6f10fc4ad05da42c3259af24976470dc7172b99858"
+    },
+    "passive-events/0000070.json.gz": {
+      "bytes": 6786,
+      "sha256": "69637aa82be53296a9db9dcc4fdad47d50108147831a8fcf5d61f55a3ee6982f"
+    },
+    "passive-events/0000071.json.gz": {
+      "bytes": 6170,
+      "sha256": "f256db08751ad357043a6845b43612596abbcd47b792711d72ee968f95029ef0"
+    },
+    "passive-events/0000072.json.gz": {
+      "bytes": 5148,
+      "sha256": "2d1da4eb46b656f0c1b27d5351862df40932c1ed90ff5b6ee6086ab2e98d0528"
+    },
+    "passive-events/0000073.json.gz": {
+      "bytes": 5508,
+      "sha256": "40ef84f81cfe2bb26ecd6bed954e6e754613dc44ba1fe61896a83d2b7291ba0f"
+    },
+    "passive-events/0000074.json.gz": {
+      "bytes": 5150,
+      "sha256": "2f773d70576209d2cecd141271a7c43865c43f580491d185f2f94d98a5cedb9d"
+    },
+    "passive-events/0000075.json.gz": {
+      "bytes": 27535,
+      "sha256": "78213c79f8e3df25dc989d049d055d0047c9df8811c251d21dcdbac37cf1ba96"
+    },
+    "passive-events/0000076.json.gz": {
+      "bytes": 20407,
+      "sha256": "3af7d0c6f8704956c6df0ae1589aebd6a0f81057d8394363f926ab11da1d3d2d"
+    },
+    "passive-events/0000077.json.gz": {
+      "bytes": 30414,
+      "sha256": "84bb70c8cbb70beb7873804da7a2e2ddbdf16fbbd2c67db72e3351aad10722c3"
+    },
+    "passive-events/0000078.json.gz": {
+      "bytes": 20505,
+      "sha256": "40a574c889539e6bdc4621693e5334780694ce5104cbf3cc1204bc7a8e14b9d8"
+    },
+    "passive-events/0000079.json.gz": {
+      "bytes": 20510,
+      "sha256": "56da565c7dc3289a3d73c69e0bb0243badce467bef8c19960f76188964bf5cd4"
+    },
+    "passive-events/0000080.json.gz": {
+      "bytes": 20162,
+      "sha256": "5dce125ed0f58b4bd50833cb76446c5a59ea865e4fcbe90fd2efbaed7e7dd439"
+    },
+    "passive-events/0000081.json.gz": {
+      "bytes": 29300,
+      "sha256": "05da6940fefa974f6daa6bb7fce9c6f798edf440414ac2c26fd30728fbaa62cb"
+    },
+    "passive-events/0000082.json.gz": {
+      "bytes": 20048,
+      "sha256": "60cea70c249dc6dd4a09dba56c43be60bbc798054af805d1a8ebf04299312d7e"
+    },
+    "passive-events/0000083.json.gz": {
+      "bytes": 29305,
+      "sha256": "b9b67284e2dbbf33df7e5b5134c2c5a3425b1541afca6008c41ccb87d4a00aab"
+    },
+    "passive-events/0000084.json.gz": {
+      "bytes": 20044,
+      "sha256": "7e9ec83892abefe225d5b395c2aad8cdf40595de96ae546744e97db15a80ad18"
+    },
+    "passive-events/0000085.json.gz": {
+      "bytes": 29299,
+      "sha256": "970ff6464ccf899b163ab8bcadc38daf9986302b9b70a643b43eff7cfdafea16"
+    },
+    "passive-events/0000086.json.gz": {
+      "bytes": 19998,
+      "sha256": "632e39281b960be743275d004ea54e1fadcfc7a21e5561bc4064f36132da361d"
+    },
+    "passive-events/0000087.json.gz": {
+      "bytes": 20011,
+      "sha256": "1f481ce494a887ad4d68da4721ac3a2cbb1401da873dc1c2411e32d65facab50"
+    },
+    "passive-events/0000088.json.gz": {
+      "bytes": 29280,
+      "sha256": "77239b666971a39463e4b46afee2281d89fad074269b6c57c5809f747b765423"
+    },
+    "passive-events/0000089.json.gz": {
+      "bytes": 38636,
+      "sha256": "c8199bb370862b79d14e2c895bc6b01ddfa8d67ab0dffda0c19510375a0fed20"
+    },
+    "passive-events/0000090.json.gz": {
+      "bytes": 20033,
+      "sha256": "3a41fe01e4bb550ac2eeb6fca2023f9eca363f685fe308b5fa73d8f6c69b6e6d"
+    },
+    "passive-events/0000091.json.gz": {
+      "bytes": 29274,
+      "sha256": "7dc4983cbbb335dbdbb924373a9ca13f3e5b1882c33358d6cb5d38fb99c91264"
+    },
+    "passive-events/0000092.json.gz": {
+      "bytes": 20023,
+      "sha256": "502a71f7a189597e5623af83d0db4f1ca9c5dc7010459adf70e8bacc472e2466"
+    },
+    "passive-events/0000093.json.gz": {
+      "bytes": 38628,
+      "sha256": "fa696d408d0a51179ca8e5441a3dc188803095668427d9c0314280710d5daf72"
+    },
+    "passive-events/0000094.json.gz": {
+      "bytes": 20035,
+      "sha256": "94c2cae82760b596f2d12bfa9a04be0b59624dfa49b76ac14540021ebd0c1a14"
+    },
+    "passive-events/0000095.json.gz": {
+      "bytes": 20044,
+      "sha256": "25966aa6f63a2b65e183cf068e8384ba34fcddb93286ad1abddbed837403135e"
+    },
+    "passive-events/0000096.json.gz": {
+      "bytes": 29317,
+      "sha256": "ed8da1c2a52e562eeb3e09d435e07f84022b0446e498d1e916dfa884f721002f"
+    },
+    "passive-events/0000097.json.gz": {
+      "bytes": 29297,
+      "sha256": "cbbad755f2039b3588e0e3d4775a328af3bbe2beff4ee00f4dcfdd40d1a26f74"
+    },
+    "passive-events/0000098.json.gz": {
+      "bytes": 20024,
+      "sha256": "85f2ee96ac4470a0ca192a2fc2e7fb89e1e06fc752a9cd112c4707ea0838dc3f"
+    },
+    "passive-events/0000099.json.gz": {
+      "bytes": 20017,
+      "sha256": "ef53b62602401e61222859ca766ac96efaaa5f13fc1d7cfcc581fe4bd78a85b7"
+    },
+    "passive-events/0000100.json.gz": {
+      "bytes": 20011,
+      "sha256": "f125458c0f20cc55c2620ef491bcaa6ab0c09461ca043fcb517744dd369702a5"
+    },
+    "passive-events/0000101.json.gz": {
+      "bytes": 29258,
+      "sha256": "fceb4a7157d4599adff9c70b92e86c3f1e6be5f340bf30a0329913c7664a2f70"
+    },
+    "passive-events/0000102.json.gz": {
+      "bytes": 29273,
+      "sha256": "b5b166c3b095f8c5149c1e2547eef0d09ea165b9541e43b872d69099d9c93a48"
+    },
+    "passive-events/0000103.json.gz": {
+      "bytes": 20024,
+      "sha256": "848afc22a6004e8f730a7033acf53e203b9d9b79dcdb0b9ce0d921ff5671a3c2"
+    },
+    "passive-events/0000104.json.gz": {
+      "bytes": 20021,
+      "sha256": "3640958248d614df63958264b1e8372ef605c5ba7f21a4ff7de01acc6df03156"
+    },
+    "passive-events/0000105.json.gz": {
+      "bytes": 29255,
+      "sha256": "6205300e076bdc3ff8ac7bf72e33b090bf1603fcaed5c82cd78afdf14b6e7096"
+    },
+    "passive-events/0000106.json.gz": {
+      "bytes": 47883,
+      "sha256": "6b1bb823a62b87fefb47ce6b527c2b1652e1dbdca2ef1ee02ee506851af13924"
+    },
+    "passive-events/0000107.json.gz": {
+      "bytes": 20012,
+      "sha256": "0dca5104f43c20c7471137c2701d41c17b10172e239e34953dd826c19bbf4c33"
+    },
+    "passive-events/0000108.json.gz": {
+      "bytes": 29293,
+      "sha256": "ece47a51cd8483b6be7e6e514243a52c1a9cb4ef340fb8bd713298d9e76f0079"
+    },
+    "passive-events/0000109.json.gz": {
+      "bytes": 29292,
+      "sha256": "c0c984a5f76ab45730a237f437f61751002b3db9e6b88607051ec24956dc4bd8"
+    },
+    "passive-events/0000110.json.gz": {
+      "bytes": 20029,
+      "sha256": "19e7027c90944f855d445a7d461488b1453bdf753a9743a61d8c50d848931d91"
+    },
+    "passive-events/0000111.json.gz": {
+      "bytes": 20021,
+      "sha256": "2d957f549335c7a7282ccd45eabb64e7c661259fb6a7926044d13f669c860e83"
+    },
+    "passive-events/0000112.json.gz": {
+      "bytes": 29301,
+      "sha256": "05f31600a1145f437bc5c2f0549ed932aed56e5b5596f74dbfab4f208805ecaa"
+    },
+    "passive-events/0000113.json.gz": {
+      "bytes": 20019,
+      "sha256": "47b22e1a7a339367bd99d99b63c3420e9f8f600d2f7800bd12c3b26065f1a3d4"
+    },
+    "passive-events/0000114.json.gz": {
+      "bytes": 29283,
+      "sha256": "d1f386da170db6b236140a9fab35b44962cb9e4fd8dbf573c79e208c5176a274"
+    },
+    "passive-events/0000115.json.gz": {
+      "bytes": 20047,
+      "sha256": "a38131c7a449c813dd8767612195cbcfad2f2e4bd20a7a5fd324c08a4931c91a"
+    },
+    "passive-events/0000116.json.gz": {
+      "bytes": 20045,
+      "sha256": "a157611286df63907a64d481d732cf72df1b2f623a8ebbf88f7747ab2f795831"
+    },
+    "passive-events/0000117.json.gz": {
+      "bytes": 38680,
+      "sha256": "791ad3b849a0e9537fda4ca2f9491aa7bdd9f6863d15cf9a67ad11a5ec832c6b"
+    },
+    "passive-events/0000118.json.gz": {
+      "bytes": 20058,
+      "sha256": "25841e4af3db0677321c6622a33cd35f89c8a0ac73bb01796ecb707ccfe703f1"
+    },
+    "passive-events/0000119.json.gz": {
+      "bytes": 38665,
+      "sha256": "6e7cbbd5165a8c17bb9f38bdf3fbf834a4b917f2f767b0fed25f3e51a7bba636"
+    },
+    "passive-events/0000120.json.gz": {
+      "bytes": 20062,
+      "sha256": "416909ae6d7710871729143af8fe8508d2d5d85ae2a011c1633ef76c4c3f1d32"
+    },
+    "passive-events/0000121.json.gz": {
+      "bytes": 20055,
+      "sha256": "50f64f4a50f57e68cdb0078552fa0c52fc97ca45b54cc80fc981cc56951a7876"
+    },
+    "passive-events/0000122.json.gz": {
+      "bytes": 29306,
+      "sha256": "a01afff8cf2b4ab61f7e3149109391baf2e811d700604558256b24d3d122f8dc"
+    },
+    "passive-events/0000123.json.gz": {
+      "bytes": 29174,
+      "sha256": "9aeea84260a81302586ad8849c05b7319738419ca21c2b88f12e95eafd806436"
+    },
+    "passive-events/0000124.json.gz": {
+      "bytes": 28916,
+      "sha256": "f4ae8e17da8bc16004b274982a0bee1f6f55489929ef7b21fa810cc51b451c81"
+    },
+    "passive-events/0000125.json.gz": {
+      "bytes": 19765,
+      "sha256": "fbe43e82e9b687658c12f90d05b355f9981abe389e28b389af149f18e4395cab"
+    },
+    "passive-events/0000126.json.gz": {
+      "bytes": 19774,
+      "sha256": "48efa5bdd55d5df89be2ab5ad518db88b2b773bd304aca5758641b644a8cf4b7"
+    },
+    "passive-events/0000127.json.gz": {
+      "bytes": 36436,
+      "sha256": "1a66c4578181738ebe65210668c63cf43a76bf382b93697e7937a518ff6ec319"
+    },
+    "passive-events/0000128.json.gz": {
+      "bytes": 17016,
+      "sha256": "14450161aaf59711852a6d0f369c077a16a5fcea7b6b163e6c558ab2c5c9c6d2"
+    }
+  },
+  "protocol": {
+    "steps": 32,
+    "seconds": 180,
+    "goalAfter": 0,
+    "frozen": true,
+    "frozenScope": "transferable dynamics and affordances; current task feedback remains active",
+    "environment": "natural",
+    "worldSeed": "129604783",
+    "difficulty": "peaceful",
+    "difficultySource": "explicit-command-line",
+    "goalDistance": 12,
+    "geometry": {
+      "wallDepth": 2,
+      "halfWidth": 5,
+      "startX": 0.5,
+      "material": "oak_planks"
+    },
+    "taskOnly": false,
+    "resetAfterStart": false,
+    "externalActionSelection": false,
+    "requestedGoals": [
+      {
+        "version": "GroundedGoalV1",
+        "id": "reach-other-side",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "past-exit",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "position.2",
+            "comparator": "less-than",
+            "target": -5.5
+          }
+        }
+      }
+    ],
+    "goalSourceSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+    "boundary": "native normal terrain and peaceful difficulty; no setup, teleport or runtime rule callbacks",
+    "limitations": [
+      "finite natural-world sample; goal prerequisites depend on actual terrain",
+      "peaceful engine rules; no evidence of hostile survival or hunger management",
+      "engineered block/entity silhouette RGBD and visible hotbar sensing; some visual assets are unsupported; not full client vision",
+      "restart requires an explicit observed action; recovery does not establish survival",
+      "finite duration cannot establish lifelong learning"
+    ],
+    "difficultyVerifiedByServer": "peaceful",
+    "maintenanceGoals": [
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-health",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-health",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.health",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-food",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-food",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.food",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-oxygen",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-oxygen",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.oxygen",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      }
+    ]
+  },
+  "budgetNote": "protocol.steps is a decision limit, not an executed-action count. The historical matched task uses 192 decisions / 480 seconds; 191 was an outcome, not its budget.",
+  "counts": {
+    "decisions": 32,
+    "decisionStatuses": {
+      "executed": 5,
+      "refused": 27
+    },
+    "attempts": 32,
+    "executed": 5,
+    "refused": 27,
+    "refusalReasons": {
+      "action-start-expired": 27
+    },
+    "executedFractionOfAllDecisions": 0.15625,
+    "freshRecordedForecasts": 5,
+    "supportedExecutedForecasts": 0,
+    "supportedTaskPlans": 0,
+    "uniqueNewRealWindows": 133,
+    "activeWindows": 5,
+    "passiveWindows": 128,
+    "activeObservationWindows": 1,
+    "receiptInstrumentedWindows": 2,
+    "zeroDurationMotorExposures": 0,
+    "learningWrites": 0,
+    "passiveWrites": 0,
+    "activeWrites": 0
+  },
+  "supportedForecasts": {
+    "fieldDeclarations": 0,
+    "uniqueSourceWindows": 0,
+    "actualObservable": 0,
+    "actualUnavailable": 0,
+    "numericIntervalsEvaluated": 0,
+    "intervalHits": 0,
+    "intervalMisses": 0,
+    "strictIntervalCoverage": null,
+    "coverageWith1eMinus6": null,
+    "intervalWidths": {
+      "count": 0,
+      "min": null,
+      "median": null,
+      "p95": null,
+      "max": null,
+      "mean": null
+    },
+    "absoluteErrors": {
+      "count": 0,
+      "min": null,
+      "median": null,
+      "p95": null,
+      "max": null,
+      "mean": null
+    },
+    "categoricalCompared": 0,
+    "categoricalMatched": 0,
+    "windowSupportFractionOfAllDecisions": 0,
+    "windowSupportFractionOfExecuted": 0
+  },
+  "perField": {},
+  "goalAxisCoverage": {
+    "self/position.2": {
+      "fieldDeclarations": 0,
+      "uniqueSourceWindows": 0,
+      "actualObservable": 0,
+      "actualUnavailable": 0,
+      "numericIntervalsEvaluated": 0,
+      "intervalHits": 0,
+      "intervalMisses": 0,
+      "strictIntervalCoverage": null,
+      "coverageWith1eMinus6": null,
+      "intervalWidths": {
+        "count": 0,
+        "min": null,
+        "median": null,
+        "p95": null,
+        "max": null,
+        "mean": null
+      },
+      "absoluteErrors": {
+        "count": 0,
+        "min": null,
+        "median": null,
+        "p95": null,
+        "max": null,
+        "mean": null
+      },
+      "categoricalCompared": 0,
+      "categoricalMatched": 0,
+      "windowSupportFractionOfAllDecisions": 0,
+      "windowSupportFractionOfExecuted": 0,
+      "activeGoal": {
+        "fieldDeclarations": 0,
+        "uniqueSourceWindows": 0,
+        "actualObservable": 0,
+        "actualUnavailable": 0,
+        "numericIntervalsEvaluated": 0,
+        "intervalHits": 0,
+        "intervalMisses": 0,
+        "strictIntervalCoverage": null,
+        "coverageWith1eMinus6": null,
+        "intervalWidths": {
+          "count": 0,
+          "min": null,
+          "median": null,
+          "p95": null,
+          "max": null,
+          "mean": null
+        },
+        "absoluteErrors": {
+          "count": 0,
+          "min": null,
+          "median": null,
+          "p95": null,
+          "max": null,
+          "mean": null
+        },
+        "categoricalCompared": 0,
+        "categoricalMatched": 0,
+        "windowSupportFractionOfAllDecisions": 0,
+        "windowSupportFractionOfExecuted": 0
+      }
+    }
+  },
+  "hypotheses": {
+    "fieldDeclarations": 0,
+    "sourceWindows": 0
+  },
+  "motors": [
+    {
+      "id": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "active": 1,
+      "passive": 6,
+      "executedObservation": 1,
+      "selectedDecisions": 7,
+      "refusedDecisions": 6,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "769ab4556cc8dfadf4257ec66981f572dd1d1cbbd58b5ee2845d3d3249c0c469",
+      "cue": {
+        "kind": "look",
+        "parameters": {
+          "yawDegrees": 15,
+          "pitchDegrees": 0
+        }
+      },
+      "active": 1,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "9b75cf0fd352f25b87434eb88f83f60318476ea4df9a5804d8377660c7a2ea76",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 5
+        }
+      },
+      "active": 1,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "ea110fd563e9525c6db69668a3e7242aaa66c84e3f1ebfc808bf5efa81facf07",
+      "cue": {
+        "kind": "jump",
+        "parameters": {
+          "forward": false,
+          "holdTicks": 4
+        }
+      },
+      "active": 1,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "f64e6a49f10909427a5637f58ddb1bb5ff85d7c415e7efeeae4c9395e1f9d0da",
+      "cue": {
+        "kind": "use-item",
+        "parameters": {
+          "holdTicks": 40
+        }
+      },
+      "active": 1,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 3,
+      "refusedDecisions": 2,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "active": 0,
+      "passive": 48,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "active": 0,
+      "passive": 43,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "active": 0,
+      "passive": 19,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "25cf91fa1da14c60503f7f85fde83761b95b19d6d07bb8ff45c1610365a398cd",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "active": 0,
+      "passive": 4,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "13c3992f4bb8a491e7e175cef727ad8d7ec2e4c01aa3b3f67913f6dfaf6b52d9",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 6
+        }
+      },
+      "active": 0,
+      "passive": 3,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "2240a5b4108e0bea2828c5ac9fd39fa0aa94c7acae62177116a23efa1edcf8be",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 5
+        }
+      },
+      "active": 0,
+      "passive": 2,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "2760f576c48516e639786ad1bdace49ad0cd4325145271c6ba1fa0d8f8edcfe0",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 7
+        }
+      },
+      "active": 0,
+      "passive": 2,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "f7aff501eb725f361b5b66f01be82cd22cf0f9740b582f2b9f4f5826e67572dc",
+      "cue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 9
+        }
+      },
+      "active": 0,
+      "passive": 1,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 0
+    },
+    {
+      "id": "1a1c04ac46eea00bfadf5e82b771a8440383da9c95e16f976de9f65906c626a7",
+      "cue": {
+        "kind": "jump",
+        "parameters": {
+          "forward": false,
+          "holdTicks": 20
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 2,
+      "refusedDecisions": 2,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "2c8ff24e1434b5c570d61af716214c1d8b9936711efd5f2adf098ea3d5479334",
+      "cue": {
+        "kind": "look",
+        "parameters": {
+          "yawDegrees": -15,
+          "pitchDegrees": 0
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 2,
+      "refusedDecisions": 2,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "2ed798c2a703c49470c93272df2c9da477116327b97c5a2213de4c407cc49268",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 7
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 1,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "440aa91494768f459074dcc87d6fda22f3a816f38c1cba00d8a69d1200767f27",
+      "cue": {
+        "kind": "jump",
+        "parameters": {
+          "forward": true,
+          "holdTicks": 4
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 2,
+      "refusedDecisions": 2,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "4911db3735134f25ead27a371ebf6845d5fd328a11241a191ea910083b89b471",
+      "cue": {
+        "kind": "jump",
+        "parameters": {
+          "forward": true,
+          "holdTicks": 20
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 2,
+      "refusedDecisions": 2,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "57a41c17c1292d8e7188a6e56bf35fa77aa16857cee3f223b9b940dd6fc6ddae",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 0
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "69fffcf7e0e15c20490d803728f435f9ad4fa0c237adaf5f74f49c6b743ca3fd",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 6
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 1,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "776dfa79390e76fb8be668b94017896a696169f84106e1e4ed9d57d4981d3163",
+      "cue": {
+        "kind": "move",
+        "parameters": {
+          "direction": "left",
+          "ticks": 4
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 1,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "83ac2f241fdbc62905b220f0ac123f323eb8ee45f1ecfd24f4a51e6a6f0c8f7c",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 3
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "89c875309973e4f80323d600ab42f5caacd8db2af7df35c87ebdacf72dd1752d",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 1
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "aa3080dca9abfa11d672398ef2526fd6a4fb6fb6886b774c491dac15b8ce9db9",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 2
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "ae9e9c0aff76af61b235f59e1469e581bacbd998b7b0aef1ea043d0856f9cb57",
+      "cue": {
+        "kind": "move",
+        "parameters": {
+          "direction": "right",
+          "ticks": 4
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 2,
+      "refusedDecisions": 2,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "b09dae090ff57e364384c7bca000bcbdb3a59fdc4f89e53978c32c52486ce67f",
+      "cue": {
+        "kind": "move",
+        "parameters": {
+          "direction": "back",
+          "ticks": 4
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "b9599d207a3aa49f131934ec45e31c0a61921f669cd6f2f64f32420c5a207b39",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 8
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 1,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "c33e080d8beeb8348eb94fa8441e3027f6f521d3cca35d186d5c26312ea5fab9",
+      "cue": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 1,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "e9a1ca2b26e8f0ee3a15db379500349c156e87198e27702118f6de63e8e9a3c8",
+      "cue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 4
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 0,
+      "refusedDecisions": 0,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "eece1766fdf057ac3c81a24f15f7d39277e2e85ae0a7a565a0df74ed9f7cbd4d",
+      "cue": {
+        "kind": "look",
+        "parameters": {
+          "yawDegrees": 0,
+          "pitchDegrees": -15
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 3,
+      "refusedDecisions": 3,
+      "offeredDecisions": 32
+    },
+    {
+      "id": "ffcb336e2bb3f453016a5986283fcbe2b3134b39a40cbaec47699eb104fca3b3",
+      "cue": {
+        "kind": "look",
+        "parameters": {
+          "yawDegrees": 0,
+          "pitchDegrees": 15
+        }
+      },
+      "active": 0,
+      "passive": 0,
+      "executedObservation": 0,
+      "selectedDecisions": 1,
+      "refusedDecisions": 1,
+      "offeredDecisions": 32
+    }
+  ],
+  "finalModel": {
+    "version": "KairosExperienceMediumV11",
+    "contextVersion": "ContextualReadout3",
+    "cumulativeWrites": 24,
+    "networkCount": 10,
+    "networks": [
+      {
+        "id": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30/self",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 1
+          }
+        },
+        "observations": 11,
+        "receptorCount": 32,
+        "retainedRows": 11,
+        "retainedIndependentWindowIds": 11,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 10,
+            "externalWindows": 10
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 10,
+            "externalWindows": 10
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 10,
+            "externalWindows": 10
+          }
+        ]
+      },
+      {
+        "id": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30/object",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 1
+          }
+        },
+        "observations": 22,
+        "receptorCount": 32,
+        "retainedRows": 22,
+        "retainedIndependentWindowIds": 11,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 10,
+            "externalWindows": 10
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          }
+        ]
+      },
+      {
+        "id": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b/self",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 2
+          }
+        },
+        "observations": 6,
+        "receptorCount": 32,
+        "retainedRows": 6,
+        "retainedIndependentWindowIds": 6,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 5,
+            "externalWindows": 5
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 5,
+            "externalWindows": 5
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 5,
+            "externalWindows": 5
+          }
+        ]
+      },
+      {
+        "id": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b/object",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 2
+          }
+        },
+        "observations": 12,
+        "receptorCount": 32,
+        "retainedRows": 12,
+        "retainedIndependentWindowIds": 6,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 5,
+            "externalWindows": 5
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          }
+        ]
+      },
+      {
+        "id": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415/self",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 3
+          }
+        },
+        "observations": 5,
+        "receptorCount": 32,
+        "retainedRows": 5,
+        "retainedIndependentWindowIds": 5,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 4,
+            "externalWindows": 4
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 4,
+            "externalWindows": 4
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 4,
+            "externalWindows": 4
+          }
+        ]
+      },
+      {
+        "id": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415/object",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 3
+          }
+        },
+        "observations": 9,
+        "receptorCount": 32,
+        "retainedRows": 9,
+        "retainedIndependentWindowIds": 5,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 4,
+            "externalWindows": 4
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          }
+        ]
+      },
+      {
+        "id": "ae9e9c0aff76af61b235f59e1469e581bacbd998b7b0aef1ea043d0856f9cb57/self",
+        "cue": {
+          "kind": "move",
+          "parameters": {
+            "direction": "right",
+            "ticks": 4
+          }
+        },
+        "observations": 1,
+        "receptorCount": 32,
+        "retainedRows": 1,
+        "retainedIndependentWindowIds": 1,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          }
+        ]
+      },
+      {
+        "id": "ae9e9c0aff76af61b235f59e1469e581bacbd998b7b0aef1ea043d0856f9cb57/object",
+        "cue": {
+          "kind": "move",
+          "parameters": {
+            "direction": "right",
+            "ticks": 4
+          }
+        },
+        "observations": 2,
+        "receptorCount": 32,
+        "retainedRows": 2,
+        "retainedIndependentWindowIds": 1,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          }
+        ]
+      },
+      {
+        "id": "25cf91fa1da14c60503f7f85fde83761b95b19d6d07bb8ff45c1610365a398cd/self",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 4
+          }
+        },
+        "observations": 1,
+        "receptorCount": 32,
+        "retainedRows": 1,
+        "retainedIndependentWindowIds": 1,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          }
+        ]
+      },
+      {
+        "id": "25cf91fa1da14c60503f7f85fde83761b95b19d6d07bb8ff45c1610365a398cd/object",
+        "cue": {
+          "kind": "passive",
+          "parameters": {
+            "ticks": 4
+          }
+        },
+        "observations": 2,
+        "receptorCount": 32,
+        "retainedRows": 2,
+        "retainedIndependentWindowIds": 1,
+        "legacyRowsWithoutWindowIdentity": 0,
+        "motionCalibration": [
+          {
+            "field": "motion/0",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/1",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          },
+          {
+            "field": "motion/2",
+            "contextualWindows": 0,
+            "externalWindows": 0
+          }
+        ]
+      }
+    ],
+    "frozenQueries": null
+  },
+  "windows": [
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-1",
+      "file": "passive-events/0000001.json.gz",
+      "sha256": "cf6ae58523294e66ca50c5b11ad371dc8151f1ecf0c42e90f2b971279aeda96d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "firstSequence": 40,
+      "lastSequence": 50,
+      "totalObservedIntervals": 10,
+      "totalActiveSeconds": 0.5,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-2",
+      "file": "passive-events/0000002.json.gz",
+      "sha256": "5b45ad98f69d3055721c0d6f77315afb76fd5ac9f63e1d251d38e7049fe8d082",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 9
+        }
+      },
+      "firstSequence": 50,
+      "lastSequence": 59,
+      "totalObservedIntervals": 9,
+      "totalActiveSeconds": 0.4499999999999993,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 9
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "f7aff501eb725f361b5b66f01be82cd22cf0f9740b582f2b9f4f5826e67572dc"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-3",
+      "file": "passive-events/0000003.json.gz",
+      "sha256": "640a2c422de2f02649a92d80f9155bccb23c37058bcc500248c477c125e55949",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 7
+        }
+      },
+      "firstSequence": 59,
+      "lastSequence": 66,
+      "totalObservedIntervals": 7,
+      "totalActiveSeconds": 0.3500000000000014,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 7
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "2760f576c48516e639786ad1bdace49ad0cd4325145271c6ba1fa0d8f8edcfe0"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-4",
+      "file": "passive-events/0000004.json.gz",
+      "sha256": "9c08abe418dd0425ec2960cc41b10b17a290e51a0123902f169a3f3ab09bc78c",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 66,
+      "lastSequence": 69,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-5",
+      "file": "passive-events/0000005.json.gz",
+      "sha256": "23d6aaac47cacd708cbe7086a707a25bcdf38b79be30febf09de00c81fe11114",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 69,
+      "lastSequence": 70,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-6",
+      "file": "passive-events/0000006.json.gz",
+      "sha256": "ba4cf4474d2fe10f64e7b7793b184e1cdad2133f5b5dbe07facf450783cc62d4",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 70,
+      "lastSequence": 72,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-7",
+      "file": "passive-events/0000007.json.gz",
+      "sha256": "2ef117922fe3f2130047fd73bbf0dfe713a7d0fe8b89ac96eaf1d3ea293b944c",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 72,
+      "lastSequence": 74,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-8",
+      "file": "passive-events/0000008.json.gz",
+      "sha256": "3b2e5c2853744f29b7d776f3dfb99bc7f88d3b91efa9e4ed2e37fc92e399879c",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 74,
+      "lastSequence": 77,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000036,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-9",
+      "file": "passive-events/0000009.json.gz",
+      "sha256": "a0cab6fddb00d954ddf5dfbaba5b6d635812531bbee48b2da1e401cba4c296d6",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 77,
+      "lastSequence": 78,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-10",
+      "file": "passive-events/0000010.json.gz",
+      "sha256": "62fc11b0a26781ac484686d0fe886ff05086e43b20179df4666b3b9987846e0f",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 78,
+      "lastSequence": 79,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-11",
+      "file": "passive-events/0000011.json.gz",
+      "sha256": "9eee35b1a23d9eea61035e5ce89a9543ec5ac199d055e6d8e24423c137cce569",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 79,
+      "lastSequence": 80,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-12",
+      "file": "passive-events/0000012.json.gz",
+      "sha256": "a2f309d37dee61791b37583cdb54a6264e7fc26d960b27ca455a683383b10c4c",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 80,
+      "lastSequence": 82,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-13",
+      "file": "passive-events/0000013.json.gz",
+      "sha256": "5660e8b04d5de24f57e12cac884c04e84fd1c7bcb49e8ea900d277981627abfa",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 82,
+      "lastSequence": 84,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-14",
+      "file": "passive-events/0000014.json.gz",
+      "sha256": "6ae79d470f41f83c77ab9f1f75628bb0ba239917bdd4b1b4ed3c7eb78281a5a2",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 84,
+      "lastSequence": 86,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-15",
+      "file": "passive-events/0000015.json.gz",
+      "sha256": "5bb740963ea271deabcd3abe5b9e9c066ea27211abd31745978c49c184bf1044",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 86,
+      "lastSequence": 88,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-16",
+      "file": "passive-events/0000016.json.gz",
+      "sha256": "77699f466ee826b6ef1b9c5dceb9086f87f0e148360567fbd3b46ca38aaefafd",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 88,
+      "lastSequence": 91,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000036,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-17",
+      "file": "passive-events/0000017.json.gz",
+      "sha256": "f19df0f1158d19adf9b92515995740f8fe2e4598b668db5561bdabff259f87cd",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 91,
+      "lastSequence": 94,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-18",
+      "file": "passive-events/0000018.json.gz",
+      "sha256": "fea642317eb091988f2f49ecc1cae65b11b35d8f6b9e0a01224bfa949ed728dd",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 5
+        }
+      },
+      "firstSequence": 94,
+      "lastSequence": 99,
+      "totalObservedIntervals": 5,
+      "totalActiveSeconds": 0.25,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 5
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "2240a5b4108e0bea2828c5ac9fd39fa0aa94c7acae62177116a23efa1edcf8be"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-19",
+      "file": "passive-events/0000019.json.gz",
+      "sha256": "c0f3f729c75e4cdb3c302495287bf1008f6eee70584e84c275aae1c59eb31e5f",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 6
+        }
+      },
+      "firstSequence": 99,
+      "lastSequence": 105,
+      "totalObservedIntervals": 6,
+      "totalActiveSeconds": 0.3000000000000007,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 6
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "13c3992f4bb8a491e7e175cef727ad8d7ec2e4c01aa3b3f67913f6dfaf6b52d9"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-20",
+      "file": "passive-events/0000020.json.gz",
+      "sha256": "3d4a4e9fb1c9a8c50117e5bb6340372c5eacebcda0d3927d74e4ca85f17ee4bb",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 7
+        }
+      },
+      "firstSequence": 105,
+      "lastSequence": 112,
+      "totalObservedIntervals": 7,
+      "totalActiveSeconds": 0.3500000000000014,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 7
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "2760f576c48516e639786ad1bdace49ad0cd4325145271c6ba1fa0d8f8edcfe0"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-21",
+      "file": "passive-events/0000021.json.gz",
+      "sha256": "ea7d747034182564bbe5b9771cbd6c6227fa8206e103c2fb26a396392aab568c",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 112,
+      "lastSequence": 114,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-22",
+      "file": "passive-events/0000022.json.gz",
+      "sha256": "7ca742b78b1c9c1e06b36cd75acbb96ef5db36fa4fbae6d9fb7377a166600fdd",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 114,
+      "lastSequence": 116,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-23",
+      "file": "passive-events/0000023.json.gz",
+      "sha256": "8368e0a1f32ddecb3f7d807beecb8dd5da88af37b8f4585a54ca7d33d96d71cf",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 116,
+      "lastSequence": 119,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-24",
+      "file": "passive-events/0000024.json.gz",
+      "sha256": "cb6f3c144ed492f831a4ffb3c58bdeefffb11044b2a145e5a9b5d653f45d549a",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 119,
+      "lastSequence": 122,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000213,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-25",
+      "file": "passive-events/0000025.json.gz",
+      "sha256": "a134c1440a6a34beb1b692f4a0d4155cc655b64321e0f8c8d5e35ac86a97110e",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 122,
+      "lastSequence": 123,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-26",
+      "file": "passive-events/0000026.json.gz",
+      "sha256": "eb555ca46ee562d6d341b28f4d78448d32c7545ac7b4f4d528695b8e416b7a44",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 123,
+      "lastSequence": 125,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-27",
+      "file": "passive-events/0000027.json.gz",
+      "sha256": "2fde9656dd2b071bd3afd93a627c063e794b3c452aa769c3c633453cfd796476",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 5
+        }
+      },
+      "firstSequence": 125,
+      "lastSequence": 130,
+      "totalObservedIntervals": 5,
+      "totalActiveSeconds": 0.25,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 5
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "2240a5b4108e0bea2828c5ac9fd39fa0aa94c7acae62177116a23efa1edcf8be"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-28",
+      "file": "passive-events/0000028.json.gz",
+      "sha256": "f810f37801c59bd5a5fea7411c9dc8d438e442a8a2ff39795598288a208f76a2",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "firstSequence": 130,
+      "lastSequence": 134,
+      "totalObservedIntervals": 4,
+      "totalActiveSeconds": 0.1999999999999993,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "25cf91fa1da14c60503f7f85fde83761b95b19d6d07bb8ff45c1610365a398cd"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-29",
+      "file": "passive-events/0000029.json.gz",
+      "sha256": "e963b1b888e7a5194152b546be0673cafc0bf0d27b8d18c5935ccaaf0b60704c",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 134,
+      "lastSequence": 135,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-30",
+      "file": "passive-events/0000030.json.gz",
+      "sha256": "e4a5ea17ca34927be51c1e1961bfbd9221fa303215d26f54288e05564dc13a1d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 135,
+      "lastSequence": 137,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-31",
+      "file": "passive-events/0000031.json.gz",
+      "sha256": "1273165d31bbecdaee0a69e28bc896a5b3d52d32be5e34c3a9e90b9a482d6ffd",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 137,
+      "lastSequence": 138,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-32",
+      "file": "passive-events/0000032.json.gz",
+      "sha256": "a4c5fcc53a6219109cc84a85328cb8dd5c218aea299ac43a17a65acbb39134e8",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 138,
+      "lastSequence": 141,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000036,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-33",
+      "file": "passive-events/0000033.json.gz",
+      "sha256": "3ef87d6edac22bacb40b1bf903fd60bab7db52e9cc8a1e550bbf8f44f51b2cdb",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 141,
+      "lastSequence": 142,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-34",
+      "file": "passive-events/0000034.json.gz",
+      "sha256": "e0de979a3be3ce234fddb9f385cf6e3090fd7967309862a4cb974cb116b046da",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 142,
+      "lastSequence": 145,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-35",
+      "file": "passive-events/0000035.json.gz",
+      "sha256": "0ca92e2559ec503395ab36db98192f1c603b7b0f446527510ccde5c4dcdd378f",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 145,
+      "lastSequence": 147,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-36",
+      "file": "passive-events/0000036.json.gz",
+      "sha256": "534ebe02193df51f2bf8116a98f3ed12dfc4f02b200cab8268d0a3380a265afa",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 147,
+      "lastSequence": 150,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-37",
+      "file": "passive-events/0000037.json.gz",
+      "sha256": "6ae83dc0baceaf16a86e464b16e69b187f23f9c8c61c488cf3a0895f702524d3",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 150,
+      "lastSequence": 152,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-38",
+      "file": "passive-events/0000038.json.gz",
+      "sha256": "41b85ce4dfa342428746350692c854712d84a18b37c3942e67d143848af3fe3e",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 152,
+      "lastSequence": 153,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-39",
+      "file": "passive-events/0000039.json.gz",
+      "sha256": "f7f28918921260d557746a66569894ea5756af3462e64ca78f62afc4fdcd25b6",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 153,
+      "lastSequence": 155,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-40",
+      "file": "passive-events/0000040.json.gz",
+      "sha256": "c5cac343068bc967fa83822bcbc00b33fb1d275641152360da37fdb90ebe9446",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 155,
+      "lastSequence": 158,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000036,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-41",
+      "file": "passive-events/0000041.json.gz",
+      "sha256": "f902503b8d1d1f0818138dcedf39819b42a936194aadd2de4b9652bd88e83369",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 158,
+      "lastSequence": 159,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-42",
+      "file": "passive-events/0000042.json.gz",
+      "sha256": "ef3e233b993e2200b374140892ca1e427421e662ca7056df874af4b58b44787a",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 159,
+      "lastSequence": 161,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-43",
+      "file": "passive-events/0000043.json.gz",
+      "sha256": "7e37a07602f3150be02124eb6872cf53ee7d2ca7c0e483158b11215fa8709978",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 161,
+      "lastSequence": 162,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-44",
+      "file": "passive-events/0000044.json.gz",
+      "sha256": "492848215710056905e46f4527f3a2c2603b59f7454d92e217e130b605e2d145",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 162,
+      "lastSequence": 165,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000036,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-45",
+      "file": "passive-events/0000045.json.gz",
+      "sha256": "51ee142bdd05b37836101a42a6956324a94785c8c6262229953ad5361cce97e1",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 165,
+      "lastSequence": 166,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-46",
+      "file": "passive-events/0000046.json.gz",
+      "sha256": "9882bbda126b2ede453003945ea31b429c6073b14aa153f6abdfde0d6d183854",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 166,
+      "lastSequence": 168,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-47",
+      "file": "passive-events/0000047.json.gz",
+      "sha256": "e8d22e460a6b28b489060960ce9f21a2f6b56b0720397ea6fcf984c98220fa62",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 168,
+      "lastSequence": 170,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-48",
+      "file": "passive-events/0000048.json.gz",
+      "sha256": "cf07b051d5b727a4621b19a28fe48b026669641198b3860e30a494b020f2bb8d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 170,
+      "lastSequence": 173,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000036,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-49",
+      "file": "passive-events/0000049.json.gz",
+      "sha256": "3517cb3a45d75b4c4944334407c9ceff01311c31af3110b9038156bad654ca17",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 173,
+      "lastSequence": 174,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-50",
+      "file": "passive-events/0000050.json.gz",
+      "sha256": "8d73fd8e2fd0c101c33607497d8286eb8eb0e3159774196bed12a2ba00656a09",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 174,
+      "lastSequence": 175,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-51",
+      "file": "passive-events/0000051.json.gz",
+      "sha256": "7a4ebb955f67fdde844e567297d6579544385ba69108090181fc415704c52d36",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 175,
+      "lastSequence": 177,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-52",
+      "file": "passive-events/0000052.json.gz",
+      "sha256": "8625a35209330ce0b2bf614d1c469392e61edaba2f88e34af929f89a146b67f9",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 177,
+      "lastSequence": 179,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-53",
+      "file": "passive-events/0000053.json.gz",
+      "sha256": "19e034bc9790af892aabb74254ba15d6a6aa25e7c1b98d534a26261274edb53b",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 179,
+      "lastSequence": 181,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-54",
+      "file": "passive-events/0000054.json.gz",
+      "sha256": "ddda7e6bcefb6eaa0733ea0b8199041f0de817840b52681d5615cbc954b0ca49",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 181,
+      "lastSequence": 182,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.049999999999998934,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-55",
+      "file": "passive-events/0000055.json.gz",
+      "sha256": "eb473a5bb1fcb555f6cdc78cf22e4896e5a5dd033d1f7c38239d772eb596e24d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 182,
+      "lastSequence": 184,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-56",
+      "file": "passive-events/0000056.json.gz",
+      "sha256": "2b106e6dce35d3c416db2f1b00d3200738b6afc95e1adced10b5dad181588bbb",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 184,
+      "lastSequence": 186,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999964,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:event-1",
+      "file": "events/0000001.json.gz",
+      "sha256": "702251f4fe6f64e7c90b249010cb8910e6462aa078d092818034fe5189a90283",
+      "lane": "events",
+      "requestedCue": {
+        "kind": "look",
+        "parameters": {
+          "yawDegrees": 15,
+          "pitchDegrees": 0
+        }
+      },
+      "firstSequence": 186,
+      "lastSequence": 195,
+      "totalObservedIntervals": 9,
+      "totalActiveSeconds": 0.4499999999999993,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": "stable",
+      "measuredCue": {
+        "kind": "look",
+        "parameters": {
+          "yawDegrees": 15,
+          "pitchDegrees": 0
+        }
+      },
+      "durationAuthority": "no-embedded-hold-receipt",
+      "hold": null,
+      "motorId": "769ab4556cc8dfadf4257ec66981f572dd1d1cbbd58b5ee2845d3d3249c0c469",
+      "decisionIndex": 22,
+      "goalId": "reach-other-side",
+      "goalAxes": [
+        "self/position.2"
+      ],
+      "learned": false,
+      "freshRecordedForecast": true,
+      "forecastBasis": "supported",
+      "supportedFields": []
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-57",
+      "file": "passive-events/0000057.json.gz",
+      "sha256": "29369e0216124a3360999141706f45e867ab03ad3437f014f7ec4e08534ff437",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "firstSequence": 195,
+      "lastSequence": 205,
+      "totalObservedIntervals": 10,
+      "totalActiveSeconds": 0.5,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-58",
+      "file": "passive-events/0000058.json.gz",
+      "sha256": "dd47a3d6a0eca1946c4ed7954f730ea7abd60da9950ef0736a9d6453482a8638",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 205,
+      "lastSequence": 206,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-59",
+      "file": "passive-events/0000059.json.gz",
+      "sha256": "531bddfd9fce46fb403211013289fe0bae27213a8920ea0d35d2088ef1e4545e",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "firstSequence": 206,
+      "lastSequence": 216,
+      "totalObservedIntervals": 10,
+      "totalActiveSeconds": 0.5,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-60",
+      "file": "passive-events/0000060.json.gz",
+      "sha256": "2d73c8a74363929fe8709366d1dba82c9a410cbdd28458e59ccccf60034e2a4e",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 6
+        }
+      },
+      "firstSequence": 216,
+      "lastSequence": 222,
+      "totalObservedIntervals": 6,
+      "totalActiveSeconds": 0.3000000000000007,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 6
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "13c3992f4bb8a491e7e175cef727ad8d7ec2e4c01aa3b3f67913f6dfaf6b52d9"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-61",
+      "file": "passive-events/0000061.json.gz",
+      "sha256": "d3ec599794cc6a8b98126dbcf99f11f51776de7ffc53b033caaa2f7b1eb3a780",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "firstSequence": 222,
+      "lastSequence": 232,
+      "totalObservedIntervals": 10,
+      "totalActiveSeconds": 0.5,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-62",
+      "file": "passive-events/0000062.json.gz",
+      "sha256": "850ea6bff1e1e506f55b6dc76aa83ec035106342cb007a5ee56aa99f55467a6d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "firstSequence": 232,
+      "lastSequence": 236,
+      "totalObservedIntervals": 4,
+      "totalActiveSeconds": 0.1999999999999993,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "25cf91fa1da14c60503f7f85fde83761b95b19d6d07bb8ff45c1610365a398cd"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-63",
+      "file": "passive-events/0000063.json.gz",
+      "sha256": "fe70a6dcfc57aae11a83a84516544741b4cbe8b92baf2dc40728a65b756a6af7",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 236,
+      "lastSequence": 239,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000213,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-64",
+      "file": "passive-events/0000064.json.gz",
+      "sha256": "8a49a60fa92bc1819a91f6fd7b03fd0cafdce0adf8049ea6166d8294fea5c865",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 239,
+      "lastSequence": 242,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-65",
+      "file": "passive-events/0000065.json.gz",
+      "sha256": "6afe6e632c9ce5fb71394ec7c370c8868ed40dbb6eeb58524a4319cbee747e04",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 242,
+      "lastSequence": 244,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-66",
+      "file": "passive-events/0000066.json.gz",
+      "sha256": "73dda18af7037f19f69f99fd3cd57044f680bc660d9932cc2ddafed1c9d34a76",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 244,
+      "lastSequence": 245,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:event-2",
+      "file": "events/0000002.json.gz",
+      "sha256": "e3f7e5390097d7588739e8c1d1645bf170fb0abca6b8f80995ca48977071552c",
+      "lane": "events",
+      "requestedCue": {
+        "kind": "use-item",
+        "parameters": {
+          "holdTicks": 40
+        }
+      },
+      "firstSequence": 245,
+      "lastSequence": 287,
+      "totalObservedIntervals": 42,
+      "totalActiveSeconds": 2.1000000000000014,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": "motor-released",
+      "measuredCue": {
+        "kind": "use-item",
+        "parameters": {
+          "holdTicks": 40
+        }
+      },
+      "durationAuthority": "embedded-physical-motor-receipt",
+      "hold": {
+        "requestedTicks": 40,
+        "actualTicks": 40,
+        "actualSeconds": 2,
+        "elapsedMonotonicMs": 1951.1940999999933,
+        "observedIntervals": 40,
+        "releaseReason": "interval-complete",
+        "releaseSequence": 285,
+        "beforePressIntervals": 0,
+        "afterReleaseIntervals": 2,
+        "afterReleaseActiveSeconds": 0.10000000000000142,
+        "pressedDisplacement": [
+          0,
+          0,
+          0
+        ],
+        "afterReleaseDisplacement": [
+          0,
+          0,
+          0
+        ]
+      },
+      "motorId": "f64e6a49f10909427a5637f58ddb1bb5ff85d7c415e7efeeae4c9395e1f9d0da",
+      "decisionIndex": 24,
+      "goalId": "reach-other-side",
+      "goalAxes": [
+        "self/position.2"
+      ],
+      "learned": false,
+      "freshRecordedForecast": true,
+      "forecastBasis": "supported",
+      "supportedFields": []
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-67",
+      "file": "passive-events/0000067.json.gz",
+      "sha256": "0ea29a8bdb81b36baaeda6af0c333ebf3f5048999b87ef89de231cc5b840eccd",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "firstSequence": 287,
+      "lastSequence": 297,
+      "totalObservedIntervals": 10,
+      "totalActiveSeconds": 0.5,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-68",
+      "file": "passive-events/0000068.json.gz",
+      "sha256": "dcd320e6cd92b05c23d690761f3ae53d2e910f09ffad18e543a986e2525b604c",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "firstSequence": 297,
+      "lastSequence": 307,
+      "totalObservedIntervals": 10,
+      "totalActiveSeconds": 0.5,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-69",
+      "file": "passive-events/0000069.json.gz",
+      "sha256": "2d5f02a6bbe7e38915e7be6f10fc4ad05da42c3259af24976470dc7172b99858",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 307,
+      "lastSequence": 309,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-70",
+      "file": "passive-events/0000070.json.gz",
+      "sha256": "69637aa82be53296a9db9dcc4fdad47d50108147831a8fcf5d61f55a3ee6982f",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 6
+        }
+      },
+      "firstSequence": 309,
+      "lastSequence": 315,
+      "totalObservedIntervals": 6,
+      "totalActiveSeconds": 0.29999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 6
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "13c3992f4bb8a491e7e175cef727ad8d7ec2e4c01aa3b3f67913f6dfaf6b52d9"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-71",
+      "file": "passive-events/0000071.json.gz",
+      "sha256": "f256db08751ad357043a6845b43612596abbcd47b792711d72ee968f95029ef0",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "firstSequence": 315,
+      "lastSequence": 319,
+      "totalObservedIntervals": 4,
+      "totalActiveSeconds": 0.20000000000000284,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "25cf91fa1da14c60503f7f85fde83761b95b19d6d07bb8ff45c1610365a398cd"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-72",
+      "file": "passive-events/0000072.json.gz",
+      "sha256": "2d1da4eb46b656f0c1b27d5351862df40932c1ed90ff5b6ee6086ab2e98d0528",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 319,
+      "lastSequence": 320,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-73",
+      "file": "passive-events/0000073.json.gz",
+      "sha256": "40ef84f81cfe2bb26ecd6bed954e6e754613dc44ba1fe61896a83d2b7291ba0f",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 320,
+      "lastSequence": 322,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-74",
+      "file": "passive-events/0000074.json.gz",
+      "sha256": "2f773d70576209d2cecd141271a7c43865c43f580491d185f2f94d98a5cedb9d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 322,
+      "lastSequence": 323,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:event-3",
+      "file": "events/0000003.json.gz",
+      "sha256": "2f895934b53e0c6d5a664f367efc91eb91fe97232979e429b3bf0721b2d44e57",
+      "lane": "events",
+      "requestedCue": {
+        "kind": "jump",
+        "parameters": {
+          "forward": false,
+          "holdTicks": 4
+        }
+      },
+      "firstSequence": 323,
+      "lastSequence": 330,
+      "totalObservedIntervals": 7,
+      "totalActiveSeconds": 0.34999999999999787,
+      "displacement": [
+        0,
+        0.8849590410804211,
+        0
+      ],
+      "termination": "motor-released",
+      "measuredCue": {
+        "kind": "jump",
+        "parameters": {
+          "forward": false,
+          "holdTicks": 4
+        }
+      },
+      "durationAuthority": "embedded-physical-motor-receipt",
+      "hold": {
+        "requestedTicks": 4,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 197.33920000000217,
+        "observedIntervals": 4,
+        "releaseReason": "interval-complete",
+        "releaseSequence": 327,
+        "beforePressIntervals": 0,
+        "afterReleaseIntervals": 3,
+        "afterReleaseActiveSeconds": 0.14999999999999858,
+        "pressedDisplacement": [
+          0,
+          0.772799993753452,
+          0
+        ],
+        "afterReleaseDisplacement": [
+          0,
+          0.11215904732696913,
+          0
+        ]
+      },
+      "motorId": "ea110fd563e9525c6db69668a3e7242aaa66c84e3f1ebfc808bf5efa81facf07",
+      "decisionIndex": 26,
+      "goalId": "reach-other-side",
+      "goalAxes": [
+        "self/position.2"
+      ],
+      "learned": false,
+      "freshRecordedForecast": true,
+      "forecastBasis": "supported",
+      "supportedFields": []
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-75",
+      "file": "passive-events/0000075.json.gz",
+      "sha256": "78213c79f8e3df25dc989d049d055d0047c9df8811c251d21dcdbac37cf1ba96",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 330,
+      "lastSequence": 332,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        -0.2698431810960926,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-76",
+      "file": "passive-events/0000076.json.gz",
+      "sha256": "3af7d0c6f8704956c6df0ae1589aebd6a0f81057d8394363f926ab11da1d3d2d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 332,
+      "lastSequence": 333,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        -0.15000000000000568,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-77",
+      "file": "passive-events/0000077.json.gz",
+      "sha256": "84bb70c8cbb70beb7873804da7a2e2ddbdf16fbbd2c67db72e3351aad10722c3",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 333,
+      "lastSequence": 335,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        -0.30000000000001137,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-78",
+      "file": "passive-events/0000078.json.gz",
+      "sha256": "40a574c889539e6bdc4621693e5334780694ce5104cbf3cc1204bc7a8e14b9d8",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 335,
+      "lastSequence": 336,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        -0.15000000000000568,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-79",
+      "file": "passive-events/0000079.json.gz",
+      "sha256": "56da565c7dc3289a3d73c69e0bb0243badce467bef8c19960f76188964bf5cd4",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 336,
+      "lastSequence": 337,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        -0.015115859984305757,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-80",
+      "file": "passive-events/0000080.json.gz",
+      "sha256": "5dce125ed0f58b4bd50833cb76446c5a59ea865e4fcbe90fd2efbaed7e7dd439",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 337,
+      "lastSequence": 338,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-81",
+      "file": "passive-events/0000081.json.gz",
+      "sha256": "05da6940fefa974f6daa6bb7fce9c6f798edf440414ac2c26fd30728fbaa62cb",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 338,
+      "lastSequence": 340,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-82",
+      "file": "passive-events/0000082.json.gz",
+      "sha256": "60cea70c249dc6dd4a09dba56c43be60bbc798054af805d1a8ebf04299312d7e",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 340,
+      "lastSequence": 341,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-83",
+      "file": "passive-events/0000083.json.gz",
+      "sha256": "b9b67284e2dbbf33df7e5b5134c2c5a3425b1541afca6008c41ccb87d4a00aab",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 341,
+      "lastSequence": 343,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-84",
+      "file": "passive-events/0000084.json.gz",
+      "sha256": "7e9ec83892abefe225d5b395c2aad8cdf40595de96ae546744e97db15a80ad18",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 343,
+      "lastSequence": 344,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-85",
+      "file": "passive-events/0000085.json.gz",
+      "sha256": "970ff6464ccf899b163ab8bcadc38daf9986302b9b70a643b43eff7cfdafea16",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 344,
+      "lastSequence": 346,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-86",
+      "file": "passive-events/0000086.json.gz",
+      "sha256": "632e39281b960be743275d004ea54e1fadcfc7a21e5561bc4064f36132da361d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 346,
+      "lastSequence": 347,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-87",
+      "file": "passive-events/0000087.json.gz",
+      "sha256": "1f481ce494a887ad4d68da4721ac3a2cbb1401da873dc1c2411e32d65facab50",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 347,
+      "lastSequence": 348,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-88",
+      "file": "passive-events/0000088.json.gz",
+      "sha256": "77239b666971a39463e4b46afee2281d89fad074269b6c57c5809f747b765423",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 348,
+      "lastSequence": 350,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-89",
+      "file": "passive-events/0000089.json.gz",
+      "sha256": "c8199bb370862b79d14e2c895bc6b01ddfa8d67ab0dffda0c19510375a0fed20",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 350,
+      "lastSequence": 353,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000213,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-90",
+      "file": "passive-events/0000090.json.gz",
+      "sha256": "3a41fe01e4bb550ac2eeb6fca2023f9eca363f685fe308b5fa73d8f6c69b6e6d",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 353,
+      "lastSequence": 354,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-91",
+      "file": "passive-events/0000091.json.gz",
+      "sha256": "7dc4983cbbb335dbdbb924373a9ca13f3e5b1882c33358d6cb5d38fb99c91264",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 354,
+      "lastSequence": 356,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-92",
+      "file": "passive-events/0000092.json.gz",
+      "sha256": "502a71f7a189597e5623af83d0db4f1ca9c5dc7010459adf70e8bacc472e2466",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 356,
+      "lastSequence": 357,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-93",
+      "file": "passive-events/0000093.json.gz",
+      "sha256": "fa696d408d0a51179ca8e5441a3dc188803095668427d9c0314280710d5daf72",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 357,
+      "lastSequence": 360,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-94",
+      "file": "passive-events/0000094.json.gz",
+      "sha256": "94c2cae82760b596f2d12bfa9a04be0b59624dfa49b76ac14540021ebd0c1a14",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 360,
+      "lastSequence": 361,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-95",
+      "file": "passive-events/0000095.json.gz",
+      "sha256": "25966aa6f63a2b65e183cf068e8384ba34fcddb93286ad1abddbed837403135e",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 361,
+      "lastSequence": 362,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-96",
+      "file": "passive-events/0000096.json.gz",
+      "sha256": "ed8da1c2a52e562eeb3e09d435e07f84022b0446e498d1e916dfa884f721002f",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 362,
+      "lastSequence": 364,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-97",
+      "file": "passive-events/0000097.json.gz",
+      "sha256": "cbbad755f2039b3588e0e3d4775a328af3bbe2beff4ee00f4dcfdd40d1a26f74",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 364,
+      "lastSequence": 366,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-98",
+      "file": "passive-events/0000098.json.gz",
+      "sha256": "85f2ee96ac4470a0ca192a2fc2e7fb89e1e06fc752a9cd112c4707ea0838dc3f",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 366,
+      "lastSequence": 367,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-99",
+      "file": "passive-events/0000099.json.gz",
+      "sha256": "ef53b62602401e61222859ca766ac96efaaa5f13fc1d7cfcc581fe4bd78a85b7",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 367,
+      "lastSequence": 368,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-100",
+      "file": "passive-events/0000100.json.gz",
+      "sha256": "f125458c0f20cc55c2620ef491bcaa6ab0c09461ca043fcb517744dd369702a5",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 368,
+      "lastSequence": 369,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-101",
+      "file": "passive-events/0000101.json.gz",
+      "sha256": "fceb4a7157d4599adff9c70b92e86c3f1e6be5f340bf30a0329913c7664a2f70",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 369,
+      "lastSequence": 371,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-102",
+      "file": "passive-events/0000102.json.gz",
+      "sha256": "b5b166c3b095f8c5149c1e2547eef0d09ea165b9541e43b872d69099d9c93a48",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 371,
+      "lastSequence": 373,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-103",
+      "file": "passive-events/0000103.json.gz",
+      "sha256": "848afc22a6004e8f730a7033acf53e203b9d9b79dcdb0b9ce0d921ff5671a3c2",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 373,
+      "lastSequence": 374,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-104",
+      "file": "passive-events/0000104.json.gz",
+      "sha256": "3640958248d614df63958264b1e8372ef605c5ba7f21a4ff7de01acc6df03156",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 374,
+      "lastSequence": 375,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-105",
+      "file": "passive-events/0000105.json.gz",
+      "sha256": "6205300e076bdc3ff8ac7bf72e33b090bf1603fcaed5c82cd78afdf14b6e7096",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 375,
+      "lastSequence": 377,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:event-4",
+      "file": "events/0000004.json.gz",
+      "sha256": "1ba45d1f7abb0f78abc97a87365b069055e975565478aa8c36a1bf15ead91050",
+      "lane": "events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "firstSequence": 377,
+      "lastSequence": 387,
+      "totalObservedIntervals": 10,
+      "totalActiveSeconds": 0.5,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": "interval-complete",
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 10
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "9015b506f3eae4b45c1cf3b6f1300553a9162724a1f9fa0582e46e0e242a4247",
+      "decisionIndex": 34,
+      "goalId": "reach-other-side",
+      "goalAxes": [
+        "self/position.2"
+      ],
+      "learned": false,
+      "freshRecordedForecast": true,
+      "forecastBasis": "supported",
+      "supportedFields": []
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-106",
+      "file": "passive-events/0000106.json.gz",
+      "sha256": "6b1bb823a62b87fefb47ce6b527c2b1652e1dbdca2ef1ee02ee506851af13924",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "firstSequence": 387,
+      "lastSequence": 391,
+      "totalObservedIntervals": 4,
+      "totalActiveSeconds": 0.1999999999999993,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 4
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "25cf91fa1da14c60503f7f85fde83761b95b19d6d07bb8ff45c1610365a398cd"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-107",
+      "file": "passive-events/0000107.json.gz",
+      "sha256": "0dca5104f43c20c7471137c2701d41c17b10172e239e34953dd826c19bbf4c33",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 391,
+      "lastSequence": 392,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-108",
+      "file": "passive-events/0000108.json.gz",
+      "sha256": "ece47a51cd8483b6be7e6e514243a52c1a9cb4ef340fb8bd713298d9e76f0079",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 392,
+      "lastSequence": 394,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-109",
+      "file": "passive-events/0000109.json.gz",
+      "sha256": "c0c984a5f76ab45730a237f437f61751002b3db9e6b88607051ec24956dc4bd8",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 394,
+      "lastSequence": 396,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-110",
+      "file": "passive-events/0000110.json.gz",
+      "sha256": "19e7027c90944f855d445a7d461488b1453bdf753a9743a61d8c50d848931d91",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 396,
+      "lastSequence": 397,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-111",
+      "file": "passive-events/0000111.json.gz",
+      "sha256": "2d957f549335c7a7282ccd45eabb64e7c661259fb6a7926044d13f669c860e83",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 397,
+      "lastSequence": 398,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-112",
+      "file": "passive-events/0000112.json.gz",
+      "sha256": "05f31600a1145f437bc5c2f0549ed932aed56e5b5596f74dbfab4f208805ecaa",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 398,
+      "lastSequence": 400,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-113",
+      "file": "passive-events/0000113.json.gz",
+      "sha256": "47b22e1a7a339367bd99d99b63c3420e9f8f600d2f7800bd12c3b26065f1a3d4",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 400,
+      "lastSequence": 401,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-114",
+      "file": "passive-events/0000114.json.gz",
+      "sha256": "d1f386da170db6b236140a9fab35b44962cb9e4fd8dbf573c79e208c5176a274",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 401,
+      "lastSequence": 403,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-115",
+      "file": "passive-events/0000115.json.gz",
+      "sha256": "a38131c7a449c813dd8767612195cbcfad2f2e4bd20a7a5fd324c08a4931c91a",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 403,
+      "lastSequence": 404,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-116",
+      "file": "passive-events/0000116.json.gz",
+      "sha256": "a157611286df63907a64d481d732cf72df1b2f623a8ebbf88f7747ab2f795831",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 404,
+      "lastSequence": 405,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:event-5",
+      "file": "events/0000005.json.gz",
+      "sha256": "9bdb39bdb1607635f16bf5aaa976b78ad2aa32be1762818ab10a01ee0ef7db72",
+      "lane": "events",
+      "requestedCue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 5
+        }
+      },
+      "firstSequence": 405,
+      "lastSequence": 412,
+      "totalObservedIntervals": 7,
+      "totalActiveSeconds": 0.3500000000000014,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": "stable",
+      "measuredCue": {
+        "kind": "select-hotbar",
+        "parameters": {
+          "slot": 5
+        }
+      },
+      "durationAuthority": "no-embedded-hold-receipt",
+      "hold": null,
+      "motorId": "9b75cf0fd352f25b87434eb88f83f60318476ea4df9a5804d8377660c7a2ea76",
+      "decisionIndex": 37,
+      "goalId": "reach-other-side",
+      "goalAxes": [
+        "self/position.2"
+      ],
+      "learned": false,
+      "freshRecordedForecast": true,
+      "forecastBasis": "supported",
+      "supportedFields": []
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-117",
+      "file": "passive-events/0000117.json.gz",
+      "sha256": "791ad3b849a0e9537fda4ca2f9491aa7bdd9f6863d15cf9a67ad11a5ec832c6b",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 412,
+      "lastSequence": 415,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-118",
+      "file": "passive-events/0000118.json.gz",
+      "sha256": "25841e4af3db0677321c6622a33cd35f89c8a0ac73bb01796ecb707ccfe703f1",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 415,
+      "lastSequence": 416,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-119",
+      "file": "passive-events/0000119.json.gz",
+      "sha256": "6e7cbbd5165a8c17bb9f38bdf3fbf834a4b917f2f767b0fed25f3e51a7bba636",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 416,
+      "lastSequence": 419,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.15000000000000213,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-120",
+      "file": "passive-events/0000120.json.gz",
+      "sha256": "416909ae6d7710871729143af8fe8508d2d5d85ae2a011c1633ef76c4c3f1d32",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 419,
+      "lastSequence": 420,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.04999999999999716,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-121",
+      "file": "passive-events/0000121.json.gz",
+      "sha256": "50f64f4a50f57e68cdb0078552fa0c52fc97ca45b54cc80fc981cc56951a7876",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 420,
+      "lastSequence": 421,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-122",
+      "file": "passive-events/0000122.json.gz",
+      "sha256": "a01afff8cf2b4ab61f7e3149109391baf2e811d700604558256b24d3d122f8dc",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 421,
+      "lastSequence": 423,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-123",
+      "file": "passive-events/0000123.json.gz",
+      "sha256": "9aeea84260a81302586ad8849c05b7319738419ca21c2b88f12e95eafd806436",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 423,
+      "lastSequence": 425,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.09999999999999787,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-124",
+      "file": "passive-events/0000124.json.gz",
+      "sha256": "f4ae8e17da8bc16004b274982a0bee1f6f55489929ef7b21fa810cc51b451c81",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "firstSequence": 425,
+      "lastSequence": 427,
+      "totalObservedIntervals": 2,
+      "totalActiveSeconds": 0.10000000000000142,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 2
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "b75671b31f759433a1344200980a8e5c03f4f7ede649400edb98b7c45b6ec02b"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-125",
+      "file": "passive-events/0000125.json.gz",
+      "sha256": "fbe43e82e9b687658c12f90d05b355f9981abe389e28b389af149f18e4395cab",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 427,
+      "lastSequence": 428,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-126",
+      "file": "passive-events/0000126.json.gz",
+      "sha256": "48efa5bdd55d5df89be2ab5ad518db88b2b773bd304aca5758641b644a8cf4b7",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 428,
+      "lastSequence": 429,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-127",
+      "file": "passive-events/0000127.json.gz",
+      "sha256": "1a66c4578181738ebe65210668c63cf43a76bf382b93697e7937a518ff6ec319",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "firstSequence": 429,
+      "lastSequence": 432,
+      "totalObservedIntervals": 3,
+      "totalActiveSeconds": 0.14999999999999858,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 3
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "999c682d181436f26c756496be3ddb74c0544bb0da5ea068c58d6cbd6f34a415"
+    },
+    {
+      "eventId": "717a4907-0bbf-4371-9fac-c17984c17aa4:passive:event-128",
+      "file": "passive-events/0000128.json.gz",
+      "sha256": "14450161aaf59711852a6d0f369c077a16a5fcea7b6b163e6c558ab2c5c9c6d2",
+      "lane": "passive-events",
+      "requestedCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "firstSequence": 432,
+      "lastSequence": 433,
+      "totalObservedIntervals": 1,
+      "totalActiveSeconds": 0.05000000000000071,
+      "displacement": [
+        0,
+        0,
+        0
+      ],
+      "termination": null,
+      "measuredCue": {
+        "kind": "passive",
+        "parameters": {
+          "ticks": 1
+        }
+      },
+      "durationAuthority": "observed-passive-window",
+      "hold": null,
+      "motorId": "47dc9fbfa8159a117473b36fc9e98394a75b50faf8920ffebc825cbac2779e30"
+    }
+  ],
+  "fields": [],
+  "limitations": [
+    "Counts are within this run only. Inherited model observations are separate and shared ancestors must not be counted twice.",
+    "Distinct source-window IDs do not establish statistical independence; adjacent windows and multiple fields share physical context.",
+    "Observed holds are keyed by measured duration. Receipt-free actions retain cue identity without a timing certificate.",
+    "Interval coverage uses only fresh recorded supported forecasts with observable numeric outcomes. Unobservable fields and hypotheses are reported separately.",
+    "Frozen final-model support is not an out-of-sample prediction result. No fitting, replay or native action occurs in this audit.",
+    "This audit does not prove goal success, preservation of raw capture boundaries, long-term retention or causal multistage capability. Use the independent outcome and capture audits too."
+  ]
+}

@@ -1,5 +1,11 @@
 # Kairos continuation
 
+Current status: read `docs/native-current-state-2026-09-13.md` first. The original
+peaceful matched task and both continuous-state development pairs remain negative.
+The current window-statistics candidate passes 316/316 and exact software/replay
+comparisons; its new native pair still requires the pinned launch protocol.
+The overall sustained-learning and open multistage objective remains unfinished.
+
 Latest PR #3 continuation: read `docs/work-package-a-local-2026-09-13/README.zh-CN.md`
 and its artifact/verification records first. The locally rebuilt calibration,
 atomic initial capture and search fixes pass 196/196; the final tested actor is

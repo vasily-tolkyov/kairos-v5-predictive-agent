@@ -184,6 +184,28 @@ export class ContextualReadout {
     this.#trees.set(id, new Map(keys.map(key => [key, this.#refresh(shapes.get(key) ?? null,
       samples.filter(row => key in row.targets), key)])));
   }
+  #pruneCircuit(id: string): void {
+    // While a single original window is appended, no posterior is read: all
+    // its pre-update errors were already measured. Eviction needs partition
+    // shape/order only. Preserve the exact pruning of empty branches without
+    // repeatedly computing every leaf's independent-window error statistics.
+    const old = this.#trees.get(id) ?? new Map<string, Tree>(), samples = this.#circuits.get(id)!.samples;
+    const firstLeaf = (tree: Tree): Leaf => tree.kind === 'leaf' ? tree : firstLeaf(tree.left);
+    const prune = (tree: Tree | undefined, rows: readonly Sample[], key: string): Tree => {
+      if (!tree) return summary(rows, key).leaf;
+      if (tree.kind === 'leaf') return tree;
+      const observed = rows.filter(row => Object.hasOwn(row.input, tree.key)
+        && (!tree.numeric || typeof row.input[tree.key] === 'number'));
+      if (!observed.length) return firstLeaf(tree);
+      const left = observed.filter(row => goesLeft(row.input[tree.key]!, tree));
+      const right = observed.filter(row => !goesLeft(row.input[tree.key]!, tree));
+      if (!left.length) return prune(tree.right, right, key);
+      if (!right.length) return prune(tree.left, left, key);
+      return { ...tree, left: prune(tree.left, left, key), right: prune(tree.right, right, key) };
+    };
+    const keys = [...new Set(samples.flatMap(row => Object.keys(row.targets)))];
+    this.#trees.set(id, new Map(keys.map(key => [key, prune(old.get(key), samples.filter(row => key in row.targets), key)])));
+  }
   read(id: string, key: string, input: SensoryState, bounds: NumericRanges = {}): ConditionalValue | null {
     const root = this.#trees.get(id)?.get(key);
     if (!root) return null;
@@ -335,11 +357,13 @@ export class ContextualReadout {
       }
       return { input, targets, externalErrors, errors };
     });
-    for (const row of prepared) this.#append(id, windowId, row);
+    let pendingRefresh = false;
+    for (const row of prepared) pendingRefresh = this.#append(id, windowId, row, prepared.length > 1);
+    if (pendingRefresh) this.#refreshCircuit(id, this.#trees.get(id) ?? new Map());
   }
   #append(id: string, windowId: string, { input, targets, externalErrors, errors }:
-    ContextualWindowRow & { errors: Record<string, number> }): void {
-    if (!targets.length) return;
+    ContextualWindowRow & { errors: Record<string, number> }, deferLeafStatistics = false): boolean {
+    if (!targets.length) return false;
     if ([...Object.values(input), ...targets.flatMap(([, a, b]) => [a, b]), ...Object.values(externalErrors ?? {})]
       .some(v => typeof v === 'number' && !Number.isFinite(v))) throw new Error('non-finite-context-measurement');
     this.#matching = new WeakMap();
@@ -348,7 +372,8 @@ export class ContextualReadout {
     circuit.samples.push({ input: structuredClone(input), targets: Object.fromEntries(targets.map(([k, a, b]) => [k, [a, b]])),
       errors, ...(externalErrors ? { externalErrors: { ...externalErrors } } : {}), serial: ++circuit.writes, windowId });
     this.#circuits.set(id, circuit);
-    if (circuit.samples.length > this.capacity) {
+    const retiring = circuit.samples.length > this.capacity;
+    if (retiring) {
       // Protect sparsely encountered response contexts. The oldest row in the
       // most populated learned region is expendable before an unrehearsed one.
       const informative = [...(this.#trees.get(id)?.values() ?? [])].filter(t => t.kind === 'branch').slice(0, 8);
@@ -365,8 +390,10 @@ export class ContextualReadout {
     // Full split induction can take longer than the real sampling interval.
     // Reuse its partition between bounded structural updates; all retained
     // measurements still participate in the refreshed leaf statistics.
-    if (circuit.writes <= 16 || circuit.writes % 16 === 0) this.#rebuild(id);
-    else this.#refreshCircuit(id, this.#trees.get(id) ?? new Map());
+    if (circuit.writes <= 16 || circuit.writes % 16 === 0) { this.#rebuild(id); return false; }
+    if (!deferLeafStatistics) { this.#refreshCircuit(id, this.#trees.get(id) ?? new Map()); return false; }
+    if (retiring) this.#pruneCircuit(id);
+    return true;
   }
   keys(id: string): readonly string[] { return [...(this.#trees.get(id)?.keys() ?? [])]; }
   snapshot(): ContextualReadoutSnapshot {
