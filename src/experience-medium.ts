@@ -1,5 +1,5 @@
 import type { ActionCue, Observation, PublicObject, PublicValue, RealEvent, XYZ } from './contracts.js';
-import { validateEvent } from './events.js';
+import { measuredMotorCueV1, validateEvent } from './events.js';
 import { bodyToWorld, worldToBody } from './perception.js';
 import { sha } from './util.js';
 import { ContextualReadout, type ContextualReadoutSnapshot } from './contextual-readout.js';
@@ -23,6 +23,8 @@ interface Network { inputs: string[]; ranges: [number, number][]; weights: numbe
 export interface ExperienceMediumSnapshot {
   version: 'KairosExperienceMediumV9' | 'KairosExperienceMediumV10' | 'KairosExperienceMediumV11'; seed: number; random: number;
   networks: [string, Network][]; events: [string, string][]; writes: number;
+  /** Verified zero-duration motor exposures retained by the ledger, not training writes. */
+  untrainedMotorWindows?: number;
   contexts?: ContextualReadoutSnapshot;
   ledger?: { capacity: number; retired: string; streams?: [string, number][] };
 }
@@ -172,6 +174,7 @@ function features(state: State): [string, number][] {
 export class ExperienceMedium {
   #seed: number; #random: number; #networks = new Map<string, Network>();
   #ledger = new ExperienceLedger(); #contexts = new ContextualReadout(); #writes = 0;
+  #untrainedMotorWindows = 0;
   #attentionPredictions = new WeakMap<Observation, Map<string, ExperiencePrediction>>();
   #attentionBase = new WeakMap<Observation, Map<string, number>>();
   constructor(seed = 1) {
@@ -333,7 +336,7 @@ export class ExperienceMedium {
     return results;
   }
   observe(event: RealEvent): { learned: boolean; correctBeforeUpdate: boolean | null; writes: number; measuredChannels: number; maskedObjects: number;
-    skipped?: 'duplicate' | 'retired-or-collision' } {
+    skipped?: 'duplicate' | 'retired-or-collision' | 'no-measured-motor-interval' } {
     validateEvent(event);
     for (const frame of event.frames) {
       if (frame.predictionSupport !== undefined || frame.predictionContext !== undefined || frame.predictionBounds !== undefined)
@@ -363,7 +366,18 @@ export class ExperienceMedium {
     if (previous !== 'new') {
       return { learned: false, correctBeforeUpdate: null, writes: this.#writes, measuredChannels: 0, maskedObjects: 0, skipped: previous };
     }
-    const first = event.frames[0]!, last = event.frames.at(-1)!, motor = motorIdentity(event.cue);
+    // A requested hold can be interrupted. Keep the original window and its
+    // identity, but select the circuit using the instrumented physical hold.
+    // Legacy windows carry no such measurement and retain their old semantics;
+    // this does not repair or certify their historical timing.
+    const measuredCue = measuredMotorCueV1(event);
+    if (measuredCue === null) {
+      this.#ledger.commit(event.id, digest);
+      this.#untrainedMotorWindows++;
+      return { learned: false, correctBeforeUpdate: null, writes: this.#writes,
+        measuredChannels: 0, maskedObjects: 0, skipped: 'no-measured-motor-interval' };
+    }
+    const first = event.frames[0]!, last = event.frames.at(-1)!, motor = motorIdentity(measuredCue);
     if (typeof event.attentionId === 'string' && !first.objects.some(object => object.id === event.attentionId))
       throw new Error('attention-subject-not-observed-before-action');
     this.#attentionPredictions = new WeakMap(); this.#attentionBase = new WeakMap();
@@ -761,6 +775,7 @@ export class ExperienceMedium {
     const { recent, ...ledger } = this.#ledger.snapshot();
     return structuredClone({ version: 'KairosExperienceMediumV11', seed: this.#seed,
       random: this.#random, networks: [...this.#networks], events: recent, writes: this.#writes,
+      ...(this.#untrainedMotorWindows ? { untrainedMotorWindows: this.#untrainedMotorWindows } : {}),
       contexts: this.#contexts.snapshot(), ledger });
   }
   static restore(state: ExperienceMediumSnapshot): ExperienceMedium {
@@ -772,7 +787,11 @@ export class ExperienceMedium {
     const copy = structuredClone(state), medium = new ExperienceMedium(copy.seed);
     if (!Number.isSafeInteger(copy.random) || copy.random < 1 || copy.random > 0xffffffff)
       throw new Error('experience-medium-invalid-random-state');
-    if (!Number.isSafeInteger(copy.writes) || copy.writes < 0 || copy.events.length > copy.writes
+    const untrainedMotorWindows = copy.untrainedMotorWindows ?? 0;
+    if (!Number.isSafeInteger(untrainedMotorWindows) || untrainedMotorWindows < 0
+      || untrainedMotorWindows > 0 && copy.version !== 'KairosExperienceMediumV11'
+      || !Number.isSafeInteger(copy.writes + untrainedMotorWindows)) throw new Error('experience-medium-invalid-populations');
+    if (!Number.isSafeInteger(copy.writes) || copy.writes < 0 || copy.events.length > copy.writes + untrainedMotorWindows
       || copy.version === 'KairosExperienceMediumV9' && copy.events.length !== copy.writes
       || copy.version !== 'KairosExperienceMediumV9' && (!copy.ledger || !copy.contexts)
       || new Set(copy.events.map(([id]) => id)).size !== copy.events.length
@@ -803,6 +822,7 @@ export class ExperienceMedium {
           .some(value => !Number.isFinite(value))) throw new Error('experience-medium-invalid-conductances');
     }
     medium.#random = copy.random; medium.#networks = new Map(copy.networks); medium.#writes = copy.writes;
+    medium.#untrainedMotorWindows = untrainedMotorWindows;
     if (copy.ledger) medium.#ledger = new ExperienceLedger(copy.ledger.capacity, copy.ledger.retired, copy.events, copy.ledger.streams);
     else for (const [id, digest] of copy.events) medium.#ledger.commit(id, digest);
     if (copy.contexts) medium.#contexts = ContextualReadout.restore(copy.contexts);

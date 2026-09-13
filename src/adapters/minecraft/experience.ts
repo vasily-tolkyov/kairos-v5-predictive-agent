@@ -1,7 +1,7 @@
 import type { MinecraftBody } from '../../body.js';
 import type { Observation, PublicValue, RealEvent } from '../../contracts.js';
 import type { ActionOfferV1, GroundedGoalV1 } from '../../control/contracts.js';
-import type { ExperienceEnvironment } from '../../experience-agent.js';
+import type { BeforeExperienceAction, ExperienceEnvironment } from '../../experience-agent.js';
 import { cueFor } from '../../events.js';
 import { perceptualObjects } from '../../perception.js';
 
@@ -40,7 +40,9 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
       residualScale: 20 } } }));
   constructor(readonly body: Pick<MinecraftBody,
     'latest' | 'listActionOffers' | 'describeActionRequirement' | 'execute' | 'waitForObservationAfter'>
-    & Partial<Pick<MinecraftBody, 'takePassiveEvents'>>) {}
+    & { takePassiveEvents?(): readonly RealEvent[] | Promise<readonly RealEvent[]>;
+      /** Only an in-process body can guarantee capture before its first await. */
+      readonly synchronousActionStart?: boolean }) {}
   #passive(event: RealEvent): RealEvent {
     const frames = event.frames.map(frame => this.#anonymous(frame));
     return { ...event, frames, attentionId: frames[0]!.perception?.attendedId,
@@ -82,18 +84,33 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
     if (!raw) throw new Error('action-offers-require-an-actually-observed-frame');
     return this.#offersFor(raw, observation);
   }
-  async executeOffer(offer: ActionOfferV1): ReturnType<ExperienceEnvironment['executeOffer']> {
+  async executeOffer(offer: ActionOfferV1, beforeExecute?: BeforeExperienceAction): ReturnType<ExperienceEnvironment['executeOffer']> {
+    // Only the in-process body promises that execute captures its start before
+    // yielding. A worker keeps its own physical clock and may advance during
+    // IPC; its eventual receipt must determine whether the old forecast fits.
+    const synchronousStart = this.body.synchronousActionStart === true;
+    const pending = beforeExecute ? this.body.takePassiveEvents?.() ?? [] : [];
+    if (synchronousStart && !Array.isArray(pending)) throw new Error('synchronous-body-returned-async-passive-events');
+    const waiting = (synchronousStart ? pending as readonly RealEvent[] : await pending).map(event => this.#passive(event));
     const current = this.body.latest(), perceived = this.#anonymous(current);
     const fresh = this.body.listActionOffers(current).find(value =>
       value.action.kind === offer.action.kind && JSON.stringify(value.action.parameters) === JSON.stringify(offer.action.parameters)
       && this.#visuallyBound(value, current)
       && this.#available(value, current)
       && (!value.action.targetId || offer.action.targetId === perceived.targetId));
-    if (!fresh) return { executed: false, observation: perceived, event: null };
+    if (!fresh) return { executed: false, observation: perceived, event: null, precedingPassiveEvents: waiting };
+    if (beforeExecute && synchronousStart) {
+      const availableOffers = this.#offersFor(current, perceived);
+      const action = { ...fresh.action, ...(fresh.action.targetId ? { targetId: perceived.targetId! } : {}) };
+      const rebound = { ...fresh, action, cue: cueFor(action, perceived), observationSequence: perceived.sequence,
+        ...(offer.attentionId !== undefined ? { attentionId: offer.attentionId } : {}) };
+      if (beforeExecute({ observation: perceived, offer: rebound, availableOffers, precedingPassiveEvents: waiting }) !== true)
+        return { executed: false, observation: perceived, event: null, precedingPassiveEvents: waiting };
+    }
     const receipt = await this.body.execute(fresh.action, {
       version: 'ActionObservationScopeV1', referencedPublicObjectIds: current.objects.map(object => object.id),
     });
-    const precedingPassiveEvents = receipt.precedingPassiveEvents?.map(event => this.#passive(event));
+    const precedingPassiveEvents = [...waiting, ...(receipt.precedingPassiveEvents?.map(event => this.#passive(event)) ?? [])];
     if (!receipt.event || !current.perception) {
       const observation = this.#anonymous(this.body.latest()), first = receipt.event?.frames[0];
       return { executed: receipt.result.executed, observation, event: receipt.event, precedingPassiveEvents,

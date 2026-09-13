@@ -60,8 +60,8 @@ const environment = {
   drainPassiveEvents: async () => recordPassive(await base.drainPassiveEvents()),
   observe: () => base.observe(), listActionOffers: observation => base.listActionOffers(observation),
   waitForObservationAfter: sequence => base.waitForObservationAfter(sequence),
-  executeOffer: async offer => {
-    const receipt = await base.executeOffer(offer);
+  executeOffer: async (offer, beforeExecute) => {
+    const receipt = await base.executeOffer(offer, beforeExecute);
     await recordPassive(receipt.precedingPassiveEvents);
     if (receipt.event) await writeFile(resolve(output, 'events', String(++eventCount).padStart(7, '0') + '.json.gz'),
       await compress(JSON.stringify(receipt.event)));

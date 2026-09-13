@@ -111,7 +111,7 @@ const verifiedDecisionPositions = decisions.filter(row => row.status === 'goal-v
   index: row.index, goalId: row.goalId, position: row.self.position,
   independentlyReportedByServer: serverPositions.some(position => position.every((value, axis) => Math.abs(value - row.self.position[axis]) < 1e-8)) }));
 const count = values => Object.fromEntries([...new Set(values)].map(value => [value, values.filter(item => item === value).length]));
-const result = { version: 'StoppedNativeContinuingAudit1', source: root, reportSha256: sha(await readFile(resolve(root, 'results.json'))),
+const result = { version: 'StoppedNativeContinuingAudit2', source: root, reportSha256: sha(await readFile(resolve(root, 'results.json'))),
   status: report.status, stoppedAt: report.stoppedAt, seconds: report.seconds,
   savedWorld: { file: levelFiles[0], sha256: sha(levelBytes), difficulty: savedDifficulty, gameType: level.GameType },
   initialPosition: initial.self.position, finalPosition: report.finalObservation.self.position,
@@ -121,7 +121,18 @@ const result = { version: 'StoppedNativeContinuingAudit1', source: root, reportS
   journalMismatches: mismatches, initialWrites: report.initialWrites, finalWrites: report.final.writes,
   frozen: report.protocol.frozen, learningDigestUnchanged: report.initialLearningDigest === report.finalLearningDigest,
   sources: count(decisions.map(row => row.source)), statuses: count(decisions.map(row => row.status)),
-  supportedTaskPlans: decisions.filter(row => row.source === 'task' && row.planLength > 0).map(row => ({ index: row.index, length: row.planLength })),
+  // Search-time branches and execution-time support have distinct identities.
+  // Old actors did not record this start certificate; retain their searches
+  // separately instead of retroactively declaring them freshly verified.
+  searchTaskPlans: decisions.filter(row => row.source === 'task' && row.planLength > 0)
+    .map(row => ({ index: row.index, length: row.planLength, status: row.status })),
+  supportedTaskPlans: decisions.filter(row => row.source === 'task' && row.status === 'executed'
+    && row.planLength > 0 && row.predictionFresh === true && row.prediction?.basis === 'supported')
+    .map(row => ({ index: row.index, length: row.predictedSteps?.length ?? 1,
+      planningObservationSequence: row.planningObservationSequence,
+      predictionObservationSequence: row.predictionObservationSequence })),
+  invalidatedTaskForecasts: decisions.filter(row => row.source === 'task' && row.predictionInvalidation)
+    .map(row => ({ index: row.index, reason: row.predictionInvalidation })),
   hypotheses: decisions.filter(row => row.exploration?.source === 'hypothesis').map(row => ({ index: row.index, length: row.exploration.planLength })),
   taskConfirmations: report.tasks.map(task => ({ id: task.goal.id, expression: task.goal.expression, status: task.status,
     firstSatisfied: task.firstSatisfied, confirmations: task.confirmations })),

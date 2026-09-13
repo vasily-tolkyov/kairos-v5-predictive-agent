@@ -178,7 +178,7 @@ try {
   await save('static-setup.json', { commands, taskGeometryVisibleOnlyThroughBody: true }); await delay(1000);
   body = new MinecraftBodyConnection({ ...config.minecraft, worldId: 'continuous-evaluation',
     activeSecondsOffset: previousReport?.finalObservation?.activeSeconds ?? 0 }, (kind, value) => {
-    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release'].includes(kind)) {
+    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release', 'body-motor-receipt'].includes(kind)) {
       diagnostics = diagnostics.then(() => log('body-diagnostics', { kind, at: new Date().toISOString(), value }))
         .catch(error => { diagnosticError = error; });
     }
@@ -197,11 +197,11 @@ try {
   environment = { maintenanceGoals: base.maintenanceGoals,
     drainPassiveEvents: async () => recordPassive(await base.drainPassiveEvents()),
     observe: () => base.observe(), listActionOffers: observation => base.listActionOffers(observation),
-    waitForObservationAfter: sequence => base.waitForObservationAfter(sequence), executeOffer: async offer => {
+    waitForObservationAfter: sequence => base.waitForObservationAfter(sequence), executeOffer: async (offer, beforeExecute) => {
       const before = await base.observe(), choiceOffers = base.listActionOffers(before);
       await log('action-intents', { offer, observation: before, at: new Date().toISOString() });
       let receipt;
-      try { receipt = await base.executeOffer(offer); }
+      try { receipt = await base.executeOffer(offer, beforeExecute); }
       catch (error) {
         await log('action-errors', { offer, error: String(error.stack ?? error), at: new Date().toISOString() });
         throw error;

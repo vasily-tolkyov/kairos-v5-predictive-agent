@@ -1,7 +1,7 @@
 import type { Observation, RealEvent, XYZ } from './contracts.js';
 import type { ActionOfferV1, GroundedGoalV1 } from './control/contracts.js';
 import { GroundedGoalEvaluatorV1 } from './control/goal.js';
-import { ExperienceAgent, compareExperiencePrediction, type ExperienceEnvironment, type ExperiencePlanStep } from './experience-agent.js';
+import { ExperienceAgent, compareExperiencePrediction, type ExperienceActionStart, type ExperienceEnvironment, type ExperiencePlanStep } from './experience-agent.js';
 import { ExperienceMedium, experienceInputs, motorIdentity, type ExperienceMediumSnapshot } from './experience-medium.js';
 import { LearnedAffordances, type LearnedAffordancesSnapshot } from './learned-affordances.js';
 import { ExperienceWorld, type ExperienceWorldSnapshot } from './experience-world.js';
@@ -24,6 +24,10 @@ export interface SessionDecision {
   stateKey?: string; refuted?: boolean; withdrawnPlanningOffers?: number;
   hypothesisDeferred?: boolean; measuredProgress?: boolean;
   actionStartLatencyFrames?: number;
+  planningObservationSequence?: number;
+  predictionObservationSequence?: number;
+  predictionFresh?: boolean;
+  predictionInvalidation?: string;
   forecastAdvanced?: boolean;
   predictedSteps?: readonly ExperiencePlanStep[];
 }
@@ -133,7 +137,9 @@ export class ExperienceSession {
     depth?: number; expansions?: number; verificationTicks?: number; milliseconds?: number } = {}): Promise<SessionDecision> {
     this.#consumePassive(await environment.drainPassiveEvents?.() ?? [], options.learn !== false);
     const observation = await environment.observe();
-    if (observation.predictionSupport !== undefined || observation.predictionBounds !== undefined) throw new Error('session-received-imagined-frame');
+    if (observation.predictionSupport !== undefined || observation.predictionBounds !== undefined
+      || observation.predictionContext !== undefined) throw new Error('session-received-imagined-frame');
+    const planningFrameDigest = sha(observation);
     this.world.observe(observation);
     const offers = environment.listActionOffers(observation);
     if (options.learn !== false) this.agent.affordances.observe(observation, offers);
@@ -225,23 +231,69 @@ export class ExperienceSession {
         milliseconds: options.milliseconds ?? 50 } : undefined, localVisits);
     }
     if (!offer) return this.#record({ ...common, status: 'no-offers' });
-    const prediction = selected?.prediction ?? this.agent.explorationPrediction ?? this.agent.medium.predict(offer.cue, observation);
-    const result = await environment.executeOffer(offer);
+    const planningPrediction = selected?.prediction ?? this.agent.explorationPrediction ?? this.agent.medium.predict(offer.cue, observation);
+    let prediction = planningPrediction, actionStart: ExperienceActionStart | undefined;
+    let actionStartDigest: string | undefined;
+    let predictionInvalidation: string | undefined;
+    const consumedPassive = new Map<string, string>();
+    const result = await environment.executeOffer(offer, start => {
+      if (actionStart) throw new Error('action-start-callback-repeated');
+      if (start.observation.predictionSupport !== undefined || start.observation.predictionBounds !== undefined
+        || start.observation.predictionContext !== undefined
+        || start.observation.sequence < observation.sequence || start.offer.observationSequence !== start.observation.sequence
+        || motorIdentity(start.offer.cue) !== motorIdentity(offer.cue)
+        || start.availableOffers.some(value => value.observationSequence !== start.observation.sequence))
+        throw new Error('invalid-measured-action-start');
+      actionStart = start;
+      actionStartDigest = sha(start.observation);
+      let previousPassiveEnd: Observation | undefined;
+      for (const event of start.precedingPassiveEvents) {
+        validateEvent(event);
+        const first = event.frames[0]!, last = event.frames.at(-1)!;
+        if (last.sequence > start.observation.sequence || last.activeSeconds > start.observation.activeSeconds
+          || previousPassiveEnd && (first.sequence < previousPassiveEnd.sequence || first.activeSeconds < previousPassiveEnd.activeSeconds))
+          throw new Error('passive-experience-does-not-precede-action-start');
+        previousPassiveEnd = last;
+      }
+      this.#consumePassive(start.precedingPassiveEvents, options.learn !== false);
+      for (const event of start.precedingPassiveEvents) consumedPassive.set(event.id, sha(event));
+      // This forecast is saved before the motor is issued and before any
+      // outcome update. A waiting-time context change may withdraw support;
+      // an unsupported replacement cannot inherit a selected plan's credit.
+      prediction = this.agent.medium.predict(start.offer.cue, start.observation, {
+        probe: planningPrediction.hypothesizedFields !== undefined,
+        requestedFields: planningPrediction.hypothesizedFields ?? planningPrediction.supportedFields });
+      if (selected && (!prediction.accepted
+        || planningPrediction.supportedFields.some(field => !prediction.supportedFields.includes(field)))) {
+        predictionInvalidation = 'action-start-support-withdrawn'; return false;
+      }
+      return true;
+    });
     // The world also advanced during selection. Consume those earlier real
     // intervals before learning the action, in physical time order.
-    this.#consumePassive(result.precedingPassiveEvents ?? [], options.learn !== false);
+    this.#consumePassive((result.precedingPassiveEvents ?? []).filter(event => {
+      const consumed = consumedPassive.get(event.id);
+      if (consumed !== undefined && consumed !== sha(event)) throw new Error('event-id-conflict');
+      return consumed === undefined;
+    }), options.learn !== false);
     if (result.observation.sequence < observation.sequence) throw new Error('body-feedback-went-backward');
+    if (result.executed && predictionInvalidation === 'action-start-support-withdrawn')
+      throw new Error('body-executed-a-vetoed-action');
     if (!result.executed) return this.#record({ ...common, observationSequence: result.observation.sequence,
       status: 'refused', offer, planLength: plan?.steps.length ?? 0, planReason: plan?.reason,
+      planningObservationSequence: observation.sequence, predictionObservationSequence: actionStart?.observation.sequence,
+      predictionFresh: false, predictionInvalidation,
       ...(!selected && this.agent.lastExploration ? { exploration: this.agent.lastExploration } : {}) });
     if (result.observation.sequence <= observation.sequence) return this.#record({ ...common, status: 'observation-stalled', offer });
     let learned = false;
     if (result.event) {
       validateEvent(result.event);
-      if (cueIdentity(result.event.cue) !== cueIdentity(offer.cue)
+      if (cueIdentity(result.event.cue) !== cueIdentity(actionStart?.offer.cue ?? offer.cue)
         || result.event.frames[0]!.sequence < observation.sequence
         || result.event.frames.at(-1)!.sequence !== result.observation.sequence)
         throw new Error('body-feedback-does-not-match-commanded-window');
+      if (actionStart && sha(result.event.frames[0]!) !== actionStartDigest)
+        throw new Error('body-feedback-does-not-match-action-start-prediction');
       if (result.availableOffers) {
         if (result.availableOffers.some(value => value.observationSequence !== result.event!.frames[0]!.sequence))
           throw new Error('action-start-affordances-do-not-match-the-measured-frame');
@@ -251,44 +303,60 @@ export class ExperienceSession {
     }
     this.#executed++; if (intention) intention.actions++;
     this.world.observe(result.observation);
-    const comparison = compareExperiencePrediction(prediction, result.observation);
-    const differences = compareExperiencePrediction(prediction, result.event?.frames[0] ?? observation).errors
+    const beforeAction = actionStart?.observation ?? result.event?.frames[0] ?? observation;
+    const predictionFresh = !!result.event && (actionStart !== undefined
+      || sha(result.event.frames[0]!) === planningFrameDigest);
+    // Older synthetic adapters may omit receipts altogether. Keep their
+    // comparison for compatibility, but mark its start unverified and grant
+    // no forecast or refutation credit. A measured drift invalidates it fully.
+    predictionInvalidation = predictionFresh ? undefined : result.event
+      ? 'action-start-changed-without-forecast' : 'unverified-action-start';
+    const comparison = !predictionFresh && result.event ? undefined : compareExperiencePrediction(prediction, result.observation);
+    const differences = compareExperiencePrediction(prediction, beforeAction).errors
       .filter(error => error.known && !error.matched);
-    const forecastAdvanced = differences.length > 0 && differences.every(before =>
-      comparison.errors.some(after => after.field === before.field && after.known && after.matched));
+    const forecastAdvanced = predictionFresh && differences.length > 0 && differences.every(before =>
+      comparison!.errors.some(after => after.field === before.field && after.known && after.matched));
     let measuredProgress = false;
     if (intention) {
       const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(intention.goal, intention.baseline!);
       const measured = evaluator.evaluate(result.observation);
-      const beforeAction = evaluator.evaluate(result.event?.frames[0] ?? observation);
+      const beforeMeasured = evaluator.evaluate(beforeAction);
       // A real advance can recover from a setback without beating an earlier
       // best. Credit the actual action window, not passive drift during search
       // or the magnitude of an inaccurate forecast. Ignore numerical roundoff.
-      measuredProgress = measured.status !== 'unknown' && measured.residual < beforeAction.residual - 1e-12;
+      measuredProgress = measured.status !== 'unknown' && measured.residual < beforeMeasured.residual - 1e-12;
       if (measuredProgress) {
         intention.bestResidual = Math.min(intention.bestResidual, measured.residual); intention.lastProgress = this.#steps;
         intention.unsuccessfulProbes = 0; intention.probeAfter = 0;
       } else if (forecastAdvanced) intention.unsuccessfulProbes = 0;
-      else if (selected || this.agent.lastExploration?.source === 'hypothesis') {
+      else if (predictionFresh && (selected || this.agent.lastExploration?.source === 'hypothesis')) {
         // Changed but irrelevant motion does not earn unlimited faith in an
         // unrealized plan. A nominally supported tiny displacement is not
         // progress when nothing happened within measurement tolerance.
         // Realized prerequisites count even before the final goal changes.
+        // An unverified action start cannot establish failure either.
         intention.unsuccessfulProbes = (intention.unsuccessfulProbes ?? 0) + 1;
         if (intention.unsuccessfulProbes >= 8) {
           intention.probeAfter = this.#steps + 17; intention.unsuccessfulProbes = 0;
         }
       }
     }
-    return this.#record({ ...common, status: 'executed', observationSequence: result.observation.sequence, offer,
+    return this.#record({ ...common, status: 'executed', observationSequence: result.observation.sequence,
+      offer: actionStart?.offer ?? offer,
       learned, planLength: plan?.steps.length ?? 0, planReason: plan?.reason,
       hypothesisDeferred, measuredProgress,
-      forecastAdvanced,
-      predictedSteps: selected ? plan!.steps : this.agent.explorationPlan,
+      forecastAdvanced, planningObservationSequence: observation.sequence,
+      predictionObservationSequence: actionStart?.observation.sequence ?? (predictionFresh ? observation.sequence : undefined),
+      predictionFresh, predictionInvalidation,
+      // The remaining search branch belongs to its earlier context. Only a
+      // freshly predicted first step is certified after an action-start bind.
+      predictedSteps: actionStart ? [{ offer: actionStart.offer, prediction }]
+        : predictionFresh || !result.event ? selected ? plan!.steps : this.agent.explorationPlan : undefined,
       ...(result.event ? { actionStartLatencyFrames: result.event.frames[0]!.sequence - observation.sequence } : {}),
       ...(!selected && this.agent.lastExploration ? { exploration: this.agent.lastExploration } : {}),
-      prediction: comparison, stateKey: key, withdrawnPlanningOffers: offers.length - planningOffers.length,
-      refuted: comparison.errors.some(error => error.known && !error.matched) && stateKey(result.observation) === key });
+      prediction: comparison, stateKey: stateKey(beforeAction), withdrawnPlanningOffers: offers.length - planningOffers.length,
+      refuted: predictionFresh && comparison!.errors.some(error => error.known && !error.matched)
+        && stateKey(result.observation) === stateKey(beforeAction) });
   }
   snapshot(): ExperienceSessionSnapshot { return structuredClone({ version: 'ExperienceSession1',
     medium: this.agent.medium.snapshot(), affordances: this.agent.affordances.snapshot(), world: this.world.snapshot(),

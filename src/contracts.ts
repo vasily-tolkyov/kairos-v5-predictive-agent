@@ -53,12 +53,39 @@ export interface ActionCue {
   readonly parameters: Readonly<Record<string, string | number | boolean>>;
   readonly targetRole: string | null;
 }
+/** Body instrumentation only: no action, engine object ID, or world state. */
+export interface MotorClockV1 {
+  readonly observationSequence: number;
+  /** Physical callbacks, excluding terminal sensor samples such as death. */
+  readonly physicsTick: number;
+  readonly activeSeconds: number;
+  /** Process-monotonic milliseconds, not wall time or a learned input. */
+  readonly monotonicMs: number;
+}
+export interface MotorReceiptV1 {
+  readonly version: 'MotorReceiptV1';
+  readonly durationParameter: 'ticks' | 'holdTicks';
+  readonly requestedTicks: number;
+  readonly requestedAt: MotorClockV1;
+  readonly pressedAt: MotorClockV1;
+  readonly releasedAt: MotorClockV1;
+  readonly pressSucceeded: boolean;
+  readonly releaseSucceeded: boolean;
+  readonly actualTicks: number;
+  readonly actualSeconds: number;
+  readonly elapsedMonotonicMs: number;
+  readonly observedIntervals: number;
+  readonly frameRange: { readonly startSequence: number; readonly endSequence: number };
+  readonly releaseReason: 'interval-complete' | 'death' | 'fault' | 'closed' | 'timeout' | 'press-failed';
+}
 export interface BodyResult {
   readonly action: Action;
   readonly executed: boolean;
   readonly status: 'completed' | 'no-target' | 'out-of-reach' | 'unavailable';
   readonly startSequence: number;
   readonly endSequence: number;
+  /** Absent in legacy records: never reconstructed from requested duration. */
+  readonly motorReceipt?: MotorReceiptV1;
   readonly terminationReason?: 'stable' | 'no-effect-window-complete' | 'observation-limit' | 'motor-released' | 'body-interrupted' | 'interval-complete';
 }
 export interface RealEventContinuityEvidenceV1 {

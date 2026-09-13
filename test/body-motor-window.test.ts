@@ -7,6 +7,8 @@ import { Vec3 } from 'vec3';
 import { MinecraftBody } from '../src/body.js';
 import { validateAction } from '../src/action-contract.js';
 import { validateEvent } from '../src/events.js';
+import * as eventTools from '../src/events.js';
+import type { MotorReceiptV1, RealEvent } from '../src/contracts.js';
 
 class MotorBot extends EventEmitter {
   entity = { id: 1, position: new Vec3(0, 64, 0), velocity: new Vec3(0, 0, 0), yaw: 0, pitch: 0, onGround: false };
@@ -182,4 +184,101 @@ test('using the held item is a measured button window, with no supplied item eff
   await h.tick(24); const { result, event } = await pending;
   assert.equal(result.terminationReason, 'motor-released'); assert(event); assert.equal(h.bot.releases, 1);
   assert.equal(event.frames.at(-1)!.self.properties.food, event.frames[0]!.self.properties.food, 'a physical press does not invent a useful outcome');
+});
+
+function actualReceipt(event: RealEvent): MotorReceiptV1 {
+  const receipt = event.bodyResult?.motorReceipt;
+  assert(receipt, 'body result must retain its measured motor receipt');
+  assert.equal(receipt.version, 'MotorReceiptV1'); return receipt;
+}
+function actualCue(event: RealEvent) {
+  const helper = (eventTools as unknown as { measuredMotorCueV1?: (event: RealEvent) => RealEvent['cue'] | null }).measuredMotorCueV1;
+  assert(helper, 'the learning boundary must expose an actual-duration cue'); return helper(event);
+}
+
+test('motor receipts retain real clocks and release frames before a catch-up continuation', async t => {
+  const h = fixture(t); await h.tick(1);
+  const action = { kind: 'jump', parameters: { forward: true, holdTicks: 4 } } as const;
+  const pending = h.body.execute(action); void pending.catch(() => {});
+  for (let i = 0; i < 9; i++) h.bot.emit('physicsTick');
+  await turn(); await h.tick(3);
+  const { event } = await pending; assert(event); validateEvent(event);
+  const receipt = actualReceipt(event);
+  assert.equal(receipt.requestedTicks, 4); assert.equal(receipt.actualTicks, 4);
+  assert.equal(receipt.actualSeconds, .2); assert.equal(receipt.observedIntervals, 4);
+  assert.equal(receipt.pressedAt.observationSequence, 1); assert.equal(receipt.releasedAt.observationSequence, 5);
+  assert(event.frames.at(-1)!.sequence > receipt.releasedAt.observationSequence);
+  assert(receipt.requestedAt.monotonicMs <= receipt.pressedAt.monotonicMs);
+  assert(receipt.releasedAt.monotonicMs >= receipt.pressedAt.monotonicMs);
+  assert.equal(receipt.elapsedMonotonicMs, receipt.releasedAt.monotonicMs - receipt.pressedAt.monotonicMs);
+  assert.equal(receipt.releasedAt.activeSeconds, event.frames[4]!.activeSeconds);
+  assert.deepEqual(receipt.frameRange, { startSequence: 1, endSequence: 5 });
+  assert.equal(receipt.releaseReason, 'interval-complete');
+  assert.equal(receipt.pressSucceeded, true); assert.equal(receipt.releaseSucceeded, true);
+  assert(!Object.hasOwn(receipt, 'action')); assert(!JSON.stringify(receipt).includes('targetId'));
+  assert.deepEqual(event.bodyResult!.action, action); assert.deepEqual(actualCue(event), event.cue);
+  assert.equal(h.records.filter(record => record.kind === 'body-motor-receipt').length, 1);
+});
+
+test('death records actual physical duration without rewriting the requested action or terminal sample', async t => {
+  const h = fixture(t); await h.tick(1);
+  const action = { kind: 'use-item', parameters: { holdTicks: 20 } } as const;
+  const pending = h.body.execute(action); void pending.catch(() => {});
+  await h.tick(2); h.bot.health = 0; h.bot.emit('death');
+  const { event } = await pending; assert(event); validateEvent(event);
+  const receipt = actualReceipt(event);
+  assert.equal(receipt.requestedTicks, 20); assert.equal(receipt.actualTicks, 2);
+  assert.equal(receipt.observedIntervals, 3, 'the terminal death sample is a frame, not a physical tick');
+  assert.equal(receipt.releaseReason, 'death'); assert.equal(h.bot.releases, 1);
+  assert.deepEqual(event.bodyResult!.action, action); assert.equal(event.cue.parameters.holdTicks, 20);
+  assert.equal(actualCue(event)?.parameters.holdTicks, 2);
+  const legacy = structuredClone(event); delete (legacy.bodyResult as { motorReceipt?: MotorReceiptV1 }).motorReceipt;
+  validateEvent(legacy); assert.deepEqual(actualCue(legacy), legacy.cue);
+  assert.equal(legacy.bodyResult?.motorReceipt, undefined, 'legacy reads cannot invent historical instrumentation');
+});
+
+test('zero-tick death cannot be learned as a completed positive motor interval', async t => {
+  const h = fixture(t); await h.tick(1);
+  const pending = h.body.execute({ kind: 'use-item', parameters: { holdTicks: 20 } }); void pending.catch(() => {});
+  h.bot.health = 0; h.bot.emit('death');
+  const { event } = await pending; assert(event); validateEvent(event);
+  assert.equal(actualReceipt(event).actualTicks, 0); assert.equal(actualCue(event), null);
+});
+
+test('invalid or inconsistent motor receipts are rejected at the real-event boundary', async t => {
+  const h = fixture(t); await h.tick(1);
+  const pending = h.body.execute({ kind: 'jump', parameters: { forward: false, holdTicks: 4 } }); void pending.catch(() => {});
+  await h.tick(8); const { event } = await pending; assert(event);
+  const receipt = actualReceipt(event); validateEvent(event);
+  const variants: unknown[] = [
+    { ...receipt, version: 'MotorReceiptV0' }, { ...receipt, actualTicks: -1 },
+    { ...receipt, actualTicks: receipt.actualTicks + 1 }, { ...receipt, actualSeconds: 99 },
+    { ...receipt, requestedTicks: 5 }, { ...receipt, durationParameter: 'ticks' },
+    { ...receipt, elapsedMonotonicMs: Number.NaN }, { ...receipt, releaseSucceeded: false },
+    { ...receipt, requestedAt: { ...receipt.requestedAt, observationSequence: 0 } },
+    { ...receipt, pressedAt: { ...receipt.pressedAt, activeSeconds: 100 } },
+    { ...receipt, releasedAt: { ...receipt.releasedAt, monotonicMs: receipt.pressedAt.monotonicMs - 1 } },
+    { ...receipt, frameRange: { ...receipt.frameRange, endSequence: event.frames.at(-1)!.sequence + 1 } },
+  ];
+  for (const invalid of variants) assert.throws(() => validateEvent({ ...event,
+    bodyResult: { ...event.bodyResult!, motorReceipt: invalid as MotorReceiptV1 } }), /motor-receipt/);
+});
+
+test('fault, close and timeout archive one actual release receipt without completing an event', async t => {
+  for (const reason of ['fault', 'closed', 'timeout'] as const) await t.test(reason, async t => {
+    const h = fixture(t); await h.tick(1);
+    if (reason === 'timeout') t.mock.timers.enable({ apis: ['setTimeout'] });
+    const pending = h.body.execute({ kind: 'use-item', parameters: { holdTicks: 20 } }); void pending.catch(() => {});
+    await h.tick(2);
+    if (reason === 'fault') h.bot.emit('error', new Error('injected motor fault'));
+    else if (reason === 'closed') await h.body.close();
+    else t.mock.timers.tick(10_000);
+    await assert.rejects(pending);
+    assert.equal(h.bot.releases, 1); assert.equal(h.bot.usingHeldItem, false);
+    const partial = h.records.find(record => record.kind === 'body-incomplete-window')!.value;
+    assert.equal(partial.motorReceipt?.version, 'MotorReceiptV1');
+    assert.equal(partial.motorReceipt.releaseReason, reason); assert.equal(partial.motorReceipt.actualTicks, 2);
+    assert.equal(h.records.filter(record => record.kind === 'body-motor-receipt').length, 1);
+    assert(!h.records.some(record => record.kind === 'body-result'));
+  });
 });

@@ -42,6 +42,17 @@ export function compareExperiencePrediction(prediction: ExperiencePrediction, ac
     unknown: errors.filter(e => !e.known).length, errors };
 }
 
+export interface ExperienceActionStart {
+  observation: Observation;
+  offer: ActionOfferV1;
+  availableOffers: readonly ActionOfferV1[];
+  precedingPassiveEvents: readonly RealEvent[];
+}
+/** Called synchronously after rebinding and before issuing the motor. The
+ * adapter must not yield between this callback and capturing the action start.
+ * Returning false refuses the motor; a Promise is not a valid authorization. */
+export type BeforeExperienceAction = (start: ExperienceActionStart) => boolean;
+
 export interface ExperienceEnvironment {
   /** Body preferences specify desired sensed conditions, never a motor or
    * its effect. Missing sensed conditions remain unknown. */
@@ -49,7 +60,7 @@ export interface ExperienceEnvironment {
   observe(): Promise<Observation>;
   drainPassiveEvents?(): Promise<readonly RealEvent[]>;
   listActionOffers(observation: Observation): readonly ActionOfferV1[];
-  executeOffer(offer: ActionOfferV1): Promise<{
+  executeOffer(offer: ActionOfferV1, beforeExecute?: BeforeExperienceAction): Promise<{
     executed: boolean; observation: Observation; event: RealEvent | null;
     precedingPassiveEvents?: readonly RealEvent[];
     /** Complete body offers from the actual first frame of the action. */
