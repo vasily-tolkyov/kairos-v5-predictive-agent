@@ -23,6 +23,9 @@ const window = (before: Observation, after: Observation): RealEvent => ({ versio
   id: 'action-start-motor:event-' + before.sequence, cue: cueFor(action, before), frames: [before, after],
   trackedIds: ['self'], provenance: 'executed-real-body', complete: true,
   bodyResult: { action, executed: true, status: 'completed', startSequence: before.sequence, endSequence: after.sequence } });
+const passiveWindow = (before: Observation, after: Observation): RealEvent => ({ ...window(before, after),
+  id: 'action-start-passive:event-' + before.sequence, cue: { kind: 'passive', parameters: { ticks: after.sequence - before.sequence }, targetRole: null },
+  bodyResult: null, provenance: 'observed-passive' });
 const goal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'terminal', expression: { kind: 'predicate',
   predicate: { version: 'GoalPredicateV1', id: 'x', subject: { kind: 'self' }, observable: 'position.0',
     comparator: 'greater-than', target: 20 } } };
@@ -40,7 +43,7 @@ function apparatus() {
       const event = window(before, current);
       return { result: event.bodyResult!, event };
     }, waitForObservationAfter: async () => current };
-  const environment: ExperienceEnvironment = new MinecraftExperienceEnvironment(body);
+  const environment = new MinecraftExperienceEnvironment(body);
   return { environment, body, order, pending, get calls() { return calls; },
     get current() { return current; }, set current(value: Observation) { current = value; } };
 }
@@ -108,6 +111,131 @@ test('preceding passive evidence is consumed once before the fresh forecast, the
   assert.deepEqual(fixture.order, ['passive-learn', 'fresh-predict', 'motor', 'motor-learn']);
   assert.equal(session.stats.passiveWindows, 1); assert.equal(session.stats.passiveWrites, 1);
   assert.equal(medium.writes, 2);
+});
+
+test('one per-step ledger deduplicates initial, pre-preparation, callback and receipt exposure even when frozen', async t => {
+  for (const learn of [true, false]) await t.test(learn ? 'online' : 'frozen', async t => {
+    const f = apparatus(), session = new ExperienceSession(); session.submit(goal);
+    const first = passiveWindow(frame(0, -1), frame(1, 0)), second = passiveWindow(frame(1, 0), frame(2, 1));
+    const third = passiveWindow(frame(2, 1), frame(3, 2));
+    let drains = 0, plans = 0;
+    t.mock.method(f.body, 'takePassiveEvents', () => {
+      drains++;
+      if (drains === 1) return [first];
+      if (drains === 2) return [first, second, second];
+      assert.equal(drains, 3); f.current = frame(3, 2); return [first, second, third, third];
+    });
+    t.mock.method(session.agent, 'plan', (_goal: GroundedGoalV1, observation: Observation, offers: readonly ActionOfferV1[]) => {
+      plans++; f.current = frame(2, 1);
+      return { steps: [{ offer: offers[0], prediction: forecast(observation) }], expanded: 1, reason: 'predicted-progress' };
+    });
+    t.mock.method(session.agent.medium, 'predict', (_cue: ActionCue, observation: Observation) => {
+      assert.equal(session.stats.passiveWindows, 3); assert.equal(f.calls, 0); return forecast(observation);
+    });
+    const original = session.agent.medium.observe.bind(session.agent.medium), learnedIds: string[] = [];
+    t.mock.method(session.agent.medium, 'observe', (event: RealEvent) => { learnedIds.push(event.id); return original(event); });
+    const digest = sha(session.agent.medium.snapshot()), result = await session.step(f.environment, { learn, exploration: false });
+    assert.equal(result.status, 'executed'); assert.equal(plans, 1); assert.equal(drains, 3); assert.equal(f.calls, 1);
+    assert.equal(session.stats.passiveWindows, 3); assert.equal(session.stats.passiveWrites, learn ? 3 : 0);
+    assert.equal(session.stats.writes, learn ? 4 : 0);
+    assert.deepEqual(learnedIds, learn ? [first.id, second.id, third.id, 'action-start-motor:event-3'] : []);
+    if (!learn) assert.equal(sha(session.agent.medium.snapshot()), digest);
+    assert.equal(result.prePreparationPassive?.receivedWindows, 3); assert.equal(result.prePreparationPassive?.uniqueWindows, 1);
+    assert.equal(result.prePreparationPassive?.learnedWindows, learn ? 1 : 0); assert.equal(result.prePreparationPassive?.boundarySequence, 2);
+    assert(Object.values(result.prePreparationPassive!.timingsMs).every(value => Number.isFinite(value) && value >= 0));
+  });
+});
+
+test('conflicting passive IDs across preparation phases are rejected without counting or learning the conflicting batch', async t => {
+  for (const phase of ['drain', 'callback', 'receipt'] as const) for (const learn of [true, false])
+    await t.test(phase + (learn ? '-online' : '-frozen'), async t => {
+      const f = apparatus(), session = new ExperienceSession(); session.submit(goal);
+      const event = passiveWindow(frame(1, 0), frame(2, 1));
+      const conflict = { ...event, frames: [event.frames[0]!, frame(2, 99)] };
+      let drains = 0;
+      t.mock.method(f.environment, 'drainPassiveEvents', async () => ++drains === 1 ? [] : phase === 'drain' ? [event, conflict] : [event]);
+      t.mock.method(session.agent, 'plan', (_goal: GroundedGoalV1, observation: Observation, offers: readonly ActionOfferV1[]) => {
+        f.current = frame(2, 1); return { steps: [{ offer: offers[0], prediction: forecast(observation) }], expanded: 1, reason: 'predicted-progress' };
+      });
+      t.mock.method(session.agent.medium, 'predict', (_cue: ActionCue, observation: Observation) => forecast(observation));
+      if (phase === 'callback') t.mock.method(f.body, 'takePassiveEvents', () => [conflict]);
+      if (phase === 'receipt') {
+        const execute = f.environment.executeOffer.bind(f.environment);
+        t.mock.method(f.environment, 'executeOffer', async (...args: Parameters<typeof execute>) => ({ ...await execute(...args), precedingPassiveEvents: [conflict] }));
+      }
+      const digest = sha(session.agent.medium.snapshot());
+      await assert.rejects(session.step(f.environment, { learn, exploration: false }), /event-id-conflict/);
+      assert.equal(f.calls, phase === 'receipt' ? 1 : 0);
+      assert.equal(session.stats.passiveWindows, phase === 'drain' ? 0 : 1);
+      assert.equal(session.stats.writes, learn && phase !== 'drain' ? 1 : 0);
+      if (!learn) assert.equal(sha(session.agent.medium.snapshot()), digest);
+    });
+});
+
+test('frozen phase transitions reject future and backward passive intervals without executing a motor', async t => {
+  for (const mode of ['future-drain', 'backward-callback', 'backward-start', 'imagined-boundary'] as const)
+    await t.test(mode, async t => {
+      const f = apparatus(), session = new ExperienceSession(); session.submit(goal);
+      const event = passiveWindow(frame(1, 0), frame(2, 1)), future = passiveWindow(frame(2, 1), frame(3, 2));
+      let drains = 0;
+      t.mock.method(f.environment, 'drainPassiveEvents', async () => ++drains === 1 ? [] : mode === 'future-drain' ? [future] : [event]);
+      t.mock.method(session.agent, 'plan', (_goal: GroundedGoalV1, observation: Observation, offers: readonly ActionOfferV1[]) => {
+        f.current = { ...frame(2, 1), ...(mode === 'imagined-boundary' ? { predictionSupport: ['self/position.0'] } : {}) };
+        return { steps: [{ offer: offers[0], prediction: forecast(observation) }], expanded: 1, reason: 'predicted-progress' };
+      });
+      if (mode === 'backward-callback') t.mock.method(f.body, 'takePassiveEvents', () => [passiveWindow(frame(0, -1), frame(1, 0))]);
+      if (mode === 'backward-start') t.mock.method(f.body, 'takePassiveEvents', () => { f.current = frame(1, 0); return []; });
+      const digest = sha(session.agent.medium.snapshot());
+      await assert.rejects(session.step(f.environment, { learn: false, exploration: false }),
+        mode === 'imagined-boundary' ? /session-received-imagined-frame/ : mode === 'backward-start' ? /invalid-measured-action-start/ : /passive-experience-does-not-precede/);
+      assert.equal(f.calls, 0); assert.equal(session.stats.writes, 0); assert.equal(sha(session.agent.medium.snapshot()), digest);
+      assert.equal(session.stats.passiveWindows, mode === 'future-drain' || mode === 'imagined-boundary' ? 0 : 1);
+    });
+});
+
+test('preparation-time learning can withdraw selected support and veto without replanning or another attempt', async t => {
+  const f = apparatus(), session = new ExperienceSession(); session.submit(goal);
+  let plans = 0, preparations = 0;
+  t.mock.method(session.agent, 'plan', (_goal: GroundedGoalV1, observation: Observation, offers: readonly ActionOfferV1[]) => {
+    plans++; f.current = frame(2, 1); f.pending.push(passiveWindow(observation, f.current));
+    return { steps: [{ offer: offers[0], prediction: forecast(observation) }], expanded: 1, reason: 'predicted-progress' };
+  });
+  const execute = f.environment.executeOffer.bind(f.environment);
+  t.mock.method(f.environment, 'executeOffer', async (...args: Parameters<typeof execute>) => {
+    preparations++; assert.equal(session.stats.writes, 1); return execute(...args);
+  });
+  t.mock.method(session.agent.medium, 'predict', (_cue: ActionCue, observation: Observation) => forecast(observation, false));
+  const result = await session.step(f.environment, { exploration: false });
+  assert.equal(result.status, 'refused'); assert.equal(result.predictionInvalidation, 'action-start-support-withdrawn');
+  assert.equal(plans, 1); assert.equal(preparations, 1); assert.equal(f.calls, 0);
+  assert.equal(result.prePreparationPassive?.uniqueWindows, 1); assert.equal(result.prePreparationPassive?.learnedWindows, 1);
+  assert.equal(result.prediction, undefined); assert.equal(result.forecastAdvanced, undefined);
+});
+
+test('matching passive boundary sequences cannot hide conflicting full frames under different event IDs', async t => {
+  for (const phase of ['within-drain', 'drain-boundary', 'callback-boundary', 'callback-window'] as const)
+    await t.test(phase, async t => {
+      const f = apparatus(), session = new ExperienceSession(); session.submit(goal);
+      const first = passiveWindow(frame(1, 0), frame(2, 1));
+      const changedFirst = passiveWindow(frame(2, 99), frame(3, 2));
+      let drains = 0;
+      t.mock.method(f.environment, 'drainPassiveEvents', async () => ++drains === 1 ? []
+        : phase === 'within-drain' ? [first, changedFirst]
+        : phase === 'drain-boundary' ? [{ ...first, frames: [first.frames[0]!, frame(2, 99)] }] : [first]);
+      t.mock.method(session.agent, 'plan', (_goal: GroundedGoalV1, observation: Observation, offers: readonly ActionOfferV1[]) => {
+        f.current = phase === 'within-drain' ? frame(3, 2) : frame(2, 1);
+        return { steps: [{ offer: offers[0], prediction: forecast(observation) }], expanded: 1, reason: 'predicted-progress' };
+      });
+      t.mock.method(session.agent.medium, 'predict', (_cue: ActionCue, observation: Observation) => forecast(observation));
+      t.mock.method(f.body, 'takePassiveEvents', () => {
+        if (phase.startsWith('callback')) f.current = phase === 'callback-window' ? frame(3, 2) : frame(2, 99);
+        return phase === 'callback-window' ? [changedFirst] : [];
+      });
+      const digest = sha(session.agent.medium.snapshot());
+      await assert.rejects(session.step(f.environment, { learn: false, exploration: false }), /passive-shared-frame-conflict/);
+      assert.equal(f.calls, 0); assert.equal(session.stats.writes, 0); assert.equal(sha(session.agent.medium.snapshot()), digest);
+      assert.equal(session.stats.passiveWindows, phase.startsWith('callback') ? 1 : 0);
+    });
 });
 
 test('a previously supported plan is refused when its actual start context loses support', async t => {

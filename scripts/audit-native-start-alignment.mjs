@@ -53,6 +53,18 @@ async function auditRun(path, aligned, registration) {
   const attempted = decisions.filter(row => ['executed', 'refused'].includes(row.status));
   assert.equal(actions.length, attempted.length, 'extra or omitted physical attempt');
   assert.equal(intents.length, attempted.length, 'extra or omitted action intention');
+  const predrains = attempted.map(row => row.prePreparationPassive).filter(Boolean);
+  if (aligned && registration.version === 'MatchedNativePredrainProtocol1') {
+    assert.equal(predrains.length, attempted.length, 'missing pre-preparation drain accounting');
+    for (const row of attempted) {
+      const drain = row.prePreparationPassive;
+      for (const key of ['receivedWindows', 'uniqueWindows', 'learnedWindows', 'boundarySequence']) sequence(drain[key]);
+      assert(drain.receivedWindows >= drain.uniqueWindows && drain.uniqueWindows >= drain.learnedWindows);
+      assert(drain.boundarySequence >= row.planningObservationSequence
+        && drain.boundarySequence <= row.predictionObservationSequence, 'drain boundary does not precede fresh prediction');
+      for (const key of ['drain', 'observation', 'validation', 'learning']) duration(drain.timingsMs[key]);
+    }
+  }
 
   const provenanceBytes = await readFile(resolve(report.predecessor, 'fork-provenance.json'));
   const provenance = JSON.parse(provenanceBytes);
@@ -251,13 +263,20 @@ async function auditRun(path, aligned, registration) {
     preparationToTerminalMs: summarize(attempts.filter(row => !row.withoutPreparation).map(row => row.elapsedMs)),
     callbackMs: Object.fromEntries(['validation', 'passiveLearning', 'prediction'].map(key => [key,
       summarize(callbackRows.map(row => row.actionStartTimingsMs[key]))])),
+    prePreparation: { recordedDrains: predrains.length,
+      receivedWindows: predrains.reduce((sum, row) => sum + row.receivedWindows, 0),
+      uniqueWindows: predrains.reduce((sum, row) => sum + row.uniqueWindows, 0),
+      learnedWindows: predrains.reduce((sum, row) => sum + row.learnedWindows, 0),
+      timingsMs: Object.fromEntries(['drain', 'observation', 'validation', 'learning'].map(key => [key,
+        summarize(predrains.map(row => row.timingsMs[key]))])) },
     wholeLoopMs: summarize(decisions.map(row => row.durationMs)), attempts, archive };
 }
 
 try {
   const registrationBytes = await readFile(resolve(protocolPath)), registration = JSON.parse(registrationBytes);
   result.registrationSha256 = hash(registrationBytes);
-  assert.equal(registration.version, 'MatchedNativeStartAlignmentProtocol1');
+  assert(['MatchedNativeStartAlignmentProtocol1', 'MatchedNativePredrainProtocol1'].includes(registration.version),
+    'unknown preregistration protocol');
   assert.equal(registration.launchAttempts, 1); assert.equal(registration.preparationWait.maximumWaitCallsPerPreparation, 1);
   assert.equal(registration.preparationWait.maximumPreparationsPerDecision, 1);
   assert.equal(hash(await readFile(resolve(registration.sourceWorld))), registration.sourceWorldArchiveSha256,

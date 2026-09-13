@@ -4,7 +4,7 @@
   "control": "evidence/pr3-local-frame-alignment",
   "controlActorCommit": "949cd496c0adb5a36cbb878f72e63029a3bbb874",
   "controlReportSha256": "a31259856a291b4dbdb19f681339ca70aaad6e259539a5214bad49633b63471c",
-  "controlProtocolSha256": "d88d3c0708dc8c7f4da439d7e8ef4ef80e863e9c976ea934bda9ba6ab73522b3",
+  "controlProtocolSha256": "c6b5bc2c7446fd36b1f137fa79856d9c0a700c8af3a39008b2dd526bb33b3ad8",
   "controlResult": {
     "decisions": 32,
     "executed": 8,

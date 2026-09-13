@@ -31,6 +31,8 @@ export interface SessionDecision {
   actionStartToken?: string;
   actionStartElapsedMs?: number | null;
   actionStartTimingsMs?: { validation: number; passiveLearning: number; prediction: number };
+  prePreparationPassive?: { receivedWindows: number; uniqueWindows: number; learnedWindows: number;
+    boundarySequence: number; timingsMs: { drain: number; observation: number; validation: number; learning: number } };
   forecastAdvanced?: boolean;
   predictedSteps?: readonly ExperiencePlanStep[];
 }
@@ -138,11 +140,52 @@ export class ExperienceSession {
   }
   async step(environment: ExperienceEnvironment, options: { learn?: boolean; exploration?: boolean;
     depth?: number; expansions?: number; verificationTicks?: number; milliseconds?: number } = {}): Promise<SessionDecision> {
-    this.#consumePassive(await environment.drainPassiveEvents?.() ?? [], options.learn !== false);
+    // One per-step ledger covers the initial drain, the drain before preparing
+    // an action, the callback and the receipt, including frozen exposure counts.
+    const consumedPassive = new Map<string, string>();
+    let previousPassiveEnd: { sequence: number; activeSeconds: number; digest: string } | undefined;
+    const measuredBoundary = (boundary: Observation) => {
+      if (boundary.predictionSupport !== undefined || boundary.predictionBounds !== undefined
+        || boundary.predictionContext !== undefined) throw new Error('session-received-imagined-frame');
+    };
+    const uniquePassive = (events: readonly RealEvent[], boundary: Observation, reason: string, boundaryDigest?: string) => {
+      measuredBoundary(boundary);
+      if (previousPassiveEnd && (previousPassiveEnd.sequence > boundary.sequence || previousPassiveEnd.activeSeconds > boundary.activeSeconds))
+        throw new Error(reason);
+      // Keep the previously validated digest, not a cache keyed by mutable
+      // frame objects. Equal sequence numbers must identify the full same frame.
+      const measuredDigest = () => boundaryDigest ??= sha(boundary);
+      if (previousPassiveEnd?.sequence === boundary.sequence && previousPassiveEnd.digest !== measuredDigest())
+        throw new Error('passive-shared-frame-conflict');
+      let lastEnd = previousPassiveEnd;
+      const unique = events.filter(event => {
+        const digest = sha(event), consumed = consumedPassive.get(event.id);
+        if (consumed !== undefined && consumed !== digest) throw new Error('event-id-conflict');
+        if (consumed !== undefined) return false;
+        validateEvent(event);
+        if (event.provenance !== 'observed-passive' || event.bodyResult !== null || event.cue.kind !== 'passive')
+          throw new Error('motor-window-supplied-as-passive-experience');
+        const first = event.frames[0]!, last = event.frames.at(-1)!;
+        if (last.sequence > boundary.sequence || last.activeSeconds > boundary.activeSeconds
+          || lastEnd && (first.sequence < lastEnd.sequence || first.activeSeconds < lastEnd.activeSeconds)) throw new Error(reason);
+        const endDigest = sha(last);
+        if (lastEnd?.sequence === first.sequence && lastEnd.digest !== sha(first)
+          || last.sequence === boundary.sequence && endDigest !== measuredDigest()) throw new Error('passive-shared-frame-conflict');
+        lastEnd = { sequence: last.sequence, activeSeconds: last.activeSeconds, digest: endDigest };
+        consumedPassive.set(event.id, digest); return true;
+      });
+      previousPassiveEnd = lastEnd; return unique;
+    };
+    const initialPassive = await environment.drainPassiveEvents?.() ?? [];
+    if (initialPassive.length) this.#consumePassive(uniquePassive(initialPassive, await environment.observe(),
+      'passive-experience-does-not-precede-initial-observation'), options.learn !== false);
     const observation = await environment.observe();
-    if (observation.predictionSupport !== undefined || observation.predictionBounds !== undefined
-      || observation.predictionContext !== undefined) throw new Error('session-received-imagined-frame');
+    measuredBoundary(observation);
+    if (previousPassiveEnd && (previousPassiveEnd.sequence > observation.sequence || previousPassiveEnd.activeSeconds > observation.activeSeconds))
+      throw new Error('passive-experience-does-not-precede-initial-observation');
     const planningFrameDigest = sha(observation);
+    if (previousPassiveEnd?.sequence === observation.sequence && previousPassiveEnd.digest !== planningFrameDigest)
+      throw new Error('passive-shared-frame-conflict');
     this.world.observe(observation);
     const offers = environment.listActionOffers(observation);
     if (options.learn !== false) this.agent.affordances.observe(observation, offers);
@@ -239,32 +282,42 @@ export class ExperienceSession {
     let actionStartDigest: string | undefined;
     let predictionInvalidation: string | undefined;
     let actionStartTimingsMs: SessionDecision['actionStartTimingsMs'];
-    const consumedPassive = new Map<string, string>();
+    let prePreparationPassive: SessionDecision['prePreparationPassive'];
+    let prePreparationBoundary = observation;
+    if (environment.drainPassiveEvents) {
+      // This is one explicit drain, never a drain-until-empty loop. It can
+      // flush a partial real passive window; its duration and identity remain
+      // the body's measured evidence. Newer windows are still learned in the
+      // exact-start callback before its forecast, and the selected offer stays.
+      const beforeDrain = performance.now(), events = await environment.drainPassiveEvents();
+      const drainedAt = performance.now(); prePreparationBoundary = await environment.observe();
+      const observedAt = performance.now(); measuredBoundary(prePreparationBoundary);
+      if (prePreparationBoundary.sequence < observation.sequence || prePreparationBoundary.activeSeconds < observation.activeSeconds)
+        throw new Error('pre-preparation-observation-went-backward');
+      const unique = uniquePassive(events, prePreparationBoundary, 'passive-experience-does-not-precede-preparation');
+      const validatedAt = performance.now(), writesBefore = this.#passiveWrites;
+      this.#consumePassive(unique, options.learn !== false);
+      prePreparationPassive = { receivedWindows: events.length, uniqueWindows: unique.length,
+        learnedWindows: this.#passiveWrites - writesBefore, boundarySequence: prePreparationBoundary.sequence,
+        timingsMs: { drain: drainedAt - beforeDrain, observation: observedAt - drainedAt,
+          validation: validatedAt - observedAt, learning: performance.now() - validatedAt } };
+    }
     const result = await environment.executeOffer(offer, start => {
       const callbackAt = performance.now();
       if (actionStart) throw new Error('action-start-callback-repeated');
       if (start.observation.predictionSupport !== undefined || start.observation.predictionBounds !== undefined
         || start.observation.predictionContext !== undefined
-        || start.observation.sequence < observation.sequence || start.offer.observationSequence !== start.observation.sequence
+        || start.observation.sequence < prePreparationBoundary.sequence
+        || start.observation.activeSeconds < prePreparationBoundary.activeSeconds
+        || start.offer.observationSequence !== start.observation.sequence
         || motorIdentity(start.offer.cue) !== motorIdentity(offer.cue)
         || start.availableOffers.some(value => value.observationSequence !== start.observation.sequence))
         throw new Error('invalid-measured-action-start');
       actionStartDigest = sha(start.observation);
-      let previousPassiveEnd: Observation | undefined;
-      const uniquePassive = start.precedingPassiveEvents.filter(event => {
-        const digest = sha(event), consumed = consumedPassive.get(event.id);
-        if (consumed !== undefined && consumed !== digest) throw new Error('event-id-conflict');
-        if (consumed !== undefined) return false;
-        validateEvent(event);
-        const first = event.frames[0]!, last = event.frames.at(-1)!;
-        if (last.sequence > start.observation.sequence || last.activeSeconds > start.observation.activeSeconds
-          || previousPassiveEnd && (first.sequence < previousPassiveEnd.sequence || first.activeSeconds < previousPassiveEnd.activeSeconds))
-          throw new Error('passive-experience-does-not-precede-action-start');
-        previousPassiveEnd = last; consumedPassive.set(event.id, digest); return true;
-      });
-      actionStart = { ...start, precedingPassiveEvents: uniquePassive };
+      const preceding = uniquePassive(start.precedingPassiveEvents, start.observation, 'passive-experience-does-not-precede-action-start', actionStartDigest);
+      actionStart = { ...start, precedingPassiveEvents: preceding };
       const validatedAt = performance.now();
-      this.#consumePassive(uniquePassive, options.learn !== false);
+      this.#consumePassive(preceding, options.learn !== false);
       const learnedAt = performance.now();
       // This forecast is saved before the motor is issued and before any
       // outcome update. A waiting-time context change may withdraw support;
@@ -285,23 +338,13 @@ export class ExperienceSession {
     if (result.executed && result.executionBinding?.status !== undefined && result.executionBinding.status !== 'accepted')
       throw new Error('body-executed-without-accepted-frame-binding');
     const executionAudit = { actionStartToken: result.executionBinding?.token,
-      actionStartElapsedMs: result.executionBinding?.elapsedMs, actionStartTimingsMs };
+      actionStartElapsedMs: result.executionBinding?.elapsedMs, actionStartTimingsMs, prePreparationPassive };
     // The world also advanced during selection. Consume those earlier real
     // intervals before learning the action, in physical time order.
     if (result.event) validateEvent(result.event);
     const passiveBoundary = result.event?.frames[0] ?? result.observation;
-    let previousPassiveEnd = actionStart?.precedingPassiveEvents.at(-1)?.frames.at(-1);
-    const remainingPassive = (result.precedingPassiveEvents ?? []).filter(event => {
-      const consumed = consumedPassive.get(event.id);
-      if (consumed !== undefined && consumed !== sha(event)) throw new Error('event-id-conflict');
-      if (consumed !== undefined) return false;
-      validateEvent(event);
-      const first = event.frames[0]!, last = event.frames.at(-1)!;
-      if (last.sequence > passiveBoundary.sequence || last.activeSeconds > passiveBoundary.activeSeconds
-        || previousPassiveEnd && (first.sequence < previousPassiveEnd.sequence || first.activeSeconds < previousPassiveEnd.activeSeconds))
-        throw new Error('passive-experience-does-not-precede-body-feedback');
-      previousPassiveEnd = last; consumedPassive.set(event.id, sha(event)); return true;
-    });
+    const remainingPassive = uniquePassive(result.precedingPassiveEvents ?? [], passiveBoundary,
+      'passive-experience-does-not-precede-body-feedback');
     this.#consumePassive(remainingPassive, options.learn !== false);
     if (result.observation.sequence < observation.sequence) throw new Error('body-feedback-went-backward');
     if (result.executed && predictionInvalidation === 'action-start-support-withdrawn')
@@ -312,7 +355,7 @@ export class ExperienceSession {
       predictionFresh: false, predictionInvalidation: predictionInvalidation ?? result.executionBinding?.reason,
       ...executionAudit,
       ...(!selected && this.agent.lastExploration ? { exploration: this.agent.lastExploration } : {}) });
-    if (result.observation.sequence <= observation.sequence) return this.#record({ ...common, status: 'observation-stalled', offer });
+    if (result.observation.sequence <= observation.sequence) return this.#record({ ...common, status: 'observation-stalled', offer, ...executionAudit });
     let learned = false;
     if (result.event) {
       if (cueIdentity(result.event.cue) !== cueIdentity(actionStart?.offer.cue ?? offer.cue)

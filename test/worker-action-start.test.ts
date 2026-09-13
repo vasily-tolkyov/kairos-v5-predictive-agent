@@ -222,6 +222,41 @@ test('session grants execution credit only to the prepared frame, while expiry l
   });
 });
 
+test('postplanning passive learning finishes before preparation while newer passive evidence still precedes the fresh forecast', async t => {
+  const f = fixture(), session = new ExperienceSession();
+  const goal: GroundedGoalV1 = { version: 'GroundedGoalV1', id: 'terminal', expression: { kind: 'predicate', predicate: {
+    version: 'GoalPredicateV1', id: 'value', subject: { kind: 'self' }, observable: 'properties.value', comparator: 'greater-than', target: 20 } } };
+  session.submit(goal); let plans = 0, preparations = 0;
+  const forecast = (observation: Observation): ExperiencePrediction => ({ observation: { ...observation,
+    self: { ...observation.self, properties: { value: Number(observation.self.properties.value) + 1 } } },
+    accepted: true, reason: null, supportedFields: ['self/properties.value'], activationMargin: 1,
+    prequentialAccuracy: 1, observedSamples: 10, settled: true });
+  const observe = session.agent.medium.observe.bind(session.agent.medium);
+  t.mock.method(session.agent.medium, 'observe', (event: RealEvent) => {
+    f.order.push('learn-' + event.frames[0]!.sequence); return observe(event);
+  });
+  t.mock.method(session.agent, 'plan', (_goal: GroundedGoalV1, observed: Observation, offers: readonly ActionOfferV1[]) => {
+    plans++; f.advance(); return { steps: [{ offer: offers[0], prediction: forecast(observed) }], expanded: 1, reason: 'predicted-progress' };
+  });
+  const prepare = f.connection.prepareActionStart;
+  f.connection.prepareActionStart = async () => {
+    preparations++; f.order.push('prepare'); assert.equal(session.agent.medium.writes, 1,
+      'already received planning-time evidence must finish learning before any start token exists');
+    f.advance(); return prepare();
+  };
+  t.mock.method(session.agent.medium, 'predict', (_cue: ActionCue, observed: Observation) => {
+    f.order.push('predict-' + observed.sequence); assert.equal(session.agent.medium.writes, 2);
+    assert.equal(f.calls, 0); return forecast(observed);
+  });
+  const result = await session.step(f.environment, { exploration: false });
+  assert.equal(result.status, 'executed'); assert.equal(plans, 1); assert.equal(preparations, 1); assert.equal(f.calls, 1);
+  assert.deepEqual(f.order, ['learn-1', 'prepare', 'learn-2', 'predict-3', 'motor-3', 'learn-3']);
+  assert.equal(session.stats.passiveWindows, 2); assert.equal(session.agent.medium.writes, 3);
+  assert.equal(result.planningObservationSequence, 1); assert.equal(result.predictionObservationSequence, 3);
+  assert.equal(result.prePreparationPassive?.receivedWindows, 1); assert.equal(result.prePreparationPassive?.uniqueWindows, 1);
+  assert.equal(result.prePreparationPassive?.learnedWindows, 1); assert.equal(result.prePreparationPassive?.boundarySequence, 2);
+});
+
 test('passive evidence from after the accepted start is rejected before outcome learning', async t => {
   const f = fixture(), session = new ExperienceSession();
   const execute = f.connection.executePrepared;
