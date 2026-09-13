@@ -1,0 +1,55 @@
+✖ independent measured planes identify motion without inventing unobserved components (265.4818ms)
+✔ chosen attention learns the selected measurement and rejects an outcome-only subject (123.8039ms)
+✔ learns a nonlinear conditional response from real transitions (8.5576ms)
+✔ goals, queries, chronology labels and snapshots do not train the medium (103.306ms)
+✔ without a motor input or any learned readout there is no executable prediction (27.7826ms)
+✔ goal-directed probes stay untrusted and require actual feedback to verify a goal (126.9085ms)
+✔ retains learned weights across a mechanism change and repairs predictions from new feedback (4656.3725ms)
+✔ restore preserves the exact subsequent learning update and replay randomness (132.8742ms)
+✔ learning another motor response retains an unrehearsed earlier capability (4293.2573ms)
+✔ rejects gaps, non-real windows and corrupt conductances without changing memory (105.8104ms)
+✔ missing objects mask their channels without discarding measurable self channels (1.2547ms)
+✔ renaming objects and translating the world preserves learned local predictions (0.6805ms)
+✔ an unsupported copied value cannot become an input to the next imagined action (1.2556ms)
+✔ real later observations verify a goal even with no motor budget (24.9351ms)
+✔ a transient or stale terminal observation cannot certify success (23.2017ms)
+✔ plans and verifies three numeric stages learned only as isolated transitions (1725.1623ms)
+✔ numeric receptors preserve distinguishable values above sixteen (3418.1855ms)
+✔ one real window with nine objects cannot establish object prediction support (38.4879ms)
+✔ all first-window object forecasts precede every object update (19.0112ms)
+✔ five two-object windows cannot borrow ten independent calibration counts (23.5914ms)
+✔ independent subsequent windows establish support and duplicate events never recalibrate (120.6093ms)
+✔ legacy rows retain their original errors and fit without inventing independent source windows (165.7582ms)
+✔ unknown property placeholders are equivalent for subsequent predictions and learned offers (294.077ms)
+✔ a previously unseen outcome category is scored before expanding the classifier vocabulary (87.0065ms)
+✔ multiple planes cannot inflate the independent-window count of a motion fallback (463.2735ms)
+✔ context certificates aggregate worst error and physical residual separately per window (1.9006ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 25
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18520.5727
+
+✖ failing tests:
+
+test at dist\test\experience-prototype.test.js:31:1
+✖ independent measured planes identify motion without inventing unobserved components (265.4818ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(full.supportedFields.includes('object:o/relativeDistance'))
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/experience-prototype.test.js:54:5)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

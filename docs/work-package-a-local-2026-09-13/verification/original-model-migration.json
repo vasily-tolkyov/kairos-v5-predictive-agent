@@ -1,0 +1,51 @@
+{
+  "version": "OriginalNativeModelMigrationAudit1",
+  "status": "passed",
+  "models": [
+    {
+      "path": "peaceful-natural-initial/session.json.gz",
+      "sha256": "8cfdd33cc6ce4467a972483c28449d79899aaee83bafd3b2ed741ba3f4a6e833",
+      "writes": 5098,
+      "choices": 1801,
+      "legacyContextVersion": "ContextualReadout2",
+      "restoredContextVersion": "ContextualReadout3",
+      "originalFittingRows": 7324,
+      "verifiedWindowRows": 0,
+      "parametersAndOriginalRowsPreserved": true,
+      "queryReadOnly": true,
+      "supportedFieldsAtFrame19": 0
+    },
+    {
+      "path": "peaceful-natural-online-long/session.json.gz",
+      "sha256": "1fb7c1ca445c8fad761274f5cb75a6c2c382874c69e270f8cb2684b2084da635",
+      "writes": 12321,
+      "choices": 2792,
+      "legacyContextVersion": "ContextualReadout2",
+      "restoredContextVersion": "ContextualReadout3",
+      "originalFittingRows": 9653,
+      "verifiedWindowRows": 0,
+      "parametersAndOriginalRowsPreserved": true,
+      "queryReadOnly": true,
+      "supportedFieldsAtFrame19": 0
+    },
+    {
+      "path": "peaceful-retention-after-learning-start/session.json.gz",
+      "sha256": "6e71f4f4f4059f4ca22a76b7d9b84955f3d86b6f892db99877e86999b243e574",
+      "writes": 12321,
+      "choices": 1801,
+      "legacyContextVersion": "ContextualReadout2",
+      "restoredContextVersion": "ContextualReadout3",
+      "originalFittingRows": 9653,
+      "verifiedWindowRows": 0,
+      "parametersAndOriginalRowsPreserved": true,
+      "queryReadOnly": true,
+      "supportedFieldsAtFrame19": 0
+    }
+  ],
+  "originalEvent": "a74cc327-76ba-4ac4-bd2a-c50161248918:event-19",
+  "eventSha256": "d36d9a8209dba5a680807fe4c15225622ea63e0e8cf67f41c4895dedfd9bf041",
+  "initialWorldArchiveSha256": "9d841f5841b36b020fa62c76e9bf5e73a8525b42e458e05600f6910bdff30a22",
+  "nativeLaunches": 0,
+  "learningWrites": 0,
+  "limitation": "Legacy fits are retained; untraceable row-level calibration is not recertified as independent windows. This intentionally withdraws old support and does not establish task retention."
+}

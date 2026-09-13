@@ -1,5 +1,17 @@
 # Kairos continuation
 
+Latest PR #3 continuation: read `docs/work-package-a-local-2026-09-13/README.zh-CN.md`
+and its artifact/verification records first. The locally rebuilt calibration,
+atomic initial capture and search fixes pass 196/196; the final tested actor is
+bf1854a9d0ed22d9c81cec87da658bf12913c1b5. Three new peaceful runs total 72 decisions,
+10 executed actions/observations and 62 expiry refusals, with zero supported
+executed forecasts or new task successes. A same-world 32/32 development pair
+improved execution from 3 to 6 after eliminating unnecessary fitting-matrix
+copies. These are execution improvements, not sustained-learning or multistage
+acceptance. The original three ZIPs are now verified and locally readable;
+legacy models retain their fits but do not receive invented window calibration.
+All local runs are stopped. B–E and the overall capability objective remain open.
+
 The user's current instruction (2026-09-13) supersedes historical workflow
 requirements: use available native Codex tools, skills and plugins, work directly
 in the main task, and do not delegate or spawn sub-agents. Do not run ACL-X,
