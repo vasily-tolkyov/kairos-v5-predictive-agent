@@ -4,6 +4,7 @@ import type { ActionOfferV1, GroundedGoalV1 } from '../../control/contracts.js';
 import type { BeforeExperienceAction, ExperienceEnvironment } from '../../experience-agent.js';
 import { cueFor } from '../../events.js';
 import { perceptualObjects } from '../../perception.js';
+import type { ConditionalMinecraftBody, PreparedMinecraftExecution, WorkerActionStartReceiptV1 } from './action-start.js';
 
 export function anonymousObservation(observation: Observation): Observation {
   if (!observation.perception) return observation; // Explicit synthetic/legacy measurement adapters.
@@ -27,6 +28,7 @@ export function anonymousObservation(observation: Observation): Observation {
  * receipts cross this adapter. Server commands and fixture mechanisms do not. */
 export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
   #rawFrames = new WeakMap<Observation, Observation>();
+  #undeliveredPassive: readonly RealEvent[] = [];
   #anonymous(raw: Observation): Observation {
     const observation = anonymousObservation(raw); this.#rawFrames.set(observation, raw); return observation;
   }
@@ -42,7 +44,7 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
     'latest' | 'listActionOffers' | 'describeActionRequirement' | 'execute' | 'waitForObservationAfter'>
     & { takePassiveEvents?(): readonly RealEvent[] | Promise<readonly RealEvent[]>;
       /** Only an in-process body can guarantee capture before its first await. */
-      readonly synchronousActionStart?: boolean }) {}
+      readonly synchronousActionStart?: boolean } & Partial<ConditionalMinecraftBody>) {}
   #passive(event: RealEvent): RealEvent {
     const frames = event.frames.map(frame => this.#anonymous(frame));
     return { ...event, frames, attentionId: frames[0]!.perception?.attendedId,
@@ -50,7 +52,11 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
       hierarchyContinuity: undefined };
   }
   async drainPassiveEvents(): Promise<readonly RealEvent[]> {
-    return (await this.body.takePassiveEvents?.() ?? []).map(event => this.#passive(event));
+    const pending = this.#undeliveredPassive; this.#undeliveredPassive = [];
+    try { return [...pending, ...(await this.body.takePassiveEvents?.() ?? []).map(event => this.#passive(event))]; }
+    // A failed worker cannot prevent already-received local evidence from
+    // being archived. Its unreceived tail remains unavailable, not fabricated.
+    catch (error) { if (pending.length) return pending; throw error; }
   }
   #available(offer: ActionOfferV1, observation: Observation): boolean {
     const id = offer.action.targetId;
@@ -85,35 +91,62 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
     return this.#offersFor(raw, observation);
   }
   async executeOffer(offer: ActionOfferV1, beforeExecute?: BeforeExperienceAction): ReturnType<ExperienceEnvironment['executeOffer']> {
-    // Only the in-process body promises that execute captures its start before
-    // yielding. A worker keeps its own physical clock and may advance during
-    // IPC; its eventual receipt must determine whether the old forecast fits.
+    // A prepared worker frame is distinct from the controller's cached latest
+    // frame. There is exactly one compare-and-execute attempt, with no retries.
+    const conditional = !!beforeExecute && !!this.body.prepareActionStart
+      && !!this.body.executePrepared && !!this.body.cancelActionStart;
+    const prepared = conditional ? await this.body.prepareActionStart!() : undefined;
     const synchronousStart = this.body.synchronousActionStart === true;
-    const pending = beforeExecute ? this.body.takePassiveEvents?.() ?? [] : [];
+    const pending = prepared?.precedingPassiveEvents ?? (beforeExecute ? this.body.takePassiveEvents?.() ?? [] : []);
     if (synchronousStart && !Array.isArray(pending)) throw new Error('synchronous-body-returned-async-passive-events');
-    const waiting = (synchronousStart ? pending as readonly RealEvent[] : await pending).map(event => this.#passive(event));
-    const current = this.body.latest(), perceived = this.#anonymous(current);
+    const waiting = (prepared || synchronousStart ? pending as readonly RealEvent[] : await pending).map(event => this.#passive(event));
+    const current = prepared?.observation ?? this.body.latest(), perceived = this.#anonymous(current);
+    const binding = (receipt: WorkerActionStartReceiptV1) => ({ token: receipt.token,
+      status: receipt.phase as 'accepted' | 'refused' | 'cancelled', reason: receipt.reason, elapsedMs: receipt.elapsedMs });
+    const cancel = async (reason: string): ReturnType<ExperienceEnvironment['executeOffer']> => {
+      if (!prepared) return { executed: false, observation: perceived, event: null, precedingPassiveEvents: waiting };
+      let cancelled;
+      try { cancelled = await this.body.cancelActionStart!(prepared.token, reason); }
+      catch (error) { this.#undeliveredPassive = [...this.#undeliveredPassive, ...waiting]; throw error; }
+      return { executed: false, observation: this.#anonymous(cancelled.observation), event: null,
+        precedingPassiveEvents: cancelled.precedingPassiveEvents.map(event => this.#passive(event)),
+        executionBinding: binding(cancelled.actionStartReceipt) };
+    };
+    const recover = async () => {
+      // Cancellation also retrieves intervals acquired while the controller
+      // was computing. Keep them available to the error-path evidence drain.
+      const recovered = await cancel('controller-error').catch(() => ({ precedingPassiveEvents: [] }));
+      this.#undeliveredPassive = [...this.#undeliveredPassive, ...(recovered.precedingPassiveEvents ?? [])];
+    };
     const fresh = this.body.listActionOffers(current).find(value =>
       value.action.kind === offer.action.kind && JSON.stringify(value.action.parameters) === JSON.stringify(offer.action.parameters)
       && this.#visuallyBound(value, current)
       && this.#available(value, current)
       && (!value.action.targetId || offer.action.targetId === perceived.targetId));
-    if (!fresh) return { executed: false, observation: perceived, event: null, precedingPassiveEvents: waiting };
-    if (beforeExecute && synchronousStart) {
+    if (!fresh) return cancel('offer-unavailable');
+    if (beforeExecute && (synchronousStart || prepared)) {
       const availableOffers = this.#offersFor(current, perceived);
       const action = { ...fresh.action, ...(fresh.action.targetId ? { targetId: perceived.targetId! } : {}) };
       const rebound = { ...fresh, action, cue: cueFor(action, perceived), observationSequence: perceived.sequence,
         ...(offer.attentionId !== undefined ? { attentionId: offer.attentionId } : {}) };
-      if (beforeExecute({ observation: perceived, offer: rebound, availableOffers, precedingPassiveEvents: waiting }) !== true)
-        return { executed: false, observation: perceived, event: null, precedingPassiveEvents: waiting };
+      let allowed: boolean;
+      try { allowed = beforeExecute({ observation: perceived, offer: rebound, availableOffers,
+        precedingPassiveEvents: waiting, ...(prepared ? { bindingToken: prepared.token } : {}) }); }
+      catch (error) { await recover(); throw error; }
+      if (allowed !== true) return cancel('controller-veto');
     }
-    const receipt = await this.body.execute(fresh.action, {
-      version: 'ActionObservationScopeV1', referencedPublicObjectIds: current.objects.map(object => object.id),
-    });
-    const precedingPassiveEvents = [...waiting, ...(receipt.precedingPassiveEvents?.map(event => this.#passive(event)) ?? [])];
+    const scope = { version: 'ActionObservationScopeV1' as const, referencedPublicObjectIds: current.objects.map(object => object.id) };
+    let receipt;
+    try { receipt = prepared ? await this.body.executePrepared!(prepared.token, fresh.action, scope)
+      : await this.body.execute(fresh.action, scope); }
+    catch (error) { await recover(); throw error; }
+    const executionBinding = prepared ? binding((receipt as PreparedMinecraftExecution).actionStartReceipt) : undefined;
+    const precedingPassiveEvents = [...(prepared ? [] : waiting),
+      ...(receipt.precedingPassiveEvents?.map(event => this.#passive(event)) ?? [])];
     if (!receipt.event || !current.perception) {
-      const observation = this.#anonymous(this.body.latest()), first = receipt.event?.frames[0];
-      return { executed: receipt.result.executed, observation, event: receipt.event, precedingPassiveEvents,
+      const observation = this.#anonymous(receipt.event?.frames.at(-1)!
+        ?? ('observation' in receipt ? receipt.observation : this.body.latest())), first = receipt.event?.frames[0];
+      return { executed: receipt.result.executed, observation, event: receipt.event, precedingPassiveEvents, executionBinding,
         ...(first ? { availableOffers: this.#offersFor(first, this.#anonymous(first)) } : {}) };
     }
     const frames = receipt.event.frames.map(frame => this.#anonymous(frame));
@@ -126,7 +159,7 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
       trackedIds: ['self', ...new Set(frames.flatMap(frame => [attentionId, frame.perception?.attendedId, frame.targetId]
         .filter((id): id is string => typeof id === 'string')))],
       bodyResult: { ...receipt.result, action }, hierarchyContinuity: undefined };
-    return { executed: receipt.result.executed, observation: frames.at(-1)!, event, precedingPassiveEvents,
+    return { executed: receipt.result.executed, observation: frames.at(-1)!, event, precedingPassiveEvents, executionBinding,
       availableOffers: this.#offersFor(receipt.event.frames[0]!, frames[0]!) };
   }
   waitForObservationAfter(sequence: number): Promise<Observation> {

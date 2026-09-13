@@ -61,7 +61,15 @@ const environment = {
   observe: () => base.observe(), listActionOffers: observation => base.listActionOffers(observation),
   waitForObservationAfter: sequence => base.waitForObservationAfter(sequence),
   executeOffer: async (offer, beforeExecute) => {
-    const receipt = await base.executeOffer(offer, beforeExecute);
+    let receipt;
+    try { receipt = await base.executeOffer(offer, beforeExecute); }
+    catch (error) {
+      await journal.write('action-errors', { error: String(error.stack ?? error), offer });
+      try { await recordPassive(await base.drainPassiveEvents()); }
+      catch (recoveryError) { await journal.write('action-errors', { phase: 'passive-recovery',
+        error: String(recoveryError.stack ?? recoveryError), offer }); }
+      throw error;
+    }
     await recordPassive(receipt.precedingPassiveEvents);
     if (receipt.event) await writeFile(resolve(output, 'events', String(++eventCount).padStart(7, '0') + '.json.gz'),
       await compress(JSON.stringify(receipt.event)));

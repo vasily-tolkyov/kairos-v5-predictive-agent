@@ -178,7 +178,7 @@ try {
   await save('static-setup.json', { commands, taskGeometryVisibleOnlyThroughBody: true }); await delay(1000);
   body = new MinecraftBodyConnection({ ...config.minecraft, worldId: 'continuous-evaluation',
     activeSecondsOffset: previousReport?.finalObservation?.activeSeconds ?? 0 }, (kind, value) => {
-    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release', 'body-motor-receipt'].includes(kind)) {
+    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release', 'body-motor-receipt', 'body-action-start'].includes(kind)) {
       diagnostics = diagnostics.then(() => log('body-diagnostics', { kind, at: new Date().toISOString(), value }))
         .catch(error => { diagnosticError = error; });
     }
@@ -204,12 +204,15 @@ try {
       try { receipt = await base.executeOffer(offer, beforeExecute); }
       catch (error) {
         await log('action-errors', { offer, error: String(error.stack ?? error), at: new Date().toISOString() });
+        try { await recordPassive(await base.drainPassiveEvents()); }
+        catch (recoveryError) { await log('action-errors', { phase: 'passive-recovery', offer,
+          error: String(recoveryError.stack ?? recoveryError), at: new Date().toISOString() }); }
         throw error;
       }
       await recordPassive(receipt.precedingPassiveEvents);
       if (receipt.event) await writeFile(resolve(root, 'events', String(++events).padStart(7, '0') + '.json.gz'),
         await compress(JSON.stringify(receipt.event)));
-      await log('physical-actions', { offer, choiceOffers, availableOffers: receipt.availableOffers,
+      await log('physical-actions', { offer, choiceOffers, availableOffers: receipt.availableOffers, executionBinding: receipt.executionBinding,
         executed: receipt.executed, before: receipt.event?.frames[0]?.self ?? before.self, after: receipt.observation.self,
         eventId: receipt.event?.id, frames: receipt.event?.frames.length, eventFile: events,
         sensoryObjectsBefore: before.objects.length, sensoryObjectsAfter: receipt.observation.objects.length });
@@ -269,7 +272,22 @@ finally {
     report.finalObservation = body ? await environment?.observe() : null; await save('results.json', report);
     console.log(JSON.stringify({ status: report.status, error: report.error, ...report.final, seconds: report.seconds }));
   } finally {
-    await body?.close(); await services.stop();
-    report.stoppedAt = new Date().toISOString(); await save('results.json', report);
+    const cleanupFailure = (phase, error) => {
+      (report.cleanupErrors ??= []).push({ phase, error: String(error.stack ?? error) });
+      report.error ??= String(error.stack ?? error);
+      if (!['fault-paused', 'evidence-incomplete'].includes(report.status)) report.status = 'fault-paused';
+      process.exitCode = 1;
+    };
+    try { await body?.close(); }
+    catch (error) { cleanupFailure('body-close', error); }
+    finally {
+      try { await services.stop(); report.stoppedAt = new Date().toISOString(); }
+      catch (error) { cleanupFailure('services-stop', error); report.stopAttemptFailedAt = new Date().toISOString(); }
+    }
+    // close can invalidate a still-prepared token. Flush those last worker
+    // diagnostics before exporting the final evidence index.
+    try { await diagnostics; if (diagnosticError) throw diagnosticError; report.journal = await journal.export(); }
+    catch (error) { cleanupFailure('final-diagnostics', error); report.status = 'evidence-incomplete'; }
+    await save('results.json', report);
   }
 }

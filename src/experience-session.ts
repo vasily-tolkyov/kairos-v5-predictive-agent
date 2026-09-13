@@ -28,6 +28,8 @@ export interface SessionDecision {
   predictionObservationSequence?: number;
   predictionFresh?: boolean;
   predictionInvalidation?: string;
+  actionStartToken?: string;
+  actionStartElapsedMs?: number | null;
   forecastAdvanced?: boolean;
   predictedSteps?: readonly ExperiencePlanStep[];
 }
@@ -244,19 +246,21 @@ export class ExperienceSession {
         || motorIdentity(start.offer.cue) !== motorIdentity(offer.cue)
         || start.availableOffers.some(value => value.observationSequence !== start.observation.sequence))
         throw new Error('invalid-measured-action-start');
-      actionStart = start;
       actionStartDigest = sha(start.observation);
       let previousPassiveEnd: Observation | undefined;
-      for (const event of start.precedingPassiveEvents) {
+      const uniquePassive = start.precedingPassiveEvents.filter(event => {
+        const digest = sha(event), consumed = consumedPassive.get(event.id);
+        if (consumed !== undefined && consumed !== digest) throw new Error('event-id-conflict');
+        if (consumed !== undefined) return false;
         validateEvent(event);
         const first = event.frames[0]!, last = event.frames.at(-1)!;
         if (last.sequence > start.observation.sequence || last.activeSeconds > start.observation.activeSeconds
           || previousPassiveEnd && (first.sequence < previousPassiveEnd.sequence || first.activeSeconds < previousPassiveEnd.activeSeconds))
           throw new Error('passive-experience-does-not-precede-action-start');
-        previousPassiveEnd = last;
-      }
-      this.#consumePassive(start.precedingPassiveEvents, options.learn !== false);
-      for (const event of start.precedingPassiveEvents) consumedPassive.set(event.id, sha(event));
+        previousPassiveEnd = last; consumedPassive.set(event.id, digest); return true;
+      });
+      actionStart = { ...start, precedingPassiveEvents: uniquePassive };
+      this.#consumePassive(uniquePassive, options.learn !== false);
       // This forecast is saved before the motor is issued and before any
       // outcome update. A waiting-time context change may withdraw support;
       // an unsupported replacement cannot inherit a selected plan's credit.
@@ -269,25 +273,41 @@ export class ExperienceSession {
       }
       return true;
     });
+    if (actionStart?.bindingToken && result.executionBinding?.token !== actionStart.bindingToken)
+      throw new Error('body-feedback-does-not-match-prepared-token');
+    if (result.executed && result.executionBinding?.status !== undefined && result.executionBinding.status !== 'accepted')
+      throw new Error('body-executed-without-accepted-frame-binding');
+    const executionAudit = { actionStartToken: result.executionBinding?.token,
+      actionStartElapsedMs: result.executionBinding?.elapsedMs };
     // The world also advanced during selection. Consume those earlier real
     // intervals before learning the action, in physical time order.
-    this.#consumePassive((result.precedingPassiveEvents ?? []).filter(event => {
+    if (result.event) validateEvent(result.event);
+    const passiveBoundary = result.event?.frames[0] ?? result.observation;
+    let previousPassiveEnd = actionStart?.precedingPassiveEvents.at(-1)?.frames.at(-1);
+    const remainingPassive = (result.precedingPassiveEvents ?? []).filter(event => {
       const consumed = consumedPassive.get(event.id);
       if (consumed !== undefined && consumed !== sha(event)) throw new Error('event-id-conflict');
-      return consumed === undefined;
-    }), options.learn !== false);
+      if (consumed !== undefined) return false;
+      validateEvent(event);
+      const first = event.frames[0]!, last = event.frames.at(-1)!;
+      if (last.sequence > passiveBoundary.sequence || last.activeSeconds > passiveBoundary.activeSeconds
+        || previousPassiveEnd && (first.sequence < previousPassiveEnd.sequence || first.activeSeconds < previousPassiveEnd.activeSeconds))
+        throw new Error('passive-experience-does-not-precede-body-feedback');
+      previousPassiveEnd = last; consumedPassive.set(event.id, sha(event)); return true;
+    });
+    this.#consumePassive(remainingPassive, options.learn !== false);
     if (result.observation.sequence < observation.sequence) throw new Error('body-feedback-went-backward');
     if (result.executed && predictionInvalidation === 'action-start-support-withdrawn')
       throw new Error('body-executed-a-vetoed-action');
     if (!result.executed) return this.#record({ ...common, observationSequence: result.observation.sequence,
       status: 'refused', offer, planLength: plan?.steps.length ?? 0, planReason: plan?.reason,
       planningObservationSequence: observation.sequence, predictionObservationSequence: actionStart?.observation.sequence,
-      predictionFresh: false, predictionInvalidation,
+      predictionFresh: false, predictionInvalidation: predictionInvalidation ?? result.executionBinding?.reason,
+      ...executionAudit,
       ...(!selected && this.agent.lastExploration ? { exploration: this.agent.lastExploration } : {}) });
     if (result.observation.sequence <= observation.sequence) return this.#record({ ...common, status: 'observation-stalled', offer });
     let learned = false;
     if (result.event) {
-      validateEvent(result.event);
       if (cueIdentity(result.event.cue) !== cueIdentity(actionStart?.offer.cue ?? offer.cue)
         || result.event.frames[0]!.sequence < observation.sequence
         || result.event.frames.at(-1)!.sequence !== result.observation.sequence)
@@ -347,7 +367,7 @@ export class ExperienceSession {
       hypothesisDeferred, measuredProgress,
       forecastAdvanced, planningObservationSequence: observation.sequence,
       predictionObservationSequence: actionStart?.observation.sequence ?? (predictionFresh ? observation.sequence : undefined),
-      predictionFresh, predictionInvalidation,
+      predictionFresh, predictionInvalidation, ...executionAudit,
       // The remaining search branch belongs to its earlier context. Only a
       // freshly predicted first step is certified after an action-start bind.
       predictedSteps: actionStart ? [{ offer: actionStart.offer, prediction }]

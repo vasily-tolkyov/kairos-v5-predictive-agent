@@ -47,9 +47,12 @@ export interface ExperienceActionStart {
   offer: ActionOfferV1;
   availableOffers: readonly ActionOfferV1[];
   precedingPassiveEvents: readonly RealEvent[];
+  /** Opaque transport identity; never a learned input. */
+  bindingToken?: string;
 }
 /** Called synchronously after rebinding and before issuing the motor. The
- * adapter must not yield between this callback and capturing the action start.
+ * adapter must capture this frame before yielding, or atomically compare and
+ * refuse execution if an asynchronous body's frame changed before capture.
  * Returning false refuses the motor; a Promise is not a valid authorization. */
 export type BeforeExperienceAction = (start: ExperienceActionStart) => boolean;
 
@@ -63,6 +66,7 @@ export interface ExperienceEnvironment {
   executeOffer(offer: ActionOfferV1, beforeExecute?: BeforeExperienceAction): Promise<{
     executed: boolean; observation: Observation; event: RealEvent | null;
     precedingPassiveEvents?: readonly RealEvent[];
+    executionBinding?: { token: string; status: 'accepted' | 'refused' | 'cancelled'; reason: string; elapsedMs: number | null };
     /** Complete body offers from the actual first frame of the action. */
     availableOffers?: readonly ActionOfferV1[];
   }>;
