@@ -66,6 +66,25 @@ test('missing or changed prediction start binding cannot pass the state audit', 
   assert(contains(audit(missing), 'missing-live-prediction-binding'));
 });
 
+test('deferred learning must name a prior original passive window and reconcile the exact write delta', () => {
+  const data = boundFixture(), event = data.events[0], decision = data.decisions[1];
+  event.provenance = 'observed-passive'; event.cue = { kind: 'passive', parameters: { ticks: 4 }, targetRole: null };
+  event.bodyResult = null; event.frames.forEach(frame => { frame.motorSignal = signal('off'); });
+  data.diagnostics = []; data.actions = [{ executed: false }]; data.report.journal['body-diagnostics'] = 0;
+  decision.status = 'refused'; decision.predictionObservationSequence = 5;
+  decision.livePredictionBinding.frame.sequence = 5;
+  decision.livePredictionBinding.frame.sensorySha256 = createHash('sha256').update(JSON.stringify(event.frames[4], (_key, item) => item !== null
+    && typeof item === 'object' && !Array.isArray(item)
+    ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b, 'en'))) : item)).digest('hex');
+  decision.deferredPassiveLearning = { version: 'DeferredPassiveLearningV1', windows: 1, learnedWindows: 1,
+    thetaBefore: 0, thetaAfter: 1, elapsedMs: 100, parentWindowIds: [event.id] };
+  assert.equal(audit(data).status, 'passed');
+  decision.deferredPassiveLearning.thetaAfter = 2;
+  assert(contains(audit(data), 'invalid-deferred-passive-learning-accounting'));
+  decision.deferredPassiveLearning.thetaAfter = 1; decision.deferredPassiveLearning.parentWindowIds = ['unobserved-event'];
+  assert(contains(audit(data), 'invalid-deferred-original-window-binding'));
+});
+
 test('catch-up capture clocks retain last held sample and later off, with separate checkpoint tail', () => {
   const result = audit(fixture());
   assert.equal(result.status, 'passed');

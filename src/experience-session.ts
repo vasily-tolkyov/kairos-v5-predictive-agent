@@ -2,7 +2,7 @@ import type { Observation, RealEvent, XYZ } from './contracts.js';
 import type { ActionOfferV1, GroundedGoalV1 } from './control/contracts.js';
 import { GroundedGoalEvaluatorV1 } from './control/goal.js';
 import { ExperienceAgent, compareExperiencePrediction, type ExperienceActionStart, type ExperienceEnvironment, type ExperiencePlanStep } from './experience-agent.js';
-import { ExperienceMedium, experienceInputs, motorIdentity, type ExperienceMediumSnapshot } from './experience-medium.js';
+import { ExperienceMedium, experienceInputs, motorIdentity, type ExperienceMediumSnapshot, type ExperienceWindowLiveTraceV1 } from './experience-medium.js';
 import { LearnedAffordances, type LearnedAffordancesSnapshot } from './learned-affordances.js';
 import { ExperienceWorld, type ExperienceWorldSnapshot } from './experience-world.js';
 import { ExperienceFrameFlow } from './experience-frame-flow.js';
@@ -15,6 +15,7 @@ export interface ContinuingTask { goal: GroundedGoalV1; baseline: Observation | 
   bestResidual: number; lastProgress: number; unsuccessfulProbes?: number; probeAfter?: number;
   progressMetric?: 'GroundedResidual2' | 'GroundedResidual3' }
 interface Investigation extends ContinuingTask { destination: XYZ }
+interface DeferredPassiveWindow { event: RealEvent; liveTrace: ExperienceWindowLiveTraceV1 }
 export interface SessionDecision {
   index: number; status: 'executed' | 'refused' | 'observing' | 'goal-verified' | 'no-offers' | 'observation-stalled';
   source: 'task' | 'investigation' | 'curiosity' | 'maintenance'; goalId: string | null; observationSequence: number;
@@ -40,6 +41,8 @@ export interface SessionDecision {
   live?: ReturnType<ExperienceSession['liveStats']>;
   livePredictionBinding?: { version: 'LivePredictionBindingV1'; frame: NonNullable<LiveStateV1['frame']>;
     law: LiveStateV1['law']; stateRevision: number; stateSha256: string; thetaWritesBeforePrediction: number };
+  deferredPassiveLearning?: { version: 'DeferredPassiveLearningV1'; windows: number; learnedWindows: number;
+    thetaBefore: number; thetaAfter: number; elapsedMs: number; parentWindowIds: string[] };
 }
 export interface ExperienceSessionSnapshot { version: 'ExperienceSession1'; medium: ExperienceMediumSnapshot;
   affordances: LearnedAffordancesSnapshot; world: ExperienceWorldSnapshot; choices: number;
@@ -146,7 +149,8 @@ export class ExperienceSession {
     return { goal, destination, baseline: light(observation), status: 'pending', actions: 0, firstSatisfied: null,
       bestResidual: 1, lastProgress: this.#steps };
   }
-  #consumePassive(events: readonly RealEvent[], learn: boolean, environment: ExperienceEnvironment): void {
+  #consumePassive(events: readonly RealEvent[], learn: boolean, environment: ExperienceEnvironment,
+    deferred?: DeferredPassiveWindow[]): void {
     for (const event of events) {
       validateEvent(event);
       if (event.provenance !== 'observed-passive' || event.bodyResult !== null || event.cue.kind !== 'passive')
@@ -154,7 +158,8 @@ export class ExperienceSession {
       if (!this.#flow && event.frames[0]?.physicalClock) this.#flow = new ExperienceFrameFlow();
       const liveTrace = this.#flow?.window(event, environment.takePhysicalTelemetryThrough?.(event.frames.at(-1)!),
         frame => this.world.observe(frame));
-      if (learn && (!this.#flow || liveTrace)
+      if (learn && liveTrace && deferred) deferred.push({ event, liveTrace });
+      else if (learn && (!this.#flow || liveTrace)
         && this.agent.medium.observe(event, liveTrace ? { liveTrace } : undefined).learned) this.#passiveWrites++;
       this.#passiveWindows++;
     }
@@ -328,7 +333,12 @@ export class ExperienceSession {
         timingsMs: { drain: drainedAt - beforeDrain, observation: observedAt - drainedAt,
           validation: validatedAt - observedAt, learning: performance.now() - validatedAt } };
     }
-    const result = await environment.executeOffer(offer, start => {
+    const deferredPassive: DeferredPassiveWindow[] = [];
+    const deferredPassiveLearning: NonNullable<SessionDecision['deferredPassiveLearning']> = {
+      version: 'DeferredPassiveLearningV1', windows: 0, learnedWindows: 0,
+      thetaBefore: this.agent.medium.writes, thetaAfter: this.agent.medium.writes, elapsedMs: 0, parentWindowIds: [] };
+    let result: Awaited<ReturnType<ExperienceEnvironment['executeOffer']>>;
+    try { result = await environment.executeOffer(offer, start => {
       const callbackAt = performance.now();
       if (actionStart) throw new Error('action-start-callback-repeated');
       if (start.observation.predictionSupport !== undefined || start.observation.predictionBounds !== undefined
@@ -343,7 +353,11 @@ export class ExperienceSession {
       const preceding = uniquePassive(start.precedingPassiveEvents, start.observation, 'passive-experience-does-not-precede-action-start', actionStartDigest);
       actionStart = { ...start, precedingPassiveEvents: preceding };
       const validatedAt = performance.now();
-      this.#consumePassive(preceding, options.learn !== false, environment);
+      // Assimilate every real frame now, but keep theta fixed during atomic
+      // authorization. Original branded traces are retained for chronological
+      // learning after the motor result (or refusal), before any outcome write.
+      // Legacy adapters without a real live trace keep their existing behavior.
+      this.#consumePassive(preceding, options.learn !== false, environment, deferredPassive);
       const startState = this.#boundary(start.observation, environment); actionStartState = startState;
       if (startState?.frame) livePredictionBinding = { version: 'LivePredictionBindingV1', frame: startState.frame,
         law: startState.law, stateRevision: startState.revision, stateSha256: sha(startState),
@@ -362,13 +376,26 @@ export class ExperienceSession {
         predictionInvalidation = 'action-start-support-withdrawn'; return false;
       }
       return true;
-    });
+    }); } finally {
+      const started = performance.now();
+      deferredPassiveLearning.thetaBefore = this.agent.medium.writes;
+      deferredPassiveLearning.windows = deferredPassive.length;
+      deferredPassiveLearning.parentWindowIds = deferredPassive.map(row => row.event.id);
+      for (const { event, liveTrace } of deferredPassive) {
+        if (this.agent.medium.observe(event, { liveTrace }).learned) {
+          this.#passiveWrites++; deferredPassiveLearning.learnedWindows++;
+        }
+      }
+      deferredPassiveLearning.thetaAfter = this.agent.medium.writes;
+      deferredPassiveLearning.elapsedMs = performance.now() - started;
+    }
     if (actionStart?.bindingToken && result.executionBinding?.token !== actionStart.bindingToken)
       throw new Error('body-feedback-does-not-match-prepared-token');
     if (result.executed && result.executionBinding?.status !== undefined && result.executionBinding.status !== 'accepted')
       throw new Error('body-executed-without-accepted-frame-binding');
     const executionAudit = { actionStartToken: result.executionBinding?.token, livePredictionBinding,
-      actionStartElapsedMs: result.executionBinding?.elapsedMs, actionStartTimingsMs, prePreparationPassive };
+      actionStartElapsedMs: result.executionBinding?.elapsedMs, actionStartTimingsMs, prePreparationPassive,
+      ...(this.#flow ? { deferredPassiveLearning } : {}) };
     // The world also advanced during selection. Consume those earlier real
     // intervals before learning the action, in physical time order.
     if (result.event) validateEvent(result.event);

@@ -1,0 +1,33 @@
+{
+  "version": "NativeDeferredStateProtocol1",
+  "registeredBeforeLaunch": true,
+  "scope": "Development follow-up to the completed R6 continuous-state pair. This is not held-out capability, retention, or multistage acceptance.",
+  "source": "evidence/pr3-local-native-smoke",
+  "sourceReportSha256": "e5b27d491e502f36e9454862dff932c4bd4efd72eda457047572e90de769ee99",
+  "sourceSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+  "sourceWorld": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+  "sourceWorldArchiveSha256": "8d7fb3423ef8778f7f49374e5d07ecfa52646f626a68ad2bcb938e9ca228ccb1",
+  "sourceWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+  "sourceLearningDigestUnderR4R5": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+  "goal": "evidence/pr3-local-timing-goal.json",
+  "goalSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+  "terminalGoal": "Original smoke development goal self position.2 < -5.5. Does not replace the original natural-world task goal < -14.5.",
+  "java": "D:/Kairos-Minecraft/runtime/jdk-21/bin/java.exe",
+  "server": "D:/Kairos-Minecraft/server/1.21.4/server.jar",
+  "environment": "natural", "difficulty": "peaceful", "worldSeed": "129604783", "modelSeed": 317, "port": 25638,
+  "steps": 32, "seconds": 180, "goalAfter": 0, "taskOnly": false,
+  "frozenActor": "evidence/execution-builds/pr3-local-r7-deferred",
+  "pendingPinRecord": "docs/deferred-state-native-2026-09-13/launch-pins.json",
+  "conditionsInOrder": [
+    { "condition": "online", "initialFork": "evidence/pr3-local-deferred-start", "output": "evidence/pr3-local-deferred", "frozen": false },
+    { "condition": "frozen", "initialFork": "evidence/pr3-local-deferred-frozen-start", "output": "evidence/pr3-local-deferred-frozen", "frozen": true }
+  ],
+  "attemptsPerCondition": 1,
+  "change": "Only the real-clock live path defers preparation-callback theta fitting until executeOffer returns or throws. Every actual frame still enters z before the exact start prediction. Complete original passive windows and their original branded state traces are learned in order before any later passive/action outcome; duplicates remain rejected. Record the actual theta version used at authorization and deferred original window IDs. Legacy unclocked adapters retain their existing update ordering.",
+  "tradeoff": "The start prediction intentionally uses theta from before the deferred preparation windows while conditioning on the exact up-to-date real z. This is a changed learning schedule, not an identical-model speed benchmark. All original parameter writes are retained after the attempt, so subsequent model trajectories and sampled outcomes can differ from R6.",
+  "fixed": ["terminal predicate and multi-frame confirmation", "actual motor holds and release/stabilization behavior", "atomic exact-frame expiry refusal", "100/50 ms search budgets and node limits", "independent original-window support thresholds", "autonomous action selection", "source world and model"],
+  "startGate": "Complete software integration must pass and source must be committed. Freeze a new actor and verify all files, source/world/session/goal bytes, both original initial-model digests, dependencies, log hashes and successful exit code in launch-pins before the first launch.",
+  "stopAndAudit": "No concurrent CPU experiments. Preserve every outcome and overrun, stop under the original decision/time bounds, archive the stopped world, then run capture/frame-state/freshness/coverage and frozen-parameter equality audits. Only after the first stopped run's integrity permits it run the registered frozen pair. An integrity failure retains the attempt and requires a separately registered corrected actor, never an invisible retry.",
+  "measures": ["execution and refusal counts over all 32 decisions", "callback validation, real-frame processing, prediction, and deferred fitting durations separately", "original deferred window IDs and exact theta write delta", "all raw frame clocks, edges, source bindings, gaps and consumption watermarks", "theta/affordance equality when frozen; actual window writes when online", "supported executed forecast coverage and actual goal state", "source/model/world hashes, RSS, state/checkpoint bytes and original stopped raw evidence"],
+  "interpretation": "R6 baseline is 0/32 online executed and 14/32 frozen, no supported execution or goal success. Higher execution alone only indicates improved availability. This follow-up cannot establish useful prediction, history dependence, retention, timed rollout, learned prerequisite composition or sustained autonomy. Continue engineering and meaningful native tests until those remaining objectives are handled."
+}

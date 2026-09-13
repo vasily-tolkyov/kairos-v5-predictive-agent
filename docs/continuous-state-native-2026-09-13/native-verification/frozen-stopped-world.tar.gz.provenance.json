@@ -1,0 +1,9 @@
+{
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-continuous-frozen",
+  "stoppedAt": "2026-09-13T11:32:04.927Z",
+  "levelName": "world-v5-physical-control",
+  "regions": 4,
+  "output": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-continuous-frozen\\stopped-world.tar.gz",
+  "bytes": 3933553,
+  "sha256": "ff18715be41eb544a36589045b4e662b71f3aea0397e3ecb9202fc54778ade92"
+}

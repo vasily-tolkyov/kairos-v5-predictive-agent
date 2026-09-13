@@ -6,3 +6,6 @@ docs/peaceful-reacquisition-2026-09-13/preregistered.json -text
 docs/continuous-state-native-2026-09-13/preregistered.json -text
 docs/continuous-state-native-2026-09-13/verification/** -text
 docs/peaceful-reacquisition-2026-09-13/verification/** -text
+docs/continuous-state-native-2026-09-13/native-verification/** -text
+docs/deferred-state-native-2026-09-13/preregistered.json -text
+docs/deferred-state-native-2026-09-13/verification/** -text

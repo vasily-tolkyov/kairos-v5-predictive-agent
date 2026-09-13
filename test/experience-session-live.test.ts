@@ -160,3 +160,47 @@ test('whole-window packaging does not retrospectively upgrade a previously unkno
     assert.equal(a.states[index]!.intervalMotor.state, 'unknown');
   }
 });
+
+test('live frames precede authorization while theta writes wait for the result and retain original causal order', async t => {
+  for (const outcome of ['executed', 'refused', 'error', 'frozen'] as const) await t.test(outcome, async t => {
+    const f = fixture([frame(0)]), medium = new ExperienceMedium(), session = new ExperienceSession(medium);
+    session.submit(goal); f.environment.listActionOffers = observation => [offer(observation)];
+    let phase = 'before', originalPassive: RealEvent;
+    const learnedIds: string[] = [], observe = medium.observe.bind(medium);
+    t.mock.method(medium, 'observe', (event: RealEvent, options: Parameters<ExperienceMedium['observe']>[1]) => {
+      assert.equal(phase, 'after-result', 'fitting cannot occupy the atomic authorization callback');
+      learnedIds.push(event.id); return observe(event, options);
+    });
+    t.mock.method(session.agent, 'plan', (_goal: GroundedGoalV1, observation: Observation, offers: readonly ActionOfferV1[]) =>
+      ({ steps: [{ offer: offers[0]!, prediction: forecast(observation) }], expanded: 1, reason: 'predicted-progress' }));
+    t.mock.method(medium, 'predict', (_cue: ActionCue, observation: Observation, options: { state?: LiveStateV1 } = {}) => {
+      assert.equal(phase, 'authorizing'); assert.equal(medium.writes, 0);
+      assert.equal(options.state?.frame?.sequence, 1); assert.equal(session.liveStats()?.acceptedFrames, 2);
+      return forecast(observation);
+    });
+    f.environment.executeOffer = async (_offered, beforeExecute) => {
+      const first = f.current; f.append(frame(1)); const before = f.current, rebound = offer(before);
+      originalPassive = passive([first, before]); phase = 'authorizing';
+      assert.equal(beforeExecute?.({ observation: before, offer: rebound, availableOffers: [rebound], precedingPassiveEvents: [originalPassive] }), true);
+      assert.equal(medium.writes, 0); assert.equal(session.stats.passiveWindows, 1);
+      phase = 'after-result';
+      if (outcome === 'error') throw new Error('fixture-transport-failure');
+      if (outcome === 'refused') return { executed: false, observation: before, event: null, precedingPassiveEvents: [originalPassive] };
+      f.append(frame(2));
+      return { executed: true, observation: f.current, event: active([before, f.current]), precedingPassiveEvents: [originalPassive], availableOffers: [rebound] };
+    };
+    const run = session.step(f.environment, { learn: outcome !== 'frozen', exploration: false });
+    if (outcome === 'error') await assert.rejects(run, /fixture-transport-failure/);
+    else {
+      const decision = await run;
+      assert.equal(decision.deferredPassiveLearning?.windows, outcome === 'frozen' ? 0 : 1);
+      assert.equal(decision.livePredictionBinding?.thetaWritesBeforePrediction, 0);
+      assert.equal(decision.deferredPassiveLearning?.thetaAfter, outcome === 'frozen' ? 0 : 1);
+    }
+    assert.equal(session.stats.passiveWindows, 1, 'the returned shared window is not consumed twice');
+    assert.equal(session.stats.passiveWrites, outcome === 'frozen' ? 0 : 1);
+    assert.deepEqual(learnedIds, outcome === 'frozen' ? [] : outcome === 'executed'
+      ? ['session-live-passive:event-0', 'session-live-active:event-1'] : ['session-live-passive:event-0']);
+    assert.equal(medium.writes, outcome === 'frozen' ? 0 : outcome === 'executed' ? 2 : 1);
+  });
+});

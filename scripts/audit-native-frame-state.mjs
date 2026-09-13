@@ -249,7 +249,7 @@ export class NativeFrameStateAudit {
       || gap.lastOrder < gap.firstOrder || gap.records !== gap.frames + gap.motorEdges
       || gap.records !== gap.lastOrder - gap.firstOrder + 1) this.issue('invalid-telemetry-gap-report');
     if (gaps.length) this.issue('telemetry-loss-or-missing-boundary-reported', { count: gaps.length }, 'incomplete');
-    const watermarks = [], predictionBindings = []; let previousLive, initialUnreconciledAcceptedFrames = null;
+    const watermarks = [], predictionBindings = [], deferredWindows = new Set(); let previousLive, initialUnreconciledAcceptedFrames = null;
     for (const [index, decision] of decisions.entries()) {
       if (decision.index !== report.initialStats.decisions + index + 1) this.issue('decision-index-gap', { index: decision.index });
       const live = decision.live;
@@ -275,6 +275,21 @@ export class NativeFrameStateAudit {
           || !source || source.predictionSha256 !== binding.frame.sensorySha256)
           this.issue('invalid-live-prediction-source-binding', { index: decision.index });
         predictionBindings.push({ decision: decision.index, ...binding });
+      }
+      const deferred = decision.deferredPassiveLearning;
+      if (deferred) {
+        if (deferred.version !== 'DeferredPassiveLearningV1' || !['windows', 'learnedWindows', 'thetaBefore', 'thetaAfter'].every(key => integer(deferred[key]))
+          || !finite(deferred.elapsedMs) || !Array.isArray(deferred.parentWindowIds)
+          || deferred.parentWindowIds.length !== deferred.windows || deferred.learnedWindows > deferred.windows
+          || deferred.thetaAfter - deferred.thetaBefore !== deferred.learnedWindows
+          || binding && deferred.thetaBefore !== binding.thetaWritesBeforePrediction)
+          this.issue('invalid-deferred-passive-learning-accounting', { index: decision.index });
+        for (const id of deferred.parentWindowIds ?? []) {
+          const event = this.events.find(event => event.id === id);
+          if (!event || event.provenance !== 'observed-passive' || !binding || event.last > binding.frame.sequence || deferredWindows.has(id))
+            this.issue('invalid-deferred-original-window-binding', { index: decision.index, id });
+          deferredWindows.add(id);
+        }
       }
       if (live.deliveredThroughOrder < live.acceptedFrames) this.issue('native-live-acceptance-exceeds-delivered-record-order', { index: decision.index });
       if (previousLive) {
@@ -318,6 +333,7 @@ export class NativeFrameStateAudit {
         measuredHoldExercised: heldIntervals > 0 },
       live: { decisions: decisions.length, decisionsWithWatermarks: watermarks.length, missingLiveWatermarks: missingLive,
         lastConsumedSequence, archiveTailBeyondDecisionWatermark, initialUnreconciledAcceptedFrames, watermarks, predictionBindings,
+        deferredOriginalWindows: deferredWindows.size,
         capacityGapReports: capacityGaps.length, droppedRecords: capacityGaps.reduce((sum, gap) => sum + (integer(gap.records) ? gap.records : 0), 0),
         droppedFrames: capacityGaps.reduce((sum, gap) => sum + (integer(gap.frames) ? gap.frames : 0), 0),
         droppedMotorEdges: capacityGaps.reduce((sum, gap) => sum + (integer(gap.motorEdges) ? gap.motorEdges : 0), 0),
