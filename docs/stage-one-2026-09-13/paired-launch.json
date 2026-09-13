@@ -1,0 +1,191 @@
+{
+  "version": "StageOnePairedLaunch1",
+  "registeredAt": "2026-09-13T13:57:21.482557+00:00",
+  "hypothesis": "The fixed R2 acquired model improves terminal-only navigation against an empty frozen model under the same world/body/goal/budgets. Low training support is retained as a risk, not repaired during tests.",
+  "protocol": "docs/stage-one-2026-09-13/r2-preregistered.json",
+  "protocolSha256": "3bebdf86fac6436f12a576a07182d92c13cf0eb70c9e87dfba5ca4b14f3bdec7",
+  "sourceActor": "evidence/execution-builds/pr3-stage-one-r2",
+  "actorManifestSha256": "bec6eb32fd05915a525ef6a4f7a997ebf3ae74fe55ba4d4bbfdaf660ac91d98b",
+  "modelSource": "evidence/pr3-stage-one-acquisition-02/session.json.gz",
+  "modelSourceSha256": "70eb3cddf0ef34a9c90cc9867111ae45395eb2164c11af737668ab65735a453d",
+  "modelLearningDigest": "805c5b94006d68afae5717b51dc575d3829eb43d7bfa2340a71bab5af67d134e",
+  "donorReportSha256": "662b0a5c176d714df976f9e0c7d9ad09ebc4650edd8f748f7d9cc97aacafd3e1",
+  "donorAuditSha256": "bedfdadf7f091e516ff50b0baad8fdc1adfb03c36eb32ae635c7370e83a6e719",
+  "auditorSourceSha256": "2187a4d93f98e2a5fa489c9dbd4d7041e7b66e9e22f15da864cdc283ee7b5d96",
+  "acquisitionGate": {
+    "counts": true,
+    "timing": true,
+    "integrity": true
+  },
+  "pairs": [
+    {
+      "pair": 1,
+      "case": "pose-1",
+      "seed": 317,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-1-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-01-retained",
+        "evidence/pr3-stage-one-pair-01-erased"
+      ]
+    },
+    {
+      "pair": 2,
+      "case": "pose-1",
+      "seed": 503,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-1-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-02-erased",
+        "evidence/pr3-stage-one-pair-02-retained"
+      ]
+    },
+    {
+      "pair": 3,
+      "case": "pose-1",
+      "seed": 911,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-1-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-03-retained",
+        "evidence/pr3-stage-one-pair-03-erased"
+      ]
+    },
+    {
+      "pair": 4,
+      "case": "pose-2",
+      "seed": 317,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-2-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-04-erased",
+        "evidence/pr3-stage-one-pair-04-retained"
+      ]
+    },
+    {
+      "pair": 5,
+      "case": "pose-2",
+      "seed": 503,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-2-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-05-retained",
+        "evidence/pr3-stage-one-pair-05-erased"
+      ]
+    },
+    {
+      "pair": 6,
+      "case": "pose-2",
+      "seed": 911,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-2-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-06-erased",
+        "evidence/pr3-stage-one-pair-06-retained"
+      ]
+    },
+    {
+      "pair": 7,
+      "case": "pose-3",
+      "seed": 317,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-3-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-07-retained",
+        "evidence/pr3-stage-one-pair-07-erased"
+      ]
+    },
+    {
+      "pair": 8,
+      "case": "pose-3",
+      "seed": 503,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-3-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-08-erased",
+        "evidence/pr3-stage-one-pair-08-retained"
+      ]
+    },
+    {
+      "pair": 9,
+      "case": "pose-3",
+      "seed": 911,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-3-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-09-retained",
+        "evidence/pr3-stage-one-pair-09-erased"
+      ]
+    },
+    {
+      "pair": 10,
+      "case": "pose-4",
+      "seed": 317,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-4-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-10-erased",
+        "evidence/pr3-stage-one-pair-10-retained"
+      ]
+    },
+    {
+      "pair": 11,
+      "case": "pose-4",
+      "seed": 503,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-4-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-11-retained",
+        "evidence/pr3-stage-one-pair-11-erased"
+      ]
+    },
+    {
+      "pair": 12,
+      "case": "pose-4",
+      "seed": 911,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-4-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-pair-12-erased",
+        "evidence/pr3-stage-one-pair-12-retained"
+      ]
+    }
+  ],
+  "preparation": "Each pose gets a stopped zero-action checkpoint and archive; every condition forks that same original. Model, controls, source, budgets and all failures retained."
+}

@@ -19,7 +19,7 @@ const { validateEvent } = await import(pathToFileURL(resolve(build, 'src/events.
 const { sha } = await import(pathToFileURL(resolve(build, 'src/util.js')));
 const modules = ['stage-one-movement.js', 'contextual-readout.js', 'experience-ledger.js', 'events.js', 'util.js'];
 for (const name of modules) assert.equal(hash(await readFile(resolve(build, 'src', name))), report.executedBuildHashes[name]);
-const result = { version: 'StageOneNativeAudit1', source: root, status: 'running',
+const result = { version: 'StageOneNativeAudit2', source: root, status: 'running',
   reportSha256: hash(await readFile(resolve(root, 'results.json'))), sessionSha256: hash(sessionBytes),
   auditScriptSha256: hash(await readFile(new URL(import.meta.url))), failures: [],
   scope: 'Stopped native action/forecast audit plus private discarded chronological replay for accounting and CPU diagnosis. Replay supplies zero new physical actions, independent experience or capability.',
@@ -28,7 +28,10 @@ const check = (condition, reason) => { if (!condition) result.failures.push(reas
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const p95 = rows => rows.length ? [...rows].sort((a, b) => a - b)[Math.ceil(.95 * rows.length) - 1] : null;
 let model = new StageOneMovement();
-if (report.modelSource) model = StageOneMovement.restore(JSON.parse(gunzipSync(await readFile(report.modelSource.path))).medium);
+if (report.modelSource) {
+  const bytes = await readFile(report.modelSource.path); assert.equal(hash(bytes), report.modelSource.sha256);
+  model = StageOneMovement.restore(JSON.parse(gunzipSync(bytes)).medium);
+}
 check(hash(JSON.stringify(model.snapshot())) === report.initialLearningDigest, 'wrong-starting-model');
 const raw = new Map(); let gaps = 0, rawRecords = 0;
 for (const line of (await readFile(resolve(root, 'raw-telemetry.jsonl'), 'utf8')).split('\n').filter(Boolean)) {
@@ -59,8 +62,14 @@ try {
     }
     const expected = model.predict(first, decision.choice.offer);
     check(equal(expected, decision.bound.prediction), 'recorded-pre-update-prediction-differs:' + index);
+    const selectionFrame = raw.get(decision.choice.offer.observationSequence);
+    check(selectionFrame && equal(model.predict(selectionFrame, decision.choice.offer), decision.choice.prediction), 'selection-prediction-source-differs:' + index);
     const actual = last.self.position.map((value, i) => value - first.self.position[i]);
     const error = expected.displacement ? Math.hypot(expected.displacement[0] - actual[0], expected.displacement[2] - actual[2]) : null;
+    const selection = decision.choice.prediction.displacement;
+    const selectionError = selection ? Math.hypot(selection[0] - actual[0], selection[2] - actual[2]) : null;
+    check(selectionError === decision.comparison.selectionError
+      && decision.comparison.selectionSupported === decision.choice.prediction.supported, 'selection-score-differs:' + index);
     const blocked = Math.hypot(actual[0], actual[2]) <= report.protocol.blockedDisplacementThreshold;
     check(equal(actual, decision.comparison.actual) && error === decision.comparison.error
       && blocked === decision.comparison.blocked && expected.supported === decision.comparison.supported, 'forecast-score-mismatch:' + index);
@@ -74,6 +83,7 @@ try {
     }
     outcomes.push({ decision: index + 1, eventId: event.id, file: decision.eventPath, sha256: hash(eventBytes),
       direction: event.cue.parameters.direction, actual, blocked, supported: expected.supported, error,
+      selectionSupported: decision.choice.prediction.supported, selectionError,
       matched: error !== null && error <= report.protocol.predictionErrorTolerance, measured,
       learned: receiptReplay?.learned ?? false });
   }
@@ -100,6 +110,18 @@ const serverPosition = positionText?.split(',').map(value => Number(value.trim()
 result.serverPosition = serverPosition;
 result.finalPositionDifference = serverPosition && report.finalObservation ? Math.hypot(...serverPosition.map((value, i) => value - report.finalObservation.self.position[i])) : null;
 check(result.finalPositionDifference !== null && result.finalPositionDifference < .05, 'final-native-player-disagreement');
+if (report.status === 'goal-verified') {
+  const confirmations = (await readFile(resolve(root, 'goal-confirmations.jsonl'), 'utf8')).split('\n').filter(Boolean).map(JSON.parse).slice(-2);
+  const goal = report.protocol.goal, tolerance = report.protocol.goalTolerance;
+  check(decisions.at(-1)?.confirmations === report.protocol.goalConfirmations && confirmations.length === 2, 'missing-goal-confirmations');
+  check(confirmations.every((row, index) => {
+    const actual = raw.get(row.sequence);
+    return actual && equal(actual.self.position, row.self.position)
+      && Math.hypot(actual.self.position[0] - goal[0], actual.self.position[2] - goal[2]) <= tolerance
+      && (index === 0 || row.sequence > confirmations[index - 1].sequence);
+  }), 'unverified-goal-confirmations');
+  check(serverPosition && Math.hypot(serverPosition[0] - goal[0], serverPosition[2] - goal[2]) <= tolerance, 'server-outside-goal');
+}
 const supported = outcomes.filter(row => row.supported), available = outcomes.filter(row => row.error !== null);
 result.metrics = { decisions: decisions.length, executed, refused: decisions.length - executed,
   executedFraction: executed / Math.max(1, decisions.length), writes, qualifiedOriginalMoves: qualified, seconds: report.seconds,
