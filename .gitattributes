@@ -1,0 +1,2 @@
+# Verification manifests describe original output bytes, including line endings.
+docs/work-package-a-frame-alignment-2026-09-13/verification/** -text
