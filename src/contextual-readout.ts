@@ -31,7 +31,9 @@ const tolerance = (a: PublicValue, b: PublicValue) => typeof a === 'number' && t
   ? .025 + .075 * Math.max(1, Math.abs(b - a)) : 0;
 const goesLeft = (value: PublicValue, split: Pick<Branch, 'numeric' | 'threshold'>) => split.numeric
   ? typeof value === 'number' && value <= Number(split.threshold) : Object.is(value, split.threshold);
-function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: number; calibrationLoss: number } {
+function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: number; calibrationLoss: number };
+function summary(rows: readonly Sample[], key: string, scoreOnly: true): { loss: number; calibrationLoss: number };
+function summary(rows: readonly Sample[], key: string, scoreOnly = false): { leaf?: Leaf; loss: number; calibrationLoss: number } {
   const numeric = rows.every(row => row.targets[key]!.every(v => typeof v === 'number'));
   const estimate = (absolute: boolean) => {
     const values = rows.map(row => numeric ? Number(row.targets[key]![1])
@@ -45,6 +47,21 @@ function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: numb
   };
   const delta = estimate(!numeric), absolute = estimate(true);
   const fit = absolute.loss + 1e-10 < delta.loss ? absolute : delta;
+  if (scoreOnly) {
+    // Candidate partitions consume only these two losses. Keep exactly the
+    // same fit and independent-window error aggregation, without building
+    // an unused leaf's quantiles, envelopes, progress or recent calibration.
+    // Accepted partitions still construct their complete original leaf below.
+    const windows = new Map<string, number>();
+    for (const row of rows) {
+      const error = row.externalErrors?.[key];
+      if (row.windowId !== undefined && error !== undefined)
+        windows.set(row.windowId, Math.max(windows.get(row.windowId) ?? 0, error));
+    }
+    const errors = [...windows.values()];
+    const accuracy = errors.reduce((sum, error) => sum + Number(error <= 1), 0) / Math.max(1, errors.length);
+    return { loss: fit.loss, calibrationLoss: errors.length * accuracy * (1 - accuracy) };
+  }
   // Confidence concerns recent predictions in this region. Early errors from
   // an obsolete partition remain in the evidence, but cannot permanently
   // disqualify a subsequently stable response. Outcome bounds still use ALL
@@ -130,7 +147,7 @@ export class ContextualReadout {
       const observed = rows.filter(row => Object.hasOwn(row.input, feature));
       const values = [...new Set(observed.map(row => row.input[feature]!))];
       if (values.length < 2) continue;
-      const compared = observed.length === rows.length ? base : summary(observed, key);
+      const compared = observed.length === rows.length ? base : summary(observed, key, true);
       if (compared.loss < 1e-8) continue;
       const numeric = values.every(value => typeof value === 'number');
       if (numeric) values.sort((a, b) => Number(a) - Number(b));
@@ -146,7 +163,7 @@ export class ContextualReadout {
         const left: Sample[] = [], right: Sample[] = [];
         for (const row of observed) (goesLeft(row.input[feature]!, split) ? left : right).push(row);
         if (left.length < 6 || right.length < 6) continue;
-        const a = summary(left, key), b = summary(right, key);
+        const a = summary(left, key, true), b = summary(right, key, true);
         // Equal mean effects may have very different reliability. A region
         // with unpredictable outcomes cannot borrow another region's score.
         const gain = observed.length / rows.length * (1 - (a.loss + b.loss) / compared.loss + (compared.calibrationLoss > 1e-8

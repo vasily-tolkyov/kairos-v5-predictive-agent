@@ -35,10 +35,13 @@ for (const directory of ['events', 'passive-events']) {
 }
 const lastArchived = Math.max(initial.sequence, ...frames.keys()), missing = [];
 for (let sequence = initial.sequence; sequence < lastArchived; sequence++) if (!intervals.has(sequence)) missing.push([sequence, sequence + 1]);
-const result = { version: 'NativeCaptureBoundaryAudit1', source: root, status: missing.length || conflicts.length || duplicateIntervals.length ? 'failed' : 'passed',
-  initialSequence: initial.sequence, lastArchivedSequence: lastArchived, finalObservedSequence: report.finalObservation?.sequence,
+const finalSequence = report.finalObservation?.sequence;
+const finalAvailable = Number.isSafeInteger(finalSequence) && finalSequence >= lastArchived;
+const result = { version: 'NativeCaptureBoundaryAudit2', source: root, status: missing.length || conflicts.length || duplicateIntervals.length ? 'failed' : finalAvailable ? 'passed' : 'incomplete',
+  initialSequence: initial.sequence, lastArchivedSequence: lastArchived, finalObservedSequence: finalSequence ?? null,
+  finalObservationAvailable: finalAvailable,
   archivedIntervals: intervals.size, expectedIntervalsThroughArchive: lastArchived - initial.sequence,
-  unarchivedCheckpointTailIntervals: (report.finalObservation?.sequence ?? lastArchived) - lastArchived,
+  unarchivedCheckpointTailIntervals: finalAvailable ? finalSequence - lastArchived : null,
   missing, conflictingSharedFrames: conflicts, duplicateIntervals, events,
   newActions: 0, learningWrites: 0,
   scope: 'Archived acquisition continuity only. The checkpoint/close tail is reported separately and is not counted as experience or capability.' };

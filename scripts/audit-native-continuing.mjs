@@ -114,7 +114,9 @@ const count = values => Object.fromEntries([...new Set(values)].map(value => [va
 const result = { version: 'StoppedNativeContinuingAudit2', source: root, reportSha256: sha(await readFile(resolve(root, 'results.json'))),
   status: report.status, stoppedAt: report.stoppedAt, seconds: report.seconds,
   savedWorld: { file: levelFiles[0], sha256: sha(levelBytes), difficulty: savedDifficulty, gameType: level.GameType },
-  initialPosition: initial.self.position, finalPosition: report.finalObservation.self.position,
+  initialPosition: initial.self.position, finalPosition: report.finalObservation?.self?.position ?? null,
+  finalObservationAvailable: Boolean(report.finalObservation?.self?.position),
+  finalObservationUnavailable: report.finalObservationUnavailable ?? (!report.finalObservation ? 'not-recorded' : null),
   decisions: decisions.length, actualWindows: windows.length, windows,
   countersMatch: report.final.executed - report.initialStats.executed === windows.length
     && report.final.decisions - report.initialStats.decisions === decisions.length,
@@ -136,7 +138,8 @@ const result = { version: 'StoppedNativeContinuingAudit2', source: root, reportS
   hypotheses: decisions.filter(row => row.exploration?.source === 'hypothesis').map(row => ({ index: row.index, length: row.exploration.planLength })),
   taskConfirmations: report.tasks.map(task => ({ id: task.goal.id, expression: task.goal.expression, status: task.status,
     firstSatisfied: task.firstSatisfied, confirmations: task.confirmations })),
-  players, finalSavedPlayerMatches: players.some(player => JSON.stringify(player.position) === JSON.stringify(report.finalObservation.self.position)),
+  players, finalSavedPlayerMatches: report.finalObservation?.self?.position
+    ? players.some(player => JSON.stringify(player.position) === JSON.stringify(report.finalObservation.self.position)) : null,
   archiveProofs, deaths: { reported: report.lifecycle.deaths, serverMessages: deaths },
   verifiedDecisionPositions, serverPositions,
   withinAction: { healthDrops, oxygenDrops, intervals: windows.reduce((sum, row) => sum + row.last - row.first, 0) },
@@ -155,3 +158,4 @@ console.log(JSON.stringify({ output: resolve(output), decisions: result.decision
   supportedTaskMultistep: result.supportedTaskPlans.filter(plan => plan.length > 1).length,
   recordedIntervals: result.withinAction.intervals, gapIntervals: result.betweenActions.intervals,
   healthDropsInActions: healthDrops.length, netGapHealthLoss: result.betweenActions.netHealthLoss }));
+if (!result.finalObservationAvailable) process.exitCode = 1;

@@ -12,7 +12,7 @@ const names = ['open-world', 'experience-prototype', 'perception', 'minecraft-ex
 // Match the already documented serial integration protocol. Native planning
 // deadlines and every existing test assertion remain unchanged.
 const child = spawn(process.execPath, ['--test', '--test-concurrency=1', ...names.map(name => resolve('dist/test', name + '.test.js')),
-  resolve('scripts/test-audit-native-frame-state.mjs')], { stdio: 'inherit' });
+  resolve('scripts/test-audit-native-frame-state.mjs'), resolve('scripts/test-minecraft-body-connection.mjs')], { stdio: 'inherit' });
 child.once('error', error => { throw error; });
 const [code, signal] = await new Promise(done => child.once('exit', (code, signal) => done([code, signal])));
 if (signal) throw new Error('next-stage-tests-interrupted:' + signal);

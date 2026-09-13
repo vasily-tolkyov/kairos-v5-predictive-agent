@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
 import { NativeFrameStateAudit } from './audit-native-frame-state.mjs';
+import { InitialTelemetryJournal } from './initial-telemetry-journal.mjs';
 
 // Offline positive/negative fixtures only. They make no native/capability claim.
 const signal = state => ({ version: 'BodyMotorSignalV1', scope: 'instrumented-held-controls', state,
@@ -39,9 +40,47 @@ function fixture() {
 function audit(data) {
   const checker = new NativeFrameStateAudit(data.report, data.initial);
   data.events.forEach((event, index) => checker.addEvent(event, 'events/' + String(index + 1).padStart(7, '0') + '.json.gz'));
+  (data.initialTelemetry ?? []).forEach((row, index) => checker.addInitialTelemetry(row, 'initial-telemetry:' + index));
   return checker.finish(data.decisions, data.diagnostics, data.actions);
 }
 const contains = (result, code) => result.issues.some(issue => issue.code === code);
+
+test('missing final measurement stays unknown rather than a zero close tail', () => {
+  const data = fixture(); delete data.report.finalObservation;
+  const result = audit(data); assert.equal(result.status, 'incomplete');
+  assert(contains(result, 'final-observation-unavailable'));
+  assert.equal(result.coverage.unarchivedCheckpointTailIntervals, null);
+});
+
+test('initialization surplus requires exact archived frames; a marker cannot fill a missing frame', () => {
+  const data = fixture(), zero = frame(0);
+  zero.physicalClock.monotonicMs = 9; zero.motorSignal = signal('unknown');
+  data.decisions.forEach(row => { row.live.acceptedFrames++; row.live.deliveredThroughOrder++; });
+  assert(contains(audit(data), 'initial-live-frames-not-fully-archived'));
+  const journal = new InitialTelemetryJournal();
+  const row = journal.capture({ deliveredThroughOrder: 2, receivedThroughOrder: 2, records: [
+    {kind:'frame',source:'cached-anchor',order:1,receivedMonotonicMs:10,observation:zero},
+    {kind:'frame',source:'worker-frame',order:2,receivedMonotonicMs:11,observation:data.initial} ] }, 1);
+  assert.equal(row.records.length, 1); assert.equal(journal.capture({records:[]}, 1), null);
+  data.initialTelemetry = [row]; data.report.journal['initial-telemetry'] = 1;
+  data.report.protocol = { initialTelemetryArchive: 'InitialTelemetryArchive1' };
+  const result = audit(data); assert.equal(result.status, 'passed', JSON.stringify(result.issues));
+  assert.equal(result.live.archivedInitializationFrames, 1);
+  assert.equal(result.live.unreconciledInitializationFrames, 0);
+  data.initialTelemetry[0].records = [];
+  assert(contains(audit(data), 'initial-live-frames-not-fully-archived'));
+});
+
+test('corrupt initialization clocks and absent required archive markers are incomplete', () => {
+  const data = fixture(); data.report.protocol = { initialTelemetryArchive: 'InitialTelemetryArchive1' };
+  assert(contains(audit(data), 'initial-telemetry-marker-missing'));
+  const zero = frame(0); zero.physicalClock.monotonicMs = 50;
+  data.decisions.forEach(row => { row.live.acceptedFrames++; row.live.deliveredThroughOrder++; });
+  data.initialTelemetry = [{version:'InitialTelemetryArchive1',initialSequence:1,deliveredThroughOrder:1,receivedThroughOrder:1,
+    records:[{kind:'frame',source:'cached-anchor',order:1,receivedMonotonicMs:10,observation:zero}]}];
+  data.report.journal['initial-telemetry'] = 1;
+  assert(contains(audit(data), 'initial-live-prefix-clock-or-sequence-gap'));
+});
 
 function boundFixture() {
   const data = fixture(), start = data.initial;

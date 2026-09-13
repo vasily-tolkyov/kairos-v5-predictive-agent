@@ -34,6 +34,7 @@ export class NativeFrameStateAudit {
   constructor(report, initial) {
     this.report = report; this.initial = initial; this.frames = new Map(); this.intervals = new Map();
     this.events = []; this.eventIds = new Map(); this.receipts = []; this.issues = []; this.issueCounts = {};
+    this.initialTelemetry = []; this.initialTelemetryOrder = 0;
     this.addFrame(initial, 'initial-observation.json');
   }
   issue(code, detail = {}, severity = 'failed') {
@@ -52,6 +53,26 @@ export class NativeFrameStateAudit {
     if (frame.motorSignal && !motorValid(frame.motorSignal)) this.issue('invalid-sampled-motor', { source, sequence: frame.sequence });
     this.frames.set(frame.sequence, { sequence: frame.sequence, activeSeconds: frame.activeSeconds,
       physicalClock: frame.physicalClock, motorSignal: frame.motorSignal, sha256, predictionSha256: bindingHash(frame), source });
+  }
+  addInitialTelemetry(batch, source) {
+    this.initialTelemetry.push({ source, records: batch?.records?.length ?? null });
+    if (batch?.version !== 'InitialTelemetryArchive1' || batch.initialSequence !== this.initial.sequence
+      || !integer(batch.deliveredThroughOrder) || !integer(batch.receivedThroughOrder)
+      || batch.receivedThroughOrder < batch.deliveredThroughOrder || !Array.isArray(batch.records)) {
+      this.issue('invalid-initial-telemetry-record', { source }); return;
+    }
+    for (const record of batch.records) {
+      if (!integer(record.order) || record.order <= this.initialTelemetryOrder || record.order > batch.deliveredThroughOrder
+        || !finite(record.receivedMonotonicMs)) this.issue('invalid-initial-telemetry-order', { source });
+      this.initialTelemetryOrder = record.order;
+      if (record.kind === 'frame') {
+        if (!['worker-frame', 'cached-anchor'].includes(record.source) || record.observation?.sequence >= this.initial.sequence)
+          this.issue('invalid-initial-telemetry-frame', { source });
+        this.addFrame(record.observation, source);
+      } else if (record.kind !== 'motor-edge' || !edgeClockValid(record.edge?.clock)
+        || record.edge.clock.observationSequence >= this.initial.sequence || !motorValid(record.edge.signal))
+        this.issue('invalid-initial-telemetry-edge', { source });
+    }
   }
   addEvent(event, source, compressedSha256 = null) {
     if (!event?.id || !Array.isArray(event.frames) || event.frames.length < 2) {
@@ -82,12 +103,17 @@ export class NativeFrameStateAudit {
     const acquired = allFrames.filter(frame => frame.sequence >= initialSequence);
     if (!report.stoppedAt || !report.final) this.issue('run-not-stopped');
     const finalObservation = report.finalObservation, archivedFinal = this.frames.get(finalObservation?.sequence);
+    if (!finalObservation) this.issue('final-observation-unavailable', {}, 'incomplete');
     if (finalObservation && finalObservation.sequence < lastArchivedSequence) this.issue('final-observation-before-archive-end');
     if (archivedFinal && archivedFinal.sha256 !== hash(finalObservation)) this.issue('conflicting-final-shared-frame-payload', { sequence: finalObservation.sequence });
     const expectedDecisions = report.final?.decisions - report.initialStats?.decisions;
     if (!integer(expectedDecisions) || expectedDecisions !== decisions.length) this.issue('decision-export-count-mismatch', { expected: expectedDecisions, actual: decisions.length });
     for (const [kind, rows] of [['decisions', decisions], ['body-diagnostics', diagnostics], ['physical-actions', actions]])
       if ((report.journal?.[kind] ?? 0) !== rows.length) this.issue('journal-count-mismatch', { kind, expected: report.journal?.[kind] ?? 0, actual: rows.length });
+    if ((report.journal?.['initial-telemetry'] ?? 0) !== this.initialTelemetry.length)
+      this.issue('journal-count-mismatch', { kind: 'initial-telemetry' });
+    if (report.protocol?.initialTelemetryArchive === 'InitialTelemetryArchive1' && !this.initialTelemetry.length)
+      this.issue('initial-telemetry-marker-missing', {}, 'incomplete');
     const actionEvents = this.events.filter(event => event.provenance === 'executed-real-body'), actionReferences = new Set();
     for (const action of actions.filter(action => action.executed)) {
       const event = actionEvents.find(event => event.id === action.eventId);
@@ -307,6 +333,18 @@ export class NativeFrameStateAudit {
       previousLive = live;
     }
     const finalLive = watermarks.at(-1), lastConsumedSequence = finalLive?.lastSequence ?? null;
+    const prefix = allFrames.filter(frame => frame.sequence < initialSequence);
+    if (initialUnreconciledAcceptedFrames !== null && initialUnreconciledAcceptedFrames !== prefix.length)
+      this.issue('initial-live-frames-not-fully-archived', { acceptedBeforeInitial: initialUnreconciledAcceptedFrames,
+        archivedBeforeInitial: prefix.length }, 'incomplete');
+    const prefixChain = [...prefix, this.frames.get(initialSequence)];
+    for (let index = 1; index < prefixChain.length; index++) {
+      const before = prefixChain[index - 1], after = prefixChain[index];
+      if (after.sequence !== before.sequence + 1 || !clockValid(before.physicalClock) || !clockValid(after.physicalClock)
+        || after.activeSeconds <= before.activeSeconds || after.physicalClock.monotonicMs < before.physicalClock.monotonicMs
+        || after.physicalClock.physicsTick - before.physicalClock.physicsTick !== Number(after.physicalClock.sample === 'physics'))
+        this.issue('initial-live-prefix-clock-or-sequence-gap', { before: before.sequence, after: after.sequence }, 'incomplete');
+    }
     const archiveTailBeyondDecisionWatermark = lastConsumedSequence === null ? null : Math.max(0, lastArchivedSequence - lastConsumedSequence);
     if (archiveTailBeyondDecisionWatermark) this.issue('archive-tail-without-decision-consumption-watermark', { intervals: archiveTailBeyondDecisionWatermark }, 'incomplete');
     if (finalLive && (finalLive.telemetryGaps > capacityGaps.length || finalLive.unavailableTelemetryBoundaries > missingBoundaryReports))
@@ -317,7 +355,7 @@ export class NativeFrameStateAudit {
     const unsupported = legacy || missingClocks > 0 || missingSamples > 0 || missingLive > 0 || decisions.length === 0;
     const failed = Object.keys(this.issueCounts).some(key => key.startsWith('failed:'));
     const incomplete = Object.keys(this.issueCounts).some(key => key.startsWith('incomplete:'));
-    return { version: 'NativeFrameStateAudit1', status: failed ? 'failed' : unsupported ? 'unsupported' : incomplete ? 'incomplete' : 'passed',
+    return { version: 'NativeFrameStateAudit2', status: failed ? 'failed' : unsupported ? 'unsupported' : incomplete ? 'incomplete' : 'passed',
       scope: 'Independent raw-evidence instrumentation and consumption-accounting audit; not capability acceptance or a replay of learned/live state.',
       legacy, bCapabilityEstablished: false, newActions: 0, learningWrites: 0,
       coverage: { initialSequence, lastArchivedSequence, uniqueArchivedFrames: acquired.length,
@@ -333,6 +371,8 @@ export class NativeFrameStateAudit {
         measuredHoldExercised: heldIntervals > 0 },
       live: { decisions: decisions.length, decisionsWithWatermarks: watermarks.length, missingLiveWatermarks: missingLive,
         lastConsumedSequence, archiveTailBeyondDecisionWatermark, initialUnreconciledAcceptedFrames, watermarks, predictionBindings,
+        archivedInitializationFrames: prefix.length, initialTelemetryRecords: this.initialTelemetry,
+        unreconciledInitializationFrames: initialUnreconciledAcceptedFrames === null ? null : initialUnreconciledAcceptedFrames - prefix.length,
         deferredOriginalWindows: deferredWindows.size,
         capacityGapReports: capacityGaps.length, droppedRecords: capacityGaps.reduce((sum, gap) => sum + (integer(gap.records) ? gap.records : 0), 0),
         droppedFrames: capacityGaps.reduce((sum, gap) => sum + (integer(gap.frames) ? gap.frames : 0), 0),
@@ -344,7 +384,7 @@ export class NativeFrameStateAudit {
         'No absolute/relative physical duration is inferred for legacy or partially clocked frames; sequence and activeSeconds are not substitute physical clocks.',
         'Source frame clocks, sampled controls and edge diagnostics check capture-before-release. The full transport order-to-frame map is not journaled, so worker delivery order is not independently replayed.',
         'Decision.live is recorded consumption accounting. Prediction bindings cross-check the archived start-frame digest and recorded z identity, but do not independently replay z recurrence, theta updates, or functional learning.',
-        'The first live count may include cached setup anchors before initial-observation. Its unreconciled surplus is reported, not credited as learned frames or additional experience windows.',
+        'Initialization anchors must have their own original archived payloads and measured clocks. Any remaining unreconciled surplus is incomplete, never credited as independent learning windows.',
         'Incomplete diagnostic windows and the unarchived checkpoint/close tail are not counted as completed learning experience. Original event IDs remain the independent window units.',
         'Unknown or unmeasured motor signals do not prove off, held, motion, effect, or task achievement; no impulse dynamics are invented.',
         'A passed instrumentation audit is not evidence of sustained autonomous learning or an open multistage task result.' ] };
@@ -377,6 +417,7 @@ export async function auditStoppedRun(source) {
     return value.toString('utf8').split('\n').filter(line => line.trim()).map(line => JSON.parse(line));
   };
   const decisions = await jsonl('decisions'), diagnostics = await jsonl('body-diagnostics'), actions = await jsonl('physical-actions');
+  (await jsonl('initial-telemetry')).forEach((row, index) => audit.addInitialTelemetry(row, 'initial-telemetry.jsonl:' + (index + 1)));
   return { source: root, ...audit.finish(decisions, diagnostics, actions), inputs };
 }
 

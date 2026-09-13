@@ -32,11 +32,12 @@ export class MinecraftBodyConnection {
   #observationReceivedMonotonicMs = null;
   #fatal = null;
   #closing = false;
+  #exited = false;
   #telemetry = null;
   #record;
-  constructor(configuration, record = () => {}) {
+  constructor(configuration, record = () => {}, createWorker = data => new Worker(new URL(import.meta.url), { workerData: data })) {
     this.#record = record;
-    this.#worker = new Worker(new URL(import.meta.url), { workerData: configuration });
+    this.#worker = createWorker(configuration);
     const fail = error => {
       if (this.#closing) return;
       this.#fatal ??= error;
@@ -44,7 +45,7 @@ export class MinecraftBodyConnection {
       this.#pending.clear();
     };
     this.#worker.on('error', fail);
-    this.#worker.on('exit', code => fail(new Error('minecraft-body-worker-exited:' + code)));
+    this.#worker.on('exit', code => { this.#exited = true; fail(new Error('minecraft-body-worker-exited:' + code)); });
     this.#worker.on('message', message => {
       if (message.kind === 'frame') {
         this.#acceptObservation(message.value);
@@ -72,7 +73,8 @@ export class MinecraftBodyConnection {
     }
   }
   #call(method, ...args) {
-    if (this.#fatal) return Promise.reject(this.#fatal);
+    if (this.#fatal && method !== 'close') return Promise.reject(this.#fatal);
+    if (this.#exited) return Promise.reject(this.#fatal ?? new Error('minecraft-body-worker-exited'));
     const id = ++this.#sequence;
     return new Promise((resolve, reject) => {
       this.#pending.set(id, { resolve, reject });
@@ -83,6 +85,11 @@ export class MinecraftBodyConnection {
     if (this.#fatal) throw this.#fatal;
     if (!this.#observation) throw new Error('no-real-public-frame');
     return this.#observation;
+  }
+  lastReceivedObservationForEvidence() {
+    return { version: 'LastReceivedBodyEvidence1', observation: this.#observation ? structuredClone(this.#observation) : null,
+      receivedMonotonicMs: this.#observationReceivedMonotonicMs, connectionFault: this.#fatal ? String(this.#fatal.message) : null,
+      freshFinalObservation: false };
   }
   // Off by default: legacy consumers keep only latest and do not accumulate a
   // silently unconsumed frame inbox. The cached anchor retains its original
@@ -124,8 +131,14 @@ export class MinecraftBodyConnection {
   async close() {
     if (this.#closing) return;
     this.#closing = true;
-    try { await this.#call('close'); }
+    let timeout;
+    try {
+      if (!this.#exited) await Promise.race([this.#call('close'), new Promise((_, reject) => {
+        timeout = setTimeout(() => reject(new Error('minecraft-body-close-timeout')), 5000);
+      })]);
+    }
     finally {
+      clearTimeout(timeout);
       for (const pending of this.#pending.values()) pending.reject(new Error('minecraft-body-closed'));
       this.#pending.clear();
       await this.#worker.terminate();

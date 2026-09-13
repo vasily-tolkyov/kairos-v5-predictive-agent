@@ -8,10 +8,11 @@ import { execFileSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ExperienceSession, ExperienceMedium } from '../dist/src/prototype.js';
 import { MinecraftBodyConnection } from './minecraft-body-connection.mjs';
-import { MinecraftExperienceEnvironment } from '../dist/src/adapters/minecraft/experience.js';
+import { MinecraftExperienceEnvironment, anonymousObservation } from '../dist/src/adapters/minecraft/experience.js';
 import { Services } from '../dist/src/services.js';
 import { GroundedGoalEvaluatorV1 } from '../dist/src/control/goal.js';
 import { EvidenceJournal } from './evidence-journal.mjs';
+import { InitialTelemetryJournal } from './initial-telemetry-journal.mjs';
 
 const { values } = parseArgs({ options: { java: { type: 'string' }, server: { type: 'string' },
   output: { type: 'string' }, restore: { type: 'string' }, continue: { type: 'string' }, seed: { type: 'string', default: '317' },
@@ -133,7 +134,7 @@ report.executedBuildHashes = Object.fromEntries(await Promise.all((await readdir
   .filter(name => name.endsWith('.js')).sort().map(async name =>
     [name, createHash('sha256').update(await readFile(new URL(name, buildRoot))).digest('hex')])));
 report.executedHarnessHashes = Object.fromEntries(await Promise.all(['evaluate-minecraft-continuing.mjs',
-  'minecraft-body-connection.mjs', 'evidence-journal.mjs'].map(async name =>
+  'minecraft-body-connection.mjs', 'evidence-journal.mjs', 'initial-telemetry-journal.mjs'].map(async name =>
     [name, createHash('sha256').update(await readFile(new URL(name, import.meta.url))).digest('hex')])));
 await save('protocol.json', report);
 let body, environment, initial, submitted = requestedGoals
@@ -192,11 +193,18 @@ try {
   if (!predecessor && worldKind === 'enclosure') services.command(`tp KairosContinuing ${startX} 64 2.5 180 0`);
   await delay(1000);
   const base = new MinecraftExperienceEnvironment(body);
-  report.protocol.maintenanceGoals = base.maintenanceGoals; await save('protocol.json', report);
+  report.protocol.maintenanceGoals = base.maintenanceGoals;
+  report.protocol.initialTelemetryArchive = 'InitialTelemetryArchive1'; await save('protocol.json', report);
   initial = await base.initialize(); await save('initial-observation.json', initial);
   await checkpoint();
+  const initialTelemetry = new InitialTelemetryJournal();
   environment = { maintenanceGoals: base.maintenanceGoals,
-    takePhysicalTelemetryThrough: observation => base.takePhysicalTelemetryThrough(observation),
+    takePhysicalTelemetryThrough: observation => {
+      const batch = base.takePhysicalTelemetryThrough(observation), prefix = initialTelemetry.capture(batch, initial.sequence);
+      if (prefix) diagnostics = diagnostics.then(() => log('initial-telemetry', prefix))
+        .catch(error => { diagnosticError = error; });
+      return batch;
+    },
     drainPassiveEvents: async () => recordPassive(await base.drainPassiveEvents()),
     observe: () => base.observe(), listActionOffers: observation => base.listActionOffers(observation),
     waitForObservationAfter: sequence => base.waitForObservationAfter(sequence), executeOffer: async (offer, beforeExecute) => {
@@ -271,7 +279,18 @@ finally {
     if (values.frozen && report.finalLearningDigest !== report.initialLearningDigest) {
       report.status = 'frozen-state-mutated'; report.error = 'A frozen trial changed learned state'; process.exitCode = 1;
     }
-    report.finalObservation = body ? await environment?.observe() : null; await save('results.json', report);
+    try { report.finalObservation = body ? await environment?.observe() : null; }
+    catch (error) {
+      // A failed connection must not relabel its older cache as a fresh final
+      // measurement, or throw out of finally before writing the stop report.
+      report.finalObservation = null;
+      report.finalObservationUnavailable = String(error.stack ?? error);
+      const last = body?.lastReceivedObservationForEvidence();
+      if (last) report.lastReceivedBodyEvidence = { ...last,
+        observation: last.observation ? anonymousObservation(last.observation) : null };
+      report.status = 'fault-paused'; report.error ??= report.finalObservationUnavailable; process.exitCode = 1;
+    }
+    await save('results.json', report);
     console.log(JSON.stringify({ status: report.status, error: report.error, ...report.final, seconds: report.seconds }));
   } finally {
     const cleanupFailure = (phase, error) => {

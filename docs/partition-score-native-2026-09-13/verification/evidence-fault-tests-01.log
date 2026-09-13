@@ -1,0 +1,50 @@
+✔ missing final measurement stays unknown rather than a zero close tail (18.1583ms)
+✖ initialization surplus requires exact archived frames; a marker cannot fill a missing frame (3.1259ms)
+✔ corrupt initialization clocks and absent required archive markers are incomplete (1.9166ms)
+✔ recorded prediction start is bound to the complete original frame independently of the later live watermark (1.378ms)
+✔ missing or changed prediction start binding cannot pass the state audit (1.2682ms)
+✔ deferred learning must name a prior original passive window and reconcile the exact write delta (1.5736ms)
+✔ catch-up capture clocks retain last held sample and later off, with separate checkpoint tail (0.7039ms)
+✔ a terminal sample advances sensation but contributes zero physical time (0.7028ms)
+✔ death before the first held tick records a held terminal sample then release without inventing exposure (0.9838ms)
+✔ legacy frames and live omissions remain unsupported even with measured old receipts (0.6371ms)
+✔ equal sequence with a different boundary payload is rejected, including legacy data (1.1598ms)
+✔ terminal physics advancement and physical clock reversal are rejected (1.1999ms)
+✔ post-release off cannot relabel the last held frame (0.5745ms)
+✔ missing release edge and modified edge clock cannot be hidden by the receipt (1.8766ms)
+✔ live count and sequence watermark advance must agree even with theta frozen (0.5378ms)
+✔ recorded telemetry loss and trace omissions cannot pass a complete-coverage audit (0.6883ms)
+✔ missing frames and a reused original action event reject accounting (0.9284ms)
+✔ faulted transport keeps its exact cached evidence separate from live observations and still closes gracefully (35.429ms)
+✔ an exited worker rejects the pending operation and cleanup does not wait for an impossible reply (27.6368ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 528.302
+
+✖ failing tests:
+
+test at scripts\test-audit-native-frame-state.mjs:55:1
+✖ initialization surplus requires exact archived frames; a marker cannot fill a missing frame (3.1259ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'failed' !== 'passed'
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/test-audit-native-frame-state.mjs:67:38)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'failed',
+    expected: 'passed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
