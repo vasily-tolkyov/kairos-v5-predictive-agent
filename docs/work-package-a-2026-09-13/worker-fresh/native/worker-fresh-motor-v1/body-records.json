@@ -1,0 +1,650 @@
+[
+  {
+    "kind": "body-spawn",
+    "value": {
+      "observationSequence": 0
+    }
+  },
+  {
+    "kind": "client-load-acknowledged",
+    "value": {
+      "observationSequence": 3
+    }
+  },
+  {
+    "kind": "body-motor-receipt",
+    "value": {
+      "version": "MotorReceiptV1",
+      "requestedTicks": 4,
+      "durationParameter": "ticks",
+      "requestedAt": {
+        "observationSequence": 23,
+        "physicsTick": 23,
+        "activeSeconds": 1.1500000000000001,
+        "monotonicMs": 7818.922055
+      },
+      "pressedAt": {
+        "observationSequence": 23,
+        "physicsTick": 23,
+        "activeSeconds": 1.1500000000000001,
+        "monotonicMs": 7819.150913
+      },
+      "releasedAt": {
+        "observationSequence": 27,
+        "physicsTick": 27,
+        "activeSeconds": 1.35,
+        "monotonicMs": 7994.915237
+      },
+      "pressSucceeded": true,
+      "releaseSucceeded": true,
+      "actualTicks": 4,
+      "actualSeconds": 0.2,
+      "elapsedMonotonicMs": 175.76432399999976,
+      "observedIntervals": 4,
+      "frameRange": {
+        "startSequence": 23,
+        "endSequence": 27
+      },
+      "releaseReason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 23,
+      "releaseSequence": 27,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 23,
+      "endSequence": 38,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 23,
+          "physicsTick": 23,
+          "activeSeconds": 1.1500000000000001,
+          "monotonicMs": 7818.922055
+        },
+        "pressedAt": {
+          "observationSequence": 23,
+          "physicsTick": 23,
+          "activeSeconds": 1.1500000000000001,
+          "monotonicMs": 7819.150913
+        },
+        "releasedAt": {
+          "observationSequence": 27,
+          "physicsTick": 27,
+          "activeSeconds": 1.35,
+          "monotonicMs": 7994.915237
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 175.76432399999976,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 23,
+          "endSequence": 27
+        },
+        "releaseReason": "interval-complete"
+      },
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-receipt",
+    "value": {
+      "version": "MotorReceiptV1",
+      "requestedTicks": 4,
+      "durationParameter": "ticks",
+      "requestedAt": {
+        "observationSequence": 57,
+        "physicsTick": 57,
+        "activeSeconds": 2.85,
+        "monotonicMs": 9502.090441
+      },
+      "pressedAt": {
+        "observationSequence": 57,
+        "physicsTick": 57,
+        "activeSeconds": 2.85,
+        "monotonicMs": 9502.109609
+      },
+      "releasedAt": {
+        "observationSequence": 61,
+        "physicsTick": 61,
+        "activeSeconds": 3.0500000000000003,
+        "monotonicMs": 9885.769322
+      },
+      "pressSucceeded": true,
+      "releaseSucceeded": true,
+      "actualTicks": 4,
+      "actualSeconds": 0.2,
+      "elapsedMonotonicMs": 383.6597130000009,
+      "observedIntervals": 4,
+      "frameRange": {
+        "startSequence": 57,
+        "endSequence": 61
+      },
+      "releaseReason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 57,
+      "releaseSequence": 61,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 57,
+      "endSequence": 72,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 57,
+          "physicsTick": 57,
+          "activeSeconds": 2.85,
+          "monotonicMs": 9502.090441
+        },
+        "pressedAt": {
+          "observationSequence": 57,
+          "physicsTick": 57,
+          "activeSeconds": 2.85,
+          "monotonicMs": 9502.109609
+        },
+        "releasedAt": {
+          "observationSequence": 61,
+          "physicsTick": 61,
+          "activeSeconds": 3.0500000000000003,
+          "monotonicMs": 9885.769322
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 383.6597130000009,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 57,
+          "endSequence": 61
+        },
+        "releaseReason": "interval-complete"
+      },
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-receipt",
+    "value": {
+      "version": "MotorReceiptV1",
+      "requestedTicks": 4,
+      "durationParameter": "ticks",
+      "requestedAt": {
+        "observationSequence": 91,
+        "physicsTick": 91,
+        "activeSeconds": 4.55,
+        "monotonicMs": 11191.177439
+      },
+      "pressedAt": {
+        "observationSequence": 91,
+        "physicsTick": 91,
+        "activeSeconds": 4.55,
+        "monotonicMs": 11191.195205
+      },
+      "releasedAt": {
+        "observationSequence": 95,
+        "physicsTick": 95,
+        "activeSeconds": 4.75,
+        "monotonicMs": 11390.411472
+      },
+      "pressSucceeded": true,
+      "releaseSucceeded": true,
+      "actualTicks": 4,
+      "actualSeconds": 0.2,
+      "elapsedMonotonicMs": 199.2162669999998,
+      "observedIntervals": 4,
+      "frameRange": {
+        "startSequence": 91,
+        "endSequence": 95
+      },
+      "releaseReason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 91,
+      "releaseSequence": 95,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 91,
+      "endSequence": 106,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 91,
+          "physicsTick": 91,
+          "activeSeconds": 4.55,
+          "monotonicMs": 11191.177439
+        },
+        "pressedAt": {
+          "observationSequence": 91,
+          "physicsTick": 91,
+          "activeSeconds": 4.55,
+          "monotonicMs": 11191.195205
+        },
+        "releasedAt": {
+          "observationSequence": 95,
+          "physicsTick": 95,
+          "activeSeconds": 4.75,
+          "monotonicMs": 11390.411472
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 199.2162669999998,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 91,
+          "endSequence": 95
+        },
+        "releaseReason": "interval-complete"
+      },
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-receipt",
+    "value": {
+      "version": "MotorReceiptV1",
+      "requestedTicks": 4,
+      "durationParameter": "ticks",
+      "requestedAt": {
+        "observationSequence": 124,
+        "physicsTick": 124,
+        "activeSeconds": 6.2,
+        "monotonicMs": 12895.046284
+      },
+      "pressedAt": {
+        "observationSequence": 124,
+        "physicsTick": 124,
+        "activeSeconds": 6.2,
+        "monotonicMs": 12895.074546
+      },
+      "releasedAt": {
+        "observationSequence": 128,
+        "physicsTick": 128,
+        "activeSeconds": 6.4,
+        "monotonicMs": 13236.458381
+      },
+      "pressSucceeded": true,
+      "releaseSucceeded": true,
+      "actualTicks": 4,
+      "actualSeconds": 0.2,
+      "elapsedMonotonicMs": 341.38383500000054,
+      "observedIntervals": 4,
+      "frameRange": {
+        "startSequence": 124,
+        "endSequence": 128
+      },
+      "releaseReason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 124,
+      "releaseSequence": 128,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 124,
+      "endSequence": 139,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 124,
+          "physicsTick": 124,
+          "activeSeconds": 6.2,
+          "monotonicMs": 12895.046284
+        },
+        "pressedAt": {
+          "observationSequence": 124,
+          "physicsTick": 124,
+          "activeSeconds": 6.2,
+          "monotonicMs": 12895.074546
+        },
+        "releasedAt": {
+          "observationSequence": 128,
+          "physicsTick": 128,
+          "activeSeconds": 6.4,
+          "monotonicMs": 13236.458381
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 341.38383500000054,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 124,
+          "endSequence": 128
+        },
+        "releaseReason": "interval-complete"
+      },
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-receipt",
+    "value": {
+      "version": "MotorReceiptV1",
+      "requestedTicks": 4,
+      "durationParameter": "ticks",
+      "requestedAt": {
+        "observationSequence": 158,
+        "physicsTick": 158,
+        "activeSeconds": 7.9,
+        "monotonicMs": 14539.936477
+      },
+      "pressedAt": {
+        "observationSequence": 158,
+        "physicsTick": 158,
+        "activeSeconds": 7.9,
+        "monotonicMs": 14539.954534
+      },
+      "releasedAt": {
+        "observationSequence": 162,
+        "physicsTick": 162,
+        "activeSeconds": 8.1,
+        "monotonicMs": 14740.238054
+      },
+      "pressSucceeded": true,
+      "releaseSucceeded": true,
+      "actualTicks": 4,
+      "actualSeconds": 0.2,
+      "elapsedMonotonicMs": 200.28351999999904,
+      "observedIntervals": 4,
+      "frameRange": {
+        "startSequence": 158,
+        "endSequence": 162
+      },
+      "releaseReason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 158,
+      "releaseSequence": 162,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 158,
+      "endSequence": 173,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 158,
+          "physicsTick": 158,
+          "activeSeconds": 7.9,
+          "monotonicMs": 14539.936477
+        },
+        "pressedAt": {
+          "observationSequence": 158,
+          "physicsTick": 158,
+          "activeSeconds": 7.9,
+          "monotonicMs": 14539.954534
+        },
+        "releasedAt": {
+          "observationSequence": 162,
+          "physicsTick": 162,
+          "activeSeconds": 8.1,
+          "monotonicMs": 14740.238054
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 200.28351999999904,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 158,
+          "endSequence": 162
+        },
+        "releaseReason": "interval-complete"
+      },
+      "terminationReason": "stable"
+    }
+  },
+  {
+    "kind": "body-motor-receipt",
+    "value": {
+      "version": "MotorReceiptV1",
+      "requestedTicks": 4,
+      "durationParameter": "ticks",
+      "requestedAt": {
+        "observationSequence": 192,
+        "physicsTick": 192,
+        "activeSeconds": 9.600000000000001,
+        "monotonicMs": 16247.548462
+      },
+      "pressedAt": {
+        "observationSequence": 192,
+        "physicsTick": 192,
+        "activeSeconds": 9.600000000000001,
+        "monotonicMs": 16247.570765
+      },
+      "releasedAt": {
+        "observationSequence": 196,
+        "physicsTick": 196,
+        "activeSeconds": 9.8,
+        "monotonicMs": 16641.156802
+      },
+      "pressSucceeded": true,
+      "releaseSucceeded": true,
+      "actualTicks": 4,
+      "actualSeconds": 0.2,
+      "elapsedMonotonicMs": 393.58603700000094,
+      "observedIntervals": 4,
+      "frameRange": {
+        "startSequence": 192,
+        "endSequence": 196
+      },
+      "releaseReason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-motor-release",
+    "value": {
+      "version": "MeasuredMotorRelease1",
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "requestedTicks": 4,
+      "startSequence": 192,
+      "releaseSequence": 196,
+      "observedIntervals": 4,
+      "reason": "interval-complete"
+    }
+  },
+  {
+    "kind": "body-result",
+    "value": {
+      "action": {
+        "kind": "move",
+        "parameters": {
+          "direction": "forward",
+          "ticks": 4
+        }
+      },
+      "executed": true,
+      "status": "completed",
+      "startSequence": 192,
+      "endSequence": 207,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 192,
+          "physicsTick": 192,
+          "activeSeconds": 9.600000000000001,
+          "monotonicMs": 16247.548462
+        },
+        "pressedAt": {
+          "observationSequence": 192,
+          "physicsTick": 192,
+          "activeSeconds": 9.600000000000001,
+          "monotonicMs": 16247.570765
+        },
+        "releasedAt": {
+          "observationSequence": 196,
+          "physicsTick": 196,
+          "activeSeconds": 9.8,
+          "monotonicMs": 16641.156802
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 393.58603700000094,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 192,
+          "endSequence": 196
+        },
+        "releaseReason": "interval-complete"
+      },
+      "terminationReason": "stable"
+    }
+  }
+]

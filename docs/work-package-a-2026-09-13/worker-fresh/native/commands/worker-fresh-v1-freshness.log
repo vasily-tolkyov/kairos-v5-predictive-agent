@@ -1,0 +1,1 @@
+{"output":"/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1-freshness-audit.json","status":"passed","decisions":8,"executedActions":4,"refusedDecisions":4,"refusalReasons":{"action-start-expired":4},"freshExecutedForecasts":4}

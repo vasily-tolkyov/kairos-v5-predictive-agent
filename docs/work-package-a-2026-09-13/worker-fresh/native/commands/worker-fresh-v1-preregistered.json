@@ -1,0 +1,136 @@
+{
+  "version": "NativeWorkerFreshV1Preregistration1",
+  "preparedAt": "2026-09-13T02:31:21.027533+00:00",
+  "status": "prepared-awaiting-root-frozen-actor",
+  "sourceActor": null,
+  "noServerStartedByPreparation": true,
+  "worker": {
+    "output": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1",
+    "port": 25636,
+    "environment": "enclosure",
+    "difficulty": "peaceful",
+    "worldSeed": "129604783",
+    "modelSamplingSeed": 317,
+    "decisions": 8,
+    "seconds": 120,
+    "goalAfter": 0,
+    "taskOnly": false,
+    "frozenLearning": false,
+    "argvTemplate": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "FROZEN_ACTOR/scripts/evaluate-minecraft-continuing.mjs",
+      "--java",
+      "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+      "--server",
+      "/workspace/scratch/5d0f85e4c822/evidence/runtime/minecraft-server-1.21.4.jar",
+      "--output",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1",
+      "--environment",
+      "enclosure",
+      "--difficulty",
+      "peaceful",
+      "--world-seed",
+      "129604783",
+      "--seed",
+      "317",
+      "--steps",
+      "8",
+      "--seconds",
+      "120",
+      "--goal-after",
+      "0",
+      "--port",
+      "25636"
+    ]
+  },
+  "motor": {
+    "output": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/motor-worker-fresh-v1",
+    "port": 25637,
+    "expectation": "exact",
+    "evaluatorSelectedActions": 6,
+    "requestedTicks": 4,
+    "loadScheduleMilliseconds": [
+      0,
+      230,
+      0,
+      230,
+      0,
+      230
+    ],
+    "argvTemplate": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "FROZEN_ACTOR/scripts/check-minecraft-motor-catchup.mjs",
+      "--java",
+      "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+      "--server",
+      "/workspace/scratch/5d0f85e4c822/evidence/runtime/minecraft-server-1.21.4.jar",
+      "--output",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/motor-worker-fresh-v1",
+      "--build",
+      "FROZEN_ACTOR/dist",
+      "--expectation",
+      "exact",
+      "--port",
+      "25637"
+    ]
+  },
+  "acceptance": {
+    "goalSuccessRequired": false,
+    "workerDecisionBudget": 8,
+    "allRefusalsAndNoProgressRemainInDenominator": true,
+    "executedActionMustHavePredictionFreshTrue": true,
+    "executionStateAndForecastBindingAuditedAgainstActualRawWindow": true,
+    "engineMustRemainRunningDuringProtocolAndPredictionWork": true,
+    "worldDifficultyMustBeIndependentlyVerified": "peaceful",
+    "actualWindowsValidatedByFrozenActor": true,
+    "motorReceiptMustMatchIndependentSdkControlsAndServerPositions": true,
+    "checkpointSameWorldRestoreMustPreserveLearnedAndTaskState": true,
+    "readOnlyPredictionMustNotMutateLearnedDigest": true,
+    "noOldNativeEvidenceOrDocsOverwritten": true
+  },
+  "outputsRequired": [
+    "exact frozen actor src/harness manifests",
+    "all original decision/refusal/action journals",
+    "active and passive observed windows",
+    "body binding/release/receipt diagnostics",
+    "server logs and difficulty confirmation",
+    "stopped session",
+    "stopped-world archive and proof",
+    "fresh binding audit including rejected decisions",
+    "motor receipt independent audit",
+    "offline checkpoint restore audit",
+    "new per-file evidence manifest"
+  ],
+  "postRunCommandsTemplate": [
+    [
+      "python",
+      "/workspace/scratch/5d0f85e4c822/kairos/scripts/archive-stopped-world.py",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1/stopped-world.tar.gz"
+    ],
+    [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "FROZEN_ACTOR/scripts/audit-native-continuing.mjs",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1-stopped-audit.json"
+    ],
+    [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "FROZEN_ACTOR/scripts/check-native-smoke-restore.mjs",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1/session.json.gz",
+      "FIRST_ORIGINAL_EXECUTED_EVENT",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1-restore-audit.json"
+    ],
+    [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "FROZEN_ACTOR/scripts/audit-native-motor-receipts.mjs",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/motor-worker-fresh-v1",
+      "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/motor-worker-fresh-v1-audit.json"
+    ]
+  ],
+  "limits": [
+    "This is a fresh worker execution and persistence smoke test, not open-world or multistage acceptance.",
+    "Original PR #2 model/world/frame-19 package remains unavailable and is not replaced by this new world.",
+    "No forced success or refusal removal; zero executions would be reported as zero execution coverage."
+  ]
+}

@@ -14,24 +14,27 @@
   },
   "candidate": {
     "command": "npm run test:next-stage",
-    "tests": 168,
-    "passed": 168,
+    "tests": 184,
+    "passed": 184,
     "failed": 0,
     "skipped": 0,
-    "log": "integrated-first.log",
+    "log": "worker-fresh/integrated-gate.log",
     "assertionsRelaxed": false,
-    "sourceCommit": "5c5e6219df17b3c865567a7526d9565304d19066",
-    "sourceTree": "9d246a206e1358099e16105d681d97c2f6ee780c"
+    "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+    "sourceTree": "a2bbb21c8934eaab7f4b55df2316128fb7b318dc",
+    "cancelled": 0
   },
   "newNativeEvidence": {
-    "apparatusRuns": 5,
-    "evaluatorSelectedActions": 21,
-    "workerSmokeRuns": 1,
-    "autonomousSelectedActions": 8,
-    "passiveWindows": 13,
-    "learningWrites": 21,
+    "apparatusRuns": 6,
+    "evaluatorSelectedActions": 27,
+    "workerSmokeRuns": 2,
+    "autonomousSelectedActions": 12,
+    "passiveWindows": 30,
+    "learningWrites": 42,
     "deaths": 0,
-    "newGoalSuccesses": 0
+    "newGoalSuccesses": 0,
+    "refusedDecisions": 4,
+    "scope": "Totals across separate runs; two independent worker models each have21 writes and are not merged."
   },
   "workerSmoke": {
     "status": "budget-paused",
@@ -44,7 +47,7 @@
     "scope": "Short integration smoke test; not retention, transfer or multistage acceptance"
   },
   "acceptance": {
-    "A": "partially implemented; support-domain, motor-receipt and stale-forecast software/apparatus checks passed; asynchronous fresh-prediction protocol and strict original-data comparison remain open",
+    "A": "Implementation and software gates passed including one-shot asynchronous frame binding; strict original-model/world comparison and native task forecast support/reliability acceptance remain open",
     "B": "not started: prerequisite gate unmet",
     "C": "not started: prerequisite gate unmet",
     "D": "not started: prerequisite gate unmet",
@@ -59,5 +62,35 @@
     "additiveSnapshotField": "untrainedMotorWindows (absent means0)",
     "legacyWindows": "readable; no timing receipt manufactured",
     "oldWeightsReencoded": false
+  },
+  "firstDeliveryCommit": "091f0ccfa6d541ab70b6d6eb78bc3944d766491c",
+  "workerFreshnessSmoke": {
+    "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+    "status": "budget-paused",
+    "decisions": 8,
+    "executed": 4,
+    "refused": 4,
+    "refusalReasons": {
+      "action-start-expired": 4
+    },
+    "freshExecutedStarts": 4,
+    "preparedFrameDigestMatches": 4,
+    "supportedResultFields": 0,
+    "comparedResultFields": 0,
+    "supportedTaskPlans": 0,
+    "goal": "pending",
+    "passiveWindows": 17,
+    "learningWrites": 21,
+    "deaths": 0,
+    "initialUnrecordedIntervals": 1,
+    "initialGap": [
+      31,
+      32
+    ],
+    "laterBetweenActionIntervalsCovered": 27,
+    "scope": "One-shot transport freshness and finite native integration; no claim of task prediction reliability or task success.",
+    "launchAttempts": 2,
+    "preGameLaunchFailures": 1,
+    "enteredWorldRuns": 1
   }
 }

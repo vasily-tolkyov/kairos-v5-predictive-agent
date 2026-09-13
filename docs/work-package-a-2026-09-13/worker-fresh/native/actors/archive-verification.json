@@ -1,0 +1,14 @@
+{
+  "version": "VerifiedWorkerFreshActorArchive1",
+  "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+  "sourceTree": "a2bbb21c8934eaab7f4b55df2316128fb7b318dc",
+  "actorManifestSha256": "ddc87fd0bdb0df4c83ab8585363a365f6a5716113a7602772a4be7e8db505c0f",
+  "archive": "actors/worker-fresh-actor-v1.tar.gz",
+  "bytes": 1769720,
+  "sha256": "8bc4c989fadf4943aca5395875fda09f0ea1d1c6dd0f4155b60875561befb3f6",
+  "members": 864,
+  "sourceBytes": 8129480,
+  "everyMemberReopenedAndCompared": true,
+  "nodeModulesIncluded": false,
+  "writeMethod": "write temporary file, close, fsync, reopen and verify each member, atomic rename, fsync parent directory"
+}

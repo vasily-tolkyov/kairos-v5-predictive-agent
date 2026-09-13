@@ -1,0 +1,15 @@
+{
+  "version": "OriginalEvidenceAccessAddendum1",
+  "checkedAt": "2026-09-13T02:54:45.914533+00:00",
+  "neededFiles": [
+    "kairos-native-evidence-20260913.zip",
+    "kairos-motor-evidence-20260913.zip",
+    "kairos-r6-retention-20260913.zip"
+  ],
+  "githubDraftRelease": "Original binary download limitation remains as recorded in ../environment.json. No release visibility or permission change.",
+  "additionalFileSearch": {
+    "status": "unavailable",
+    "attempt": "Additional stored-file retrieval is unavailable in this session; no file search was performed.",
+    "conclusion": "Cannot establish whether an additional stored copy exists. This is an access limitation, not a claim that no copy exists."
+  }
+}

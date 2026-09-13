@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-09-13T02:32:08.745375+00:00",
+  "normativeProtocol": "/workspace/scratch/5d0f85e4c822/kairos/docs/work-package-a-2026-09-13/worker-fresh/protocol.json",
+  "normativeProtocolSha256": "56a9d4a27b4af5feb1306d74c67a60e36092214d07296ebbbb84955f4f0d2e70",
+  "correction": "The scratch preflight used motor-worker-fresh-v1; the root preregistered protocol takes precedence. No run has started at either location.",
+  "actualMotorOutput": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-motor-v1",
+  "workerOutput": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1",
+  "motorPort": 25637,
+  "workerPort": 25636,
+  "serversStarted": false
+}

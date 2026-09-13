@@ -1,0 +1,286 @@
+{
+  "version": "NativeMotorReceiptAudit1",
+  "status": "passed",
+  "source": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-motor-v1",
+  "recordedBuild": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1/dist",
+  "inspectedBuild": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1/dist",
+  "reportSha256": "1fd6d288b7a4cb1c6006ce7c635b46d8c6566eb31ee7ce5989c499794769a231",
+  "windowsSha256": "5a28213c8e20bf615328b38f96bdc856df8a3f1371465a08821d2095b90707b1",
+  "bodySha256": "20b0470c669ab13798c14086fa0f567846ba572b40c883eca8a7bf3b89f622d4",
+  "evaluatorSelectedPhysicalActions": 6,
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "trials": [
+    {
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-1",
+      "loaded": false,
+      "round": 0,
+      "pressedTicks": 4,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 23,
+          "physicsTick": 23,
+          "activeSeconds": 1.1500000000000001,
+          "monotonicMs": 7818.922055
+        },
+        "pressedAt": {
+          "observationSequence": 23,
+          "physicsTick": 23,
+          "activeSeconds": 1.1500000000000001,
+          "monotonicMs": 7819.150913
+        },
+        "releasedAt": {
+          "observationSequence": 27,
+          "physicsTick": 27,
+          "activeSeconds": 1.35,
+          "monotonicMs": 7994.915237
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 175.76432399999976,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 23,
+          "endSequence": 27
+        },
+        "releaseReason": "interval-complete"
+      },
+      "serverPosition": [
+        0.5,
+        64,
+        -0.3571697198364468
+      ]
+    },
+    {
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-2",
+      "loaded": true,
+      "round": 0,
+      "pressedTicks": 4,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 57,
+          "physicsTick": 57,
+          "activeSeconds": 2.85,
+          "monotonicMs": 9502.090441
+        },
+        "pressedAt": {
+          "observationSequence": 57,
+          "physicsTick": 57,
+          "activeSeconds": 2.85,
+          "monotonicMs": 9502.109609
+        },
+        "releasedAt": {
+          "observationSequence": 61,
+          "physicsTick": 61,
+          "activeSeconds": 3.0500000000000003,
+          "monotonicMs": 9885.769322
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 383.6597130000009,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 57,
+          "endSequence": 61
+        },
+        "releaseReason": "interval-complete"
+      },
+      "serverPosition": [
+        0.5,
+        64,
+        -0.3571697198364468
+      ]
+    },
+    {
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-3",
+      "loaded": false,
+      "round": 1,
+      "pressedTicks": 4,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 91,
+          "physicsTick": 91,
+          "activeSeconds": 4.55,
+          "monotonicMs": 11191.177439
+        },
+        "pressedAt": {
+          "observationSequence": 91,
+          "physicsTick": 91,
+          "activeSeconds": 4.55,
+          "monotonicMs": 11191.195205
+        },
+        "releasedAt": {
+          "observationSequence": 95,
+          "physicsTick": 95,
+          "activeSeconds": 4.75,
+          "monotonicMs": 11390.411472
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 199.2162669999998,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 91,
+          "endSequence": 95
+        },
+        "releaseReason": "interval-complete"
+      },
+      "serverPosition": [
+        0.5,
+        64,
+        -0.3571697198364468
+      ]
+    },
+    {
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-4",
+      "loaded": true,
+      "round": 1,
+      "pressedTicks": 4,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 124,
+          "physicsTick": 124,
+          "activeSeconds": 6.2,
+          "monotonicMs": 12895.046284
+        },
+        "pressedAt": {
+          "observationSequence": 124,
+          "physicsTick": 124,
+          "activeSeconds": 6.2,
+          "monotonicMs": 12895.074546
+        },
+        "releasedAt": {
+          "observationSequence": 128,
+          "physicsTick": 128,
+          "activeSeconds": 6.4,
+          "monotonicMs": 13236.458381
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 341.38383500000054,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 124,
+          "endSequence": 128
+        },
+        "releaseReason": "interval-complete"
+      },
+      "serverPosition": [
+        0.5,
+        64,
+        -0.3571697198364468
+      ]
+    },
+    {
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-5",
+      "loaded": false,
+      "round": 2,
+      "pressedTicks": 4,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 158,
+          "physicsTick": 158,
+          "activeSeconds": 7.9,
+          "monotonicMs": 14539.936477
+        },
+        "pressedAt": {
+          "observationSequence": 158,
+          "physicsTick": 158,
+          "activeSeconds": 7.9,
+          "monotonicMs": 14539.954534
+        },
+        "releasedAt": {
+          "observationSequence": 162,
+          "physicsTick": 162,
+          "activeSeconds": 8.1,
+          "monotonicMs": 14740.238054
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 200.28351999999904,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 158,
+          "endSequence": 162
+        },
+        "releaseReason": "interval-complete"
+      },
+      "serverPosition": [
+        0.5,
+        64,
+        -0.3571697198364468
+      ]
+    },
+    {
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-6",
+      "loaded": true,
+      "round": 2,
+      "pressedTicks": 4,
+      "motorReceipt": {
+        "version": "MotorReceiptV1",
+        "requestedTicks": 4,
+        "durationParameter": "ticks",
+        "requestedAt": {
+          "observationSequence": 192,
+          "physicsTick": 192,
+          "activeSeconds": 9.600000000000001,
+          "monotonicMs": 16247.548462
+        },
+        "pressedAt": {
+          "observationSequence": 192,
+          "physicsTick": 192,
+          "activeSeconds": 9.600000000000001,
+          "monotonicMs": 16247.570765
+        },
+        "releasedAt": {
+          "observationSequence": 196,
+          "physicsTick": 196,
+          "activeSeconds": 9.8,
+          "monotonicMs": 16641.156802
+        },
+        "pressSucceeded": true,
+        "releaseSucceeded": true,
+        "actualTicks": 4,
+        "actualSeconds": 0.2,
+        "elapsedMonotonicMs": 393.58603700000094,
+        "observedIntervals": 4,
+        "frameRange": {
+          "startSequence": 192,
+          "endSequence": 196
+        },
+        "releaseReason": "interval-complete"
+      },
+      "serverPosition": [
+        0.5,
+        64,
+        -0.3571697198364468
+      ]
+    }
+  ],
+  "limitation": "Isolated peaceful movement timing only; no retention or causal multistage outcome. Jump/item interruption is tested separately."
+}

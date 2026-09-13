@@ -1,0 +1,1207 @@
+{
+  "version": "MaterializedKairosDependencyRecovery1",
+  "recoveredAt": "2026-09-13T02:53:53.318450+00:00",
+  "reason": "Previously audited external scratch dependency directory was no longer present; worker launch failed before server/output creation.",
+  "priorSymlinkPath": "/workspace/scratch/5d0f85e4c822/kairos/node_modules",
+  "priorSymlinkTarget": "/workspace/scratch/7173c9a8d69e/kairos-v5-predictive-agent/node_modules",
+  "newDependencyPath": "/workspace/scratch/5d0f85e4c822/kairos/node_modules",
+  "materializedDirectory": true,
+  "sourcePackageLockSha256": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b",
+  "stagingLockUnchanged": true,
+  "method": {
+    "argv": [
+      "npm",
+      "ci",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "--registry=https://registry.npmjs.org",
+      "--replace-registry-host=always",
+      "--fetch-retries=0",
+      "--fetch-timeout=20000"
+    ],
+    "cwd": "/workspace/scratch/5d0f85e4c822/evidence/runtime/kairos-node-dependencies-v1",
+    "startedAt": "2026-09-13T02:52:43.633198+00:00",
+    "exitCode": 0,
+    "timedOut": false,
+    "stoppedAt": "2026-09-13T02:53:10.979799+00:00",
+    "lockSha256Before": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b",
+    "lockSha256After": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b"
+  },
+  "offlineFailure": {
+    "argv": [
+      "npm",
+      "ci",
+      "--offline",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund"
+    ],
+    "cwd": "/workspace/scratch/5d0f85e4c822/evidence/runtime/kairos-node-dependencies-v1",
+    "startedAt": "2026-09-13T02:52:07.724390+00:00",
+    "exitCode": 1,
+    "stoppedAt": "2026-09-13T02:52:08.189828+00:00"
+  },
+  "installScriptsDeclared": 0,
+  "packageCount": 192,
+  "allInstalledVersionsMatch": true,
+  "packages": [
+    {
+      "path": "node_modules/@azure/msal-common",
+      "lockedVersion": "14.16.1",
+      "installedVersion": "14.16.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@azure/msal-node",
+      "lockedVersion": "2.16.3",
+      "installedVersion": "2.16.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@socket.io/component-emitter",
+      "lockedVersion": "3.1.2",
+      "installedVersion": "3.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@tweenjs/tween.js",
+      "lockedVersion": "23.1.3",
+      "installedVersion": "23.1.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@types/cors",
+      "lockedVersion": "2.8.19",
+      "installedVersion": "2.8.19",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@types/node",
+      "lockedVersion": "24.12.0",
+      "installedVersion": "24.12.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@types/node-rsa",
+      "lockedVersion": "1.1.4",
+      "installedVersion": "1.1.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@types/readable-stream",
+      "lockedVersion": "4.0.24",
+      "installedVersion": "4.0.24",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@types/ws",
+      "lockedVersion": "8.18.1",
+      "installedVersion": "8.18.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/@xboxreplay/xboxlive-auth",
+      "lockedVersion": "5.1.0",
+      "installedVersion": "5.1.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/abort-controller",
+      "lockedVersion": "3.0.0",
+      "installedVersion": "3.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/accepts",
+      "lockedVersion": "1.3.8",
+      "installedVersion": "1.3.8",
+      "matches": true
+    },
+    {
+      "path": "node_modules/accepts/node_modules/negotiator",
+      "lockedVersion": "0.6.3",
+      "installedVersion": "0.6.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/aes-js",
+      "lockedVersion": "3.1.2",
+      "installedVersion": "3.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ajv",
+      "lockedVersion": "6.15.0",
+      "installedVersion": "6.15.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/array-flatten",
+      "lockedVersion": "1.1.1",
+      "installedVersion": "1.1.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/asn1",
+      "lockedVersion": "0.2.3",
+      "installedVersion": "0.2.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/base64-js",
+      "lockedVersion": "1.5.1",
+      "installedVersion": "1.5.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/base64id",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/body-parser",
+      "lockedVersion": "1.20.6",
+      "installedVersion": "1.20.6",
+      "matches": true
+    },
+    {
+      "path": "node_modules/body-parser/node_modules/debug",
+      "lockedVersion": "2.6.9",
+      "installedVersion": "2.6.9",
+      "matches": true
+    },
+    {
+      "path": "node_modules/body-parser/node_modules/ms",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/buffer",
+      "lockedVersion": "6.0.3",
+      "installedVersion": "6.0.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/buffer-equal",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/buffer-equal-constant-time",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/bytes",
+      "lockedVersion": "3.1.2",
+      "installedVersion": "3.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/call-bind-apply-helpers",
+      "lockedVersion": "1.0.2",
+      "installedVersion": "1.0.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/call-bound",
+      "lockedVersion": "1.0.4",
+      "installedVersion": "1.0.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/commander",
+      "lockedVersion": "2.20.3",
+      "installedVersion": "2.20.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/compressible",
+      "lockedVersion": "2.0.18",
+      "installedVersion": "2.0.18",
+      "matches": true
+    },
+    {
+      "path": "node_modules/compression",
+      "lockedVersion": "1.8.1",
+      "installedVersion": "1.8.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/compression/node_modules/debug",
+      "lockedVersion": "2.6.9",
+      "installedVersion": "2.6.9",
+      "matches": true
+    },
+    {
+      "path": "node_modules/compression/node_modules/ms",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/content-disposition",
+      "lockedVersion": "0.5.4",
+      "installedVersion": "0.5.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/content-type",
+      "lockedVersion": "1.0.5",
+      "installedVersion": "1.0.5",
+      "matches": true
+    },
+    {
+      "path": "node_modules/cookie",
+      "lockedVersion": "0.7.2",
+      "installedVersion": "0.7.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/cookie-signature",
+      "lockedVersion": "1.0.7",
+      "installedVersion": "1.0.7",
+      "matches": true
+    },
+    {
+      "path": "node_modules/cors",
+      "lockedVersion": "2.8.6",
+      "installedVersion": "2.8.6",
+      "matches": true
+    },
+    {
+      "path": "node_modules/debug",
+      "lockedVersion": "4.4.3",
+      "installedVersion": "4.4.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/depd",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/destroy",
+      "lockedVersion": "1.2.0",
+      "installedVersion": "1.2.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/discontinuous-range",
+      "lockedVersion": "1.0.0",
+      "installedVersion": "1.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/dunder-proto",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ecdsa-sig-formatter",
+      "lockedVersion": "1.0.11",
+      "installedVersion": "1.0.11",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ee-first",
+      "lockedVersion": "1.1.1",
+      "installedVersion": "1.1.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/encodeurl",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/endian-toggle",
+      "lockedVersion": "0.0.0",
+      "installedVersion": "0.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/engine.io",
+      "lockedVersion": "6.6.9",
+      "installedVersion": "6.6.9",
+      "matches": true
+    },
+    {
+      "path": "node_modules/engine.io-client",
+      "lockedVersion": "6.6.6",
+      "installedVersion": "6.6.6",
+      "matches": true
+    },
+    {
+      "path": "node_modules/engine.io-parser",
+      "lockedVersion": "5.2.3",
+      "installedVersion": "5.2.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/es-define-property",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/es-errors",
+      "lockedVersion": "1.3.0",
+      "installedVersion": "1.3.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/es-object-atoms",
+      "lockedVersion": "1.1.2",
+      "installedVersion": "1.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/escape-html",
+      "lockedVersion": "1.0.3",
+      "installedVersion": "1.0.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/etag",
+      "lockedVersion": "1.8.1",
+      "installedVersion": "1.8.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/event-target-shim",
+      "lockedVersion": "5.0.1",
+      "installedVersion": "5.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/events",
+      "lockedVersion": "3.3.0",
+      "installedVersion": "3.3.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/express",
+      "lockedVersion": "4.22.2",
+      "installedVersion": "4.22.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/express/node_modules/debug",
+      "lockedVersion": "2.6.9",
+      "installedVersion": "2.6.9",
+      "matches": true
+    },
+    {
+      "path": "node_modules/express/node_modules/ms",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/fast-deep-equal",
+      "lockedVersion": "3.1.3",
+      "installedVersion": "3.1.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/fast-json-stable-stringify",
+      "lockedVersion": "2.1.0",
+      "installedVersion": "2.1.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/finalhandler",
+      "lockedVersion": "1.3.2",
+      "installedVersion": "1.3.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/finalhandler/node_modules/debug",
+      "lockedVersion": "2.6.9",
+      "installedVersion": "2.6.9",
+      "matches": true
+    },
+    {
+      "path": "node_modules/finalhandler/node_modules/ms",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/forwarded",
+      "lockedVersion": "0.2.0",
+      "installedVersion": "0.2.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/fresh",
+      "lockedVersion": "0.5.2",
+      "installedVersion": "0.5.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/function-bind",
+      "lockedVersion": "1.1.2",
+      "installedVersion": "1.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/get-intrinsic",
+      "lockedVersion": "1.3.0",
+      "installedVersion": "1.3.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/get-proto",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/gopd",
+      "lockedVersion": "1.2.0",
+      "installedVersion": "1.2.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/has-symbols",
+      "lockedVersion": "1.1.0",
+      "installedVersion": "1.1.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/hasown",
+      "lockedVersion": "2.0.4",
+      "installedVersion": "2.0.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/http-errors",
+      "lockedVersion": "2.0.1",
+      "installedVersion": "2.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/iconv-lite",
+      "lockedVersion": "0.4.24",
+      "installedVersion": "0.4.24",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ieee754",
+      "lockedVersion": "1.2.1",
+      "installedVersion": "1.2.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/inherits",
+      "lockedVersion": "2.0.4",
+      "installedVersion": "2.0.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ipaddr.js",
+      "lockedVersion": "1.9.1",
+      "installedVersion": "1.9.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/json-schema-traverse",
+      "lockedVersion": "0.4.1",
+      "installedVersion": "0.4.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/jsonwebtoken",
+      "lockedVersion": "9.0.3",
+      "installedVersion": "9.0.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/jwa",
+      "lockedVersion": "2.0.1",
+      "installedVersion": "2.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/jws",
+      "lockedVersion": "4.0.1",
+      "installedVersion": "4.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.includes",
+      "lockedVersion": "4.3.0",
+      "installedVersion": "4.3.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.isboolean",
+      "lockedVersion": "3.0.3",
+      "installedVersion": "3.0.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.isinteger",
+      "lockedVersion": "4.0.4",
+      "installedVersion": "4.0.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.isnumber",
+      "lockedVersion": "3.0.3",
+      "installedVersion": "3.0.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.isplainobject",
+      "lockedVersion": "4.0.6",
+      "installedVersion": "4.0.6",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.isstring",
+      "lockedVersion": "4.0.1",
+      "installedVersion": "4.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.merge",
+      "lockedVersion": "4.6.2",
+      "installedVersion": "4.6.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.once",
+      "lockedVersion": "4.1.1",
+      "installedVersion": "4.1.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/lodash.reduce",
+      "lockedVersion": "4.6.0",
+      "installedVersion": "4.6.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/macaddress",
+      "lockedVersion": "0.5.4",
+      "installedVersion": "0.5.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/math-intrinsics",
+      "lockedVersion": "1.1.0",
+      "installedVersion": "1.1.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/media-typer",
+      "lockedVersion": "0.3.0",
+      "installedVersion": "0.3.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/merge-descriptors",
+      "lockedVersion": "1.0.3",
+      "installedVersion": "1.0.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/methods",
+      "lockedVersion": "1.1.2",
+      "installedVersion": "1.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/mime",
+      "lockedVersion": "1.6.0",
+      "installedVersion": "1.6.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/mime-db",
+      "lockedVersion": "1.54.0",
+      "installedVersion": "1.54.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/mime-types",
+      "lockedVersion": "2.1.35",
+      "installedVersion": "2.1.35",
+      "matches": true
+    },
+    {
+      "path": "node_modules/mime-types/node_modules/mime-db",
+      "lockedVersion": "1.52.0",
+      "installedVersion": "1.52.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/minecraft-data",
+      "lockedVersion": "3.114.0",
+      "installedVersion": "3.114.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/minecraft-folder-path",
+      "lockedVersion": "1.2.0",
+      "installedVersion": "1.2.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/minecraft-protocol",
+      "lockedVersion": "1.68.0",
+      "installedVersion": "1.68.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/minecraft-protocol/node_modules/node-fetch",
+      "lockedVersion": "2.7.0",
+      "installedVersion": "2.7.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/mineflayer",
+      "lockedVersion": "4.37.1",
+      "installedVersion": "4.37.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/mojangson",
+      "lockedVersion": "2.1.0",
+      "installedVersion": "2.1.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/moo",
+      "lockedVersion": "0.5.3",
+      "installedVersion": "0.5.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ms",
+      "lockedVersion": "2.1.3",
+      "installedVersion": "2.1.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/nearley",
+      "lockedVersion": "2.20.1",
+      "installedVersion": "2.20.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/negotiator",
+      "lockedVersion": "0.6.4",
+      "installedVersion": "0.6.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/node-rsa",
+      "lockedVersion": "0.4.2",
+      "installedVersion": "0.4.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/object-assign",
+      "lockedVersion": "4.1.1",
+      "installedVersion": "4.1.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/object-inspect",
+      "lockedVersion": "1.13.4",
+      "installedVersion": "1.13.4",
+      "matches": true
+    },
+    {
+      "path": "node_modules/on-finished",
+      "lockedVersion": "2.4.1",
+      "installedVersion": "2.4.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/on-headers",
+      "lockedVersion": "1.1.0",
+      "installedVersion": "1.1.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/parseurl",
+      "lockedVersion": "1.3.3",
+      "installedVersion": "1.3.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/path-to-regexp",
+      "lockedVersion": "0.1.13",
+      "installedVersion": "0.1.13",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-auth",
+      "lockedVersion": "3.1.1",
+      "installedVersion": "3.1.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-biome",
+      "lockedVersion": "1.4.0",
+      "installedVersion": "1.4.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-block",
+      "lockedVersion": "1.23.0",
+      "installedVersion": "1.23.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-chat",
+      "lockedVersion": "1.13.0",
+      "installedVersion": "1.13.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-chunk",
+      "lockedVersion": "1.41.0",
+      "installedVersion": "1.41.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-entity",
+      "lockedVersion": "2.6.0",
+      "installedVersion": "2.6.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-item",
+      "lockedVersion": "1.18.0",
+      "installedVersion": "1.18.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-nbt",
+      "lockedVersion": "2.8.0",
+      "installedVersion": "2.8.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-physics",
+      "lockedVersion": "1.11.1",
+      "installedVersion": "1.11.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-physics/node_modules/vec3",
+      "lockedVersion": "0.2.0",
+      "installedVersion": "0.2.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-realms",
+      "lockedVersion": "1.6.0",
+      "installedVersion": "1.6.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-realms/node_modules/node-fetch",
+      "lockedVersion": "2.7.0",
+      "installedVersion": "2.7.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-recipe",
+      "lockedVersion": "1.5.0",
+      "installedVersion": "1.5.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-registry",
+      "lockedVersion": "1.12.0",
+      "installedVersion": "1.12.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-viewer",
+      "lockedVersion": "1.33.0",
+      "installedVersion": "1.33.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-windows",
+      "lockedVersion": "2.10.0",
+      "installedVersion": "2.10.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-windows/node_modules/typed-emitter",
+      "lockedVersion": "2.1.0",
+      "installedVersion": "2.1.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/prismarine-world",
+      "lockedVersion": "3.7.0",
+      "installedVersion": "3.7.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/process",
+      "lockedVersion": "0.11.10",
+      "installedVersion": "0.11.10",
+      "matches": true
+    },
+    {
+      "path": "node_modules/protodef",
+      "lockedVersion": "1.19.0",
+      "installedVersion": "1.19.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/protodef-validator",
+      "lockedVersion": "1.5.0",
+      "installedVersion": "1.5.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/proxy-addr",
+      "lockedVersion": "2.0.7",
+      "installedVersion": "2.0.7",
+      "matches": true
+    },
+    {
+      "path": "node_modules/punycode",
+      "lockedVersion": "2.3.1",
+      "installedVersion": "2.3.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/qs",
+      "lockedVersion": "6.15.3",
+      "installedVersion": "6.15.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/railroad-diagrams",
+      "lockedVersion": "1.0.0",
+      "installedVersion": "1.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/randexp",
+      "lockedVersion": "0.4.6",
+      "installedVersion": "0.4.6",
+      "matches": true
+    },
+    {
+      "path": "node_modules/range-parser",
+      "lockedVersion": "1.2.1",
+      "installedVersion": "1.2.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/raw-body",
+      "lockedVersion": "2.5.3",
+      "installedVersion": "2.5.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/readable-stream",
+      "lockedVersion": "4.7.0",
+      "installedVersion": "4.7.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ret",
+      "lockedVersion": "0.1.15",
+      "installedVersion": "0.1.15",
+      "matches": true
+    },
+    {
+      "path": "node_modules/rxjs",
+      "lockedVersion": "7.8.2",
+      "installedVersion": "7.8.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/safe-buffer",
+      "lockedVersion": "5.2.1",
+      "installedVersion": "5.2.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/safer-buffer",
+      "lockedVersion": "2.1.2",
+      "installedVersion": "2.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/semver",
+      "lockedVersion": "7.8.5",
+      "installedVersion": "7.8.5",
+      "matches": true
+    },
+    {
+      "path": "node_modules/send",
+      "lockedVersion": "0.19.2",
+      "installedVersion": "0.19.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/send/node_modules/debug",
+      "lockedVersion": "2.6.9",
+      "installedVersion": "2.6.9",
+      "matches": true
+    },
+    {
+      "path": "node_modules/send/node_modules/debug/node_modules/ms",
+      "lockedVersion": "2.0.0",
+      "installedVersion": "2.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/serve-static",
+      "lockedVersion": "1.16.3",
+      "installedVersion": "1.16.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/setprototypeof",
+      "lockedVersion": "1.2.0",
+      "installedVersion": "1.2.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/side-channel",
+      "lockedVersion": "1.1.1",
+      "installedVersion": "1.1.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/side-channel-list",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/side-channel-map",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/side-channel-weakmap",
+      "lockedVersion": "1.0.2",
+      "installedVersion": "1.0.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/smart-buffer",
+      "lockedVersion": "4.2.0",
+      "installedVersion": "4.2.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/socket.io",
+      "lockedVersion": "4.8.3",
+      "installedVersion": "4.8.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/socket.io-adapter",
+      "lockedVersion": "2.5.8",
+      "installedVersion": "2.5.8",
+      "matches": true
+    },
+    {
+      "path": "node_modules/socket.io-client",
+      "lockedVersion": "4.8.3",
+      "installedVersion": "4.8.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/socket.io-parser",
+      "lockedVersion": "4.2.7",
+      "installedVersion": "4.2.7",
+      "matches": true
+    },
+    {
+      "path": "node_modules/statuses",
+      "lockedVersion": "2.0.2",
+      "installedVersion": "2.0.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/string_decoder",
+      "lockedVersion": "1.3.0",
+      "installedVersion": "1.3.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/three",
+      "lockedVersion": "0.128.0",
+      "installedVersion": "0.128.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/three.meshline",
+      "lockedVersion": "1.4.0",
+      "installedVersion": "1.4.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/toidentifier",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/tr46",
+      "lockedVersion": "0.0.3",
+      "installedVersion": "0.0.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/tslib",
+      "lockedVersion": "2.8.1",
+      "installedVersion": "2.8.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/type-is",
+      "lockedVersion": "1.6.18",
+      "installedVersion": "1.6.18",
+      "matches": true
+    },
+    {
+      "path": "node_modules/typed-emitter",
+      "lockedVersion": "1.4.0",
+      "installedVersion": "1.4.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/typescript",
+      "lockedVersion": "5.9.3",
+      "installedVersion": "5.9.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/uint4",
+      "lockedVersion": "0.1.2",
+      "installedVersion": "0.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/undici-types",
+      "lockedVersion": "7.16.0",
+      "installedVersion": "7.16.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/unpipe",
+      "lockedVersion": "1.0.0",
+      "installedVersion": "1.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/uri-js",
+      "lockedVersion": "4.4.1",
+      "installedVersion": "4.4.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/utils-merge",
+      "lockedVersion": "1.0.1",
+      "installedVersion": "1.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/uuid",
+      "lockedVersion": "8.3.2",
+      "installedVersion": "8.3.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/uuid-1345",
+      "lockedVersion": "1.0.2",
+      "installedVersion": "1.0.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/vary",
+      "lockedVersion": "1.1.2",
+      "installedVersion": "1.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/vec3",
+      "lockedVersion": "0.1.10",
+      "installedVersion": "0.1.10",
+      "matches": true
+    },
+    {
+      "path": "node_modules/webidl-conversions",
+      "lockedVersion": "3.0.1",
+      "installedVersion": "3.0.1",
+      "matches": true
+    },
+    {
+      "path": "node_modules/whatwg-url",
+      "lockedVersion": "5.0.0",
+      "installedVersion": "5.0.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/ws",
+      "lockedVersion": "8.21.3",
+      "installedVersion": "8.21.3",
+      "matches": true
+    },
+    {
+      "path": "node_modules/xmlhttprequest-ssl",
+      "lockedVersion": "2.1.2",
+      "installedVersion": "2.1.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/xxhash-wasm",
+      "lockedVersion": "0.4.2",
+      "installedVersion": "0.4.2",
+      "matches": true
+    },
+    {
+      "path": "node_modules/yggdrasil",
+      "lockedVersion": "1.8.0",
+      "installedVersion": "1.8.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/yggdrasil/node_modules/node-fetch",
+      "lockedVersion": "2.7.0",
+      "installedVersion": "2.7.0",
+      "matches": true
+    },
+    {
+      "path": "node_modules/yggdrasil/node_modules/uuid",
+      "lockedVersion": "10.0.0",
+      "installedVersion": "10.0.0",
+      "matches": true
+    }
+  ],
+  "actorModuleImport": {
+    "exitCode": 0,
+    "stdout": "frozen-actor-body-import-passed\n",
+    "stderr": ""
+  }
+}

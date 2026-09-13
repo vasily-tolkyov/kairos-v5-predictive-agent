@@ -1,0 +1,28 @@
+{
+  "version": "OriginalReleaseRecheck1",
+  "checkedAt": "2026-09-13T03:08:19.672Z",
+  "releaseId": 387688738,
+  "draft": true,
+  "tag": "native-evidence-2026-09-13",
+  "assets": [
+    {
+      "id": 559894185,
+      "name": "kairos-motor-evidence-20260913.zip",
+      "bytes": 2701785,
+      "digest": "sha256:ea9c486ea26cd1e8768a6673f929c9ae81acd9042d013d7d2657af361b2964ba"
+    },
+    {
+      "id": 559871197,
+      "name": "kairos-native-evidence-20260913.zip",
+      "bytes": 2073229124,
+      "digest": "sha256:20716418a6bccd146d3306c4f9bfdce8c4a8fab4554662e2a724ee4aae7ff90e"
+    },
+    {
+      "id": 559914682,
+      "name": "kairos-r6-retention-20260913.zip",
+      "bytes": 152252646,
+      "digest": "sha256:c101005a5db36fdec8de7a246d0501376bef00bf673dc417266574b2236b3639"
+    }
+  ],
+  "access": "Release remains draft. Metadata access does not provide binary bytes; no visibility or permission changes were made."
+}

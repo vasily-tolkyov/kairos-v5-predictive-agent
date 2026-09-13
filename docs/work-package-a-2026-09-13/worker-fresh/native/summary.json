@@ -1,0 +1,211 @@
+{
+  "version": "NativeWorkerFreshV1EvidenceSummary1",
+  "createdAt": "2026-09-13T03:01:58.049739+00:00",
+  "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+  "sourceTree": "a2bbb21c8934eaab7f4b55df2316128fb7b318dc",
+  "actorManifestSha256": "ddc87fd0bdb0df4c83ab8585363a365f6a5716113a7602772a4be7e8db505c0f",
+  "overallScope": "Fresh start-frame binding protocol and short persistence/motor smoke checks. No task, retention, transfer, interval reliability, or long-running capability acceptance.",
+  "worker": {
+    "runStatus": "budget-paused",
+    "decisions": 8,
+    "decisionBudget": 8,
+    "wallBudgetSeconds": 120,
+    "reportedSeconds": 17.339,
+    "worldSeed": "129604783",
+    "difficulty": "peaceful",
+    "samplingSeed": 317,
+    "goalAfter": 0,
+    "preparedAttempts": 8,
+    "executedActions": 4,
+    "refusedDecisions": 4,
+    "refusalReasons": {
+      "action-start-expired": 4
+    },
+    "freshStartBindings": 4,
+    "executionFractionOfAllDecisions": 0.5,
+    "freshStartFractionOfExecutedActions": 1,
+    "substantivelySupportedPredictions": 0,
+    "supportedTaskPlans": 0,
+    "comparedPredictionFields": 0,
+    "supportedNumericIntervalDenominator": 0,
+    "numericIntervalCoverage": null,
+    "predictionReliability": null,
+    "freshnessMeaning": "All four executed actions bind their forecast computation to the exact complete anonymous event-start frame. All four forecasts have empty supportedFields and compared=0; comparison.basis defaults to supported and is not evidence of supported action consequences.",
+    "goalState": [
+      {
+        "id": "reach-other-side",
+        "status": "pending",
+        "confirmations": 0
+      }
+    ],
+    "learningWrites": 21,
+    "activeWindowWrites": 4,
+    "passiveWindows": 17,
+    "passiveWrites": 17,
+    "recordedActiveIntervals": 100,
+    "recordedPassiveIntervals": 28,
+    "unrecordedBetweenActionIntervals": 1,
+    "initialCaptureGap": {
+      "firstInitialObservationSequence": 31,
+      "firstRecordedPassiveSequence": 32,
+      "missingInterval": [
+        31,
+        32
+      ],
+      "missingIntervalCount": 1,
+      "noSyntheticFrameInserted": true,
+      "effectOnScope": "Complete continuous capture is not established. This gap precedes the first passive window; subsequent executed start bindings still validate."
+    },
+    "prepareToCheckMilliseconds": {
+      "minimum": 12.976497999999992,
+      "maximum": 63.806266999999934,
+      "mean": 30.91539687500017,
+      "all": [
+        38.76507499999934,
+        51.930554000000484,
+        16.980954000000565,
+        12.976497999999992,
+        63.806266999999934,
+        19.641632999999274,
+        24.9256060000007,
+        18.296588000001066
+      ]
+    },
+    "waitingTickAdvance": {
+      "expiredAttempts": 4,
+      "checkedMinusPreparedSequence": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "interpretation": "Each refusal observed a real frame advance during prepare-to-check waiting. This is evidence that sensing advanced during these waits, not a universal timing/latency guarantee."
+    },
+    "rssMb": {
+      "first": 440.86328125,
+      "last": 583.6796875,
+      "minimum": 440.86328125,
+      "maximum": 583.6796875,
+      "scope": "Node controller RSS samples only; no bounded-memory or combined Java/Node resource guarantee."
+    },
+    "savedPlayerMatches": true,
+    "deaths": 0,
+    "worldArchive": {
+      "path": "worker-fresh-v1/stopped-world.tar.gz",
+      "bytes": 375085,
+      "sha256": "31d612670366c2d0b34eb2358a7bfb1d012e812ebc0bd8fda22b1af231562ba6"
+    },
+    "startupAttempts": 2,
+    "preGameStartupFailures": 1,
+    "enteredWorldRuns": 1,
+    "startupAttemptsDetail": [
+      {
+        "attempt": 1,
+        "result": "module-load-failed-before-java-start",
+        "decisions": 0,
+        "physicalActions": 0,
+        "learningWrites": 0,
+        "console": "commands/worker-fresh-v1-console.log"
+      },
+      {
+        "attempt": 2,
+        "result": "entered-world-budget-paused",
+        "decisions": 8,
+        "physicalActions": 4,
+        "learningWrites": 21,
+        "console": "commands/worker-fresh-v1-runtime-ready-console.log"
+      }
+    ]
+  },
+  "motor": {
+    "evaluatorSelectedActions": 6,
+    "actualPressedTicks": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    "requestedTicks": 4,
+    "independentReceiptAndServerPositionAudit": "passed",
+    "learningWrites": 0,
+    "autonomousTrials": 0
+  },
+  "checkpointRestore": {
+    "status": "passed",
+    "sourceSessionSha256": "6b449087f25f89d274dffd74422b7cdc754a7237f751cb261caf954810417894",
+    "modelAndTaskStateUnchanged": true,
+    "transientVisibleBindingsCleared": 73,
+    "predictionReadOnly": true,
+    "duplicateWindowRejected": true,
+    "nativeRestartPerformed": false
+  },
+  "counts": {
+    "nativeControllerSmokeRuns": 1,
+    "nativeMotorCalibrationRuns": 1,
+    "controllerDecisions": 8,
+    "controllerExecutedActions": 4,
+    "controllerRefusedDecisions": 4,
+    "evaluatorSelectedMotorActions": 6,
+    "actualLearningWrites": 21,
+    "preServerLaunchFailures": 1,
+    "controllerStartupAttempts": 2,
+    "controllerEnteredWorldRuns": 1,
+    "environmentDependencyInstallAttempts": 2,
+    "environmentDependencyInstallFailures": 1
+  },
+  "deviations": [
+    {
+      "kind": "pre-server-dependency-loss",
+      "detail": "The first node launch failed before creating the native output or starting Minecraft because the earlier scratch dependency directory was gone. It added zero game actions/writes. Original argv/error retained; online npm ci restored all 192 pinned packages into a materialized node_modules in the current project, with the source lock unchanged. This is retained as one of two controller startup attempts; the successful second attempt entered the world exactly once. Startup failures, in-run refused decisions, and dependency-install attempts have separate denominators."
+    },
+    {
+      "kind": "offline-dependency-cache-miss",
+      "detail": "npm ci --offline failed ENOTCACHED; retained before the successful official-registry installation."
+    },
+    {
+      "kind": "initial-unrecorded-sensory-interval",
+      "detail": "Initial observation is frame 31 and passive capture starts at frame 32. One interval is absent; original data kept, no fill or replacement run."
+    }
+  ],
+  "audits": [
+    {
+      "kind": "fresh-start binding",
+      "file": "audits/worker-fresh-v1-freshness-audit.json",
+      "status": "passed"
+    },
+    {
+      "kind": "stopped world and original windows",
+      "file": "audits/worker-fresh-v1-stopped-audit.json",
+      "status": "passed",
+      "knownLimitation": "One initialization interval 31→32 is unrecorded."
+    },
+    {
+      "kind": "offline restore/read-only/duplicate rejection",
+      "file": "audits/worker-fresh-v1-restore-audit.json",
+      "status": "passed"
+    },
+    {
+      "kind": "native motor receipt and server positions",
+      "file": "audits/worker-fresh-motor-v1-audit.json",
+      "status": "passed"
+    }
+  ],
+  "actorArchive": {
+    "version": "VerifiedWorkerFreshActorArchive1",
+    "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+    "sourceTree": "a2bbb21c8934eaab7f4b55df2316128fb7b318dc",
+    "actorManifestSha256": "ddc87fd0bdb0df4c83ab8585363a365f6a5716113a7602772a4be7e8db505c0f",
+    "archive": "actors/worker-fresh-actor-v1.tar.gz",
+    "bytes": 1769720,
+    "sha256": "8bc4c989fadf4943aca5395875fda09f0ea1d1c6dd0f4155b60875561befb3f6",
+    "members": 864,
+    "sourceBytes": 8129480,
+    "everyMemberReopenedAndCompared": true,
+    "nodeModulesIncluded": false,
+    "writeMethod": "write temporary file, close, fsync, reopen and verify each member, atomic rename, fsync parent directory"
+  },
+  "retainedOriginalData": true,
+  "oldNativeEvidenceOverwritten": false
+}
