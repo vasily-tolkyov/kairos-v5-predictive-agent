@@ -30,6 +30,7 @@ export interface SessionDecision {
   predictionInvalidation?: string;
   actionStartToken?: string;
   actionStartElapsedMs?: number | null;
+  actionStartTimingsMs?: { validation: number; passiveLearning: number; prediction: number };
   forecastAdvanced?: boolean;
   predictedSteps?: readonly ExperiencePlanStep[];
 }
@@ -237,8 +238,10 @@ export class ExperienceSession {
     let prediction = planningPrediction, actionStart: ExperienceActionStart | undefined;
     let actionStartDigest: string | undefined;
     let predictionInvalidation: string | undefined;
+    let actionStartTimingsMs: SessionDecision['actionStartTimingsMs'];
     const consumedPassive = new Map<string, string>();
     const result = await environment.executeOffer(offer, start => {
+      const callbackAt = performance.now();
       if (actionStart) throw new Error('action-start-callback-repeated');
       if (start.observation.predictionSupport !== undefined || start.observation.predictionBounds !== undefined
         || start.observation.predictionContext !== undefined
@@ -260,13 +263,17 @@ export class ExperienceSession {
         previousPassiveEnd = last; consumedPassive.set(event.id, digest); return true;
       });
       actionStart = { ...start, precedingPassiveEvents: uniquePassive };
+      const validatedAt = performance.now();
       this.#consumePassive(uniquePassive, options.learn !== false);
+      const learnedAt = performance.now();
       // This forecast is saved before the motor is issued and before any
       // outcome update. A waiting-time context change may withdraw support;
       // an unsupported replacement cannot inherit a selected plan's credit.
       prediction = this.agent.medium.predict(start.offer.cue, start.observation, {
         probe: planningPrediction.hypothesizedFields !== undefined,
         requestedFields: planningPrediction.hypothesizedFields ?? planningPrediction.supportedFields });
+      actionStartTimingsMs = { validation: validatedAt - callbackAt,
+        passiveLearning: learnedAt - validatedAt, prediction: performance.now() - learnedAt };
       if (selected && (!prediction.accepted
         || planningPrediction.supportedFields.some(field => !prediction.supportedFields.includes(field)))) {
         predictionInvalidation = 'action-start-support-withdrawn'; return false;
@@ -278,7 +285,7 @@ export class ExperienceSession {
     if (result.executed && result.executionBinding?.status !== undefined && result.executionBinding.status !== 'accepted')
       throw new Error('body-executed-without-accepted-frame-binding');
     const executionAudit = { actionStartToken: result.executionBinding?.token,
-      actionStartElapsedMs: result.executionBinding?.elapsedMs };
+      actionStartElapsedMs: result.executionBinding?.elapsedMs, actionStartTimingsMs };
     // The world also advanced during selection. Consume those earlier real
     // intervals before learning the action, in physical time order.
     if (result.event) validateEvent(result.event);
