@@ -282,20 +282,32 @@ export class MinecraftBody extends EventEmitter {
     await this.#until(() => this.frames.length >= 3 && this.#clientLoadAfter === null
       || this.frames.length > 0 && this.bot.health <= 0, 120_000);
   }
-  async waitForObservationAfter(sequence: number): Promise<Observation> {
+  async waitForObservationAfter(sequence: number): Promise<Observation>;
+  async waitForObservationAfter(sequence: number, options: { timeoutMs: number; signal?: AbortSignal }): Promise<Observation | null>;
+  async waitForObservationAfter(sequence: number, options?: { timeoutMs: number; signal?: AbortSignal }): Promise<Observation | null> {
     this.check();
+    if (this.#closed) throw new Error('minecraft-body-closed');
+    if (options) assert(Number.isFinite(options.timeoutMs) && options.timeoutMs >= 0, 'invalid-observation-wait-timeout');
+    if (options?.signal?.aborted) throw options.signal.reason ?? new Error('observation-wait-aborted');
     const current = this.frames.at(-1);
     if (current && current.sequence > sequence) return structuredClone(current);
-    return new Promise<Observation>((resolve, reject) => {
-      const cleanup = () => { this.off('frame', frame); this.off('fault', fault); };
+    return new Promise<Observation | null>((resolve, reject) => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const cleanup = () => { clearTimeout(timer); this.off('frame', frame); this.off('fault', fault);
+        options?.signal?.removeEventListener('abort', abort); };
       const frame = (observation: Observation) => {
         if (observation.sequence <= sequence) return;
         cleanup(); resolve(structuredClone(observation));
       };
       const fault = (error: Error) => { cleanup(); reject(error); };
+      const abort = () => { cleanup(); reject(options?.signal?.reason ?? new Error('observation-wait-aborted')); };
       this.on('frame', frame); this.on('fault', fault);
+      options?.signal?.addEventListener('abort', abort, { once: true });
+      if (options) timer = setTimeout(() => { cleanup(); resolve(null); }, options.timeoutMs);
       try {
         this.check();
+        if (this.#closed) throw new Error('minecraft-body-closed');
+        if (options?.signal?.aborted) { abort(); return; }
         const latest = this.frames.at(-1);
         if (latest && latest.sequence > sequence) frame(latest);
       } catch (error) { fault(error as Error); }

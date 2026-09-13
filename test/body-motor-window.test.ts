@@ -9,6 +9,7 @@ import { validateAction } from '../src/action-contract.js';
 import { validateEvent } from '../src/events.js';
 import * as eventTools from '../src/events.js';
 import type { MotorReceiptV1, RealEvent } from '../src/contracts.js';
+import { MinecraftActionStartProtocol } from '../src/adapters/minecraft/action-start.js';
 
 class MotorBot extends EventEmitter {
   entity = { id: 1, position: new Vec3(0, 64, 0), velocity: new Vec3(0, 0, 0), yaw: 0, pitch: 0, onGround: false };
@@ -45,6 +46,97 @@ function fixture(t: TestContext) {
   };
   t.after(() => body.close()); return { bot, body, tick, records };
 }
+
+test('a bounded next-frame wait returns a copied real successor and removes its listeners', async t => {
+  const h = fixture(t); await h.tick(1);
+  const listeners = { frame: h.body.listenerCount('frame'), fault: h.body.listenerCount('fault') };
+  const waiting = h.body.waitForObservationAfter(1, { timeoutMs: 50 });
+  assert.equal(h.body.listenerCount('frame'), listeners.frame + 1);
+  assert.equal(h.body.listenerCount('fault'), listeners.fault + 1);
+  await h.tick(1); const observed = await waiting; assert(observed);
+  assert.equal(observed.sequence, 2); assert.deepEqual(observed, h.body.latest());
+  assert.notStrictEqual(observed, h.body.latest());
+  assert.equal(h.body.listenerCount('frame'), listeners.frame);
+  assert.equal(h.body.listenerCount('fault'), listeners.fault);
+  await h.tick(1); assert.equal(h.body.latest().sequence, 3);
+  assert.deepEqual(await h.body.waitForObservationAfter(1, { timeoutMs: 50 }), h.body.latest());
+});
+
+test('a bounded silent-clock wait expires without fabricating a frame and removes its listeners', async t => {
+  const h = fixture(t); await h.tick(1); t.mock.timers.enable({ apis: ['setTimeout'] });
+  const listeners = { frame: h.body.listenerCount('frame'), fault: h.body.listenerCount('fault') };
+  let finished = false;
+  const waiting = h.body.waitForObservationAfter(1, { timeoutMs: 50 }).then(value => { finished = true; return value; });
+  t.mock.timers.tick(49); await Promise.resolve(); assert.equal(finished, false);
+  t.mock.timers.tick(1); assert.equal(await waiting, null); assert.equal(h.body.latest().sequence, 1);
+  assert.equal(h.body.listenerCount('frame'), listeners.frame);
+  assert.equal(h.body.listenerCount('fault'), listeners.fault);
+  assert.equal(h.body.physicalCalls, 0);
+});
+
+test('aborted, faulted and closed observation waits settle once and release listeners', async t => {
+  for (const reason of ['abort', 'fault', 'close'] as const) await t.test(reason, async t => {
+    const h = fixture(t); await h.tick(1);
+    const listeners = { frame: h.body.listenerCount('frame'), fault: h.body.listenerCount('fault') };
+    const controller = new AbortController();
+    const waiting = h.body.waitForObservationAfter(1, { timeoutMs: 50, signal: controller.signal });
+    const failure = assert.rejects(waiting, reason === 'abort' ? /cancel-test/ : reason === 'fault' ? /wait-fault/ : /body-closed/);
+    if (reason === 'abort') controller.abort(new Error('cancel-test'));
+    else if (reason === 'fault') h.bot.emit('error', new Error('wait-fault'));
+    else await h.body.close();
+    await failure;
+    assert.equal(h.body.listenerCount('frame'), listeners.frame);
+    assert.equal(h.body.listenerCount('fault'), listeners.fault);
+    if (reason === 'abort') await assert.rejects(h.body.waitForObservationAfter(0, { timeoutMs: 50, signal: controller.signal }), /cancel-test/);
+    if (reason === 'close') await assert.rejects(h.body.waitForObservationAfter(0), /body-closed/);
+  });
+});
+
+test('pending preparation cancellation preserves measured passive evidence with no token or motor', async t => {
+  const h = fixture(t); await h.tick(1); h.body.startObservation(); await h.tick(1);
+  const records: unknown[] = [], starts = new MinecraftActionStartProtocol(h.body, value => records.push(value));
+  const listeners = { frame: h.body.listenerCount('frame'), fault: h.body.listenerCount('fault') };
+  const pending = starts.prepareActionStart();
+  const cancelled = assert.rejects(pending, /preparation-body-closed/);
+  assert.throws(() => starts.startObservation(), /during-preparation/);
+  await assert.rejects(starts.executePrepared('unknown', { kind: 'respawn', parameters: {} }), /preparing-action-start/);
+  starts.invalidate('body-closed'); await cancelled;
+  assert.equal(records.length, 0); assert.equal(h.body.physicalCalls, 0);
+  assert.equal(h.body.listenerCount('frame'), listeners.frame);
+  assert.equal(h.body.listenerCount('fault'), listeners.fault);
+  assert.deepEqual(starts.drainPassiveEvents().flatMap(event => event.frames.map(value => value.sequence)), [1, 2]);
+  assert.deepEqual(starts.drainPassiveEvents(), []);
+});
+
+test('superseding a pending frame wait cancels it without stealing the succeeding preparation interval', async t => {
+  const h = fixture(t); await h.tick(1); h.body.startObservation();
+  const starts = new MinecraftActionStartProtocol(h.body), first = starts.prepareActionStart();
+  const superseded = assert.rejects(first, /preparation-superseded/);
+  const second = starts.prepareActionStart(); await superseded;
+  assert.equal(h.body.listenerCount('frame'), 1); assert.equal(h.body.listenerCount('fault'), 1);
+  await h.tick(1); const prepared = await second;
+  assert.equal(prepared.observation.sequence, 2);
+  assert.deepEqual(prepared.precedingPassiveEvents.flatMap(event => event.frames.map(value => value.sequence)), [1, 2]);
+  assert.equal(h.body.listenerCount('frame'), 0); assert.equal(h.body.listenerCount('fault'), 0);
+  starts.cancelActionStart(prepared.token, 'test-end'); assert.equal(h.body.physicalCalls, 0);
+});
+
+test('a dead body with no further clock ticks can prepare and execute its explicitly chosen restart after one timeout', async t => {
+  const h = fixture(t), ready = h.body.ready(); await h.tick(4); await ready;
+  h.bot.health = 0; h.bot.emit('death');
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const starts = new MinecraftActionStartProtocol(h.body), pending = starts.prepareActionStart();
+  const before = h.body.latest(); t.mock.timers.tick(50); const prepared = await pending;
+  assert.strictEqual(prepared.observation, before); assert.equal(h.bot.restarts, 0);
+  const restart = h.body.listActionOffers()[0]!;
+  const execution = starts.executePrepared(prepared.token, restart.action);
+  await h.tick(12); const receipt = await execution;
+  assert.equal(receipt.result.executed, true); assert.equal(h.bot.restarts, 1);
+  assert.equal(receipt.event?.frames[0]!.self.properties.health, 0);
+  assert.equal(receipt.actionStartReceipt.preparationWait?.outcome, 'timeout');
+  assert.equal(receipt.actionStartReceipt.preparationWait?.observedSequence, null);
+  assert.equal(receipt.actionStartReceipt.preparationWait?.waitAttempts, 1);
+});
 
 test('a stalled real sensor archives only the incomplete measured motor window and releases its controls', async t => {
   const h = fixture(t); await h.tick(1); t.mock.timers.enable({ apis: ['setTimeout'] });

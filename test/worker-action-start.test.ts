@@ -26,7 +26,7 @@ function fixture() {
     const event: RealEvent = { version: 'RealEventV5', id: 'protocol-motor:event-' + before.sequence, cue: cueFor(selected, before),
       frames: [before, current], trackedIds: ['self'], provenance: 'executed-real-body', complete: true, bodyResult: result };
     return { result, event, precedingPassiveEvents: pending.splice(0) };
-  } };
+  }, waitForObservationAfter: async (_sequence: number, _options: { timeoutMs: number; signal?: AbortSignal }): Promise<Observation | null> => null };
   const protocol = new MinecraftActionStartProtocol(body, receipt => diagnostics.push(receipt));
   const connection = { latest: body.latest, synchronousActionStart: false,
     startObservation: async () => protocol.startObservation(),
@@ -42,6 +42,39 @@ function fixture() {
     get current() { return current; }, set current(value: Observation) { current = value; },
     get calls() { return calls; }, advance() { const before = current; current = frame(before.sequence + 1); pending.push(passive(before, current)); } };
 }
+
+test('preparation waits once for a new real frame before atomically draining passive evidence', async t => {
+  const f = fixture(); let resolveWait!: (value: Observation) => void, waits = 0, finished = false;
+  t.mock.method(f.body, 'waitForObservationAfter', async (sequence: number, options: { timeoutMs: number }) => {
+    waits++; assert.equal(sequence, 1); assert.equal(options.timeoutMs, 50);
+    return new Promise<Observation>(resolve => { resolveWait = resolve; });
+  });
+  const pending = Promise.resolve(f.protocol.prepareActionStart()).then(value => { finished = true; return value; });
+  await Promise.resolve(); assert.equal(finished, false); assert.equal(waits, 1); assert.equal(f.calls, 0);
+  f.advance(); resolveWait(f.current);
+  const prepared = await pending;
+  assert.equal(prepared.observation.sequence, 2);
+  assert.equal(f.diagnostics[0]!.preparationWait?.outcome, 'next-frame');
+  assert.equal(f.diagnostics[0]!.preparationWait?.requestedSequence, 1);
+  assert.equal(f.diagnostics[0]!.preparationWait?.observedSequence, 2);
+  assert.deepEqual(prepared.precedingPassiveEvents.map(event => event.frames.map(value => value.sequence)), [[1, 2]]);
+  const execution = await f.protocol.executePrepared(prepared.token, action);
+  assert.equal(execution.result.executed, true); assert.equal(waits, 1); assert.equal(f.calls, 1);
+  assert.deepEqual(execution.actionStartReceipt.preparationWait, f.diagnostics[0]!.preparationWait);
+});
+
+test('a single preparation captures the latest frame of a synchronous clock catch-up without retrying', async t => {
+  const f = fixture(); let waits = 0;
+  t.mock.method(f.body, 'waitForObservationAfter', async () => {
+    waits++; f.advance(); const first = f.current; f.advance(); f.advance(); return first;
+  });
+  const prepared = await f.protocol.prepareActionStart();
+  assert.equal(waits, 1); assert.equal(prepared.observation.sequence, 4);
+  assert.equal(f.diagnostics[0]!.preparationWait?.observedSequence, 2);
+  assert.deepEqual(prepared.precedingPassiveEvents.map(event => event.frames.map(value => value.sequence)), [[1, 2], [2, 3], [3, 4]]);
+  assert.equal((await f.protocol.executePrepared(prepared.token, action)).result.executed, true);
+  assert.equal(waits, 1); assert.equal(f.calls, 1);
+});
 
 test('initial acquisition returns its atomic boundary even if a later worker frame arrives first', async () => {
   const f = fixture();
@@ -105,7 +138,7 @@ test('a controller veto cancels its token without issuing a motor or losing prep
 });
 
 test('full-frame comparison rejects changed sensations with the same sequence', async () => {
-  const f = fixture(), prepared = f.protocol.prepareActionStart();
+  const f = fixture(), prepared = await f.protocol.prepareActionStart();
   f.current = { ...f.current, sensation: { version: 'AnonymousRGBD1', width: 1, height: 1,
     horizontalFov: 1, verticalFov: 1, range: 8, samples: [.1, .2, .3, 4] } };
   const result = await f.protocol.executePrepared(prepared.token, action);
@@ -114,8 +147,8 @@ test('full-frame comparison rejects changed sensations with the same sequence', 
 });
 
 test('superseded and unprepared execution tokens cannot later execute, while their passive evidence remains available', async () => {
-  const f = fixture(); f.advance(); const first = f.protocol.prepareActionStart(); f.advance();
-  const second = f.protocol.prepareActionStart();
+  const f = fixture(); f.advance(); const first = await f.protocol.prepareActionStart(); f.advance();
+  const second = await f.protocol.prepareActionStart();
   assert.equal(second.precedingPassiveEvents.length, 2);
   assert.equal((await f.protocol.executePrepared(first.token, action)).result.executed, false);
   await f.protocol.execute(action);
@@ -123,7 +156,7 @@ test('superseded and unprepared execution tokens cannot later execute, while the
 });
 
 test('a failed motor consumes its token and preserves preparation evidence for a later drain', async t => {
-  const f = fixture(); f.advance(); const prepared = f.protocol.prepareActionStart();
+  const f = fixture(); f.advance(); const prepared = await f.protocol.prepareActionStart();
   t.mock.method(f.body, 'execute', async () => { throw new Error('measured-body-fault'); });
   await assert.rejects(f.protocol.executePrepared(prepared.token, action), /measured-body-fault/);
   assert.equal(f.protocol.drainPassiveEvents().length, 1);
@@ -133,7 +166,7 @@ test('a failed motor consumes its token and preserves preparation evidence for a
 test('a preparation reply cannot be replaced with a newer controller cache frame', async () => {
   const f = fixture();
   f.connection.prepareActionStart = async () => {
-    const prepared = f.protocol.prepareActionStart(); f.advance(); return prepared;
+    const prepared = await f.protocol.prepareActionStart(); f.advance(); return prepared;
   };
   const result = await f.environment.executeOffer(offer(f.current), start => {
     assert.equal(start.observation.sequence, 1); assert.equal(f.connection.latest().sequence, 2); return true;
@@ -202,7 +235,7 @@ test('passive evidence from after the accepted start is rejected before outcome 
 });
 
 test('an unknown token cannot steal newer passive evidence ahead of a legitimate prepared window', async () => {
-  const f = fixture(); f.advance(); const prepared = f.protocol.prepareActionStart(); f.advance();
+  const f = fixture(); f.advance(); const prepared = await f.protocol.prepareActionStart(); f.advance();
   const unknown = await f.protocol.executePrepared('wrong-token', action);
   assert.deepEqual(unknown.precedingPassiveEvents, []);
   assert.deepEqual(f.protocol.cancelActionStart('wrong-token', 'controller-veto').precedingPassiveEvents, []);
@@ -223,7 +256,7 @@ test('local preparation evidence remains retrievable after the worker and its ca
 });
 
 test('a diagnostic failure after token consumption preserves preparation evidence and prevents the motor', async t => {
-  const f = fixture(); f.advance(); const prepared = f.protocol.prepareActionStart();
+  const f = fixture(); f.advance(); const prepared = await f.protocol.prepareActionStart();
   t.mock.method(f.protocol, 'record', () => { throw new Error('diagnostic-channel-failed'); });
   await assert.rejects(f.protocol.executePrepared(prepared.token, action), /diagnostic-channel-failed/);
   assert.equal(f.protocol.drainPassiveEvents().length, 1); assert.equal(f.calls, 0);

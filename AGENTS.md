@@ -13,8 +13,9 @@ legacy models retain their fits but do not receive invented window calibration.
 All local runs are stopped. B–E and the overall capability objective remain open.
 
 The user's current instruction (2026-09-13) supersedes historical workflow
-requirements: use available native Codex tools, skills and plugins, work directly
-in the main task, and do not delegate or spawn sub-agents. Do not run ACL-X,
+requirements: use available native Codex tools, skills and plugins. The latest
+user instruction explicitly permits bounded subtask delegation; the main task
+retains responsibility for integration and continuing through acceptance. Do not run ACL-X,
 generator/critic loops, custom routing or phase-stage autorun protocols. Archived
 workflow artifacts are historical evidence only. Current engineering progress is
 recorded in `docs/native-continuation-2026-09-13.md`.
