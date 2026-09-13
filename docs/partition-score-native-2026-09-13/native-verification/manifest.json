@@ -1,0 +1,131 @@
+{
+  "version": "NativeR10FaultStop1",
+  "status": "fault-paused",
+  "stoppedAt": "2026-09-13T13:10:13.082Z",
+  "seconds": 281.398,
+  "source": "evidence/pr3-local-partition-score",
+  "sourceCommit": "f531165e08260034ac6a2ca63b0289a3544d705e",
+  "sessionSha256": "dc87e8a88f7858321574cdc34628e5b187ec1c2be8741ec5e8b73e04db8996d2",
+  "worldSha256": "d64490e72059fd4d3662d0faa5abd0ccfd1b43e86458e01e783d804468622d40",
+  "counts": {
+    "decisions": 10,
+    "decisionStatuses": {
+      "executed": 2,
+      "refused": 8
+    },
+    "attempts": 10,
+    "executed": 2,
+    "refused": 8,
+    "refusalReasons": {
+      "action-start-expired": 8
+    },
+    "executedFractionOfAllDecisions": 0.2,
+    "freshRecordedForecasts": 2,
+    "supportedExecutedForecasts": 0,
+    "supportedTaskPlans": 0,
+    "uniqueNewRealWindows": 251,
+    "activeWindows": 2,
+    "passiveWindows": 249,
+    "activeObservationWindows": 0,
+    "receiptInstrumentedWindows": 2,
+    "zeroDurationMotorExposures": 0,
+    "learningWrites": 251,
+    "passiveWrites": 249,
+    "activeWrites": 2
+  },
+  "finalObservationAvailable": false,
+  "finalPlayerAgreement": null,
+  "capabilityEstablished": false,
+  "files": [
+    {
+      "source": "evidence/pr3-local-partition-score/capture-audit.json",
+      "path": "capture-audit.json",
+      "bytes": 64342,
+      "sha256": "bd293ca1657d7b9198a8c967f9fc66f8df94b09f2b12842c5e228d184ae8eea0"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/coverage-audit.json",
+      "path": "coverage-audit.json",
+      "bytes": 292956,
+      "sha256": "97806d54baa087f9bca452832210fc1c46048d60fd62ef0a4552d35dbdf77b50"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/frame-state-audit.json",
+      "path": "frame-state-audit.json",
+      "bytes": 153497,
+      "sha256": "ad1b888223c47216eae7bdcbb2b00c8d5942e2c143070830108b8b1fe2dd5fef"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/freshness-audit.json",
+      "path": "freshness-audit.json",
+      "bytes": 8777,
+      "sha256": "07863a5d88d1b851bbe05e55fdc98c9dccd99637c723b363885dd46fd6e45146"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/live-restore-audit.json",
+      "path": "live-restore-audit.json",
+      "bytes": 1313,
+      "sha256": "93c3f8b0cc46a90c0c516828ef1f7f6b34959bef5712c23494c6749bc0710c04"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/stopped-audit.json",
+      "path": "stopped-audit.json",
+      "bytes": 68009,
+      "sha256": "e432c831b36081372c5e8cd471cd7160db7eede59b2573cf4d45c4b86ca56efb"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/capture-audit.log",
+      "path": "capture-audit.log",
+      "bytes": 648,
+      "sha256": "0eccc98ae4f214301858082bcaac35a10a468c3658aac072f743bc41e998d5d1"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/coverage-audit.log",
+      "path": "coverage-audit.log",
+      "bytes": 1734,
+      "sha256": "ffbcdeb20ef1b711b773ab4b11a9c1a065c4f0073eefaef0f9a054cfdc75b3da"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/frame-state-audit.log",
+      "path": "frame-state-audit.log",
+      "bytes": 424,
+      "sha256": "d7a54fc36ffcc5965650640752f19718eccadf2aa204abbf280d612296104bfa"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/freshness-audit.log",
+      "path": "freshness-audit.log",
+      "bytes": 278,
+      "sha256": "10de93c3a2a1877e1cecbc773e7b01b3cf04a02a22553ccd5f05d2d26ca4255b"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/live-restore-audit.log",
+      "path": "live-restore-audit.log",
+      "bytes": 325,
+      "sha256": "fd4c0f7105b8e800c470e38a7fe9f4d22fcbe48aab2e744d0290d99005add6a9"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/stopped-audit.log",
+      "path": "stopped-audit.log",
+      "bytes": 338,
+      "sha256": "14aa87bc7008f6ab6846a380b1e482206ba1ac494a2b4e92a7eccf6977279071"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/stopped-world.tar.gz.provenance.json",
+      "path": "stopped-world.tar.gz.provenance.json",
+      "bytes": 459,
+      "sha256": "9e0e65e6ff482faa877a289d31aabb519de1b0055d8d19e1077d69334346fce0"
+    },
+    {
+      "source": "evidence/pr3-local-partition-score/journal-counts.json",
+      "path": "journal-counts.json",
+      "bytes": 150,
+      "sha256": "7a4b05ebb6fabbd256092f582c13d8781277a461ff3985238ece8cefc810834f"
+    },
+    {
+      "source": "evidence/pr3-partition-score-recovery/online-run.log",
+      "path": "online-run.log",
+      "bytes": 804,
+      "sha256": "ba659b3da37354ac2721e448ec0b11978247e1c58fc547bd8de274f395d1b9fa"
+    }
+  ]
+}

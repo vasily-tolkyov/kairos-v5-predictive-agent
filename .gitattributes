@@ -16,3 +16,8 @@ docs/window-statistics-native-2026-09-13/native-verification/** -text
 docs/sealed-consumption-native-2026-09-13/verification/** -text
 docs/sealed-consumption-native-2026-09-13/native-verification/** -text
 docs/partition-score-native-2026-09-13/verification/** -text
+
+docs/partition-score-native-2026-09-13/native-verification/** -text
+docs/stage-one-2026-09-13/verification/** -text
+docs/stage-one-2026-09-13/paused-candidate/** -text
+docs/stage-one-2026-09-13/preregistered.json -text

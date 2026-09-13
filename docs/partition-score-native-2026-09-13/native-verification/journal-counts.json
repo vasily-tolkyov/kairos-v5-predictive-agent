@@ -1,0 +1,8 @@
+{
+  "passive-windows": 249,
+  "initial-telemetry": 1,
+  "action-intents": 10,
+  "body-diagnostics": 136,
+  "physical-actions": 10,
+  "decisions": 10
+}

@@ -1,0 +1,9 @@
+{
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-partition-score",
+  "stoppedAt": "2026-09-13T13:10:13.082Z",
+  "levelName": "world-v5-physical-control",
+  "regions": 4,
+  "output": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-partition-score\\stopped-world.tar.gz",
+  "bytes": 3903092,
+  "sha256": "d64490e72059fd4d3662d0faa5abd0ccfd1b43e86458e01e783d804468622d40"
+}

@@ -8,7 +8,7 @@ const names = ['open-world', 'experience-prototype', 'perception', 'minecraft-ex
   'dig-action-window', 'interact-observation-window', 'body-motor-window', 'entity-retina', 'block-optics', 'passive-experience', 'new-visible-surface', 'prediction-ranges',
   'contextual-support-domain', 'measured-motor-learning', 'action-start', 'worker-action-start', 'window-calibration',
   'experience-live-state', 'experience-intervals', 'experience-frame-flow', 'experience-session-live', 'experience-continuous-readout',
-  'experience-sealed-evidence'];
+  'experience-sealed-evidence', 'stage-one-movement'];
 // Match the already documented serial integration protocol. Native planning
 // deadlines and every existing test assertion remain unchanged.
 const child = spawn(process.execPath, ['--test', '--test-concurrency=1', ...names.map(name => resolve('dist/test', name + '.test.js')),
