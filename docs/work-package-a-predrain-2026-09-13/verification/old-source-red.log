@@ -1,0 +1,31 @@
+✖ postplanning passive learning finishes before preparation while newer passive evidence still precedes the fresh forecast (24.7237ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 145.1323
+
+✖ failing tests:
+
+test at dist\test\worker-action-start.test.js:283:1
+✖ postplanning passive learning finishes before preparation while newer passive evidence still precedes the fresh forecast (24.7237ms)
+  AssertionError [ERR_ASSERTION]: already received planning-time evidence must finish learning before any start token exists
+  
+  0 !== 1
+  
+      at f.connection.prepareActionStart (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/worker-action-start.test.js:308:16)
+      at MinecraftExperienceEnvironment.executeOffer (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/adapters/minecraft/experience.js:119:56)
+      at ExperienceSession.step (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/experience-session.js:247:42)
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/worker-action-start.test.js:318:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
