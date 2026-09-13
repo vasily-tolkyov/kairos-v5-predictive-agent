@@ -1,0 +1,92 @@
+{
+  "version": "MatchedNativePredrainProtocol1",
+  "registeredBeforeCandidateLaunch": true,
+  "control": "evidence/pr3-local-frame-alignment",
+  "controlActorCommit": "949cd496c0adb5a36cbb878f72e63029a3bbb874",
+  "controlReportSha256": "a31259856a291b4dbdb19f681339ca70aaad6e259539a5214bad49633b63471c",
+  "controlProtocolSha256": "d88d3c0708dc8c7f4da439d7e8ef4ef80e863e9c976ea934bda9ba6ab73522b3",
+  "controlResult": {
+    "decisions": 32,
+    "executed": 8,
+    "refused": 24,
+    "newWrites": 97,
+    "newPassiveWindows": 89,
+    "supportedExecutedForecasts": 0,
+    "goalSuccesses": 0
+  },
+  "sourceWorld": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+  "sourceWorldArchiveSha256": "8d7fb3423ef8778f7f49374e5d07ecfa52646f626a68ad2bcb938e9ca228ccb1",
+  "sourceSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+  "sourceWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+  "initialLearningDigest": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+  "newFork": "evidence/pr3-local-predrain-start",
+  "output": "evidence/pr3-local-predrain",
+  "frozenActor": "evidence/execution-builds/pr3-local-r5-predrain",
+  "candidateActorIdentity": "Pin the reviewed source commit and all executed build hashes before launch; never change the frozen actor or reuse a mutated runtime as initial state.",
+  "steps": 32,
+  "seconds": 180,
+  "port": 25638,
+  "difficulty": "peaceful",
+  "environment": "natural",
+  "worldSeed": "129604783",
+  "modelSeed": 317,
+  "goalAfter": 0,
+  "goal": "evidence/pr3-local-timing-goal.json",
+  "goalSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+  "launchAttempts": 1,
+  "learning": true,
+  "concurrentCpuExperiments": false,
+  "treatment": "Once after planning and before requesting the prepared frame, explicitly drain, validate and learn waiting-time passive windows. The existing callback still learns newer real windows before its fresh forecast and exact-frame check. The selected action, search, motor and decision budgets do not change. All phases share duplicate/conflict and chronology checks, including frozen sessions.",
+  "preparationWait": {
+    "requestedTimeoutMs": 50,
+    "maximumWaitCallsPerPreparation": 1,
+    "maximumPreparationsPerDecision": 1,
+    "retryAfterExpiry": false,
+    "clockSuspension": false,
+    "wallTimeQualification": "A JavaScript timer is not a hard real-time bound; report every observed wait and overrun, including timeout outcomes, without excluding slow attempts."
+  },
+  "unchanged": [
+    "initial session bytes, choices and learned parameters",
+    "stopped world files and player state",
+    "terminal goal and maintenance goals",
+    "learning and support thresholds",
+    "motor tick durations",
+    "search and decision budgets",
+    "all initial and intervening real passive evidence is eligible exactly once"
+  ],
+  "primaryMeasures": [
+    "executed physical action or active observation windows / all new decisions",
+    "all action-start dispositions, including refusals and cancellations",
+    "wait outcome and duration; fresh prediction-to-motor duration",
+    "independent support coverage and observed terminal goal result"
+  ],
+  "integrityChecks": [
+    "matched source session bytes, world tree, restored learning digest and full evaluator protocol",
+    "one preparation token at most per attempted decision, one terminal disposition per token, no unrepresented token request",
+    "prepared complete anonymous frame equals the actual action start frame for every accepted execution",
+    "all action and passive archive intervals form one gap-free, non-overlapping chain; checkpoint/close tail reported separately",
+    "raw event counts, passive-window journal, decision journal and final cumulative counters agree"
+  ],
+  "requiredSoftwareChecks": [
+    "next frame, timeout, supersede/close/fault cleanup and no auto-retry regressions",
+    "passive learning precedes fresh prediction and exact frame mismatch still refuses",
+    "full active integration gate without weaker assertions or larger budgets"
+  ],
+  "decisionRule": "Archive the one candidate launch regardless of outcome. More than 8 actual executions in a complete 32-decision sample supports improved availability for this ordered development pair only. All other cases remain negative or incomplete, without retry or budget extension. Calibration coverage and goal result are separate.",
+  "preserve": [
+    "raw receipts and events",
+    "all failures and any launch deviation",
+    "initial fork provenance",
+    "final model and stopped world",
+    "actor and audit identities",
+    "resource and timing measurements"
+  ],
+  "limitations": [
+    "One ordered development pair does not estimate a general causal speedup.",
+    "Different live timing can change later trajectories and learning costs even with an identical initial state.",
+    "Recorded receipts establish represented preparations and motor attempts; software tests and source review establish that an aborted pending wait cannot trigger an invisible retry.",
+    "This short peaceful experiment cannot establish useful retention, transfer, sustained autonomous learning or open multistage capability. Those remain separate subsequent tasks.",
+    "Additional flush changes passive-window segmentation and model trajectory; do not attribute differences solely to computational cost placement."
+  ],
+  "windowSegmentation": "This drain flushes the partially accumulated real passive window, so it can split nonoverlapping passive intervals, change measured passive cue durations and change the learned trajectory. It is not an exact-model-equivalent cost optimization. Every raw interval and source window is preserved; no replay or duplicate is counted as a new independent window. Report active/passive window counts and both off-critical and callback costs."
+}
