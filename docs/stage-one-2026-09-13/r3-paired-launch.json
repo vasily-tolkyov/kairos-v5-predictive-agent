@@ -1,0 +1,192 @@
+{
+  "version": "StageOnePairedLaunch1",
+  "registeredAt": "2026-09-13T14:44:41.705557+00:00",
+  "hypothesis": "Same fixed R2 task policy with R3 balanced goal-free acquisition. This acquisition has zero blocked moves, so obstruction acceptance is already absent; retain the full registered paired test to measure task and prediction consequences.",
+  "protocol": "docs/stage-one-2026-09-13/r3-preregistered.json",
+  "protocolSha256": "e123818c51a2f1e6fb4f84525fa3ced4aa514cb74b113e6ae8132f32f4bae620",
+  "sourceActor": "evidence/execution-builds/pr3-stage-one-r3",
+  "actorManifestSha256": "ff7f87497d201da91dc2e56799f23693cf399caa356b52a871a2c82232d9f3d3",
+  "modelSource": "evidence/pr3-stage-one-acquisition-03/session.json.gz",
+  "modelSourceSha256": "6b218ffb13286f6b9b3693159d1c8dff759d186e0d58cd86853de424e9e170c0",
+  "modelLearningDigest": "5791fc0ee65712a7c34bf89db34cd0aedda3cb57dc0ab311dd885f5688f152e1",
+  "donorReportSha256": "3d6ddd6471204b06bd47621c63f13b46bf4bdaf528c33103c6230e9723a2d261",
+  "donorAuditSha256": "e1e352807acdc6c068d07a002b20979a35da21215cfd05595a7c51a0d5ca3c8e",
+  "auditorSourceSha256": "2187a4d93f98e2a5fa489c9dbd4d7041e7b66e9e22f15da864cdc283ee7b5d96",
+  "acquisitionGate": {
+    "counts": true,
+    "timing": true,
+    "integrity": true
+  },
+  "pairs": [
+    {
+      "pair": 1,
+      "case": "pose-1",
+      "seed": 317,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-1-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-01-retained",
+        "evidence/pr3-stage-one-r3-pair-01-erased"
+      ]
+    },
+    {
+      "pair": 2,
+      "case": "pose-1",
+      "seed": 503,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-1-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-02-erased",
+        "evidence/pr3-stage-one-r3-pair-02-retained"
+      ]
+    },
+    {
+      "pair": 3,
+      "case": "pose-1",
+      "seed": 911,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-1-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-03-retained",
+        "evidence/pr3-stage-one-r3-pair-03-erased"
+      ]
+    },
+    {
+      "pair": 4,
+      "case": "pose-2",
+      "seed": 317,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-2-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-04-erased",
+        "evidence/pr3-stage-one-r3-pair-04-retained"
+      ]
+    },
+    {
+      "pair": 5,
+      "case": "pose-2",
+      "seed": 503,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-2-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-05-retained",
+        "evidence/pr3-stage-one-r3-pair-05-erased"
+      ]
+    },
+    {
+      "pair": 6,
+      "case": "pose-2",
+      "seed": 911,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-2-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-06-erased",
+        "evidence/pr3-stage-one-r3-pair-06-retained"
+      ]
+    },
+    {
+      "pair": 7,
+      "case": "pose-3",
+      "seed": 317,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-3-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-07-retained",
+        "evidence/pr3-stage-one-r3-pair-07-erased"
+      ]
+    },
+    {
+      "pair": 8,
+      "case": "pose-3",
+      "seed": 503,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-3-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-08-erased",
+        "evidence/pr3-stage-one-r3-pair-08-retained"
+      ]
+    },
+    {
+      "pair": 9,
+      "case": "pose-3",
+      "seed": 911,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-3-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-09-retained",
+        "evidence/pr3-stage-one-r3-pair-09-erased"
+      ]
+    },
+    {
+      "pair": 10,
+      "case": "pose-4",
+      "seed": 317,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-4-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-10-erased",
+        "evidence/pr3-stage-one-r3-pair-10-retained"
+      ]
+    },
+    {
+      "pair": 11,
+      "case": "pose-4",
+      "seed": 503,
+      "conditionsInOrder": [
+        "retained-frozen",
+        "erased-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-4-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-11-retained",
+        "evidence/pr3-stage-one-r3-pair-11-erased"
+      ]
+    },
+    {
+      "pair": 12,
+      "case": "pose-4",
+      "seed": 911,
+      "conditionsInOrder": [
+        "erased-frozen",
+        "retained-frozen"
+      ],
+      "source": "evidence/pr3-stage-one-pose-4-prepared",
+      "outputs": [
+        "evidence/pr3-stage-one-r3-pair-12-erased",
+        "evidence/pr3-stage-one-r3-pair-12-retained"
+      ]
+    }
+  ],
+  "preparation": "Each pose gets a stopped zero-action checkpoint and archive; every condition forks that same original. Model, controls, source, budgets and all failures retained.",
+  "driverSha256": "2eb0ee87215fb4ec4f2d4c99673e3a52b6c0d6c63ddc9ee140a479412fd7d4f6"
+}
