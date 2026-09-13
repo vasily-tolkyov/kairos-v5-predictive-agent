@@ -1,0 +1,162 @@
+{
+  "version": "StageOnePreparedStarts1",
+  "recordedBeforePairedTests": "2026-09-13T14:01:10.331448+00:00",
+  "sources": [
+    {
+      "case": "pose-1",
+      "source": "evidence/pr3-stage-one-pose-1-prepared",
+      "stoppedAt": "2026-09-13T13:58:16.647Z",
+      "reportSha256": "08b09c66261b539570fc35257613061bcd8b7619b5df2ae49016640045e3b698",
+      "sessionSha256": "b7a3d0820d58ba670c16197daa257e5e0c4c9fd51d693a5d30adaf8959a5af14",
+      "worldSha256": "b33d8d8e1acb10adfb89e62cf3a7340eead1541b92f8929309f3f6a961f20d9c",
+      "worldProofSha256": "2bc7b511139c3136813c1706d8611445a931ff2bdc4d82f985320694bb54da10",
+      "actualSelf": {
+        "position": [
+          -1.5,
+          64,
+          1.5
+        ],
+        "yaw": 3.141592653589793,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0,
+          "hotbarCount0": 0,
+          "hotbarCount1": 0,
+          "hotbarCount2": 0,
+          "hotbarCount3": 0,
+          "hotbarCount4": 0,
+          "hotbarCount5": 0,
+          "hotbarCount6": 0,
+          "hotbarCount7": 0,
+          "hotbarCount8": 0,
+          "gripCount": 0
+        }
+      },
+      "newActions": 0,
+      "newLearning": 0
+    },
+    {
+      "case": "pose-2",
+      "source": "evidence/pr3-stage-one-pose-2-prepared",
+      "stoppedAt": "2026-09-13T13:58:36.667Z",
+      "reportSha256": "aaf33ab8a847e21bb73b44001b50074dc7ffe06a3636f55cbae23eafad4b7e89",
+      "sessionSha256": "b7a3d0820d58ba670c16197daa257e5e0c4c9fd51d693a5d30adaf8959a5af14",
+      "worldSha256": "83dbb07190b46b5c4f13f960ced9a030de5e6b52b0a198636a1004cddea022f6",
+      "worldProofSha256": "02a7c01a32ec84e0be66b7900d55bbb6e2d551f5f5a9de2d756fc58eaef0d788",
+      "actualSelf": {
+        "position": [
+          -1.5,
+          64,
+          1.5
+        ],
+        "yaw": 1.5707963267948966,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0,
+          "hotbarCount0": 0,
+          "hotbarCount1": 0,
+          "hotbarCount2": 0,
+          "hotbarCount3": 0,
+          "hotbarCount4": 0,
+          "hotbarCount5": 0,
+          "hotbarCount6": 0,
+          "hotbarCount7": 0,
+          "hotbarCount8": 0,
+          "gripCount": 0
+        }
+      },
+      "newActions": 0,
+      "newLearning": 0
+    },
+    {
+      "case": "pose-3",
+      "source": "evidence/pr3-stage-one-pose-3-prepared",
+      "stoppedAt": "2026-09-13T13:58:55.323Z",
+      "reportSha256": "6299d11c607d81cd7161d2c459ffe7c631e2d70cd26b41c5dc36ad8b5e8206ae",
+      "sessionSha256": "b7a3d0820d58ba670c16197daa257e5e0c4c9fd51d693a5d30adaf8959a5af14",
+      "worldSha256": "5127fa1a91e828ea84211bfe273f368d7f4a75c784e265e475c784a30f68e3ea",
+      "worldProofSha256": "19161a4816a9cbd2959e0cfe068563e4f0bfa480540f21a483c135888818f78a",
+      "actualSelf": {
+        "position": [
+          -1.5,
+          64,
+          1.5
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0,
+          "hotbarCount0": 0,
+          "hotbarCount1": 0,
+          "hotbarCount2": 0,
+          "hotbarCount3": 0,
+          "hotbarCount4": 0,
+          "hotbarCount5": 0,
+          "hotbarCount6": 0,
+          "hotbarCount7": 0,
+          "hotbarCount8": 0,
+          "gripCount": 0
+        }
+      },
+      "newActions": 0,
+      "newLearning": 0
+    },
+    {
+      "case": "pose-4",
+      "source": "evidence/pr3-stage-one-pose-4-prepared",
+      "stoppedAt": "2026-09-13T13:59:15.221Z",
+      "reportSha256": "248081908ad838a4cf676416bd516a0d9418e8e20da96e4e84c997cfc5c5de76",
+      "sessionSha256": "b7a3d0820d58ba670c16197daa257e5e0c4c9fd51d693a5d30adaf8959a5af14",
+      "worldSha256": "47c0422390c81fd80288697d0a6d3804d807c49017e66fa58c7cb51d7bb4c090",
+      "worldProofSha256": "cc4d274aa3e675d117ce2fe2b8647f5513707f69ccc411a1c6a18524fac32f18",
+      "actualSelf": {
+        "position": [
+          -1.5,
+          64,
+          1.5
+        ],
+        "yaw": 4.71238898038469,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0,
+          "hotbarCount0": 0,
+          "hotbarCount1": 0,
+          "hotbarCount2": 0,
+          "hotbarCount3": 0,
+          "hotbarCount4": 0,
+          "hotbarCount5": 0,
+          "hotbarCount6": 0,
+          "hotbarCount7": 0,
+          "hotbarCount8": 0,
+          "gripCount": 0
+        }
+      },
+      "newActions": 0,
+      "newLearning": 0
+    }
+  ]
+}
