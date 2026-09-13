@@ -1,0 +1,9 @@
+{"decisions":16,"executed":16,"writes":16,"position":[2.157169719836446,64,1.499999999999998],"seconds":13.805127899999999}
+{"decisions":32,"executed":32,"writes":32,"position":[2.157169719836446,64,1.4999999999999962],"seconds":28.027612800000004}
+{"decisions":48,"executed":46,"writes":46,"position":[1.8428302801635534,64,1.4999999999999953],"seconds":40.8732264}
+{"decisions":64,"executed":62,"writes":62,"position":[2.7,64,1.4999999999999953],"seconds":51.887895799999995}
+{"decisions":80,"executed":78,"writes":78,"position":[1.3,64,1.4999999999999953],"seconds":65.1920705}
+{"decisions":96,"executed":92,"writes":92,"position":[1.3,64,1.4999999999999953],"seconds":73.860944}
+{"decisions":112,"executed":108,"writes":108,"position":[1.3,64,1.4999999999999944],"seconds":83.949434}
+{"decisions":128,"executed":124,"writes":124,"position":[2.7,64,1.4999999999999936],"seconds":95.6873777}
+{"status":"budget-paused","decisions":128,"executed":124,"writes":124,"passiveWindows":204,"seconds":95.6874852}

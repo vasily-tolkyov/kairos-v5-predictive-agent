@@ -1,0 +1,140 @@
+{
+  "version": "StageOneMovementProtocol1",
+  "registeredAt": "2026-09-13T13:50:37.207767+00:00",
+  "registeredBeforeFirstNativeRun": false,
+  "scope": "New independent stage-one task. Historical original z < -14.5 task and all old failures are unchanged. Endpoint movement learning only.",
+  "hypothesis": "The R1 learning p95 failure was mainly canonical event serialization. Hashing the exact archived JSON bytes, with no changed fitted rows/predictions/support, reduces native learning p95 to the original <=20ms gate while retaining execution and integrity thresholds.",
+  "worldSeed": 9132701,
+  "difficulty": "peaceful",
+  "setupCommands": [
+    "fill -3 63 -3 3 63 3 minecraft:smooth_stone",
+    "fill -3 64 -3 3 68 3 minecraft:air",
+    "fill -3 64 -3 -3 65 3 minecraft:stone",
+    "fill 3 64 -3 3 65 3 minecraft:stone",
+    "fill -3 64 -3 3 65 -3 minecraft:stone",
+    "fill -3 64 3 3 65 3 minecraft:stone",
+    "fill 0 64 0 0 65 1 minecraft:stone",
+    "setworldspawn 1 64 1"
+  ],
+  "training": {
+    "id": "acquisition-01",
+    "start": [
+      1.5,
+      64,
+      1.5
+    ],
+    "yawDegrees": 180,
+    "goal": null,
+    "selection": "Own uncertainty-driven choice among four existing four-tick movement offers; no trajectory or terminal testing goal provided."
+  },
+  "trainingBudget": {
+    "decisions": 128,
+    "seconds": 240
+  },
+  "testBudget": {
+    "decisions": 48,
+    "seconds": 90
+  },
+  "goal": [
+    1.5,
+    64,
+    -1.5
+  ],
+  "goalTolerance": 0.55,
+  "goalConfirmations": 3,
+  "predictionErrorTolerance": 0.15,
+  "blockedDisplacementThreshold": 0.05,
+  "controllerSeeds": [
+    317,
+    503,
+    911
+  ],
+  "testCases": [
+    {
+      "id": "pose-1",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 0
+    },
+    {
+      "id": "pose-2",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 90
+    },
+    {
+      "id": "pose-3",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 180
+    },
+    {
+      "id": "pose-4",
+      "start": [
+        -1.5,
+        64,
+        1.5
+      ],
+      "yawDegrees": 270
+    }
+  ],
+  "firstLaunch": {
+    "condition": "training",
+    "case": "acquisition-01",
+    "controllerSeed": 317,
+    "attempts": 1,
+    "output": "evidence/pr3-stage-one-acquisition-02"
+  },
+  "acquisitionGate": {
+    "completedDecisions": 128,
+    "minimumExecuted": 116,
+    "minimumQualifiedOriginalWrites": 80,
+    "maximumChoicePlusPreparationP95Ms": 20,
+    "maximumLearningP95Ms": 20,
+    "telemetryGaps": 0,
+    "faults": 0,
+    "supportAndPredictionErrors": "Report all pre-update actual-start forecasts including absent, unsupported and wrong; not a threshold relaxation or native task benefit claim."
+  },
+  "pairedTestGate": "Only after acquisition integrity/timeliness passes and the stopped model is pinned. Prepare one stopped zero-action body/world checkpoint per registered pose; fork the same original for every condition/seed. Frozen retained uses the same pretest donor, erased starts with empty StageOneMovement. No test fitting or exposure donated between tests. Alternate condition order by pair index; 4 poses x 3 seeds = 12 pairs. Do not run a missing dependent condition after integrity failure.",
+  "stageAcceptance": {
+    "integrity": "All 24 stopped test runs have complete original windows, bound actual-start forecasts, peaceful native engine confirmation and unchanged frozen model digests. Missing/faulted attempts remain in reporting and prohibit acceptance.",
+    "retainedSuccessesAtLeast": 9,
+    "pairs": 12,
+    "successRateGainAtLeast": 0.25,
+    "pairedSuccessSignTestOneSidedPAtMost": 0.05,
+    "penalizedActionCost": "Every failure costs the full 48-decision cap; learned median paired cost must improve, report actual wall time too.",
+    "executedFractionAtLeast": 0.9,
+    "supportedKeyPredictionCoverageAtLeast": 0.7,
+    "supportedPlanarPredictionMatchedFractionAtLeast": 0.85,
+    "guidedPredictions": "Score actual-start predictions and separately compare selection-frame forecast to avoid masking stale action guidance. Report missing/unsupported/wrong over all executed moves; .15 block Euclidean planar error fixed.",
+    "obstructionEvidence": "At least 8 genuinely blocked and 8 clearly moving training windows; report pre-update and frozen-test errors by measured blocked/moving groups. Conditional relationship must be data-induced; never inject collision law or material label."
+  },
+  "sourcePolicy": "StageOneMovement2 has no old ExperienceMedium calibration. Reuse existing ContextualReadout threshold rules (8 original-window calibration, .8 accuracy and .05 fit error). Only selected original executed four-tick movement windows train. Passive windows/telemetry remain original archival evidence and supply no theta updates in this separate endpoint prototype. Queries and frozen controls never fit.",
+  "budgetsAndControls": "Per motor retain at most 128 rows, total at most 4 motors/512 rows, 8 measured inputs/2 outputs. Ledger capacity512 with existing bounded retired filter. No continuous-state or long-term budget claim. No concurrent CPU work or uploads during native. No hidden retries, expiry relaxation, repeated evidence credit, external model or route solver.",
+  "twoRoundStop": "If the initial result identifies an obstacle, preregister a targeted change and same metrics. After two targeted changes to the same obstacle fail to improve its key metric, stop and deliver causes and an alternative design for user decision. Do not expand budget, mechanism count or scene complexity to continue.",
+  "registeredBeforeThisNativeRun": true,
+  "targetedChangeNumber": 1,
+  "baseline": "evidence/pr3-stage-one-acquisition-01",
+  "change": "StageOneMovement2 event identity hashes original event JSON bytes; V1 canonical-ledger checkpoints remain under their original immutable actor, no silent migration. No change to fitted rows, input/output, threshold, action or controller.",
+  "baselineMetrics": {
+    "executed": 124,
+    "decisions": 128,
+    "writes": 124,
+    "learningP95Ms": 27.828499999995984,
+    "choicePreparationP95Ms": 3.020699999993667,
+    "supportedPredictions": 9,
+    "supportedCorrect": 9,
+    "integrity": "passed",
+    "acquisitionGatePassed": false
+  },
+  "startGate": "Full 330-test gate and private original 124-window differential must pass. New actor/source/protocol pinned before launch. Do not reuse or overwrite R1."
+}

@@ -1,4 +1,5 @@
 import type { Observation, RealEvent, XYZ } from './contracts.js';
+import { createHash } from 'node:crypto';
 import type { ActionOfferV1 } from './control/contracts.js';
 import { ContextualReadout, type ContextualReadoutSnapshot } from './contextual-readout.js';
 import { ExperienceLedger } from './experience-ledger.js';
@@ -31,7 +32,7 @@ const identity = (offer: Pick<ActionOfferV1, 'cue'>) => sha({ kind: offer.cue.ki
 export const movementOffers = (offers: readonly ActionOfferV1[]) => offers.filter(offer => offer.action.kind === 'move'
   && offer.action.parameters.ticks === 4 && ['forward', 'back', 'left', 'right'].includes(String(offer.action.parameters.direction)));
 export interface StageOneMovementSnapshot {
-  version: 'StageOneMovement1'; writes: number; contexts: ContextualReadoutSnapshot;
+  version: 'StageOneMovement2'; writes: number; contexts: ContextualReadoutSnapshot;
   ledger: ReturnType<ExperienceLedger['snapshot']>;
 }
 export class StageOneMovement {
@@ -49,7 +50,12 @@ export class StageOneMovement {
     validateEvent(event);
     if (event.frames.some(frame => frame.predictionSupport !== undefined || frame.predictionBounds !== undefined
       || frame.predictionContext !== undefined)) throw new Error('stage-one-requires-measured-frames');
-    const digest = sha(event), seen = this.#ledger.check(event.id, digest);
+    // The original event is archived as these exact JSON bytes. A byte digest
+    // avoids sorting every nested sensory object and RGBD frame. Reordering
+    // bytes under the same event ID is conservatively a conflict, not another
+    // calibration window. V2 keeps this identity policy separate from V1.
+    const digest = createHash('sha256').update(JSON.stringify(event)).digest('hex');
+    const seen = this.#ledger.check(event.id, digest);
     if (seen !== 'new') return { learned: false, reason: seen };
     const receipt = event.bodyResult?.motorReceipt;
     if (event.provenance !== 'executed-real-body' || !event.bodyResult?.executed || event.cue.kind !== 'move'
@@ -64,10 +70,10 @@ export class StageOneMovement {
     return { learned: true, reason: null, sourceEventSha256: digest, input, target: delta };
   }
   snapshot(): StageOneMovementSnapshot {
-    return { version: 'StageOneMovement1', writes: this.#writes, contexts: this.#contexts.snapshot(), ledger: this.#ledger.snapshot() };
+    return { version: 'StageOneMovement2', writes: this.#writes, contexts: this.#contexts.snapshot(), ledger: this.#ledger.snapshot() };
   }
   static restore(snapshot: StageOneMovementSnapshot) {
-    if (snapshot.version !== 'StageOneMovement1' || !Number.isSafeInteger(snapshot.writes) || snapshot.writes < 0
+    if (snapshot.version !== 'StageOneMovement2' || !Number.isSafeInteger(snapshot.writes) || snapshot.writes < 0
       || snapshot.contexts.capacity !== 128 || snapshot.ledger.capacity !== 512) throw new Error('invalid-stage-one-model');
     const result = new StageOneMovement(); result.#contexts = ContextualReadout.restore(snapshot.contexts);
     result.#ledger = new ExperienceLedger(512, snapshot.ledger.retired, snapshot.ledger.recent, snapshot.ledger.streams);

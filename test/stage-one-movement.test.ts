@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import type { Action, Observation, RealEvent } from '../src/contracts.js';
 import type { ActionOfferV1 } from '../src/control/contracts.js';
@@ -57,4 +58,13 @@ test('stage-one refuses imagined frames and uninstrumented movement without gran
   assert.equal(model.observe({ ...source, bodyResult: body }).learned, false);
   assert.throws(() => model.observe({ ...source, frames: source.frames.map(value => ({ ...value, predictionSupport: [] })) }), /measured-frames/);
   assert.equal(model.writes, 0); assert.equal(model.snapshot().contexts.circuits.length, 0);
+});
+
+test('stage-one V2 identifies original archived bytes and conservatively rejects reordering an existing event', () => {
+  const model = new StageOneMovement(), source = event(0), bytes = JSON.stringify(source);
+  assert.equal(model.observe(source).sourceEventSha256, createHash('sha256').update(bytes).digest('hex'));
+  assert.equal(model.observe(JSON.parse(bytes)).learned, false);
+  const reordered = Object.fromEntries(Object.entries(source).reverse()) as unknown as RealEvent;
+  assert.throws(() => model.observe(reordered), /conflict/);
+  assert.equal(model.writes, 1);
 });

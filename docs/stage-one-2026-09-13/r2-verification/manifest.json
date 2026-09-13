@@ -1,0 +1,29 @@
+{
+  "version": "StageOneEvidenceCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-stage-one-preparation/r2-compile-01.log",
+      "path": "r2-compile-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/r2-full-gate-01.log",
+      "path": "r2-full-gate-01.log",
+      "bytes": 33192,
+      "sha256": "9b7bc4b5b33a9e099d8a12ed292aa1949bf6e395383372a6ba8c230bcaace642"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/r2-native-window-differential.json",
+      "path": "r2-native-window-differential.json",
+      "bytes": 772,
+      "sha256": "f33f7562adc089794ef38d5b75ae1d1dd5062d803c6a1e290e90ad9fbb11ed68"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/r2-native-window-differential.log",
+      "path": "r2-native-window-differential.log",
+      "bytes": 732,
+      "sha256": "9d177cf2b8e29eedced73512ed6162a4d68b39826713a9091046d6b793a157c1"
+    }
+  ]
+}
