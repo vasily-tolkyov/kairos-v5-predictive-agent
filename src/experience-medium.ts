@@ -21,6 +21,19 @@ interface MotionEstimate { mean: number[]; covariance: number[][]; information: 
   calibration?: { windowId: string; error: number; residual: number }[] }
 interface Network { inputs: string[]; ranges: [number, number][]; weights: number[][]; bias: number[]; heads: Head[];
   observations: number; motion?: MotionEstimate }
+type PredictionHead = Omit<Head, 'covariance'>;
+type WindowReadout = Pick<Network, 'inputs' | 'ranges' | 'weights' | 'bias'>
+  & { heads: PredictionHead[]; motion?: Pick<MotionEstimate, 'mean'> };
+function windowReadout(network?: Network): WindowReadout | undefined {
+  if (!network) return undefined;
+  // The pre-window prediction needs readout parameters, not the much larger
+  // fitting covariance matrices. Keep an independent copy of every value
+  // that decoding actually reads; live fitting matrices remain untouched.
+  return structuredClone({ inputs: network.inputs, ranges: network.ranges,
+    weights: network.weights, bias: network.bias,
+    heads: network.heads.map(({ covariance: _covariance, ...head }) => head),
+    ...(network.motion ? { motion: { mean: network.motion.mean } } : {}) });
+}
 export interface ExperienceMediumSnapshot {
   version: 'KairosExperienceMediumV9' | 'KairosExperienceMediumV10' | 'KairosExperienceMediumV11'; seed: number; random: number;
   networks: [string, Network][]; events: [string, string][]; writes: number;
@@ -194,7 +207,7 @@ export class ExperienceMedium {
     }
     return network;
   }
-  #field(network: Network, state: State, learn = false): number[] {
+  #field(network: Pick<Network, 'inputs' | 'ranges' | 'weights' | 'bias'>, state: State, learn = false): number[] {
     const field = Array(INPUTS).fill(0) as number[];
     for (const [name, value] of features(state)) {
       let site = network.inputs.indexOf(name);
@@ -217,7 +230,7 @@ export class ExperienceMedium {
     });
     return [1, ...field, ...hidden];
   }
-  #read(head: Head, field: number[], bounds?: readonly NumericRange[]) {
+  #read(head: PredictionHead, field: number[], bounds?: readonly NumericRange[]) {
     const category = !head.numeric && head.categoryCorrect >= head.regressionCorrect - .02;
     const readout = category ? head.categoryReadout : head.readout;
     const scores = readout.map(row => row.reduce((sum, w, i) => sum + w * field[i]!, 0));
@@ -240,7 +253,7 @@ export class ExperienceMedium {
         && (head.numeric ? uncertainty <= .05 : margin > 1e-8) };
   }
   #learnMotion(network: Network, normal: readonly number[], displacement: number, sensorResidual: number,
-    windowId: string, rows: ContextualWindowRow[], state: State, prior?: MotionEstimate): boolean {
+    windowId: string, rows: ContextualWindowRow[], state: State, prior?: Pick<MotionEstimate, 'mean'>): boolean {
     const estimate = network.motion ??= { mean: [0, 0, 0], covariance: [[1000, 0, 0], [0, 1000, 0], [0, 0, 1000]],
       information: [[0, 0, 0], [0, 0, 0], [0, 0, 0]], variance: 0, observations: 0, correct: 0, error: 0 };
     // n·motion = measured plane displacement. Different views add independent
@@ -272,7 +285,7 @@ export class ExperienceMedium {
     return correct;
   }
   #learn(network: Network, state: State, targets: [string, PublicValue, PublicValue][],
-    rows: ContextualWindowRow[], prior?: Network): boolean[] {
+    rows: ContextualWindowRow[], prior?: WindowReadout): boolean[] {
     const priorField = prior ? this.#field(prior, state) : undefined;
     const field = this.#field(network, state, true), results: boolean[] = []; network.observations++;
     const externalErrors: Record<string, number> = {};
@@ -430,8 +443,8 @@ export class ExperienceMedium {
     }
     // Only the two affected motor circuits are copied. All rows still fit the
     // live networks, but none can calibrate against another row in this window.
-    const priorSelf = structuredClone(this.#networks.get(`${motor}/self`));
-    const priorObject = structuredClone(this.#networks.get(`${motor}/object`));
+    const priorSelf = windowReadout(this.#networks.get(`${motor}/self`));
+    const priorObject = windowReadout(this.#networks.get(`${motor}/object`));
     const selfRows: ContextualWindowRow[] = [], objectRows: ContextualWindowRow[] = [], planeRows: ContextualWindowRow[] = [];
     const correct = this.#learn(this.#network(`${motor}/self`), inputState(first), targets, selfRows, priorSelf);
     let maskedObjects = 0;
