@@ -1,0 +1,19 @@
+{
+  "scope": "Evaluator-selected isolated native actuator calibration. No learner, autonomous trials or learned writes.",
+  "commands": [
+    "fill -12 63 -12 12 63 12 bedrock",
+    "difficulty",
+    "tp KairosMotor .5 64 .5 180 0",
+    "data get entity KairosMotor Pos",
+    "tp KairosMotor .5 64 .5 180 0",
+    "data get entity KairosMotor Pos",
+    "tp KairosMotor .5 64 .5 180 0",
+    "data get entity KairosMotor Pos",
+    "tp KairosMotor .5 64 .5 180 0",
+    "data get entity KairosMotor Pos",
+    "tp KairosMotor .5 64 .5 180 0",
+    "data get entity KairosMotor Pos",
+    "tp KairosMotor .5 64 .5 180 0",
+    "data get entity KairosMotor Pos"
+  ]
+}

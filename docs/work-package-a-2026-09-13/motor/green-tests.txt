@@ -1,0 +1,30 @@
+✔ a stalled real sensor archives only the incomplete measured motor window and releases its controls (17.374456ms)
+✔ a held motor keeps its requested duration and returns ongoing motion without waiting for rest (16.837713ms)
+▶ requested motor duration survives a synchronous physics catch-up batch
+  ✔ move (11.738998ms)
+  ✔ jump (7.277718ms)
+  ✔ use-item (10.603368ms)
+✔ requested motor duration survives a synchronous physics catch-up batch (32.270656ms)
+✔ the passive port returns exactly its measured interval without motor output or waiting for stability (3.232763ms)
+✔ death during a passive choice retains the short actual interval without completing its requested duration (1.167277ms)
+✔ breathing comes only from owned metadata and becomes unknown at a body replacement (2.562662ms)
+✔ death exposes an explicit restart action and no SDK restart runs before it is chosen (4.078404ms)
+✔ a death packet ends a physical window even when the SDK stops all subsequent physics ticks (1.346362ms)
+✔ using the held item is a measured button window, with no supplied item effect or consumption helper (8.140665ms)
+✔ motor receipts retain real clocks and release frames before a catch-up continuation (2.380432ms)
+✔ death records actual physical duration without rewriting the requested action or terminal sample (1.944036ms)
+✔ zero-tick death cannot be learned as a completed positive motor interval (1.02099ms)
+✔ invalid or inconsistent motor receipts are rejected at the real-event boundary (2.952989ms)
+▶ fault, close and timeout archive one actual release receipt without completing an event
+  ✔ fault (1.390888ms)
+  ✔ closed (1.1765ms)
+  ✔ timeout (1.3584ms)
+✔ fault, close and timeout archive one actual release receipt without completing an event (4.444907ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 390.435738

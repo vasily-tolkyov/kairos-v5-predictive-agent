@@ -1,0 +1,134 @@
+{
+  "version": "KairosSupportDomainValidation1",
+  "baseCommit": "fb3c40a8e172e092ca6ba9a69eebc2836e255b36",
+  "node": "v24.19.0",
+  "typescript": "5.9.3",
+  "scope": "contextual-readout support domain; no native trials",
+  "targeted": {
+    "tests": 20,
+    "passed": 20,
+    "failed": 0,
+    "log": "final-targeted-tests.log"
+  },
+  "initialNewTests": {
+    "tests": 8,
+    "passed": 1,
+    "failed": 7,
+    "log": "red-tests.log"
+  },
+  "additionalNumericBoundaryRed": "numeric-boundary-red.log",
+  "combinedCandidate": {
+    "tests": 152,
+    "passed": 151,
+    "failed": 1,
+    "log": "integration-candidate-tests.log",
+    "remainingFailure": "ten-stage runGoal; reproduced with baseline readout in ten-stage-baseline-readout-isolation.log"
+  },
+  "files": [
+    {
+      "path": "src/contextual-readout.ts",
+      "bytes": 26538,
+      "sha256": "158050471aaafae9521f89740019ce7c469d23ece5e1b5e283a3cfde65dbd006"
+    },
+    {
+      "path": "test/contextual-support-domain.test.ts",
+      "bytes": 9903,
+      "sha256": "f668afbf99ac6d1f3e8de482128d8f5458d8e2068fb315a07620043d7a3e73e8"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/README.zh-CN.md",
+      "bytes": 5067,
+      "sha256": "932e234e96065e0fdc3278f9c9f24d6a8c685eb80fb74b591a27d80b253bb00f"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/compare-query-cost.mjs",
+      "bytes": 2785,
+      "sha256": "b934d72f6c3f1c2c88618552d3af132306dee77d5105f32739735822964f1743"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/final-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/final-targeted-tests.log",
+      "bytes": 2270,
+      "sha256": "ef7262fdf23f7b61f8a94124080dc6ce5ba8d2d9afc67b7e7b8d3f9e4e720025"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/green-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/green-cached-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/green-domain-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/green-final-targeted-tests.log",
+      "bytes": 2268,
+      "sha256": "564f28518dc3dad221c726e3091b1d30ba3accad588a8d42457f53219401cb17"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/green-interpolation-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/green-tests.log",
+      "bytes": 2156,
+      "sha256": "9a4b026c41120061b0c5497414474844b6203d7d16709de3c018629d819d0f26"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/integration-candidate-tests.log",
+      "bytes": 16422,
+      "sha256": "d6bad44c2d841f613ebe12f87c82efeda3a29768f4b31f167ba5bb8c0eac0411"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/integration-tests.log",
+      "bytes": 23438,
+      "sha256": "70fb01ea427aeb6e01a42a327b112b57b58f964eaf619a49ba77c04cb4355275"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/numeric-boundary-red.log",
+      "bytes": 1283,
+      "sha256": "77e64da336258585cae7bc4bafdaa3209d561513ac6d4442e04b59b9e458c2c1"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/query-cost-final.json",
+      "bytes": 4793,
+      "sha256": "491e4c6197d620754d2c6a1de75ce265b24a19d7a38d878fedd2f4e6db9f1331"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/query-cost.json",
+      "bytes": 4770,
+      "sha256": "1fb6808c612a992e7eed78c2ded2c0d7e51cf6e9cd996851b37297ebee3fe398"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/red-build-fixed.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/red-build.log",
+      "bytes": 2441,
+      "sha256": "81c3cf8de8ce5c542c589cdb356e9c207e95052b59a2ac84b54e3243328a0276"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/red-tests.log",
+      "bytes": 7573,
+      "sha256": "65f62ce05979bbce067bb49de85f873d161ff9ffc336081d2e938ce255c3eb40"
+    },
+    {
+      "path": "docs/work-package-a-2026-09-13/support-domain/ten-stage-baseline-readout-isolation.log",
+      "bytes": 973,
+      "sha256": "3444de60429569586b8bbbff4dd09397377e9ce506d4f967d61eeae8cfa8eac7"
+    }
+  ]
+}

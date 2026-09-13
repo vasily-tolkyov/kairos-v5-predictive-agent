@@ -1,0 +1,63 @@
+{
+  "version": "WorkPackageAValidation1",
+  "baseCommit": "fb3c40a8e172e092ca6ba9a69eebc2836e255b36",
+  "baseTree": "0979f2304ea42a589c6b4aacc0df8dfce4863458",
+  "baseline": {
+    "node": "24.19.0",
+    "typescript": "5.9.3",
+    "build": "passed",
+    "tests": 135,
+    "passed": 135,
+    "failed": 0,
+    "skipped": 0,
+    "log": "baseline-gate.log"
+  },
+  "candidate": {
+    "command": "npm run test:next-stage",
+    "tests": 168,
+    "passed": 168,
+    "failed": 0,
+    "skipped": 0,
+    "log": "integrated-first.log",
+    "assertionsRelaxed": false,
+    "sourceCommit": "5c5e6219df17b3c865567a7526d9565304d19066",
+    "sourceTree": "9d246a206e1358099e16105d681d97c2f6ee780c"
+  },
+  "newNativeEvidence": {
+    "apparatusRuns": 5,
+    "evaluatorSelectedActions": 21,
+    "workerSmokeRuns": 1,
+    "autonomousSelectedActions": 8,
+    "passiveWindows": 13,
+    "learningWrites": 21,
+    "deaths": 0,
+    "newGoalSuccesses": 0
+  },
+  "workerSmoke": {
+    "status": "budget-paused",
+    "goal": "pending",
+    "supportedPlans": 0,
+    "freshActionForecasts": 0,
+    "staleForecastsExcluded": 8,
+    "audit": "native-worker-smoke-audit.json",
+    "checkpointCheck": "native-worker-restore.json",
+    "scope": "Short integration smoke test; not retention, transfer or multistage acceptance"
+  },
+  "acceptance": {
+    "A": "partially implemented; support-domain, motor-receipt and stale-forecast software/apparatus checks passed; asynchronous fresh-prediction protocol and strict original-data comparison remain open",
+    "B": "not started: prerequisite gate unmet",
+    "C": "not started: prerequisite gate unmet",
+    "D": "not started: prerequisite gate unmet",
+    "E": "not started: prerequisite gate unmet",
+    "overall": "not met"
+  },
+  "originalEvidenceAccess": "Draft release metadata verified; binary assets unavailable via exposed authenticated interface; direct download returned404. No original model/world replacement.",
+  "modelCompatibility": {
+    "snapshot": "KairosExperienceMediumV11",
+    "contextSnapshot": "ContextualReadout2",
+    "newEventReceipt": "MotorReceiptV1",
+    "additiveSnapshotField": "untrainedMotorWindows (absent means0)",
+    "legacyWindows": "readable; no timing receipt manufactured",
+    "oldWeightsReencoded": false
+  }
+}

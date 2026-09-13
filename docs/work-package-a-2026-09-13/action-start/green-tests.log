@@ -1,0 +1,21 @@
+✔ the adapter binds a fresh synchronous forecast before the physical motor and honors a veto (2.059247ms)
+✔ session comparisons and recorded first predictions use the action-start frame, before outcome learning (18.07964ms)
+✔ preceding passive evidence is consumed once before the fresh forecast, then the action is learned (9.740431ms)
+✔ a previously supported plan is refused when its actual start context loses support (0.765642ms)
+✔ legacy delayed receipts cannot earn stale prediction, progress or local refutation credit (0.860383ms)
+✔ a fresh failed action is refuted in its actual starting context, independent of planning drift (1.205995ms)
+✔ a callback cannot certify a different actual action-start frame (1.214828ms)
+✔ an asynchronous callback cannot authorize a motor across a scheduling gap (0.185044ms)
+✔ rebinding preserves a hypothesis as an untrusted probe after waiting-time drift (1.761166ms)
+✔ a worker-shaped body keeps advancing across async passive drain without a false synchronous forecast (0.282968ms)
+✔ a changed retina invalidates a claimed action-start frame even when its sequence and body channels agree (0.781066ms)
+✔ a future passive window cannot train an allegedly pre-execution forecast (0.970676ms)
+✔ retransmitting consumed passive evidence under its old ID cannot hide changed content (3.195027ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 138.210901

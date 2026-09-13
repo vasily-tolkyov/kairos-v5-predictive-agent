@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/5d0f85e4c822/kairos/scripts/check-minecraft-motor-catchup.mjs",
+    "--java",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+    "--server",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/minecraft-server-1.21.4.jar",
+    "--output",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-motor",
+    "--build",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/apparatus-candidate",
+    "--expectation",
+    "exact",
+    "--port",
+    "25632"
+  ],
+  "cwd": "/workspace/scratch/5d0f85e4c822/kairos",
+  "startedAt": "2026-09-13T02:02:16.317890+00:00",
+  "scriptSha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf",
+  "bodySha256": "32ffec2d41ad4928087439a3feae05e9a61f2542c3cc84c3d5d17ad0be2eb3b0",
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "scope": "Six evaluator-selected peaceful native motor calibration actions on frozen apparatus candidate build.",
+  "exitCode": 0,
+  "stoppedAt": "2026-09-13T02:02:36.798160+00:00",
+  "scriptUnchanged": true,
+  "bodyUnchanged": true
+}

@@ -1,0 +1,14 @@
+{
+  "source": "https://cdn.azul.com/zulu/bin/zulu21.52.203-ca-jre21.0.12.1-linux_x64.tar.gz",
+  "metadataUrl": "https://api.azul.com/metadata/v1/zulu/packages/f89c621b-7e5d-4147-b7f7-8dc832ad2413",
+  "archive": "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64.tar.gz",
+  "bytes": 52435156,
+  "declaredBytes": 52435200,
+  "declaredSizeMatches": false,
+  "sha256": "170f31af477726931543e91a5c44dfef4b7117382800dfd962aaea9fbbca4e50",
+  "officialDigestVerified": true,
+  "acceptanceCriterion": "Exact official SHA256 matches; gzip CRC/length check passed; publisher metadata size inconsistency retained separately.",
+  "executable": "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+  "versionOutput": "openjdk 21.0.12.1 2026-08-18 LTS\nOpenJDK Runtime Environment Zulu21.52+203-CA (build 21.0.12.1+1-LTS)\nOpenJDK 64-Bit Server VM Zulu21.52+203-CA (build 21.0.12.1+1-LTS, mixed mode, sharing)",
+  "versionExitCode": 0
+}

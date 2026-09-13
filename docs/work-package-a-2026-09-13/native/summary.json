@@ -1,0 +1,109 @@
+{
+  "version": "WorkPackageANativeApparatusEvidence1",
+  "createdAt": "2026-09-13T02:09:27.629507+00:00",
+  "status": "passed",
+  "scope": "Four new isolated native apparatus runs executed in this turn. These are not autonomous exploration, retention, survival, or causal multistage acceptance.",
+  "counts": {
+    "nativeApparatusRuns": 4,
+    "evaluatorSelectedPhysicalActions": 15,
+    "autonomousTrials": 0,
+    "learningWrites": 0
+  },
+  "runs": [
+    {
+      "id": "baseline-motor",
+      "actorId": "baseline",
+      "evaluatorSelectedPhysicalActions": 6,
+      "status": "passed"
+    },
+    {
+      "id": "candidate-motor",
+      "actorId": "apparatus-candidate",
+      "evaluatorSelectedPhysicalActions": 6,
+      "status": "passed"
+    },
+    {
+      "id": "candidate-entity-vision",
+      "actorId": "apparatus-candidate",
+      "evaluatorSelectedPhysicalActions": 1,
+      "status": "passed"
+    },
+    {
+      "id": "candidate-sensory-body",
+      "actorId": "apparatus-candidate",
+      "evaluatorSelectedPhysicalActions": 2,
+      "status": "passed"
+    }
+  ],
+  "actors": [
+    {
+      "version": "FrozenCompiledActor1",
+      "id": "baseline",
+      "sourceBuild": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/baseline",
+      "baselineGitCommit": "163c991cf8ea1b14821e4aec4a61ee003858ea08",
+      "sourceState": "exact baseline source compiled before this work package",
+      "compiledBodySha256": "5e195b8810c793678474b911d0a20213ab7941d272756d48b4fc179f0fc94154",
+      "srcFileCount": 186,
+      "srcBytes": 2619940,
+      "srcManifestSha256": "edf0eb6968bf2168165a8a24fe20a7251f91ebdb27e656c098f7fdf8be3e1b6f",
+      "esmWrapperSha256": "cdadf8c0df26d582cd16c7873040df0275c94ad95fd505f675f4b28b4758d9cd",
+      "archive": "baseline.tar.gz",
+      "archiveBytes": 555879,
+      "archiveSha256": "6aeee9be2c464c0a6661489aa998e179753e378bbd2021739686b52e0b7fdfe6",
+      "archiveMembersReopenedAndVerified": 187,
+      "dependencyLockSha256": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b",
+      "dependenciesBundled": false
+    },
+    {
+      "version": "FrozenCompiledActor1",
+      "id": "apparatus-candidate",
+      "sourceBuild": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/apparatus-candidate",
+      "baselineGitCommit": "163c991cf8ea1b14821e4aec4a61ee003858ea08",
+      "sourceState": "uncommitted intermediate apparatus candidate; not the subsequent final integrated actor",
+      "compiledBodySha256": "32ffec2d41ad4928087439a3feae05e9a61f2542c3cc84c3d5d17ad0be2eb3b0",
+      "srcFileCount": 186,
+      "srcBytes": 2644530,
+      "srcManifestSha256": "63b80a9a54cd7b55232f03cd6be4cac9d04c081de707f5aa7572661385a96455",
+      "esmWrapperSha256": "6fcd7fee62d5c690bd1cce114aa70e411fd0499619578cbc3b769f2bdf3ff2c9",
+      "archive": "apparatus-candidate.tar.gz",
+      "archiveBytes": 560938,
+      "archiveSha256": "065d452863f9f3c46780c762459620043a138bc0d13291ca4d0c6920801173d2",
+      "archiveMembersReopenedAndVerified": 187,
+      "dependencyLockSha256": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b",
+      "dependenciesBundled": false
+    }
+  ],
+  "runtime": {
+    "minecraft": "1.21.4",
+    "serverSha1": "4707d00eb834b446575d89a61a11b5d548d8c001",
+    "serverSha256": "1066970b09e9c671844572291c4a871cc1ac2b85838bf7004fa0e778e10f1358",
+    "java": "openjdk 21.0.12.1 2026-08-18 LTS\nOpenJDK Runtime Environment Zulu21.52+203-CA (build 21.0.12.1+1-LTS)\nOpenJDK 64-Bit Server VM Zulu21.52+203-CA (build 21.0.12.1+1-LTS, mixed mode, sharing)",
+    "node": "v24.19.0",
+    "typescript": "5.9.3"
+  },
+  "packageScope": {
+    "includes": [
+      "run top-level raw observations and windows",
+      "body diagnostic records",
+      "original server evidence logs and installation identities",
+      "launch and audit results",
+      "exact harness and saved audit source",
+      "each frozen actor complete compiled src plus ESM wrapper",
+      "official runtime provenance and initial Java size-check failure"
+    ],
+    "excludes": [
+      "runtime game server binaries",
+      "Java binaries",
+      "node_modules",
+      "writable worlds"
+    ]
+  },
+  "limitations": [
+    "The apparatus candidate precedes the later synchronousActionStart marker/final integration; do not assign these outcomes to a different actor.",
+    "Baseline and candidate motor runs each have six 4-tick presses, alternating unloaded and 230 ms host load.",
+    "Entity/sensory apparatus explicitly uses normal difficulty only to retain test entities and induce a measurable item-use condition.",
+    "Native item use is 40 ticks with independently confirmed food/count changes; native item/jump interruption or catch-up is not established here.",
+    "No original 5098/12321-write model pair, original frame 19 or registered stopped-world package was downloaded or replaced.",
+    "World bytes are excluded from this compact apparatus package; raw observations, setup commands, actor bytes and independent server logs are retained."
+  ]
+}

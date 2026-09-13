@@ -1,0 +1,9 @@
+{
+  "version": "ExploratoryCheckDeviation1",
+  "check": "whole same-world snapshot equality immediately after restore",
+  "outcome": "failed",
+  "initialConsoleOutput": "Interactive console was truncated; original checkpoint is retained. No later output is claimed to be the original full console.",
+  "diagnosis": "ExperienceWorld.restore intentionally clears only perceptId and visible for renderer-local surfaces; knowledge is not current perception.",
+  "productionCodeChangedForThisCheck": false,
+  "followup": "check-native-smoke-restore.mjs verifies every other field exactly and independently checks unchanged model/query/duplicate-window behavior."
+}

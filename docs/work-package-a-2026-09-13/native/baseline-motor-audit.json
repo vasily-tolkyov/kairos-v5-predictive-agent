@@ -1,0 +1,100 @@
+{
+  "version": "IndependentBaselineMotorAudit1",
+  "status": "passed",
+  "auditedAt": "2026-09-13T02:00:13.302464+00:00",
+  "source": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/baseline-motor",
+  "scope": "Read-only audit of this turn baseline calibration raw controls, windows, release records and independent server positions. No learning or autonomous task test.",
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "evaluatorSelectedPhysicalActions": 6,
+  "windowsSha256": "38078cc4feb55063027147658af74c629dcff558fb5919c15cf4a4e0853837ec",
+  "reportSha256": "cc6bc9e734e8dcaae7e9921a3daafda25bc1914704079b19db97cb72da791cd8",
+  "bodyRecordsSha256": "65a3ecb23c9c05278b983589af4d05c5b8d91ff5793b06b21d36a0e200b6eec0",
+  "serverLogSha256": "4a22c266e04383321ab8de7033f3f5b12f3d68b34bc80c715abd8c0a8eeb29ff",
+  "rows": [
+    {
+      "eventId": "b6147491-d8c7-4d92-9b3d-58fe7f55f878:event-1",
+      "loaded": false,
+      "requestedTicks": 4,
+      "independentlyCountedPressedTicks": 4,
+      "actualReleaseIntervals": 4,
+      "serverPosition": [
+        0.5,
+        64.0,
+        -0.3571697198364468
+      ],
+      "serverPositionMatchesMeasuredEnd": true,
+      "motorReceiptEmbedded": false
+    },
+    {
+      "eventId": "b6147491-d8c7-4d92-9b3d-58fe7f55f878:event-2",
+      "loaded": true,
+      "requestedTicks": 4,
+      "independentlyCountedPressedTicks": 4,
+      "actualReleaseIntervals": 4,
+      "serverPosition": [
+        0.5,
+        64.0,
+        -0.3571697198364468
+      ],
+      "serverPositionMatchesMeasuredEnd": true,
+      "motorReceiptEmbedded": false
+    },
+    {
+      "eventId": "b6147491-d8c7-4d92-9b3d-58fe7f55f878:event-3",
+      "loaded": false,
+      "requestedTicks": 4,
+      "independentlyCountedPressedTicks": 4,
+      "actualReleaseIntervals": 4,
+      "serverPosition": [
+        0.5,
+        64.0,
+        -0.3571697198364468
+      ],
+      "serverPositionMatchesMeasuredEnd": true,
+      "motorReceiptEmbedded": false
+    },
+    {
+      "eventId": "b6147491-d8c7-4d92-9b3d-58fe7f55f878:event-4",
+      "loaded": true,
+      "requestedTicks": 4,
+      "independentlyCountedPressedTicks": 4,
+      "actualReleaseIntervals": 4,
+      "serverPosition": [
+        0.5,
+        64.0,
+        -0.3571697198364468
+      ],
+      "serverPositionMatchesMeasuredEnd": true,
+      "motorReceiptEmbedded": false
+    },
+    {
+      "eventId": "b6147491-d8c7-4d92-9b3d-58fe7f55f878:event-5",
+      "loaded": false,
+      "requestedTicks": 4,
+      "independentlyCountedPressedTicks": 4,
+      "actualReleaseIntervals": 4,
+      "serverPosition": [
+        0.5,
+        64.0,
+        -0.3571697198364468
+      ],
+      "serverPositionMatchesMeasuredEnd": true,
+      "motorReceiptEmbedded": false
+    },
+    {
+      "eventId": "b6147491-d8c7-4d92-9b3d-58fe7f55f878:event-6",
+      "loaded": true,
+      "requestedTicks": 4,
+      "independentlyCountedPressedTicks": 4,
+      "actualReleaseIntervals": 4,
+      "serverPosition": [
+        0.5,
+        64.0,
+        -0.3571697198364468
+      ],
+      "serverPositionMatchesMeasuredEnd": true,
+      "motorReceiptEmbedded": false
+    }
+  ]
+}

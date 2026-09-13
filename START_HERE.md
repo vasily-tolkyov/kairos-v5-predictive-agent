@@ -1,5 +1,11 @@
 # Kairos：从这里接手
 
+本轮附件工程接续见 [证据域与动作时间记录](docs/work-package-a-2026-09-13/README.zh-CN.md)。
+当前完整集成门禁 **168/168 通过**，新增 21 次装置动作和 8 次自主选择动作。
+目标仍未完成；包 A 的异步新鲜预测及指定原始数据对照仍待完成，B–E 尚未进入。
+
+以下为前序 PR #2 记录：
+
 最新工程入口是 [PR #2](https://github.com/vasily-tolkyov/kairos-v5-predictive-agent/pull/2)
 与 [预测校准接续记录](docs/prediction-calibration-followup.md)。当前集成集合
 **135/135 通过**；最新原生 R6 对照仍未完成目标，本轮未新增实机试验。
