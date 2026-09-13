@@ -1,0 +1,56 @@
+{
+  "query": 1.01,
+  "observedDomain": [
+    0,
+    1
+  ],
+  "result": {
+    "value": -1,
+    "absolute": false,
+    "supported": true,
+    "samples": 64,
+    "accuracy": 1,
+    "error": 0,
+    "progress": 0,
+    "externalCalibrated": 32,
+    "externalAccuracy": 1,
+    "externalSupported": true,
+    "externalErrorRadius": 0,
+    "dependencies": [
+      "condition"
+    ],
+    "bounds": {
+      "delta": [
+        -1,
+        -1
+      ],
+      "absolute": [
+        -1,
+        -1
+      ]
+    }
+  }
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: 0.1 fixed slack cannot confer support outside observed numeric domain
+
+true !== false
+
+    at file:///workspace/scratch/5d0f85e4c822/kairos/[eval1]:7:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async node:internal/modules/esm/loader:224:26
+    at async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:221:20)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: true,
+  expected: false,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

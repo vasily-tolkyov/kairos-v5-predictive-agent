@@ -1,0 +1,345 @@
+{
+  "version": "NativeApparatusFileManifest1",
+  "createdAt": "2026-09-13T02:09:27.629507+00:00",
+  "scope": "All files under this native/ directory except MANIFEST.json itself; originals copied byte-for-byte.",
+  "files": [
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 1997,
+      "sha256": "59e83303dfd6691f741c44868012d72a13ff086050d8935c2e7dfa36365f1279"
+    },
+    {
+      "path": "actors/apparatus-candidate.json",
+      "bytes": 32873,
+      "sha256": "b1656d5e49bb7760931b9846a4c2dd9b49d1b73f679ccd99e625c80cac0febc1"
+    },
+    {
+      "path": "actors/apparatus-candidate.tar.gz",
+      "bytes": 560938,
+      "sha256": "065d452863f9f3c46780c762459620043a138bc0d13291ca4d0c6920801173d2"
+    },
+    {
+      "path": "actors/baseline.json",
+      "bytes": 32808,
+      "sha256": "211241772826e876926f83c8f91f62662b994225c1c781ccc97e6999b52d07e3"
+    },
+    {
+      "path": "actors/baseline.tar.gz",
+      "bytes": 555879,
+      "sha256": "6aeee9be2c464c0a6661489aa998e179753e378bbd2021739686b52e0b7fdfe6"
+    },
+    {
+      "path": "auditors/audit-native-motor-receipts.mjs",
+      "bytes": 4107,
+      "sha256": "b1b82b42d1fe4068ba7f8b4286b2b92b4bce5e88dbdf45f81eac88c57cb452dc"
+    },
+    {
+      "path": "auditors/audit-sensory-body.mjs",
+      "bytes": 3197,
+      "sha256": "7419e4f7df211f2447c6b1a9247c83af2a8326d57a075d18dbb1dd709d484cc2"
+    },
+    {
+      "path": "baseline-motor/body-records.json",
+      "bytes": 4603,
+      "sha256": "65a3ecb23c9c05278b983589af4d05c5b8d91ff5793b06b21d36a0e200b6eec0"
+    },
+    {
+      "path": "baseline-motor/progress.json",
+      "bytes": 17318,
+      "sha256": "48787fbdddba17ff540c8cc825f17d45d61703baf64cd4090b7a22d0daba359d"
+    },
+    {
+      "path": "baseline-motor/results.json",
+      "bytes": 17876,
+      "sha256": "cc6bc9e734e8dcaae7e9921a3daafda25bc1914704079b19db97cb72da791cd8"
+    },
+    {
+      "path": "baseline-motor/server-evidence/FIXTURE_SETUP.json",
+      "bytes": 339,
+      "sha256": "f180ec52a317f4e973f760accca217d478052382053664101172584e90924df3"
+    },
+    {
+      "path": "baseline-motor/server-evidence/INSTALLATION_IDENTITIES.json",
+      "bytes": 516,
+      "sha256": "61b2f5dc7d74d554a70a881b08e5b7c21bc05835b80d50cf7f9eeb0f0a803ab0"
+    },
+    {
+      "path": "baseline-motor/server-evidence/minecraft-server.log",
+      "bytes": 16454,
+      "sha256": "4a22c266e04383321ab8de7033f3f5b12f3d68b34bc80c715abd8c0a8eeb29ff"
+    },
+    {
+      "path": "baseline-motor/setup.json",
+      "bytes": 657,
+      "sha256": "a0b281f9b2ac15f864ba4ac82190d9c1c14638650280a53833801f48ceadfb62"
+    },
+    {
+      "path": "baseline-motor/windows.json.gz",
+      "bytes": 817521,
+      "sha256": "38078cc4feb55063027147658af74c629dcff558fb5919c15cf4a4e0853837ec"
+    },
+    {
+      "path": "baseline-motor-audit.json",
+      "bytes": 3131,
+      "sha256": "03ce4bf076cae0bce1837dd86417257defae4540802213cb9bd7515341a5d246"
+    },
+    {
+      "path": "baseline-motor-console.log",
+      "bytes": 4122,
+      "sha256": "463f8c5b8e6537713592bb5ef445e51ff325bb9e7b942126a774647000a92205"
+    },
+    {
+      "path": "baseline-motor-launch.json",
+      "bytes": 1189,
+      "sha256": "7ab92b0c1f27b3030e1850b0cbf15698fd378e58f38c3998267cb0f44c9657d4"
+    },
+    {
+      "path": "candidate-entity-vision/attack-window.json.gz",
+      "bytes": 35664,
+      "sha256": "db90e5098158474e60428c5e3c3bc9dfa1cbc517440d9fd58b7a8464c46869e2"
+    },
+    {
+      "path": "candidate-entity-vision/frames.json.gz",
+      "bytes": 311815,
+      "sha256": "3dab8535212a36189dc8968ca0a889fbc443e897f105a38dbf7aa07809c02acd"
+    },
+    {
+      "path": "candidate-entity-vision/occluded.json",
+      "bytes": 77359,
+      "sha256": "94a8b9240802cb31471bc0d32c1586d6308de493e9b62c329cc973a01a111821"
+    },
+    {
+      "path": "candidate-entity-vision/results.json",
+      "bytes": 1572,
+      "sha256": "9b581920a6608d48f1388144b6c47b90617cd748bd23358e86c486799989e373"
+    },
+    {
+      "path": "candidate-entity-vision/server-evidence/FIXTURE_SETUP.json",
+      "bytes": 339,
+      "sha256": "f180ec52a317f4e973f760accca217d478052382053664101172584e90924df3"
+    },
+    {
+      "path": "candidate-entity-vision/server-evidence/INSTALLATION_IDENTITIES.json",
+      "bytes": 526,
+      "sha256": "14edd3a6ef55fe5db739c3f324c48893c4389998b1b21c7b6606c3dc046cbbda"
+    },
+    {
+      "path": "candidate-entity-vision/server-evidence/minecraft-server.log",
+      "bytes": 15911,
+      "sha256": "853f4403a23a77db811d6d0d6d1595f3d666adef9c84199a2a0ca10465215f6f"
+    },
+    {
+      "path": "candidate-entity-vision/setup.json",
+      "bytes": 624,
+      "sha256": "e2b1190fdb89879ebd55e480d7d8e29e9ffe355842fafb5d8492827e42230e45"
+    },
+    {
+      "path": "candidate-entity-vision/visible-offers.json",
+      "bytes": 9668,
+      "sha256": "a5b7ae35f78920be14f3678be1b88076b9f01bd8a93b7d9ac9f8c9246e0244e0"
+    },
+    {
+      "path": "candidate-entity-vision/visible.json",
+      "bytes": 77387,
+      "sha256": "e3a3f81f7108b4bc38f0a01d496e52b0b8fbe7fa1abe9d1ccfc4213e39ef8720"
+    },
+    {
+      "path": "candidate-entity-vision-audit.json",
+      "bytes": 1229,
+      "sha256": "2dd47a04e05e0d23361f1bc2b12c5882299f3b875ac8824d2c697e2f703b2dfc"
+    },
+    {
+      "path": "candidate-entity-vision-console.log",
+      "bytes": 1321,
+      "sha256": "12a3bc63a03360ec378863aaef02a3b53b6570b601c3c2068ca2fe5e18aa2ecc"
+    },
+    {
+      "path": "candidate-entity-vision-launch.json",
+      "bytes": 1282,
+      "sha256": "302e8f5c73159275f47054174fd0093e5f9443c3064d28517d3b1e99234c57de"
+    },
+    {
+      "path": "candidate-motor/body-records.json",
+      "bytes": 16755,
+      "sha256": "86bf7a4e38f9e7c5685c719ed0cb5b0a703f9fa0829d5e9767c7d9aa59c22e6c"
+    },
+    {
+      "path": "candidate-motor/progress.json",
+      "bytes": 17333,
+      "sha256": "0c4ff4d8bbb89ffcbdd422c06f74d000a0cf6e031cbbae9f14574a450ad72441"
+    },
+    {
+      "path": "candidate-motor/results.json",
+      "bytes": 17891,
+      "sha256": "1b35f3b56f1b4be9e398228585fa1caa508afcfd7e6d469c80b4317dfa1aec9a"
+    },
+    {
+      "path": "candidate-motor/server-evidence/FIXTURE_SETUP.json",
+      "bytes": 339,
+      "sha256": "f180ec52a317f4e973f760accca217d478052382053664101172584e90924df3"
+    },
+    {
+      "path": "candidate-motor/server-evidence/INSTALLATION_IDENTITIES.json",
+      "bytes": 517,
+      "sha256": "980afeec11255155d66e465e7155fa7e32926f19835874af69f9674ee74499a1"
+    },
+    {
+      "path": "candidate-motor/server-evidence/minecraft-server.log",
+      "bytes": 16454,
+      "sha256": "2d3b12dbe4c52251903adfa73657487ce090f40b49b42ab6e361e2277c86ccba"
+    },
+    {
+      "path": "candidate-motor/setup.json",
+      "bytes": 657,
+      "sha256": "a0b281f9b2ac15f864ba4ac82190d9c1c14638650280a53833801f48ceadfb62"
+    },
+    {
+      "path": "candidate-motor/windows.json.gz",
+      "bytes": 818898,
+      "sha256": "5290aedc085a2daed8fb31f65c66bfc7e4a60742cf5a0a6be8bb2bcec7cefe4b"
+    },
+    {
+      "path": "candidate-motor-audit-command.json",
+      "bytes": 960,
+      "sha256": "6a1614c1bdb710a67cd6635ce00884d9c1a323fb26d045a8f533778d8434fbad"
+    },
+    {
+      "path": "candidate-motor-audit.json",
+      "bytes": 8223,
+      "sha256": "c2d11d169b3db60e2ace6dd81ce9f0a2cfd398e14031a0807e303e9acc8b7658"
+    },
+    {
+      "path": "candidate-motor-console.log",
+      "bytes": 4138,
+      "sha256": "2b09449c2f9b599c1e5f622b1a28eb62441e5ba060ca6b6b384800a505125f05"
+    },
+    {
+      "path": "candidate-motor-launch.json",
+      "bytes": 1212,
+      "sha256": "56b2e487c014acbca1d8b248f054334a86e34ac1ed40e9d92cbc12724332dac4"
+    },
+    {
+      "path": "candidate-sensory-body/attack-event.json.gz",
+      "bytes": 45597,
+      "sha256": "f22f96e5ac00ca2a2c7eba1ff0c04cab50dffa3822f405555a4791e3eafd45c8"
+    },
+    {
+      "path": "candidate-sensory-body/held-item-before.json",
+      "bytes": 80981,
+      "sha256": "e643aa33428a5bd0eed1316f6e9816a25e59ce4ed8dfec1e495f076f5f270925"
+    },
+    {
+      "path": "candidate-sensory-body/occluded.json",
+      "bytes": 47273,
+      "sha256": "bd19974852495babffe8026875733d686ba9c6800b87a45bc309bfbf74397a7a"
+    },
+    {
+      "path": "candidate-sensory-body/results.json",
+      "bytes": 554,
+      "sha256": "7c1811ebb137740a442bee9a5beecfdaee9fab200cc1db9eb5d26a375c9bf0ef"
+    },
+    {
+      "path": "candidate-sensory-body/server-evidence/FIXTURE_SETUP.json",
+      "bytes": 339,
+      "sha256": "f180ec52a317f4e973f760accca217d478052382053664101172584e90924df3"
+    },
+    {
+      "path": "candidate-sensory-body/server-evidence/INSTALLATION_IDENTITIES.json",
+      "bytes": 524,
+      "sha256": "5dd9fa2a9baf9b3e3348cee540ecd36da76390128b093e886305b2a9e62d5241"
+    },
+    {
+      "path": "candidate-sensory-body/server-evidence/minecraft-server.log",
+      "bytes": 15977,
+      "sha256": "c2af3c31ef3cb88d3721e048c477bd75b5d46d02786a219972fdf36ff4af51b4"
+    },
+    {
+      "path": "candidate-sensory-body/setup.json",
+      "bytes": 543,
+      "sha256": "942f52f2b23b71b4247d15b24964d4266e9fd280e74a4aeabbdf189928b4490f"
+    },
+    {
+      "path": "candidate-sensory-body/use-item-event.json.gz",
+      "bytes": 263965,
+      "sha256": "8d869c08aa13e7bd0430c6cb1b3c74b87ff00dac6281540d21c5170fb0c7a99e"
+    },
+    {
+      "path": "candidate-sensory-body/visible-offers.json",
+      "bytes": 9668,
+      "sha256": "ec840d6383c19d41ca810726b9338acee0fc13aac5b0142917abf80358817fae"
+    },
+    {
+      "path": "candidate-sensory-body/visible-raw-body.json",
+      "bytes": 76231,
+      "sha256": "a384c1304b1c332e2f5c28ece155cdc20da2fbf7aa701ca5e5b6c3c23518b3ef"
+    },
+    {
+      "path": "candidate-sensory-body/visible.json",
+      "bytes": 82434,
+      "sha256": "ba37db49289aba702e38d52df7b24b7080c3a1050210bb5538b56e5d9c60aea0"
+    },
+    {
+      "path": "candidate-sensory-body-audit.json",
+      "bytes": 1930,
+      "sha256": "2b6d51731c8690497fa16f4e0eded7df66b333ffda0ead452e884d6c8788a22a"
+    },
+    {
+      "path": "candidate-sensory-body-console.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "candidate-sensory-body-launch.json",
+      "bytes": 1251,
+      "sha256": "b1522cee5ec109dd391e84cbead70ff7337e782d393315fd756ae2300e585e18"
+    },
+    {
+      "path": "harnesses/check-minecraft-entity-base-vision.mjs",
+      "bytes": 6700,
+      "sha256": "5c065fcf762a344871eb7e853410f6e49471147adbed74f9dfa1f5b415802152"
+    },
+    {
+      "path": "harnesses/check-minecraft-motor-catchup.mjs",
+      "bytes": 6455,
+      "sha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf"
+    },
+    {
+      "path": "harnesses/check-minecraft-sensory-body.mjs",
+      "bytes": 5893,
+      "sha256": "b196cd95da297e9e6063b602b0bc9635f26ee073ab441660d5e3228c98980aa7"
+    },
+    {
+      "path": "runtime-provenance/java21-initial-size-check-failure.json",
+      "bytes": 267,
+      "sha256": "9c3eeece88b0fd5e214b512c43b0585a0ada50432a19eb8df52606449ef487a5"
+    },
+    {
+      "path": "runtime-provenance/java21-official-package.json",
+      "bytes": 2509,
+      "sha256": "3197f95b65fa3ea08769f66ecd2d91b3ba0a19d661018ef0441d3662fb9211b1"
+    },
+    {
+      "path": "runtime-provenance/java21.download.json",
+      "bytes": 1009,
+      "sha256": "88e12e3fd313854642dd69443a3d4484a4e15f9d437da887888119b92f042716"
+    },
+    {
+      "path": "runtime-provenance/minecraft-server-1.21.4.download.json",
+      "bytes": 432,
+      "sha256": "addde082f00c9ebd5d098305f27c7f76174104c9da405fc60c8595192e4fc420"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 5016,
+      "sha256": "e4289dbb4c1339edc72513e7e41de829f48c71c77a3415c7f066875c2e2d9176"
+    }
+  ],
+  "fileCount": 66,
+  "totalPayloadBytes": 4169147,
+  "counts": {
+    "nativeApparatusRuns": 4,
+    "evaluatorSelectedPhysicalActions": 15,
+    "autonomousTrials": 0,
+    "learningWrites": 0
+  }
+}

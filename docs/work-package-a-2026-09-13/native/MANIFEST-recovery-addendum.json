@@ -1,0 +1,42 @@
+{
+  "version": "NativeApparatusRecoveryManifestAddendum1",
+  "createdAt": "2026-09-13T02:18:00.526055+00:00",
+  "originalManifest": "MANIFEST.json",
+  "originalManifestSha256": "9f04c721f668b532fbab3e3a89f596d090e3d5bd0f2f7172c1a0f1ffed27f30b",
+  "scope": "New recovery files only; original manifest and damaged archive are preserved unchanged. Use the recovered-original archive for this actor.",
+  "files": [
+    {
+      "path": "actors/apparatus-candidate.recovered-original.tar.gz",
+      "bytes": 560938,
+      "sha256": "065d452863f9f3c46780c762459620043a138bc0d13291ca4d0c6920801173d2"
+    },
+    {
+      "path": "failures/apparatus-archive-truncation-20260913/apparatus-candidate.observed-damaged.tar.gz",
+      "bytes": 276011,
+      "sha256": "edd789a35dfe30258c7e8b4b1c017e875f9d1bf444be4c68ee0412ce280f5329"
+    },
+    {
+      "path": "failures/apparatus-archive-truncation-20260913/initial-observation.json",
+      "bytes": 36397,
+      "sha256": "a34f2a13d17bbfd9c85015752231818edb83768fad961bda4b55155688f75503"
+    },
+    {
+      "path": "failures/apparatus-archive-truncation-20260913/recovery.json",
+      "bytes": 33476,
+      "sha256": "4ddfd9c1ebace7309866081806d3304301bab9cf40b0aaac02869ef0648a7f51"
+    },
+    {
+      "path": "failures/apparatus-archive-truncation-20260913/post-rebuild-verification.json",
+      "bytes": 639,
+      "sha256": "eb4ab85a10dc5175992fcf37d95fef81f9206af867ec8cdae25098ec179eb882"
+    }
+  ],
+  "fileCount": 5,
+  "totalPayloadBytes": 907461,
+  "replacesForConsumption": {
+    "damaged": "actors/apparatus-candidate.tar.gz",
+    "usable": "actors/apparatus-candidate.recovered-original.tar.gz"
+  },
+  "newNativeActions": 0,
+  "newLearningWrites": 0
+}

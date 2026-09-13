@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "npm",
+    "ci",
+    "--ignore-scripts",
+    "--no-audit",
+    "--no-fund",
+    "--registry=https://registry.npmjs.org",
+    "--replace-registry-host=always",
+    "--fetch-retries=0",
+    "--fetch-timeout=20000"
+  ],
+  "cwd": "/workspace/scratch/5d0f85e4c822/evidence/runtime/kairos-node-dependencies-v1",
+  "startedAt": "2026-09-13T02:52:43.633198+00:00",
+  "exitCode": 0,
+  "timedOut": false,
+  "stoppedAt": "2026-09-13T02:53:10.979799+00:00",
+  "lockSha256Before": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b",
+  "lockSha256After": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b"
+}

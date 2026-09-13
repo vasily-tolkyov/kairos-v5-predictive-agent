@@ -1,0 +1,27 @@
+✔ missing final measurement stays unknown rather than a zero close tail (19.7532ms)
+✔ initialization surplus requires exact archived frames; a marker cannot fill a missing frame (3.3187ms)
+✔ corrupt initialization clocks and absent required archive markers are incomplete (2.1252ms)
+✔ recorded prediction start is bound to the complete original frame independently of the later live watermark (1.0633ms)
+✔ missing or changed prediction start binding cannot pass the state audit (1.6024ms)
+✔ deferred learning must name a prior original passive window and reconcile the exact write delta (1.7207ms)
+✔ catch-up capture clocks retain last held sample and later off, with separate checkpoint tail (0.7711ms)
+✔ a terminal sample advances sensation but contributes zero physical time (1.24ms)
+✔ death before the first held tick records a held terminal sample then release without inventing exposure (0.6415ms)
+✔ legacy frames and live omissions remain unsupported even with measured old receipts (0.7811ms)
+✔ equal sequence with a different boundary payload is rejected, including legacy data (1.3827ms)
+✔ terminal physics advancement and physical clock reversal are rejected (1.1971ms)
+✔ post-release off cannot relabel the last held frame (0.6593ms)
+✔ missing release edge and modified edge clock cannot be hidden by the receipt (1.9392ms)
+✔ live count and sequence watermark advance must agree even with theta frozen (0.5871ms)
+✔ recorded telemetry loss and trace omissions cannot pass a complete-coverage audit (0.7988ms)
+✔ missing frames and a reused original action event reject accounting (1.1558ms)
+✔ faulted transport keeps its exact cached evidence separate from live observations and still closes gracefully (34.5738ms)
+✔ an exited worker rejects the pending operation and cleanup does not wait for an impossible reply (28.0259ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 545.9558

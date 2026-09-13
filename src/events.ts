@@ -1,4 +1,4 @@
-import type { Action, ActionCue, Observation, PublicChange, PublicObject, PublicValue, RealEvent,
+import type { Action, ActionCue, MotorClockV1, MotorReceiptV1, Observation, PublicChange, PublicObject, PublicValue, RealEvent,
   RealEventContinuityEvidenceV1, RealEventHierarchyContinuityV1 } from './contracts.js';
 import type { ActionObservationScopeV1 } from './control/contracts.js';
 import { assert, canonical, sha } from './util.js';
@@ -72,6 +72,66 @@ export function cueFor(action: Action, observation: Observation): ActionCue {
   const target = observation.objects.find(object => object.id === action.targetId);
   return { kind: action.kind, parameters: { ...action.parameters }, targetRole: target?.type ?? null };
 }
+/** Check body instrumentation against the immutable measured window. Legacy
+ * windows without a receipt remain readable, but obtain no timing evidence. */
+function validateMotorReceiptV1(event: RealEvent, receipt: MotorReceiptV1): void {
+  const fail = 'invalid-motor-receipt';
+  const keysAre = (value: unknown, keys: readonly string[]): boolean => value !== null
+    && typeof value === 'object' && !Array.isArray(value)
+    && Object.keys(value).length === keys.length && keys.every(key => Object.hasOwn(value, key));
+  assert(keysAre(receipt, ['version', 'durationParameter', 'requestedTicks', 'requestedAt', 'pressedAt', 'releasedAt',
+    'pressSucceeded', 'releaseSucceeded', 'actualTicks', 'actualSeconds', 'elapsedMonotonicMs',
+    'observedIntervals', 'frameRange', 'releaseReason']) && receipt.version === 'MotorReceiptV1', fail);
+  const body = event.bodyResult, first = event.frames[0]!, last = event.frames.at(-1)!;
+  assert(body && event.provenance === 'executed-real-body' && body.executed
+    && body.startSequence === first.sequence && body.endSequence === last.sequence, fail);
+  const action = body.action;
+  const parameter = action.kind === 'move' ? 'ticks'
+    : action.kind === 'use-item' || action.kind === 'jump' && Object.hasOwn(action.parameters, 'holdTicks') ? 'holdTicks' : null;
+  assert(parameter !== null && receipt.durationParameter === parameter
+    && receipt.requestedTicks === (action.parameters[parameter] ?? (action.kind === 'use-item' ? 40 : 4))
+    && Number.isSafeInteger(receipt.requestedTicks) && receipt.requestedTicks >= 1
+    && receipt.requestedTicks <= (action.kind === 'use-item' ? 40 : 20), fail);
+  const clocks = [receipt.requestedAt, receipt.pressedAt, receipt.releasedAt];
+  for (const clock of clocks) {
+    assert(keysAre(clock, ['observationSequence', 'physicsTick', 'activeSeconds', 'monotonicMs']), fail);
+    assert(Number.isSafeInteger(clock.observationSequence) && clock.observationSequence >= first.sequence
+      && clock.observationSequence <= last.sequence && Number.isSafeInteger(clock.physicsTick) && clock.physicsTick >= 0
+      && Number.isFinite(clock.activeSeconds) && clock.activeSeconds >= 0
+      && Number.isFinite(clock.monotonicMs) && clock.monotonicMs >= 0, fail);
+    assert(event.frames.find(frame => frame.sequence === clock.observationSequence)?.activeSeconds === clock.activeSeconds, fail);
+  }
+  const ordered = (before: MotorClockV1, after: MotorClockV1) => before.observationSequence <= after.observationSequence
+    && before.physicsTick <= after.physicsTick && before.activeSeconds <= after.activeSeconds
+    && before.monotonicMs <= after.monotonicMs
+    && after.physicsTick - before.physicsTick <= after.observationSequence - before.observationSequence;
+  assert(receipt.requestedAt.observationSequence === first.sequence
+    && ordered(receipt.requestedAt, receipt.pressedAt) && ordered(receipt.pressedAt, receipt.releasedAt), fail);
+  assert(Number.isSafeInteger(receipt.actualTicks) && receipt.actualTicks >= 0
+    && receipt.actualTicks <= receipt.requestedTicks
+    && receipt.actualTicks === receipt.releasedAt.physicsTick - receipt.pressedAt.physicsTick
+    && receipt.actualSeconds === receipt.actualTicks * .05
+    && receipt.elapsedMonotonicMs === receipt.releasedAt.monotonicMs - receipt.pressedAt.monotonicMs
+    && receipt.observedIntervals === receipt.releasedAt.observationSequence - receipt.pressedAt.observationSequence, fail);
+  assert(keysAre(receipt.frameRange, ['startSequence', 'endSequence'])
+    && receipt.frameRange.startSequence === receipt.pressedAt.observationSequence
+    && receipt.frameRange.endSequence === receipt.releasedAt.observationSequence, fail);
+  assert(receipt.pressSucceeded === true && receipt.releaseSucceeded === true, fail);
+  assert(receipt.releaseReason === 'interval-complete' && receipt.actualTicks === receipt.requestedTicks
+    || receipt.releaseReason === 'death' && body.terminationReason === 'body-interrupted'
+      && Number(last.self.properties.health) <= 0, fail);
+}
+
+/** Derive the measured motor key without changing the original action/cue.
+ * Null means no positive physical interval was observed, so no motor dynamics
+ * may be trained. Receipt-free legacy cues retain their unverified identity. */
+export function measuredMotorCueV1(event: RealEvent): ActionCue | null {
+  const receipt = event.bodyResult?.motorReceipt;
+  if (receipt === undefined) return event.cue;
+  validateMotorReceiptV1(event, receipt);
+  if (receipt.actualTicks === 0) return null;
+  return { ...event.cue, parameters: { ...event.cue.parameters, [receipt.durationParameter]: receipt.actualTicks } };
+}
 export function validateEvent(event: RealEvent): void {
   assert((event.version === 'RealEventV5' || event.version === 'RealEventV6')
     && event.complete && event.frames.length >= 2, 'incomplete-real-event');
@@ -112,6 +172,7 @@ export function validateEvent(event: RealEvent): void {
     assert(event.frames[i]!.sequence === event.frames[i - 1]!.sequence + 1, 'event-observation-gap');
     assert(event.frames[i]!.activeSeconds > event.frames[i - 1]!.activeSeconds, 'event-time-not-increasing');
   }
+  if (event.bodyResult?.motorReceipt !== undefined) validateMotorReceiptV1(event, event.bodyResult.motorReceipt);
 }
 function put(row: Record<string, number>, key: string, value: PublicValue): void {
   if (typeof value === 'number') { assert(Number.isFinite(value), 'non-finite-public-value'); row[key] = value; }

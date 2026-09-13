@@ -1,0 +1,43 @@
+{
+  "version": "StageOneSoftwareVerification1",
+  "gate": {
+    "tests": 329,
+    "passed": 329,
+    "failed": 0,
+    "durationMs": 78335.277
+  },
+  "firstTargetedFailure": "Signed zero in the body/world rotation was incorrectly asserted identical to positive zero. Kept the failure and used a numeric zero-magnitude assertion; did not change learner math.",
+  "nativeTrials": 0,
+  "files": [
+    {
+      "source": "evidence/pr3-stage-one-preparation/compile-01.log",
+      "path": "compile-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/compile-02.log",
+      "path": "compile-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/full-gate-01.log",
+      "path": "full-gate-01.log",
+      "bytes": 33091,
+      "sha256": "fa681e08e5b7d6b7a4dcc33be2e82934e63e23441d4767368e86207460a30d99"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/harness-syntax-01.log",
+      "path": "harness-syntax-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/targeted-01.log",
+      "path": "targeted-01.log",
+      "bytes": 1448,
+      "sha256": "e9cef70af0d356cec30567afeb89345a984dc9e57a9d1f068302e56ff551b6d0"
+    }
+  ]
+}

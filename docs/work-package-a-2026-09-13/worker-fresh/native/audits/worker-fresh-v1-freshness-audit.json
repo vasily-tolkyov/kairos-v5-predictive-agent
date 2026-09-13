@@ -1,0 +1,279 @@
+{
+  "version": "NativeWorkerFreshnessAudit1",
+  "status": "passed",
+  "source": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-v1",
+  "reportSha256": "a6454fb2b5c4dfe64e69b6ab9dacd8cf614c988aecfc04b3de94bb7e7bfb19bc",
+  "stoppedAt": "2026-09-13T02:54:50.408Z",
+  "runStatus": "budget-paused",
+  "protocol": {
+    "steps": 8,
+    "seconds": 120,
+    "goalAfter": 0,
+    "frozen": false,
+    "frozenScope": "transferable dynamics and affordances; current task feedback remains active",
+    "environment": "enclosure",
+    "worldSeed": "129604783",
+    "difficulty": "peaceful",
+    "difficultySource": "explicit-command-line",
+    "goalDistance": 12,
+    "geometry": {
+      "wallDepth": 2,
+      "halfWidth": 5,
+      "startX": 0.5,
+      "material": "oak_planks"
+    },
+    "taskOnly": false,
+    "resetAfterStart": false,
+    "externalActionSelection": false,
+    "boundary": "one static native survival enclosure; real block removal opens a low-ceiling exit; no runtime rule callbacks",
+    "limitations": [
+      "bounded enclosure, not natural open terrain",
+      "peaceful engine rules; no evidence of hostile survival or hunger management",
+      "engineered block/entity silhouette RGBD and visible hotbar sensing; some visual assets are unsupported; not full client vision",
+      "restart requires an explicit observed action; recovery does not establish survival",
+      "finite duration cannot establish lifelong learning"
+    ],
+    "difficultyVerifiedByServer": "peaceful",
+    "maintenanceGoals": [
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-health",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-health",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.health",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-food",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-food",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.food",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-oxygen",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-oxygen",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.oxygen",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      }
+    ]
+  },
+  "learningWrites": 21,
+  "passiveWindows": 17,
+  "decisions": 8,
+  "attemptedDecisions": 8,
+  "preparations": 8,
+  "acceptedAttempts": 4,
+  "preparationlessRefusals": 0,
+  "refusedDecisions": 4,
+  "refusalReasons": {
+    "action-start-expired": 4
+  },
+  "executedActions": 4,
+  "freshExecutedForecasts": 4,
+  "executedFractionOfAllDecisions": 0.5,
+  "freshFractionOfExecutedActions": 1,
+  "supportedExecutedForecasts": 0,
+  "supportedTaskPlans": 0,
+  "attempts": [
+    {
+      "index": 1,
+      "token": "fa1d1c29-b047-495d-a2fa-7a2c0aa1d6f4",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 33,
+      "checkedSequence": 33,
+      "elapsedMs": 38.76507499999934
+    },
+    {
+      "index": 2,
+      "token": "7d2caae4-1b7c-407f-9774-8fd5ff3f0df6",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 81,
+      "checkedSequence": 82,
+      "elapsedMs": 51.930554000000484
+    },
+    {
+      "index": 3,
+      "token": "35ae2cff-d79c-4e34-b2f0-32bded30ae5e",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 85,
+      "checkedSequence": 85,
+      "elapsedMs": 16.980954000000565
+    },
+    {
+      "index": 4,
+      "token": "4639361e-dc5c-4b0e-9430-a863ae82099b",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 130,
+      "checkedSequence": 130,
+      "elapsedMs": 12.976497999999992
+    },
+    {
+      "index": 5,
+      "token": "c663cd11-2e03-48f3-ba12-c2724baa103b",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 141,
+      "checkedSequence": 142,
+      "elapsedMs": 63.806266999999934
+    },
+    {
+      "index": 6,
+      "token": "ed4560c2-1ed9-44d5-a198-f435aa9cd60f",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 146,
+      "checkedSequence": 147,
+      "elapsedMs": 19.641632999999274
+    },
+    {
+      "index": 7,
+      "token": "9b2b1f2f-c7a8-4591-aaca-945e0c89a745",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 149,
+      "checkedSequence": 150,
+      "elapsedMs": 24.9256060000007
+    },
+    {
+      "index": 8,
+      "token": "4d79304b-cfe3-4e17-b940-6d5ab2c2ae67",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 152,
+      "checkedSequence": 152,
+      "elapsedMs": 18.296588000001066
+    }
+  ],
+  "windows": [
+    {
+      "eventId": "3722a27e-4142-4195-a9eb-87f4ee607923:event-1",
+      "file": "events/0000001.json.gz",
+      "sha256": "00e39eb88d12070051f5147f738c95217d7ff49d017a2f46ba39874153c02967",
+      "token": "fa1d1c29-b047-495d-a2fa-7a2c0aa1d6f4",
+      "startSequence": 33,
+      "endSequence": 75,
+      "sensoryDigest": "a192360b204268fb789f21b21ca8cfaf34eac156192402b73493c4b538c7c50b",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "3722a27e-4142-4195-a9eb-87f4ee607923:event-2",
+      "file": "events/0000002.json.gz",
+      "sha256": "b964cf4aa9f2388d970be51168d269f7e94ea064b83d7ba0704bc82f322ca15a",
+      "token": "35ae2cff-d79c-4e34-b2f0-32bded30ae5e",
+      "startSequence": 85,
+      "endSequence": 127,
+      "sensoryDigest": "a0ec8a7ddf0771d4d1f6ba3e1b5a2424cf52bdc3ebe880aa24f4958461680d9b",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "3722a27e-4142-4195-a9eb-87f4ee607923:event-3",
+      "file": "events/0000003.json.gz",
+      "sha256": "6005f8ba581fa308aa50e7fab1e0e07da72355f5e9acedb0bd968fe835467242",
+      "token": "4639361e-dc5c-4b0e-9430-a863ae82099b",
+      "startSequence": 130,
+      "endSequence": 138,
+      "sensoryDigest": "012bf58c2aea6b1da50d985a03661c96f033aaae61ff2035d048e67736de3a80",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "3722a27e-4142-4195-a9eb-87f4ee607923:event-4",
+      "file": "events/0000004.json.gz",
+      "sha256": "6bc08d7f9f4fb2206b0e5ed0e17f3dcf2f54db8f2a50f0e23fb1bd00430e2c6c",
+      "token": "4d79304b-cfe3-4e17-b940-6d5ab2c2ae67",
+      "startSequence": 152,
+      "endSequence": 160,
+      "sensoryDigest": "5ada312cce9e4d209d455e22d357a0b7f5f5c555826d26f5daadc27f3c9026ae",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    }
+  ],
+  "wholeLoopDurationMs": [
+    2362.512654,
+    194.84674700000141,
+    2308.023879999999,
+    500.8855390000008,
+    214.0944469999995,
+    223.3468959999991,
+    143.7880839999998,
+    522.7865149999998
+  ],
+  "rssMB": [
+    440.86328125,
+    469.76171875,
+    504.1484375,
+    509.109375,
+    541.9296875,
+    574.3046875,
+    578.41796875,
+    583.6796875
+  ],
+  "limitation": "Checks token/frame evidence, not a production coverage threshold. Zero executions cannot demonstrate availability. A short peaceful run does not establish task success, retention, transfer, multistage planning or worst-case query latency."
+}

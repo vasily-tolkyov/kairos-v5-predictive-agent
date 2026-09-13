@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-09-13T12:17:04.7508790Z",
+  "condition": "frozen",
+  "backgroundUpload": {
+    "processId": 532,
+    "readTransferCount": 348677196,
+    "writeTransferCount": 0,
+    "kernelModeTime": 37656250,
+    "userModeTime": 12968750
+  },
+  "noConcurrentCpuExperiments": true,
+  "isolatedWallTimeClaim": false
+}

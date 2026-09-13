@@ -1,0 +1,41 @@
+✔ the adapter binds a fresh synchronous forecast before the physical motor and honors a veto (2.8477ms)
+✔ session comparisons and recorded first predictions use the action-start frame, before outcome learning (31.5399ms)
+✔ preceding passive evidence is consumed once before the fresh forecast, then the action is learned (13.2355ms)
+✔ a previously supported plan is refused when its actual start context loses support (1.1782ms)
+✔ legacy delayed receipts cannot earn stale prediction, progress or local refutation credit (1.1094ms)
+✔ a fresh failed action is refuted in its actual starting context, independent of planning drift (1.3241ms)
+✔ a callback cannot certify a different actual action-start frame (1.4051ms)
+✔ an asynchronous callback cannot authorize a motor across a scheduling gap (0.2499ms)
+✔ rebinding preserves a hypothesis as an untrusted probe after waiting-time drift (1.9267ms)
+✔ a worker-shaped body keeps advancing across async passive drain without a false synchronous forecast (0.4168ms)
+✔ a changed retina invalidates a claimed action-start frame even when its sequence and body channels agree (1.0041ms)
+✔ a future passive window cannot train an allegedly pre-execution forecast (1.1998ms)
+✔ retransmitting consumed passive evidence under its old ID cannot hide changed content (3.3401ms)
+✔ initial acquisition returns its atomic boundary even if a later worker frame arrives first (2.7703ms)
+✔ repeated initialization keeps the original boundary and preserves preceding passive evidence once (0.3854ms)
+✔ initial acquisition refuses to cut into an active motor window (1.1818ms)
+✔ the asynchronous adapter predicts from its prepared frame and atomically executes that exact frame once (16.482ms)
+✔ a frame advancing during prediction refuses one attempt and returns every passive interval (0.7258ms)
+✔ a controller veto cancels its token without issuing a motor or losing preparation-time passive evidence (0.809ms)
+✔ full-frame comparison rejects changed sensations with the same sequence (0.5457ms)
+✔ superseded and unprepared execution tokens cannot later execute, while their passive evidence remains available (0.7532ms)
+✔ a failed motor consumes its token and preserves preparation evidence for a later drain (0.7435ms)
+✔ a preparation reply cannot be replaced with a newer controller cache frame (0.6497ms)
+✔ a throwing forecast cancels its token and preserves all passive intervals for the evidence drain (0.7159ms)
+▶ session grants execution credit only to the prepared frame, while expiry learns only intervening passive evidence
+  ✔ accepted (18.282ms)
+  ✔ expired (7.2639ms)
+✔ session grants execution credit only to the prepared frame, while expiry learns only intervening passive evidence (26.1592ms)
+✔ passive evidence from after the accepted start is rejected before outcome learning (3.2157ms)
+✔ an unknown token cannot steal newer passive evidence ahead of a legitimate prepared window (0.4066ms)
+✔ local preparation evidence remains retrievable after the worker and its cancellation RPC fail (0.4569ms)
+✔ a diagnostic failure after token consumption preserves preparation evidence and prevents the motor (0.3904ms)
+✔ frozen callbacks reject conflicting IDs before trusting or counting a passive batch (1.0013ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 327.4215

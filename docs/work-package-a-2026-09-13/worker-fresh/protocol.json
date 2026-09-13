@@ -1,0 +1,54 @@
+{
+  "version": "AsyncWorkerFreshnessCheckProtocol1",
+  "registeredAt": "2026-09-13T02:31:02.287073+00:00",
+  "predecessorCodeCommit": "5c5e6219df17b3c865567a7526d9565304d19066",
+  "predecessorEvidenceCommit": "091f0ccfa6d541ab70b6d6eb78bc3944d766491c",
+  "purpose": "Validate one-shot asynchronous preparation and conditional execution without stopping live sensing; report refusals and fresh forecast coverage. No retention or task-success acceptance.",
+  "nativeWorker": {
+    "difficulty": "peaceful",
+    "worldSeed": "129604783",
+    "steps": 8,
+    "seconds": 120,
+    "port": 25636,
+    "goalAfter": 0,
+    "newWorld": true,
+    "learning": true,
+    "output": "evidence/native-a/worker-fresh-v1"
+  },
+  "motorCalibration": {
+    "port": 25637,
+    "requestedTicks": 4,
+    "actions": 6,
+    "cpuBlockMilliseconds": 230,
+    "expectation": "exact",
+    "output": "evidence/native-a/worker-fresh-motor-v1"
+  },
+  "requiredChecks": [
+    "Keep all refusals and failures in decision denominator",
+    "At most one preparation and conditional execution attempt per decision",
+    "A consumed token cannot execute twice",
+    "Worker compares the complete prepared frame immediately before calling body.execute without yielding",
+    "A different frame refuses execution and returns actual waiting-time passive events",
+    "Never grant forecast success or refutation credit to a refused or stale action",
+    "Prepare/execute diagnostics must match recorded event starts and decision forecasts",
+    "Prediction and recording leave long-term learned state unchanged except real passive/action events",
+    "Preserve immutable source/build/harness identities, raw windows, original failure logs and stopped world",
+    "Do not change existing test assertions, goal tolerances, timing budgets or runtime world to force protocol acceptance"
+  ],
+  "reportedMetrics": [
+    "total decisions",
+    "prepared attempts",
+    "accepted attempts",
+    "refusals by reason",
+    "executed action windows",
+    "fresh execution forecasts",
+    "task-support coverage",
+    "prediction errors and supported interval widths where supported",
+    "prepare-to-check latency",
+    "learning writes",
+    "passive windows",
+    "goal state",
+    "RSS and whole-loop elapsed time"
+  ],
+  "acceptanceBoundary": "Protocol invariants and empirical availability are separate. Zero accepted actions cannot establish availability. An eight-decision smoke test cannot establish a production coverage threshold, original-data comparison, retention, transfer, multistage planning or long-run budgets."
+}

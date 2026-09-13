@@ -1,0 +1,25 @@
+{
+  "version": "StageOneLaunchPins1",
+  "recordedBeforeLaunch": "2026-09-13T13:52:51.631210+00:00",
+  "sourceCommit": "a531012c0eefcefcd13ff8367114867e68431b04",
+  "frozenActor": "evidence/execution-builds/pr3-stage-one-r2",
+  "manifestSha256": "bec6eb32fd05915a525ef6a4f7a997ebf3ae74fe55ba4d4bbfdaf660ac91d98b",
+  "verifiedActorFiles": 661,
+  "protocolSha256": "3bebdf86fac6436f12a576a07182d92c13cf0eb70c9e87dfba5ca4b14f3bdec7",
+  "javaSha256": "1f41cc782de7ddd8824376568f9011413d710cf225047906106d2a01a0e3f7a9",
+  "serverJarSha256": "1066970b09e9c671844572291c4a871cc1ac2b85838bf7004fa0e778e10f1358",
+  "packageLockSha256": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b",
+  "nodeVersion": "v24.14.0",
+  "newModel": "StageOneMovement2 empty; exact original JSON event byte identity; no inherited calibration",
+  "nativeConcurrentCPUOrUploads": false,
+  "condition": "training",
+  "case": "acquisition-01",
+  "seed": 317,
+  "steps": 128,
+  "seconds": 240,
+  "softwareGate": {
+    "passed": 330,
+    "failed": 0
+  },
+  "output": "evidence/pr3-stage-one-acquisition-02"
+}

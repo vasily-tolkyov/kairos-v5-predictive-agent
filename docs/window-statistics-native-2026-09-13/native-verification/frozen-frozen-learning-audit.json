@@ -1,0 +1,34 @@
+{
+  "version": "NativeFrozenLearningAudit1",
+  "status": "passed",
+  "inputs": [
+    {
+      "path": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-window-statistics-frozen\\results.json",
+      "bytes": 133950,
+      "sha256": "619af101ce201b368ebf466e02a029b3a2a12c248817428048db9dc195698f17"
+    },
+    {
+      "path": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-window-statistics-frozen-start\\session.json.gz",
+      "bytes": 287078,
+      "sha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907"
+    },
+    {
+      "path": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-window-statistics-frozen\\session.json.gz",
+      "bytes": 511575,
+      "sha256": "33f0a9d7e568d09977f392dd729ba2bac3310393aabe830a513655003e77e0d2"
+    }
+  ],
+  "initialLearningDigest": "18e78ef5ae2aee0fec17642092058507118338e84cbf65a6e2b34e9466432f93",
+  "finalLearningDigest": "18e78ef5ae2aee0fec17642092058507118338e84cbf65a6e2b34e9466432f93",
+  "dynamicsAndAffordancesExactlyUnchanged": true,
+  "newDecisions": 32,
+  "newExecuted": 12,
+  "newLearningWrites": 0,
+  "initialLive": null,
+  "finalLive": {
+    "epoch": "fa620873-099a-41cd-8c90-b6aa0e6bde48",
+    "sequence": 510,
+    "sensorySha256": "0b8fe2c7bb0eadb43262cb62ab9398625f7e136b011463d05da23f0eb8913753"
+  },
+  "scope": "Original stopped checkpoint equality only. Current task/world/live state can change. No actions, model queries or learning writes; no task-capability claim."
+}

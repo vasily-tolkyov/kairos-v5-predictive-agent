@@ -1,0 +1,33 @@
+✔ independent measured planes identify motion without inventing unobserved components (235.575037ms)
+✔ chosen attention learns the selected measurement and rejects an outcome-only subject (47.367763ms)
+✔ learns a nonlinear conditional response from real transitions (4.671101ms)
+✔ goals, queries, chronology labels and snapshots do not train the medium (51.652463ms)
+✔ without a motor input or any learned readout there is no executable prediction (14.169405ms)
+✔ goal-directed probes stay untrusted and require actual feedback to verify a goal (71.458297ms)
+✔ retains learned weights across a mechanism change and repairs predictions from new feedback (944.384141ms)
+✔ restore preserves the exact subsequent learning update and replay randomness (61.976468ms)
+✔ learning another motor response retains an unrehearsed earlier capability (774.797427ms)
+✔ rejects gaps, non-real windows and corrupt conductances without changing memory (59.724506ms)
+✔ missing objects mask their channels without discarding measurable self channels (0.985579ms)
+✔ renaming objects and translating the world preserves learned local predictions (0.407002ms)
+✔ an unsupported copied value cannot become an input to the next imagined action (0.812473ms)
+✔ real later observations verify a goal even with no motor budget (13.937031ms)
+✔ a transient or stale terminal observation cannot certify success (12.629186ms)
+✔ plans and verifies three numeric stages learned only as isolated transitions (315.875646ms)
+✔ numeric receptors preserve distinguishable values above sixteen (605.943127ms)
+✔ offer observations retain their actual frame while a later action starts from a different physical frame (13.840748ms)
+✔ experience adapter forwards real body feedback and observes remote public subjects (1.208147ms)
+✔ a block-only retina cannot bind an entity action to the surface behind it (0.401424ms)
+✔ an exact cursor offer remains usable among identical blocks without guessing another target (3.010104ms)
+✔ passive capture excludes motor intervals, keeps actual boundaries and refuses observation gaps (1.95317ms)
+✔ passive evidence is learned before its following action, with separate counts and exact resume (55.989389ms)
+✔ frozen observation records passive exposure without changing learning, and rejects a mislabeled motor (5.965256ms)
+✔ isolated passive experience composes between two learned motor effects without a supplied task recipe (668.681002ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4166.833864

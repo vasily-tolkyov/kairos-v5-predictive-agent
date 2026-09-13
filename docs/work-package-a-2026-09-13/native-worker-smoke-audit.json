@@ -1,0 +1,368 @@
+{
+  "version": "StoppedNativeContinuingAudit2",
+  "source": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/final-worker-smoke",
+  "reportSha256": "8379502bf9707c04eaac2138dab1c19d6188b668d251c6759cd6e14e418e8849",
+  "status": "budget-paused",
+  "stoppedAt": "2026-09-13T02:09:40.815Z",
+  "seconds": 25.988,
+  "savedWorld": {
+    "file": "world-v5-physical-control/level.dat",
+    "sha256": "2ccc6dbea7ecd561336738bc185e32548984d59f0e0facc57a1630462efe5049",
+    "difficulty": "peaceful",
+    "gameType": 0
+  },
+  "initialPosition": [
+    0.5,
+    64,
+    2.5
+  ],
+  "finalPosition": [
+    0.5,
+    64,
+    2.5
+  ],
+  "decisions": 8,
+  "actualWindows": 8,
+  "windows": [
+    {
+      "file": "events/0000001.json.gz",
+      "sha256": "e3fbbb57b09e3289845bf7530b4d5bb2dedd24a4ae7dd06e6722c5141726f866",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-1",
+      "first": 33,
+      "last": 75,
+      "action": "use-item",
+      "decision": 1
+    },
+    {
+      "file": "events/0000002.json.gz",
+      "sha256": "56e997e658abc08df9eedcbd783f03a602d023912cee69dda715af1366d01682",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-2",
+      "first": 81,
+      "last": 164,
+      "action": "interact",
+      "decision": 2
+    },
+    {
+      "file": "events/0000003.json.gz",
+      "sha256": "fde493f157aef830f7369ac5f59b0b2bdb32a6247adba69112c32d925441999c",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-3",
+      "first": 170,
+      "last": 254,
+      "action": "interact",
+      "decision": 3
+    },
+    {
+      "file": "events/0000004.json.gz",
+      "sha256": "868179fcd1befd3937c7a52c35e75fb2fb0906ade6c7e07ee16d1f348410e45e",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-4",
+      "first": 261,
+      "last": 303,
+      "action": "use-item",
+      "decision": 4
+    },
+    {
+      "file": "events/0000005.json.gz",
+      "sha256": "cdc66559d8b5be7fa9943751491359e78b963b3803141263dee9b49954355e79",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-5",
+      "first": 308,
+      "last": 318,
+      "action": "passive",
+      "decision": 5
+    },
+    {
+      "file": "events/0000006.json.gz",
+      "sha256": "d411a45095a0ad104efd4e801a722aad6dc5dc87922075ef6040ce329d4dc75a",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-6",
+      "first": 321,
+      "last": 331,
+      "action": "passive",
+      "decision": 6
+    },
+    {
+      "file": "events/0000007.json.gz",
+      "sha256": "00de8fe7bf1f71d2ba54982fe8d4fe4fb2bb6ea645575603611b083c1e2ac77e",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-7",
+      "first": 333,
+      "last": 339,
+      "action": "select-hotbar",
+      "decision": 7
+    },
+    {
+      "file": "events/0000008.json.gz",
+      "sha256": "f44de7a47bd40cb8ad49b3edfcd88d269ceb56858de010578b1985fc518ed93e",
+      "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:event-8",
+      "first": 342,
+      "last": 348,
+      "action": "select-hotbar",
+      "decision": 8
+    }
+  ],
+  "countersMatch": true,
+  "journalMismatches": [],
+  "initialWrites": 0,
+  "finalWrites": 21,
+  "frozen": false,
+  "learningDigestUnchanged": false,
+  "sources": {
+    "task": 8
+  },
+  "statuses": {
+    "executed": 8
+  },
+  "searchTaskPlans": [],
+  "supportedTaskPlans": [],
+  "invalidatedTaskForecasts": [
+    {
+      "index": 1,
+      "reason": "action-start-changed-without-forecast"
+    },
+    {
+      "index": 2,
+      "reason": "action-start-changed-without-forecast"
+    },
+    {
+      "index": 3,
+      "reason": "action-start-changed-without-forecast"
+    },
+    {
+      "index": 4,
+      "reason": "action-start-changed-without-forecast"
+    },
+    {
+      "index": 5,
+      "reason": "action-start-changed-without-forecast"
+    },
+    {
+      "index": 6,
+      "reason": "action-start-changed-without-forecast"
+    },
+    {
+      "index": 7,
+      "reason": "action-start-changed-without-forecast"
+    },
+    {
+      "index": 8,
+      "reason": "action-start-changed-without-forecast"
+    }
+  ],
+  "hypotheses": [],
+  "taskConfirmations": [
+    {
+      "id": "reach-other-side",
+      "expression": {
+        "kind": "predicate",
+        "predicate": {
+          "version": "GoalPredicateV1",
+          "id": "past-exit",
+          "subject": {
+            "kind": "self"
+          },
+          "observable": "position.2",
+          "comparator": "less-than",
+          "target": -4.2
+        }
+      },
+      "status": "pending",
+      "firstSatisfied": null,
+      "confirmations": 0
+    }
+  ],
+  "players": [
+    {
+      "file": "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat",
+      "sha256": "5b8e052ff79d78af756248a9eb7420a1b335b4384f6635c2e337cdded72d0600",
+      "position": [
+        0.5,
+        64,
+        2.5
+      ],
+      "health": 20,
+      "inventory": []
+    }
+  ],
+  "finalSavedPlayerMatches": true,
+  "archiveProofs": [
+    {
+      "source": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/final-worker-smoke",
+      "stoppedAt": "2026-09-13T02:09:40.815Z",
+      "levelName": "world-v5-physical-control",
+      "regions": 4,
+      "output": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/final-worker-smoke/stopped-world.tar.gz",
+      "bytes": 190093,
+      "sha256": "96f87c061ae77119cab1b2a30f72bceb1634503ee6f003a32c7cd4c6f3bca415"
+    }
+  ],
+  "deaths": {
+    "reported": 0,
+    "serverMessages": []
+  },
+  "verifiedDecisionPositions": [],
+  "serverPositions": [],
+  "withinAction": {
+    "healthDrops": [],
+    "oxygenDrops": [],
+    "intervals": 283
+  },
+  "passive": {
+    "windows": [
+      {
+        "file": "0000001.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-1",
+        "sha256": "890e46b5a8b32c0fd84060e747e4b3af16f426540a4603b9d4012157d3a31fbc",
+        "first": 32,
+        "last": 33
+      },
+      {
+        "file": "0000002.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-2",
+        "sha256": "8548c2a5689c2ac2a42045f21a3d1f87a4056178d93a63a339dc00f3b4e78501",
+        "first": 75,
+        "last": 79
+      },
+      {
+        "file": "0000003.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-3",
+        "sha256": "2f2b00b3fd6c7ab991d62de6a104aab411ed1c0c67bfc9d327f518cf6333e035",
+        "first": 79,
+        "last": 81
+      },
+      {
+        "file": "0000004.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-4",
+        "sha256": "7e340f2908c2ea87d2db4ab1824201795d7dc1056b789e78cbf509ce961fce50",
+        "first": 164,
+        "last": 169
+      },
+      {
+        "file": "0000005.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-5",
+        "sha256": "5b9988a7d9479e5b175d891ae8ac7d9110795181ea513848f4dea0cc1db61336",
+        "first": 169,
+        "last": 170
+      },
+      {
+        "file": "0000006.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-6",
+        "sha256": "952314e10ed222ee5cb9b35f3a5b3d8f769e94b5d42d67596250b8de013f456b",
+        "first": 254,
+        "last": 258
+      },
+      {
+        "file": "0000007.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-7",
+        "sha256": "020f855f2bf1530f11131ed60be0a821bd946392b636d3c48c917be3994e436c",
+        "first": 258,
+        "last": 261
+      },
+      {
+        "file": "0000008.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-8",
+        "sha256": "9039747971fb2dd680209c9ca015485f96dbf8d9c62c9849f46960e6b40f501e",
+        "first": 303,
+        "last": 305
+      },
+      {
+        "file": "0000009.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-9",
+        "sha256": "b7a330b3a4fab72787f36e1d5c1552be2bd3ca38b7ab39a194e0143295a26e30",
+        "first": 305,
+        "last": 308
+      },
+      {
+        "file": "0000010.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-10",
+        "sha256": "bc1a085fda68554e80b2f19f9c22fe344e7bc8234d51fb9f3caffcfa8097b637",
+        "first": 318,
+        "last": 319
+      },
+      {
+        "file": "0000011.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-11",
+        "sha256": "d0b9ae7bb3a20599d29c8b25332432b75d353ed3506b49520dbaa997b65a9b20",
+        "first": 319,
+        "last": 321
+      },
+      {
+        "file": "0000012.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-12",
+        "sha256": "68c1445c42f72d28f377c2e6365830e0fc4738e0d433dde1ec515f1104c7b4d5",
+        "first": 331,
+        "last": 333
+      },
+      {
+        "file": "0000013.json.gz",
+        "id": "3a6d4436-c2f5-4cae-9562-b8288a0d76a3:passive:event-13",
+        "sha256": "c5cba0276badd8a56ee15ea3b164d1bf3733884aeace44c5bd25aacb34898dc4",
+        "first": 339,
+        "last": 342
+      }
+    ],
+    "intervals": 33,
+    "healthDrops": []
+  },
+  "betweenActions": {
+    "intervals": 33,
+    "coveredByPassive": 33,
+    "unrecordedIntervals": 0,
+    "netHealthLoss": 0,
+    "gaps": [
+      {
+        "before": 32,
+        "after": 33,
+        "unrecordedIntervals": 1,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      },
+      {
+        "before": 75,
+        "after": 81,
+        "unrecordedIntervals": 6,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      },
+      {
+        "before": 164,
+        "after": 170,
+        "unrecordedIntervals": 6,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      },
+      {
+        "before": 254,
+        "after": 261,
+        "unrecordedIntervals": 7,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      },
+      {
+        "before": 303,
+        "after": 308,
+        "unrecordedIntervals": 5,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      },
+      {
+        "before": 318,
+        "after": 321,
+        "unrecordedIntervals": 3,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      },
+      {
+        "before": 331,
+        "after": 333,
+        "unrecordedIntervals": 2,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      },
+      {
+        "before": 339,
+        "after": 342,
+        "unrecordedIntervals": 3,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      }
+    ]
+  },
+  "limitation": "Finite evidence audit. A goal confirmation does not establish causal prerequisites, transfer benefit or lifelong competence."
+}

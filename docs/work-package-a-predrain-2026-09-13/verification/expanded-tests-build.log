@@ -1,0 +1,14 @@
+test/action-start.test.ts(156,14): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(object: ExperienceEnvironment, methodName: FunctionPropertyNames<ExperienceEnvironment>, options?: MockFunctionOptions | undefined): never', gave the following error.
+    Argument of type '"drainPassiveEvents"' is not assignable to parameter of type 'FunctionPropertyNames<ExperienceEnvironment>'.
+  Overload 2 of 4, '(object: ExperienceEnvironment, methodName: FunctionPropertyNames<ExperienceEnvironment>, implementation: () => Promise<...>, options?: MockFunctionOptions | undefined): never', gave the following error.
+    Argument of type '"drainPassiveEvents"' is not assignable to parameter of type 'FunctionPropertyNames<ExperienceEnvironment>'.
+  Overload 3 of 4, '(object: ExperienceEnvironment, methodName: keyof ExperienceEnvironment, options: MockMethodOptions): Mock<...>', gave the following error.
+    Type '() => Promise<RealEvent[]>' has no properties in common with type 'MockMethodOptions'.
+test/action-start.test.ts(181,14): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(object: ExperienceEnvironment, methodName: FunctionPropertyNames<ExperienceEnvironment>, options?: MockFunctionOptions | undefined): never', gave the following error.
+    Argument of type '"drainPassiveEvents"' is not assignable to parameter of type 'FunctionPropertyNames<ExperienceEnvironment>'.
+  Overload 2 of 4, '(object: ExperienceEnvironment, methodName: FunctionPropertyNames<ExperienceEnvironment>, implementation: () => Promise<...>, options?: MockFunctionOptions | undefined): never', gave the following error.
+    Argument of type '"drainPassiveEvents"' is not assignable to parameter of type 'FunctionPropertyNames<ExperienceEnvironment>'.
+  Overload 3 of 4, '(object: ExperienceEnvironment, methodName: keyof ExperienceEnvironment, options: MockMethodOptions): Mock<...>', gave the following error.
+    Type '() => Promise<RealEvent[]>' has no properties in common with type 'MockMethodOptions'.

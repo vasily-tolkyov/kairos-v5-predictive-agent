@@ -1,0 +1,617 @@
+{
+  "version": "NativeWorkerFreshnessAudit1",
+  "status": "passed",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-readout-copy",
+  "reportSha256": "978d03ba76ce71a84b6927e4f76c71aa9af8e86d4a153fe3b03a88d6b5fc7b3a",
+  "stoppedAt": "2026-09-13T07:22:38.378Z",
+  "runStatus": "budget-paused",
+  "protocol": {
+    "steps": 32,
+    "seconds": 180,
+    "goalAfter": 0,
+    "frozen": false,
+    "frozenScope": "transferable dynamics and affordances; current task feedback remains active",
+    "environment": "natural",
+    "worldSeed": "129604783",
+    "difficulty": "peaceful",
+    "difficultySource": "explicit-command-line",
+    "goalDistance": 12,
+    "geometry": {
+      "wallDepth": 2,
+      "halfWidth": 5,
+      "startX": 0.5,
+      "material": "oak_planks"
+    },
+    "taskOnly": false,
+    "resetAfterStart": false,
+    "externalActionSelection": false,
+    "requestedGoals": [
+      {
+        "version": "GroundedGoalV1",
+        "id": "reach-other-side",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "past-exit",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "position.2",
+            "comparator": "less-than",
+            "target": -5.5
+          }
+        }
+      }
+    ],
+    "goalSourceSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+    "boundary": "native normal terrain and peaceful difficulty; no setup, teleport or runtime rule callbacks",
+    "limitations": [
+      "finite natural-world sample; goal prerequisites depend on actual terrain",
+      "peaceful engine rules; no evidence of hostile survival or hunger management",
+      "engineered block/entity silhouette RGBD and visible hotbar sensing; some visual assets are unsupported; not full client vision",
+      "restart requires an explicit observed action; recovery does not establish survival",
+      "finite duration cannot establish lifelong learning"
+    ],
+    "difficultyVerifiedByServer": "peaceful",
+    "maintenanceGoals": [
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-health",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-health",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.health",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-food",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-food",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.food",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-oxygen",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-oxygen",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.oxygen",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      }
+    ]
+  },
+  "learningWrites": 90,
+  "passiveWindows": 84,
+  "decisions": 32,
+  "attemptedDecisions": 32,
+  "preparations": 32,
+  "acceptedAttempts": 6,
+  "preparationlessRefusals": 0,
+  "refusedDecisions": 26,
+  "refusalReasons": {
+    "action-start-expired": 26
+  },
+  "executedActions": 6,
+  "freshExecutedForecasts": 6,
+  "executedFractionOfAllDecisions": 0.1875,
+  "freshFractionOfExecutedActions": 1,
+  "supportedExecutedForecasts": 0,
+  "supportedTaskPlans": 0,
+  "attempts": [
+    {
+      "index": 9,
+      "token": "8ceba9b0-a543-40c3-98a2-e4f44b22d730",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 51,
+      "checkedSequence": 52,
+      "elapsedMs": 78.39460000000327
+    },
+    {
+      "index": 10,
+      "token": "b80ce056-cee6-4ca0-bfe0-755160a5b54b",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 59,
+      "checkedSequence": 60,
+      "elapsedMs": 67.81629999999859
+    },
+    {
+      "index": 11,
+      "token": "35c0799e-b208-4efd-b0c7-337c856a9518",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 67,
+      "checkedSequence": 69,
+      "elapsedMs": 79.96049999999741
+    },
+    {
+      "index": 12,
+      "token": "7979d86a-6045-4157-afc7-9164dbb550ed",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 75,
+      "checkedSequence": 76,
+      "elapsedMs": 47.0763999999981
+    },
+    {
+      "index": 13,
+      "token": "1cb8bbf8-5c73-4139-83a7-b6077e8c92b2",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 81,
+      "checkedSequence": 82,
+      "elapsedMs": 40.420500000000175
+    },
+    {
+      "index": 14,
+      "token": "8f27c7f4-2904-44f1-8ef8-fbfda9091a6d",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 92,
+      "checkedSequence": 95,
+      "elapsedMs": 82.84720000000016
+    },
+    {
+      "index": 15,
+      "token": "d2930d83-fb9f-4316-8c40-ee2cd170be07",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 100,
+      "checkedSequence": 101,
+      "elapsedMs": 48.519100000001345
+    },
+    {
+      "index": 16,
+      "token": "574bce84-c0a7-4023-b53d-dc563453f059",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 105,
+      "checkedSequence": 106,
+      "elapsedMs": 44.212899999998626
+    },
+    {
+      "index": 17,
+      "token": "eebfa316-cbd3-404f-bc0d-4fa26935fad1",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 111,
+      "checkedSequence": 112,
+      "elapsedMs": 49.11670000000231
+    },
+    {
+      "index": 18,
+      "token": "37423b91-d361-4fe2-be02-c9d18093d788",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 118,
+      "checkedSequence": 119,
+      "elapsedMs": 55.53209999999672
+    },
+    {
+      "index": 19,
+      "token": "12916242-9567-4577-b714-b39e8cbcd4b4",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 123,
+      "checkedSequence": 124,
+      "elapsedMs": 35.25539999999819
+    },
+    {
+      "index": 20,
+      "token": "3842f006-26cf-4c3d-9d49-c0ce11052061",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 127,
+      "checkedSequence": 127,
+      "elapsedMs": 27.573300000000017
+    },
+    {
+      "index": 21,
+      "token": "72dac35b-4943-45ff-95dc-93fec94df15f",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 142,
+      "checkedSequence": 142,
+      "elapsedMs": 36.577299999997194
+    },
+    {
+      "index": 22,
+      "token": "7901f26f-19fc-4df1-bddf-6823077856b4",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 164,
+      "checkedSequence": 165,
+      "elapsedMs": 44.060999999997875
+    },
+    {
+      "index": 23,
+      "token": "f23473fc-c09d-46d1-9a2e-fe12da53cb2c",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 169,
+      "checkedSequence": 169,
+      "elapsedMs": 24.229599999998754
+    },
+    {
+      "index": 24,
+      "token": "e8a97622-5191-4c0f-9bce-94d0eeb47a35",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 217,
+      "checkedSequence": 218,
+      "elapsedMs": 38.326499999999214
+    },
+    {
+      "index": 25,
+      "token": "ac9f1a54-48bc-4082-9563-5da4aec47f31",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 236,
+      "checkedSequence": 237,
+      "elapsedMs": 31.613099999998667
+    },
+    {
+      "index": 26,
+      "token": "6e4cf592-95fd-4d3f-b931-5198e7f15009",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 241,
+      "checkedSequence": 242,
+      "elapsedMs": 27.00050000000192
+    },
+    {
+      "index": 27,
+      "token": "fe3a9937-f0a5-49c1-b7dd-f757ec58aa1d",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 245,
+      "checkedSequence": 246,
+      "elapsedMs": 29.1179000000011
+    },
+    {
+      "index": 28,
+      "token": "56b77612-a327-492d-a25b-74562ef3c32e",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 250,
+      "checkedSequence": 250,
+      "elapsedMs": 33.52580000000307
+    },
+    {
+      "index": 29,
+      "token": "4758b10b-ed7d-4d7c-821f-79a9b56e54e3",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 296,
+      "checkedSequence": 297,
+      "elapsedMs": 18.529300000001967
+    },
+    {
+      "index": 30,
+      "token": "f59e3d38-6426-42f3-9170-493d57208777",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 300,
+      "checkedSequence": 301,
+      "elapsedMs": 26.18649999999616
+    },
+    {
+      "index": 31,
+      "token": "55af0904-58cc-4b4c-8b3e-309d34c993b9",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 304,
+      "checkedSequence": 304,
+      "elapsedMs": 18.852500000000873
+    },
+    {
+      "index": 32,
+      "token": "49dd9983-0c4f-4aa3-acec-03e5a20ea0eb",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 323,
+      "checkedSequence": 325,
+      "elapsedMs": 26.025300000001153
+    },
+    {
+      "index": 33,
+      "token": "ab8dce78-1c37-45a4-b5f1-e7468bf67c12",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 328,
+      "checkedSequence": 329,
+      "elapsedMs": 32.19389999999839
+    },
+    {
+      "index": 34,
+      "token": "8dbbc2ea-e6b5-4d7b-b106-efc6fb5d8e07",
+      "status": "executed",
+      "phase": "accepted",
+      "reason": "matched",
+      "preparedSequence": 332,
+      "checkedSequence": 332,
+      "elapsedMs": 27.448199999998906
+    },
+    {
+      "index": 35,
+      "token": "7db9d3e5-ab22-4c2a-8908-78cf74805b7b",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 364,
+      "checkedSequence": 365,
+      "elapsedMs": 33.417499999995925
+    },
+    {
+      "index": 36,
+      "token": "7c6ec3cf-3bc4-4835-8c59-cf6be36bd4ba",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 371,
+      "checkedSequence": 372,
+      "elapsedMs": 42.85439999999653
+    },
+    {
+      "index": 37,
+      "token": "8193ff25-0ca5-4010-9d4a-7cc97a57d480",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 377,
+      "checkedSequence": 378,
+      "elapsedMs": 47.1275999999998
+    },
+    {
+      "index": 38,
+      "token": "01d67f95-e183-44fb-996b-bd1027468dfe",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 383,
+      "checkedSequence": 384,
+      "elapsedMs": 47.346599999997125
+    },
+    {
+      "index": 39,
+      "token": "86c1a8dd-732e-4e67-865e-19ca725e39d6",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 389,
+      "checkedSequence": 390,
+      "elapsedMs": 43.69470000000001
+    },
+    {
+      "index": 40,
+      "token": "774f1f8f-c70c-4e43-b236-1eaa34d9b464",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 395,
+      "checkedSequence": 396,
+      "elapsedMs": 48.35419999999431
+    }
+  ],
+  "windows": [
+    {
+      "eventId": "b6a3ec28-92c9-4855-adbe-6ff29f1e885f:event-1",
+      "file": "events/0000001.json.gz",
+      "sha256": "6f60a938cce0e86da4b5f458cd1e730ceb8838e2fd6f541a08fb70bf8f6e034c",
+      "token": "3842f006-26cf-4c3d-9d49-c0ce11052061",
+      "startSequence": 127,
+      "endSequence": 137,
+      "sensoryDigest": "2e3cfbe7a60bbeb9cef6c77d4cc7c8cd20832cf54b4a9bfa70a4bcae85869ce1",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "b6a3ec28-92c9-4855-adbe-6ff29f1e885f:event-2",
+      "file": "events/0000002.json.gz",
+      "sha256": "59c262583991b1acf355186d41bcf332ecfd96aa949c8ef45cf90624775ab33d",
+      "token": "72dac35b-4943-45ff-95dc-93fec94df15f",
+      "startSequence": 142,
+      "endSequence": 159,
+      "sensoryDigest": "55d4ae05e2397084eccc047b743ea88492470d459e3ea05ac88385e65e97b791",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "b6a3ec28-92c9-4855-adbe-6ff29f1e885f:event-3",
+      "file": "events/0000003.json.gz",
+      "sha256": "55c46aa7a0e7e46c4fa27f78b07934c7a8166f9622bc982acc15fea824b8c811",
+      "token": "f23473fc-c09d-46d1-9a2e-fe12da53cb2c",
+      "startSequence": 169,
+      "endSequence": 211,
+      "sensoryDigest": "4c6d72f7e967f82bc8358239edb69bd3bc4c978a5ab3a5ef12642699a0c4fa60",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "b6a3ec28-92c9-4855-adbe-6ff29f1e885f:event-4",
+      "file": "events/0000004.json.gz",
+      "sha256": "09342872c55ad94b4f7d9b17824911b8656ae766f4a23bc1937a5c4a25fbce48",
+      "token": "56b77612-a327-492d-a25b-74562ef3c32e",
+      "startSequence": 250,
+      "endSequence": 292,
+      "sensoryDigest": "81963761b1ae6a9c81c0b5aabfd8d8d483560615a44d13c49f050ed06143a443",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "b6a3ec28-92c9-4855-adbe-6ff29f1e885f:event-5",
+      "file": "events/0000005.json.gz",
+      "sha256": "1fe56c071436434948b72157fb6d30625403dc12c3bb36b56cb927870369f068",
+      "token": "55af0904-58cc-4b4c-8b3e-309d34c993b9",
+      "startSequence": 304,
+      "endSequence": 320,
+      "sensoryDigest": "0eb276c4ca8fe23405df77cd2913c47c679d022c5cd9adc823d01417f5ca610b",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    },
+    {
+      "eventId": "b6a3ec28-92c9-4855-adbe-6ff29f1e885f:event-6",
+      "file": "events/0000006.json.gz",
+      "sha256": "9552cb618fed8d2d5167b609fbe7f20e0aa600445a321d278c380cf3d47e1183",
+      "token": "8dbbc2ea-e6b5-4d7b-b106-efc6fb5d8e07",
+      "startSequence": 332,
+      "endSequence": 358,
+      "sensoryDigest": "e898ab8593df6ddb1031b4d4c5c0a5375e10fd90bac8040c5404a4c65a9e3165",
+      "basis": "supported",
+      "supportedFields": [],
+      "compared": 0,
+      "matched": 0,
+      "unknown": 0,
+      "errors": []
+    }
+  ],
+  "wholeLoopDurationMs": [
+    489.1899000000012,
+    385.09059999999954,
+    407.8694000000032,
+    326.60969999999725,
+    357.03150000000096,
+    609.7103999999999,
+    286.10599999999977,
+    278.22520000000077,
+    311.36589999999705,
+    301.0125999999982,
+    231.67380000000048,
+    694.3195000000014,
+    1088.9254,
+    283.58250000000044,
+    2357.258399999999,
+    250.65460000000166,
+    287.1959999999999,
+    222.14140000000043,
+    227.2658999999985,
+    2330.000799999998,
+    184.5827999999965,
+    196.29460000000108,
+    976.3199999999997,
+    211.29249999999593,
+    199.03809999999794,
+    1544.5035999999964,
+    300.09449999999924,
+    317.34240000000136,
+    304.86469999999827,
+    299.1038000000044,
+    292.32189999999537,
+    336.19950000000244
+  ],
+  "rssMB": [
+    413.3125,
+    419.1953125,
+    426.76953125,
+    465.20703125,
+    500.98828125,
+    519.1484375,
+    523.62109375,
+    526.5859375,
+    529.21484375,
+    533.734375,
+    536.94140625,
+    543.640625,
+    555.34765625,
+    569.67578125,
+    571.83984375,
+    576.671875,
+    609.1171875,
+    606.609375,
+    606.375,
+    612.78515625,
+    610.30859375,
+    611.01171875,
+    612.1796875,
+    611.16796875,
+    611.79296875,
+    613.86328125,
+    609.4765625,
+    611.89453125,
+    611.3515625,
+    613.05859375,
+    612.3984375,
+    612.90234375
+  ],
+  "limitation": "Checks token/frame evidence, not a production coverage threshold. Zero executions cannot demonstrate availability. A short peaceful run does not establish task success, retention, transfer, multistage planning or worst-case query latency."
+}

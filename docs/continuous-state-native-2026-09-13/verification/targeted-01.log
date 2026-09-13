@@ -1,0 +1,200 @@
+✔ actual frame clocks distinguish physics from a zero-physics terminal sample without changing sequence time (25.4386ms)
+✔ motor edge telemetry preserves the last held tick and releases before the next catch-up sample (13.5625ms)
+✔ move stabilization retains its original duration while its post-release frames report controls off (6.1706ms)
+✔ unmeasured impulse controls remain explicitly unknown and do not acquire a fabricated motor receipt (5.331ms)
+✔ capture clocks and actuator telemetry are not sensory predictor inputs (1.7862ms)
+✔ the ordered telemetry inbox bounds records and serialized bytes and reports dropped ranges explicitly (2.6224ms)
+✔ exact-frame telemetry drains preserve later release edges, duplicate boundaries and future frames (4.7846ms)
+✔ a lost exact telemetry boundary returns an explicit gap while retaining future frames (2.3684ms)
+✔ the environment explicitly starts telemetry at initialization and anonymously drains only the exact raw boundary (4.611ms)
+✔ a bounded next-frame wait returns a copied real successor and removes its listeners (2.9278ms)
+✔ a bounded silent-clock wait expires without fabricating a frame and removes its listeners (2.694ms)
+▶ aborted, faulted and closed observation waits settle once and release listeners
+  ✔ abort (1.42ms)
+  ✔ fault (1.1364ms)
+  ✔ close (0.9327ms)
+✔ aborted, faulted and closed observation waits settle once and release listeners (4.0451ms)
+✔ pending preparation cancellation preserves measured passive evidence with no token or motor (2.4387ms)
+✔ superseding a pending frame wait cancels it without stealing the succeeding preparation interval (4.4238ms)
+✔ a dead body with no further clock ticks can prepare and execute its explicitly chosen restart after one timeout (11.1603ms)
+✔ a stalled real sensor archives only the incomplete measured motor window and releases its controls (2.078ms)
+✔ a held motor keeps its requested duration and returns ongoing motion without waiting for rest (12.4637ms)
+▶ requested motor duration survives a synchronous physics catch-up batch
+  ✔ move (6.2599ms)
+  ✔ jump (9.4899ms)
+  ✔ use-item (14.8553ms)
+✔ requested motor duration survives a synchronous physics catch-up batch (31.3364ms)
+✔ the passive port returns exactly its measured interval without motor output or waiting for stability (3.7142ms)
+✔ death during a passive choice retains the short actual interval without completing its requested duration (1.3864ms)
+✔ breathing comes only from owned metadata and becomes unknown at a body replacement (1.9156ms)
+✔ death exposes an explicit restart action and no SDK restart runs before it is chosen (5.9121ms)
+✔ a death packet ends a physical window even when the SDK stops all subsequent physics ticks (1.9049ms)
+✔ using the held item is a measured button window, with no supplied item effect or consumption helper (9.6299ms)
+✔ motor receipts retain real clocks and release frames before a catch-up continuation (3.9697ms)
+✔ death records actual physical duration without rewriting the requested action or terminal sample (1.7703ms)
+✔ zero-tick death cannot be learned as a completed positive motor interval (1.1561ms)
+✔ invalid or inconsistent motor receipts are rejected at the real-event boundary (2.775ms)
+▶ fault, close and timeout archive one actual release receipt without completing an event
+  ✔ fault (1.663ms)
+  ✔ closed (1.1768ms)
+  ✔ timeout (1.1675ms)
+✔ fault, close and timeout archive one actual release receipt without completing an event (4.6378ms)
+✔ zero measured hold assimilates death but preserves theta and earns no requested-action certificate (78.7213ms)
+✔ zero-time passive terminal sensing is retained without becoming passive dynamics or another theta write (5.5162ms)
+✔ receipt-free instantaneous endpoint measurements are preserved without any physical dynamics row (18.31ms)
+✖ the same current frame with different actual history enters the same learned 49-coefficient predictor (202.5812ms)
+✔ all interval rows are calibrated before their original window and never become extra independent observations (32.1525ms)
+✔ retrospective passive packaging duration is an output, never an endpoint input or motor namespace (20.6338ms)
+✔ missing physical clocks cannot acquire duration from activeSeconds or frame count (6.478ms)
+✔ serialized, end-substituted, mixed-owner, and source-conflicting traces are rejected before theta changes (6.9615ms)
+✔ old theta stays in legacy semantics, and new checkpoints restore both namespaces without reinterpretation (57.7268ms)
+✖ predictions and interval queries preserve real z and theta and remove measurement provenance (11.2008ms)
+✔ late sensory features enter continuous conductances after the old 32-slot capacity (1.8836ms)
+✔ real frame flow joins same-frame release after the last held interval, before the next off interval (21.4793ms)
+✔ different original window packaging preserves actual recurrent history and original trace source (10.3205ms)
+✔ retired window states stay unavailable and cannot be recreated from later state (4.7064ms)
+✔ a delivered frame gap remains visible and never acquires guessed elapsed time (0.9931ms)
+✔ same current scene with different actual histories is not collapsed by search identity (5.4729ms)
+✔ invalid full capture clock is rejected before live state and world publication (1.5894ms)
+✔ a motor edge reported after the next capture cannot label an already completed interval (1.4704ms)
+✔ telemetry record order and motor edge sequence must progress across deliveries (1.5148ms)
+✔ source intervals keep the last held tick and separate motor-off settling (17.4831ms)
+✔ an interrupted hold uses actual edges while terminal sensing has zero physical duration (0.6541ms)
+✔ early held inputs do not contain the future whole-window interruption duration (0.7005ms)
+✔ a zero-duration interrupted press produces no dynamics row or independent evidence (0.3914ms)
+✔ every adjacent row retains exactly one original parent calibration identity and compact indices (0.9862ms)
+✔ legacy receipts cannot manufacture intermediate physical timestamps (0.5167ms)
+✔ partially instrumented windows never silently train their convenient subset (0.4959ms)
+✔ observed passive provenance supplies motor-off intervals without fabricated hold receipts (0.3752ms)
+✔ impulse actions with physical clocks but no verified motor edges remain untrainable (0.3846ms)
+✔ terminal passive sensing assimilates a changed body without claiming another physical step (0.3476ms)
+✔ shared boundaries accept the same original frame and reject conflicting values or skipped frames (1.4829ms)
+✔ backward physical clocks, conflicting terminal clocks and receipt/frame disagreements are rejected (0.5192ms)
+✖ duplicate frames, imagined state and motor provenance disguised as passive are rejected (0.9168ms)
+✔ sampled controls agree with actual receipt intervals, including the release capture (1.2453ms)
+✔ frozen retained references keep actual ownership while independent exports do not (20.2134ms)
+✔ incremental payload accounting remains exact across Unicode, retirement, digit boundaries, and reset (21.0944ms)
+✔ only validated recursively sealed observations have reusable immutable digests (1.3148ms)
+✔ the same actual current frame retains different measured histories in the recurrent state (4.3894ms)
+✔ changing batch boundaries and transport latency preserves every state exactly (10.9148ms)
+✔ a duplicate shared frame does not advance state and conflicting motor/clock data is rejected (2.2319ms)
+✔ a missing interval resets continuous activation and never invents elapsed physical time (2.0404ms)
+✔ retired frames cannot be silently consumed again and the frame history is bounded (1.7545ms)
+✔ legacy activeSeconds cannot substitute for an absent physical clock (1.0451ms)
+✔ physical dt, not wall or sequence-derived activeSeconds, drives continuous updates (2.576ms)
+✔ terminal sensing with zero physical ticks changes current sensation without inventing dynamics (1.2061ms)
+✔ actual off, held and unknown signals stay distinct while requested duration is not elapsed time (1.4327ms)
+✔ a release sample keeps its preceding held interval separate from the current off signal (1.7516ms)
+✔ a late channel beyond the original 32 has a stable path independent of discovery order (4.6962ms)
+✔ world, frame and percept identities never become predictive channels (1.3485ms)
+✔ an ambiguous observed cue remains sourced memory and never becomes a visible object (1.1028ms)
+✔ private imagined branches and readonly exports cannot mutate real state or create observed cue memory (2.6482ms)
+✔ unknown or interval-valued hypothetical inputs cannot smuggle precise values into branch activation (1.2462ms)
+✔ same-world restart retains only unanchored remembered cues; transfer resets all history (2.7538ms)
+✔ bad provenance, clock order, and memory-forging snapshots leave the real state unchanged (2.2544ms)
+✔ cue count and serialized bytes stay bounded, with explicit transactional refusal on overflow (5.2898ms)
+✔ frozen theta still assimilates every real passive and intervening frame exactly once (32.9707ms)
+✔ a refuted motor in one real history is reconsidered at the same scene with a different history (8.4292ms)
+✔ retired passive traces do not fall back to learning the legacy whole window (170.8505ms)
+✔ an active window longer than the live ring remains observed without a legacy training fallback (163.19ms)
+✔ whole-window packaging does not retrospectively upgrade a previously unknown live motor interval (2.1698ms)
+✔ catch-up capture clocks retain last held sample and later off, with separate checkpoint tail (5.5075ms)
+✔ a terminal sample advances sensation but contributes zero physical time (0.976ms)
+✔ death before the first held tick records a held terminal sample then release without inventing exposure (0.7101ms)
+✔ legacy frames and live omissions remain unsupported even with measured old receipts (0.6725ms)
+✔ equal sequence with a different boundary payload is rejected, including legacy data (1.6885ms)
+✔ terminal physics advancement and physical clock reversal are rejected (1.1635ms)
+✔ post-release off cannot relabel the last held frame (0.676ms)
+✔ missing release edge and modified edge clock cannot be hidden by the receipt (1.583ms)
+✔ live count and sequence watermark advance must agree even with theta frozen (0.6374ms)
+✔ recorded telemetry loss and trace omissions cannot pass a complete-coverage audit (0.7925ms)
+✔ missing frames and a reused original action event reject accounting (1.0575ms)
+ℹ tests 108
+ℹ suites 0
+ℹ pass 105
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2654.8492
+
+✖ failing tests:
+
+test at dist\test\experience-continuous-readout.test.js:144:1
+✖ the same current frame with different actual history enters the same learned 49-coefficient predictor (202.5812ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   0,
+  +   0
+  -   -1,
+  -   1
+    ]
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/experience-continuous-readout.test.js:159:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 0, 0 ],
+    expected: [ -1, 1 ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at dist\test\experience-continuous-readout.test.js:224:1
+✖ predictions and interval queries preserve real z and theta and remove measurement provenance (11.2008ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/experience-continuous-readout.test.js:236:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at dist\test\experience-intervals.test.js:161:1
+✖ duplicate frames, imagined state and motor provenance disguised as passive are rejected (0.9168ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /passive/. Input:
+  
+  'Error: invalid-motor-receipt'
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/experience-intervals.test.js:165:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: invalid-motor-receipt
+        at assert (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/util.js:29:15)
+        at validateMotorReceiptV1 (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/events.js:26:5)
+        at validateEvent (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/events.js:117:9)
+        at extractExperienceIntervals (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/experience-intervals.js:21:5)
+        at file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/experience-intervals.test.js:165:25
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/experience-intervals.test.js:165:12)
+        at Test.runInAsyncScope (node:async_hooks:228:14)
+        at Test.run (node:internal/test_runner/test:1118:25),
+    expected: /passive/,
+    operator: 'throws',
+    diff: 'simple'
+  }

@@ -1,0 +1,29 @@
+{
+  "version": "StageOneEvidenceCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-stage-one-acquisition-01/independent-audit-01.json",
+      "path": "independent-audit-01.json",
+      "bytes": 63081,
+      "sha256": "043ffa4d1c420d6bcb6a865273e958bffc82d57aa3501da77a0aafa9bf587230"
+    },
+    {
+      "source": "evidence/pr3-stage-one-acquisition-01/stopped-world.tar.gz.provenance.json",
+      "path": "stopped-world.tar.gz.provenance.json",
+      "bytes": 464,
+      "sha256": "50fb08d4636e0810e9f4f53fcc66ee087da3be7dcaa9af393c0fc7e027fb8157"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/acquisition-01-run.log",
+      "path": "acquisition-01-run.log",
+      "bytes": 1016,
+      "sha256": "44e27fb4d075a792ca0078bd6c8c7a5ddba173ac3c5ca018c65f1764326ac823"
+    },
+    {
+      "source": "evidence/pr3-stage-one-preparation/acquisition-01-audit.log",
+      "path": "acquisition-01-audit.log",
+      "bytes": 2529,
+      "sha256": "c530267d040409d3aa126b9951714b21c793d4a2d586f1dc2db2104696faa353"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "version": "NativeTimingDiagnosisProtocol1",
+  "purpose": "Locate the elapsed-time cost responsible for action-start refusals, preserving exact frame equality and all prediction support gates.",
+  "sourceWorld": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+  "sourceSession": "evidence/pr3-local-native-smoke/session.json.gz",
+  "newFork": "evidence/pr3-local-timing-start",
+  "output": "evidence/pr3-local-timing",
+  "steps": 32,
+  "seconds": 180,
+  "port": 25638,
+  "difficulty": "peaceful",
+  "modelSeed": 317,
+  "attempts": 1,
+  "learning": true,
+  "goal": "Unchanged saved terminal goal from the first short run",
+  "treatment": "Only records validation, passive learning and prediction durations inside the existing callback; no change to decision policy or ordering.",
+  "concurrentCpuExperiments": false,
+  "limitation": "A diagnostic continuation on a fork of the prior stopped world; not an independent world or a repeat of the initial eight-decision trial. Failures and refused actions remain in the denominator."
+}

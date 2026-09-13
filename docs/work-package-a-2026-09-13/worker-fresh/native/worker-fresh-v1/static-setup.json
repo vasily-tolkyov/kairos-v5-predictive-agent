@@ -1,0 +1,9 @@
+{
+  "commands": [
+    "fill -5 63 -7 5 66 5 minecraft:bedrock hollow",
+    "fill -4 64 -6 4 65 4 minecraft:air",
+    "fill -4 64 -3 4 65 -2 minecraft:oak_planks",
+    "setworldspawn 0 64 2"
+  ],
+  "taskGeometryVisibleOnlyThroughBody": true
+}

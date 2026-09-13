@@ -1,0 +1,67 @@
+✔ the adapter binds a fresh synchronous forecast before the physical motor and honors a veto (3.3592ms)
+✔ session comparisons and recorded first predictions use the action-start frame, before outcome learning (33.6273ms)
+✔ preceding passive evidence is consumed once before the fresh forecast, then the action is learned (15.4843ms)
+▶ one per-step ledger deduplicates initial, pre-preparation, callback and receipt exposure even when frozen
+  ✔ online (17.7484ms)
+  ✔ frozen (9.7979ms)
+✔ one per-step ledger deduplicates initial, pre-preparation, callback and receipt exposure even when frozen (28.3281ms)
+▶ conflicting passive IDs across preparation phases are rejected without counting or learning the conflicting batch
+  ✔ drain-online (5.5269ms)
+  ✔ drain-frozen (8.8491ms)
+  ✔ callback-online (8.2663ms)
+  ✔ callback-frozen (9.218ms)
+  ✔ receipt-online (7.662ms)
+  ✔ receipt-frozen (9.3403ms)
+✔ conflicting passive IDs across preparation phases are rejected without counting or learning the conflicting batch (50.18ms)
+▶ frozen phase transitions reject future and backward passive intervals without executing a motor
+  ✔ future-drain (9.6483ms)
+  ✔ backward-callback (9.491ms)
+  ✔ backward-start (7.5482ms)
+  ✔ imagined-boundary (12.1073ms)
+✔ frozen phase transitions reject future and backward passive intervals without executing a motor (39.6152ms)
+✔ preparation-time learning can withdraw selected support and veto without replanning or another attempt (3.3602ms)
+✔ a previously supported plan is refused when its actual start context loses support (1.2062ms)
+✔ legacy delayed receipts cannot earn stale prediction, progress or local refutation credit (0.8877ms)
+✔ a fresh failed action is refuted in its actual starting context, independent of planning drift (1.09ms)
+✔ a callback cannot certify a different actual action-start frame (0.8465ms)
+✔ an asynchronous callback cannot authorize a motor across a scheduling gap (0.2139ms)
+✔ rebinding preserves a hypothesis as an untrusted probe after waiting-time drift (1.6243ms)
+✔ a worker-shaped body keeps advancing across async passive drain without a false synchronous forecast (0.3516ms)
+✔ a changed retina invalidates a claimed action-start frame even when its sequence and body channels agree (1.1043ms)
+✔ a future passive window cannot train an allegedly pre-execution forecast (1.0362ms)
+✔ retransmitting consumed passive evidence under its old ID cannot hide changed content (2.8052ms)
+✔ passive capture excludes motor intervals, keeps actual boundaries and refuses observation gaps (2.5502ms)
+✔ passive evidence is learned before its following action, with separate counts and exact resume (77.4566ms)
+✔ frozen observation records passive exposure without changing learning, and rejects a mislabeled motor (11.5577ms)
+✔ isolated passive experience composes between two learned motor effects without a supplied task recipe (1843.8579ms)
+✔ preparation waits once for a new real frame before atomically draining passive evidence (83.3361ms)
+✔ a single preparation captures the latest frame of a synchronous clock catch-up without retrying (3.454ms)
+✔ initial acquisition returns its atomic boundary even if a later worker frame arrives first (5.6866ms)
+✔ repeated initialization keeps the original boundary and preserves preceding passive evidence once (1.8012ms)
+✔ initial acquisition refuses to cut into an active motor window (4.2456ms)
+✔ the asynchronous adapter predicts from its prepared frame and atomically executes that exact frame once (5.7531ms)
+✔ a frame advancing during prediction refuses one attempt and returns every passive interval (3.1539ms)
+✔ a controller veto cancels its token without issuing a motor or losing preparation-time passive evidence (3.799ms)
+✔ full-frame comparison rejects changed sensations with the same sequence (2.1586ms)
+✔ superseded and unprepared execution tokens cannot later execute, while their passive evidence remains available (3.2718ms)
+✔ a failed motor consumes its token and preserves preparation evidence for a later drain (2.3627ms)
+✔ a preparation reply cannot be replaced with a newer controller cache frame (4.3664ms)
+✔ a throwing forecast cancels its token and preserves all passive intervals for the evidence drain (2.3966ms)
+▶ session grants execution credit only to the prepared frame, while expiry learns only intervening passive evidence
+  ✔ accepted (84.756ms)
+  ✔ expired (30.5217ms)
+✔ session grants execution credit only to the prepared frame, while expiry learns only intervening passive evidence (117.7564ms)
+✔ postplanning passive learning finishes before preparation while newer passive evidence still precedes the fresh forecast (35.6853ms)
+✔ passive evidence from after the accepted start is rejected before outcome learning (12.496ms)
+✔ an unknown token cannot steal newer passive evidence ahead of a legitimate prepared window (1.8017ms)
+✔ local preparation evidence remains retrievable after the worker and its cancellation RPC fail (1.944ms)
+✔ a diagnostic failure after token consumption preserves preparation evidence and prevents the motor (1.7642ms)
+✔ frozen callbacks reject conflicting IDs before trusting or counting a passive batch (4.3558ms)
+ℹ tests 55
+ℹ suites 0
+ℹ pass 55
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3235.0097

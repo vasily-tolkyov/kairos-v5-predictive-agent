@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "runtimeRoot": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-entity-vision/runtime",
+  "build": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/apparatus-candidate",
+  "startedAt": "2026-09-13T02:03:14.817Z",
+  "scope": "native base-texture visibility, occlusion and motor binding apparatus; zero autonomous learning trials",
+  "learningWrites": 0,
+  "autonomousLearningTrials": 0,
+  "apparatusSelectedActions": 1,
+  "scriptSha256": "5c065fcf762a344871eb7e853410f6e49471147adbed74f9dfa1f5b415802152",
+  "buildHashes": {
+    "body.js": "32ffec2d41ad4928087439a3feae05e9a61f2542c3cc84c3d5d17ad0be2eb3b0",
+    "adapters/minecraft/retina.js": "2596f4a32a832348d8c0cb6e9340fa0aee4d312c70be01674e4460c59ed3d6f3",
+    "adapters/minecraft/experience.js": "ae9d30183bda746f1631da0cbd2e1bebb5e090a6ec3d8666320c1e0ee7232cc8"
+  },
+  "serverEntityCount": 1,
+  "entityColor": [
+    0.3254901960784314,
+    0.3803921568627451,
+    0.23529411764705882
+  ],
+  "visiblePixels": 65,
+  "offeredActions": [
+    "passive",
+    "look",
+    "look",
+    "look",
+    "look",
+    "move",
+    "move",
+    "move",
+    "move",
+    "jump",
+    "jump",
+    "jump",
+    "jump",
+    "use-item",
+    "select-hotbar",
+    "select-hotbar",
+    "select-hotbar",
+    "select-hotbar",
+    "select-hotbar",
+    "select-hotbar",
+    "select-hotbar",
+    "select-hotbar",
+    "select-hotbar",
+    "attack"
+  ],
+  "occludedPixels": 0,
+  "hit": {
+    "healthBefore": 20,
+    "healthAfter": 19.06,
+    "frames": 7
+  },
+  "stoppedAt": "2026-09-13T02:03:25.748Z"
+}

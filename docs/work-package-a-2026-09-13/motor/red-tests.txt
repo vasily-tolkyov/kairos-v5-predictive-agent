@@ -1,0 +1,155 @@
+✔ a stalled real sensor archives only the incomplete measured motor window and releases its controls (16.496352ms)
+✔ a held motor keeps its requested duration and returns ongoing motion without waiting for rest (11.860491ms)
+▶ requested motor duration survives a synchronous physics catch-up batch
+  ✔ move (8.180195ms)
+  ✔ jump (6.962743ms)
+  ✔ use-item (9.119314ms)
+✔ requested motor duration survives a synchronous physics catch-up batch (25.053043ms)
+✔ the passive port returns exactly its measured interval without motor output or waiting for stability (3.198734ms)
+✔ death during a passive choice retains the short actual interval without completing its requested duration (2.112956ms)
+✔ breathing comes only from owned metadata and becomes unknown at a body replacement (1.462023ms)
+✔ death exposes an explicit restart action and no SDK restart runs before it is chosen (3.88554ms)
+✔ a death packet ends a physical window even when the SDK stops all subsequent physics ticks (2.256339ms)
+✔ using the held item is a measured button window, with no supplied item effect or consumption helper (7.711732ms)
+✖ motor receipts retain real clocks and release frames before a catch-up continuation (3.590824ms)
+✖ death records actual physical duration without rewriting the requested action or terminal sample (2.401984ms)
+✖ zero-tick death cannot be learned as a completed positive motor interval (1.379371ms)
+✖ invalid or inconsistent motor receipts are rejected at the real-event boundary (2.819162ms)
+▶ fault, close and timeout archive one actual release receipt without completing an event
+  ✖ fault (2.029413ms)
+  ✖ closed (1.481692ms)
+  ✖ timeout (2.843257ms)
+✖ fault, close and timeout archive one actual release receipt without completing an event (6.950865ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 12
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 379.787123
+
+✖ failing tests:
+
+test at evidence/motor-dist/test/body-motor-window.test.js:276:1
+✖ motor receipts retain real clocks and release frames before a catch-up continuation (3.590824ms)
+  AssertionError [ERR_ASSERTION]: body result must retain its measured motor receipt
+      at actualReceipt (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:267:5)
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:289:21)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at evidence/motor-dist/test/body-motor-window.test.js:311:1
+✖ death records actual physical duration without rewriting the requested action or terminal sample (2.401984ms)
+  AssertionError [ERR_ASSERTION]: body result must retain its measured motor receipt
+      at actualReceipt (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:267:5)
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:323:21)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at evidence/motor-dist/test/body-motor-window.test.js:338:1
+✖ zero-tick death cannot be learned as a completed positive motor interval (1.379371ms)
+  AssertionError [ERR_ASSERTION]: body result must retain its measured motor receipt
+      at actualReceipt (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:267:5)
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:348:18)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at evidence/motor-dist/test/body-motor-window.test.js:351:1
+✖ invalid or inconsistent motor receipts are rejected at the real-event boundary (2.819162ms)
+  AssertionError [ERR_ASSERTION]: body result must retain its measured motor receipt
+      at actualReceipt (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:267:5)
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:359:21)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at evidence/motor-dist/test/body-motor-window.test.js:377:17
+✖ fault (2.029413ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'MotorReceiptV1'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:395:20)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:377:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'MotorReceiptV1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at evidence/motor-dist/test/body-motor-window.test.js:377:17
+✖ closed (1.481692ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'MotorReceiptV1'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:395:20)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:377:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'MotorReceiptV1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at evidence/motor-dist/test/body-motor-window.test.js:377:17
+✖ timeout (2.843257ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'MotorReceiptV1'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:395:20)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/motor-dist/test/body-motor-window.test.js:377:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'MotorReceiptV1',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

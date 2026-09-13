@@ -1,0 +1,35 @@
+{
+  "version": "WorkerFreshV1AuditIndex1",
+  "audits": [
+    {
+      "kind": "fresh-start binding",
+      "file": "audits/worker-fresh-v1-freshness-audit.json",
+      "status": "passed"
+    },
+    {
+      "kind": "stopped world and original windows",
+      "file": "audits/worker-fresh-v1-stopped-audit.json",
+      "status": "passed",
+      "knownLimitation": "One initialization interval 31→32 is unrecorded."
+    },
+    {
+      "kind": "offline restore/read-only/duplicate rejection",
+      "file": "audits/worker-fresh-v1-restore-audit.json",
+      "status": "passed"
+    },
+    {
+      "kind": "native motor receipt and server positions",
+      "file": "audits/worker-fresh-motor-v1-audit.json",
+      "status": "passed"
+    }
+  ],
+  "requiredReading": [
+    "../summary.json",
+    "../README.zh-CN.md"
+  ],
+  "knownBoundaries": [
+    "Initial frame 31→32 has one unrecorded interval; continuous gap-free capture is not established.",
+    "Four fresh start bindings have zero supported forecast fields and zero numeric interval validation denominator.",
+    "All four expired refusals remain in the eight-decision denominator."
+  ]
+}

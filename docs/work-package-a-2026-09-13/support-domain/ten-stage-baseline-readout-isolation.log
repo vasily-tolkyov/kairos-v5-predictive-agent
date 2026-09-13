@@ -1,0 +1,30 @@
+✖ ten causal stages are composed from isolated experience with changing action availability (1789.339127ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1979.83365
+
+✖ failing tests:
+
+test at ../../../../tmp/kairos-support-dist/test/open-world.test.js:894:1
+✖ ten causal stages are composed from isolated experience with changing action availability (1789.339127ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'unknown'
+  - 'goal-verified'
+  
+      at TestContext.<anonymous> (file:///tmp/kairos-support-dist/test/open-world.test.js:940:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'unknown',
+    expected: 'goal-verified',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

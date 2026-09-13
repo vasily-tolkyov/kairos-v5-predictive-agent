@@ -1,0 +1,119 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-local-deferred/results.json",
+      "path": "online-results.json",
+      "bytes": 102157,
+      "sha256": "c77527e2ecf6a57f76d06f2c755fcb0abf03cc16164637bcd21397a074bd5d84"
+    },
+    {
+      "source": "evidence/pr3-local-deferred/capture-audit.json",
+      "path": "online-capture-audit.json",
+      "bytes": 96659,
+      "sha256": "6bedc53bf137911ebaa585963da273c94bd8c7d847715262a3ec63fe095eb731"
+    },
+    {
+      "source": "evidence/pr3-local-deferred/stopped-audit.json",
+      "path": "online-stopped-audit.json",
+      "bytes": 100395,
+      "sha256": "72eb101eb1daa8ce8f5e14b08f117ae31343eaf204bdfeb7665a32bce25b0e50"
+    },
+    {
+      "source": "evidence/pr3-local-deferred/frame-state-audit.json",
+      "path": "online-frame-state-audit.json",
+      "bytes": 235117,
+      "sha256": "899fc7be3604d7faa13758ae4f96b17f863d53ba7a174f417a73f4a1d9f859d4"
+    },
+    {
+      "source": "evidence/pr3-local-deferred/freshness-audit.json",
+      "path": "online-freshness-audit.json",
+      "bytes": 12048,
+      "sha256": "355c298394e6b08f08f2a4756a7a790c1d6b066829d7b8977d0821299dee08ff"
+    },
+    {
+      "source": "evidence/pr3-local-deferred/learning-coverage.json",
+      "path": "online-learning-coverage.json",
+      "bytes": 416226,
+      "sha256": "18ce35e8138310e666019c70193820a7e7b9dc839bf6cdfb8dec0f8a042c3b8e"
+    },
+    {
+      "source": "evidence/pr3-local-deferred/live-restore-audit.json",
+      "path": "online-live-restore-audit.json",
+      "bytes": 1305,
+      "sha256": "84c9be914d9472a81ae8e3ba5fa00ebfd8372cb9e2519171215b25305bceb117"
+    },
+    {
+      "source": "evidence/pr3-local-deferred/stopped-world.tar.gz.provenance.json",
+      "path": "online-stopped-world.tar.gz.provenance.json",
+      "bytes": 445,
+      "sha256": "2cde0406016941ba2f9847be05520dfe544a59a26cbeb701d580adb070e19e89"
+    },
+    {
+      "source": "evidence/pr3-deferred-state-recovery/online-run.log",
+      "path": "online-run.log",
+      "bytes": 618,
+      "sha256": "23afd7b7559c9e90fc80697bd3d96804542c6b87cd3604c344980fbe53fd245c"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/results.json",
+      "path": "frozen-results.json",
+      "bytes": 107243,
+      "sha256": "0ca0818f8e3ea1afef40f71d530372ad0e9db6a3c4df9f50c5ea61b58ecc3e6f"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/capture-audit.json",
+      "path": "frozen-capture-audit.json",
+      "bytes": 34083,
+      "sha256": "033fb493a72d28f259a1e6d4c1d83936e6beeb66984b8653c82be54e9d97c526"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/stopped-audit.json",
+      "path": "frozen-stopped-audit.json",
+      "bytes": 39576,
+      "sha256": "c4852f555e5ea86095423e7359b34df39906d3436ae550de02f4b390e9c8cc07"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/frame-state-audit.json",
+      "path": "frozen-frame-state-audit.json",
+      "bytes": 110533,
+      "sha256": "9100b592fbd85f78036e41ab775efd17dbba838694f32ed75cadb28af24cad28"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/freshness-audit.json",
+      "path": "frozen-freshness-audit.json",
+      "bytes": 17299,
+      "sha256": "b90bf3669960734d1ce99cc35b75774ad24e799a6495f401ae18d2a9a71de757"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/learning-coverage.json",
+      "path": "frozen-learning-coverage.json",
+      "bytes": 166804,
+      "sha256": "d5aa389d93f27c975c7a909af225acbbf766ae8f3d949039965734d3f401b741"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/frozen-learning-audit.json",
+      "path": "frozen-frozen-learning-audit.json",
+      "bytes": 1523,
+      "sha256": "a29491d6b708ad28f554644f8d41b466ef7ef30167b02c278dc663c43068bb39"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/live-restore-audit.json",
+      "path": "frozen-live-restore-audit.json",
+      "bytes": 23052,
+      "sha256": "2940e28e13982d1eaabf1fe04f53879777a5f25e6f29557d4fb9822cce50f097"
+    },
+    {
+      "source": "evidence/pr3-local-deferred-frozen/stopped-world.tar.gz.provenance.json",
+      "path": "frozen-stopped-world.tar.gz.provenance.json",
+      "bytes": 459,
+      "sha256": "0e8fd42a36cdc87c82113dab7f99056591254c860e6ef3c345ccf361c719910d"
+    },
+    {
+      "source": "evidence/pr3-deferred-state-recovery/frozen-run.log",
+      "path": "frozen-run.log",
+      "bytes": 925,
+      "sha256": "87d4890740af675aa0b7990c7112543675c9d284ffc15ef8f928b8556735ff5a"
+    }
+  ]
+}

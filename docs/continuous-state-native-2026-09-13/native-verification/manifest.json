@@ -1,0 +1,107 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-local-continuous/results.json",
+      "path": "online-results.json",
+      "bytes": 108934,
+      "sha256": "bd1a6074a43868a0e80b9645ef21fc33c2c916b40fcbb2e12808049f9a870d2f"
+    },
+    {
+      "source": "evidence/pr3-local-continuous/capture-audit.json",
+      "path": "online-capture-audit.json",
+      "bytes": 38487,
+      "sha256": "0e523d69d18d892883a5f361d69e6e89a2bb50755ea2603a0ef4a61ebfbe1be4"
+    },
+    {
+      "source": "evidence/pr3-local-continuous/stopped-audit.json",
+      "path": "online-stopped-audit.json",
+      "bytes": 43000,
+      "sha256": "1efd0d3efb2efe532890111328ff21385b74f09fc252a651be68c2c79770ba91"
+    },
+    {
+      "source": "evidence/pr3-local-continuous/frame-state-audit.json",
+      "path": "online-frame-state-audit.json",
+      "bytes": 119952,
+      "sha256": "65376643318ae8ce1d3f6b04d4be15ece4eb55fedfde5eecd0f6b42b8966d547"
+    },
+    {
+      "source": "evidence/pr3-local-continuous/freshness-audit.json",
+      "path": "online-freshness-audit.json",
+      "bytes": 14681,
+      "sha256": "18998994a909ce03c6fb1fccd78722a9f6cc35b61332def57dc9759457bfe099"
+    },
+    {
+      "source": "evidence/pr3-local-continuous/learning-coverage.json",
+      "path": "online-learning-coverage.json",
+      "bytes": 184536,
+      "sha256": "5a0ef2ce692458810793a2e4fe4b9d4cd3853d8deb1ff7adddebdcb053d2b8d6"
+    },
+    {
+      "source": "evidence/pr3-local-continuous/stopped-world.tar.gz.provenance.json",
+      "path": "online-stopped-world.tar.gz.provenance.json",
+      "bytes": 449,
+      "sha256": "800238bc7d0b35754a924f7f96fc18bf633fc2e3ddaaf7995fe048a575074da8"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/online-run.log",
+      "path": "online-run.log",
+      "bytes": 931,
+      "sha256": "e0f89fff288ef6de1e82a7ece7b4a7d3b52dff088e51776f152aa651667c661f"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/results.json",
+      "path": "frozen-results.json",
+      "bytes": 145483,
+      "sha256": "2cd403e30abaa968c950e7104de430845c37b7350f848031257aed50be6758e3"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/capture-audit.json",
+      "path": "frozen-capture-audit.json",
+      "bytes": 32149,
+      "sha256": "4d9ff7a40f9d227e67029af0b6186c1df70d3474282a7a3be24decb269f45f9b"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/stopped-audit.json",
+      "path": "frozen-stopped-audit.json",
+      "bytes": 39393,
+      "sha256": "ab7d321013a5f4a8f969658e650699907ee04420c04b7152228ae07678eb9a75"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/frame-state-audit.json",
+      "path": "frozen-frame-state-audit.json",
+      "bytes": 105970,
+      "sha256": "a1a5ed8a974d80affccd7efc1f39dab848a02b91c341c8d21fef3c3610bac248"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/freshness-audit.json",
+      "path": "frozen-freshness-audit.json",
+      "bytes": 22089,
+      "sha256": "3f5a33defac63b6ebf5f55bea63340be0e798416e4a6757d589c6fa7de1bd1eb"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/learning-coverage.json",
+      "path": "frozen-learning-coverage.json",
+      "bytes": 164995,
+      "sha256": "ec7546fda4360d1d3d1d4fe2fa5587e4589a2f84893b1d1f5e0126315f45b81a"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/frozen-learning-audit.json",
+      "path": "frozen-frozen-learning-audit.json",
+      "bytes": 1530,
+      "sha256": "9b906c7a3fae07cf45ba7c4d02fed6c44962db8ca203031ffcd9b62aa87767b5"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/stopped-world.tar.gz.provenance.json",
+      "path": "frozen-stopped-world.tar.gz.provenance.json",
+      "bytes": 463,
+      "sha256": "a3b97c739c4525dd4bca32ac6f7b0a29e57deed041e2bca5c44f67333136a1b7"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/frozen-run.log",
+      "path": "frozen-run.log",
+      "bytes": 958,
+      "sha256": "6adecfe1689b9526d90b2dbbe593eb37d8a25a878e2e5e6e0ba786888569b8c9"
+    }
+  ]
+}

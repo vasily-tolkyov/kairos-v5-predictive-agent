@@ -1,0 +1,6 @@
+Tool-output copy. Source: exec_command session 83048, final chunk 27d141, exit 1.
+Command: node node_modules/typescript/bin/tsc -p tsconfig.json
+The initial test draft omitted parameter annotations; no native run occurred.
+
+test/worker-action-start.test.ts(48,59): error TS7006: Parameter 'sequence' implicitly has an 'any' type.
+test/worker-action-start.test.ts(48,69): error TS7006: Parameter 'options' implicitly has an 'any' type.

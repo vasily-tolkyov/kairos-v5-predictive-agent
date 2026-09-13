@@ -1,0 +1,40 @@
+✖ interrupted measured presses train their actual duration without relabeling the original request (13.413146ms)
+✖ a press with no measured physics interval is retained by identity without creating an action effect (0.208278ms)
+✔ legacy windows remain readable without manufacturing measured motor receipts (8.581827ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 106.450491
+
+✖ failing tests:
+
+test at evidence/learning-green-dist/test/measured-motor-learning.test.js:29:1
+✖ interrupted measured presses train their actual duration without relabeling the original request (13.413146ms)
+  Error: invalid-motor-receipt
+      at assert (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/util.js:29:15)
+      at validateMotorReceiptV1 (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/events.js:60:5)
+      at validateEvent (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/events.js:117:9)
+      at ExperienceMedium.observe (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/experience-medium.js:355:9)
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/test/measured-motor-learning.test.js:33:23)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at evidence/learning-green-dist/test/measured-motor-learning.test.js:49:1
+✖ a press with no measured physics interval is retained by identity without creating an action effect (0.208278ms)
+  Error: invalid-motor-receipt
+      at assert (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/util.js:29:15)
+      at validateMotorReceiptV1 (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/events.js:60:5)
+      at validateEvent (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/events.js:117:9)
+      at ExperienceMedium.observe (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/src/experience-medium.js:355:9)
+      at TestContext.<anonymous> (file:///workspace/scratch/5d0f85e4c822/kairos/evidence/learning-green-dist/test/measured-motor-learning.test.js:51:27)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)

@@ -1,0 +1,28 @@
+✔ unseen categories cannot inherit either local or regression support (39.324898ms)
+✔ category spelling, value type and presentation order do not determine support (46.514757ms)
+✔ new real categorical observations earn their own calibration instead of borrowing a sibling count (14.26049ms)
+✔ missing relevant context never silently becomes a known branch, including after new incomplete measurements (10.605032ms)
+✔ unrelated extra or absent fields do not invalidate measured response domains (13.00922ms)
+✔ numeric points, missing values and intervals share one observed-domain gate (9.219401ms)
+✔ numeric support allows floating-point roundoff but does not silently extend the measured domain (6.721365ms)
+✔ categorical and numeric support domains survive snapshot restoration without added evidence (21.30843ms)
+✔ an unseen category cannot certify a plan but remains available for an explicitly unsupported probe (248.358119ms)
+✔ observed stationary outcomes remain possible throughout a multistep forecast (73.553355ms)
+✔ small consistently measured motion can still compose a valid goal without an arbitrary dead zone (41.367441ms)
+✔ uncertain geometry obeys the measured coordinate transform and includes all possible yaw rotations (0.998637ms)
+✔ a future action cannot select the convenient side of an uncertain prerequisite (12.449481ms)
+✔ a globally accurate small mean cannot overrule a missing context with incompatible responses (85.622784ms)
+✔ grounded gaze goals use the predicted visible role and its numeric possibility range (0.58147ms)
+✔ imagined numeric envelopes cannot be learned as additional physical evidence (0.521822ms)
+✔ a sparse local response cannot borrow global regression calibration and can become supported through learning (826.649612ms)
+✔ regression cannot bypass the observed context range, including an uncertain future input (273.733506ms)
+✔ supported numeric ranges include measured pre-update residuals on a smooth held-out response (495.234076ms)
+✔ a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response (412.211218ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2813.456103

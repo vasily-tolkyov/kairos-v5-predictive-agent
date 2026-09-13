@@ -1,10 +1,32 @@
-import type { Observation, RealEvent } from './contracts.js';
+import type { Observation, PhysicalTelemetryBatchV1, RealEvent } from './contracts.js';
+import type { LiveStateV1 } from './experience-live-state.js';
 import type { ActionOfferV1, GroundedGoalV1 } from './control/contracts.js';
 import { GroundedGoalEvaluatorV1, goalPredicates } from './control/goal.js';
 import { ExperienceMedium, experienceState, experienceInputs, motorIdentity, type ExperiencePrediction } from './experience-medium.js';
 import { cueIdentity } from './events.js';
 import { sha } from './util.js';
 import { LearnedAffordances } from './learned-affordances.js';
+
+/** Search identity, not a change to observations or their support. Property
+ * presence matters to later output binding; an unsupported property's copied
+ * value is neither a predictor input nor a grounded goal measurement. Keep
+ * geometry and target identity intact because their transforms are separate. */
+export function experienceSearchKey(value: Observation, live?: LiveStateV1): string {
+  const support = value.predictionSupport ? new Set(value.predictionSupport) : null;
+  const state = Object.fromEntries(Object.entries(experienceState(value)).map(([key, v]) => {
+    const path = JSON.parse(key) as string[];
+    const field = path[0] === 'self' && path[1] === 'properties' ? 'self/properties.' + path[2]
+      : path[0] === 'object' && path[2] === 'properties' ? 'object:' + path[1] + '/properties.' + path[3] : null;
+    return [key, field && support && !support.has(field) ? { unknown: true }
+      : typeof v === 'number' ? Math.round(v / .025) : v];
+  }));
+  return sha({ support: support ? [...support].sort() : undefined, bounds: value.predictionBounds,
+    // Frame IDs and absolute clocks bind evidence; only predictor conditions
+    // distinguish private search states with the same current sensory scene.
+    live: live ? { law: live.law, h: live.h, channels: live.channels, continuity: live.continuity } : undefined,
+    sensoryContext: Object.fromEntries(Object.entries(experienceInputs(value)).filter(([key]) => key.startsWith('view/'))
+      .map(([key, v]) => [key, typeof v === 'number' ? Math.round(v / .025) : v])), state });
+}
 
 /** Score explicitly predicted channels against later measurements. A probe's
  * assumptions remain labelled hypotheses even when comparing real feedback. */
@@ -42,16 +64,32 @@ export function compareExperiencePrediction(prediction: ExperiencePrediction, ac
     unknown: errors.filter(e => !e.known).length, errors };
 }
 
+export interface ExperienceActionStart {
+  observation: Observation;
+  offer: ActionOfferV1;
+  availableOffers: readonly ActionOfferV1[];
+  precedingPassiveEvents: readonly RealEvent[];
+  /** Opaque transport identity; never a learned input. */
+  bindingToken?: string;
+}
+/** Called synchronously after rebinding and before issuing the motor. The
+ * adapter must capture this frame before yielding, or atomically compare and
+ * refuse execution if an asynchronous body's frame changed before capture.
+ * Returning false refuses the motor; a Promise is not a valid authorization. */
+export type BeforeExperienceAction = (start: ExperienceActionStart) => boolean;
+
 export interface ExperienceEnvironment {
   /** Body preferences specify desired sensed conditions, never a motor or
    * its effect. Missing sensed conditions remain unknown. */
   readonly maintenanceGoals?: readonly GroundedGoalV1[];
   observe(): Promise<Observation>;
   drainPassiveEvents?(): Promise<readonly RealEvent[]>;
+  takePhysicalTelemetryThrough?(observation: Observation): PhysicalTelemetryBatchV1 | undefined;
   listActionOffers(observation: Observation): readonly ActionOfferV1[];
-  executeOffer(offer: ActionOfferV1): Promise<{
+  executeOffer(offer: ActionOfferV1, beforeExecute?: BeforeExperienceAction): Promise<{
     executed: boolean; observation: Observation; event: RealEvent | null;
     precedingPassiveEvents?: readonly RealEvent[];
+    executionBinding?: { token: string; status: 'accepted' | 'refused' | 'cancelled'; reason: string; elapsedMs: number | null };
     /** Complete body offers from the actual first frame of the action. */
     availableOffers?: readonly ActionOfferV1[];
   }>;
@@ -94,19 +132,19 @@ export class ExperienceAgent {
 
   explore(observation: Observation, offers: readonly ActionOfferV1[],
     purpose?: { goal: GroundedGoalV1; baseline?: Observation; planningOffers?: readonly ActionOfferV1[];
-      milliseconds?: number }, localVisits: ReadonlyMap<string, number> = new Map()): ActionOfferV1 | null {
+      milliseconds?: number }, localVisits: ReadonlyMap<string, number> = new Map(), state?: LiveStateV1): ActionOfferV1 | null {
     this.#lastExploration = null; this.#explorationPrediction = null; this.#explorationPlan = [];
     if (!offers.length) return null;
     const choiceIndex = this.#choices++;
     const probe = purpose ? this.plan(purpose.goal, observation, purpose.planningOffers ?? offers, { baseline: purpose.baseline,
-      exploratory: true, depth: 6, expansions: 64, milliseconds: purpose.milliseconds ?? 50 }) : null;
+      exploratory: true, depth: 6, expansions: 64, milliseconds: purpose.milliseconds ?? 50, state }) : null;
     // A probe already selects a motor. Only its observational focus still
     // needs scoring; ranking all discarded motors adds delay, not evidence.
     const candidates = probe?.steps[0] ? offers.filter(offer => offer.offerId === probe.steps[0]!.offer.offerId) : offers;
     const choices = observation.perception && observation.objects.length
       ? candidates.flatMap(offer => observation.objects.map(object => ({ ...offer, attentionId: object.id }))) : candidates;
     const ranked = choices.map(offer => ({ offer,
-      drive: this.medium.explorationDrive(offer.cue, observation, offer.attentionId)
+      drive: this.medium.explorationDrive(offer.cue, observation, offer.attentionId, state)
         / Math.sqrt(1 + (localVisits.get(motorIdentity(offer.cue)) ?? 0)),
       tie: sha({ action: cueIdentity(offer.cue), attention: offer.attentionId, choice: choiceIndex }) }))
       .sort((a, b) => b.drive - a.drive || a.tie.localeCompare(b.tie, 'en'));
@@ -144,23 +182,17 @@ export class ExperienceAgent {
 
   plan(goal: GroundedGoalV1, observation: Observation, offers: readonly ActionOfferV1[],
     limits: { depth?: number; expansions?: number; baseline?: Observation; exploratory?: boolean;
-      milliseconds?: number } = {}): ExperiencePlan {
+      milliseconds?: number; state?: LiveStateV1 } = {}): ExperiencePlan {
     const deadline = performance.now() + (limits.milliseconds ?? Infinity);
     const evaluator = new GroundedGoalEvaluatorV1(); evaluator.setGoal(goal, limits.baseline ?? observation);
     const requestedFields = goalPredicates(goal).map(predicate => `${predicate.subject.kind === 'self' ? 'self'
       : predicate.subject.kind === 'crosshair' ? 'gaze' : 'object:' + predicate.subject.id}/${predicate.observable}`);
     if (evaluator.evaluate(observation).status === 'satisfied')
       return { steps: [], expanded: 0, reason: 'already-satisfied' };
-    const keyOf = (value: Observation) => sha({ support: value.predictionSupport,
-      bounds: value.predictionBounds,
-      // A changed scene can enable a later action while the body stays still.
-      // Discarding this learned sensory context collapses causal stages.
-      sensoryContext: Object.fromEntries(Object.entries(experienceInputs(value)).filter(([key]) => key.startsWith('view/'))
-        .map(([key, v]) => [key, typeof v === 'number' ? Math.round(v / .025) : v])),
-      state: Object.fromEntries(Object.entries(experienceState(value)).map(([k, v]) =>
-        [k, typeof v === 'number' ? Math.round(v / .025) : v])) });
-    const queue: { observation: Observation; steps: ExperiencePlanStep[]; priority: number }[] = [{ observation, steps: [], priority: 0 }];
-    const visited = new Set([keyOf(observation)]);
+    const keyOf = experienceSearchKey;
+    const queue: { observation: Observation; state?: LiveStateV1; steps: ExperiencePlanStep[]; priority: number }[] = [
+      { observation, state: limits.state, steps: [], priority: 0 }];
+    const visited = new Set([keyOf(observation, limits.state)]);
     let expanded = 0;
     let progress: { steps: ExperiencePlanStep[]; residual: number } | null = null;
     const initialResidual = evaluator.evaluate(observation).residual;
@@ -181,14 +213,15 @@ export class ExperienceAgent {
       const available = [...candidates.slice(offset), ...candidates.slice(0, offset)];
       for (const offer of available) {
         if (performance.now() >= deadline) return finish('search-budget');
-        const prediction = this.medium.predict(offer.cue, node.observation, { probe: limits.exploratory, requestedFields });
+        const prediction = this.medium.predict(offer.cue, node.observation, { probe: limits.exploratory, requestedFields, state: node.state });
         if (!prediction.observation || (limits.exploratory
           ? !prediction.hypothesizedFields?.length : !prediction.accepted)) continue;
         // Hypotheses receive temporary support only inside this search. The
         // returned prediction stays unaccepted with no supported fields.
         const next = limits.exploratory ? { ...prediction.observation,
           predictionSupport: prediction.hypothesizedFields } : prediction.observation;
-        const key = keyOf(next);
+        if (node.state && !prediction.state) continue;
+        const key = keyOf(next, prediction.state);
         if (visited.has(key)) continue;
         visited.add(key);
         const steps = [...node.steps, { offer, prediction }];
@@ -201,7 +234,7 @@ export class ExperienceAgent {
         if (evaluated.status !== 'unknown'
           && evaluated.residual < (progress?.residual ?? initialResidual) - 1e-6)
           progress = { steps, residual: evaluated.residual };
-        queue.push({ observation: next, steps, priority: evaluated.residual + steps.length * .02 });
+        queue.push({ observation: next, state: prediction.state, steps, priority: evaluated.residual + steps.length * .02 });
       }
     }
     return finish('search-exhausted');

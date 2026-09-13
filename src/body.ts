@@ -3,7 +3,9 @@ import { randomUUID } from 'node:crypto';
 import mineflayer, { type Bot } from 'mineflayer';
 import { Vec3 } from 'vec3';
 import type { Block, Shape } from 'prismarine-block';
-import type { Action, ActionCue, BodyResult, Observation, PublicObject, RealEvent } from './contracts.js';
+import type { Action, ActionCue, BodyMotorSignalV1, BodyResult, MotorClockV1, MotorEdgeV1, MotorReceiptV1,
+  Observation, PhysicalTelemetryBatchV1, PhysicalTelemetryGapV1, PhysicalTelemetryRecordV1, PublicObject,
+  RealEvent, RealFrameClockV1 } from './contracts.js';
 import { actionObservationTrackedIdsV1, cueFor, realEventHierarchyContinuityV1 } from './events.js';
 import { assert, sha } from './util.js';
 import { validateAction } from './action-contract.js';
@@ -177,13 +179,80 @@ export class BodySession {
   }
   eventId(number: number): string { return `${this.id}:event-${number}`; }
 }
+/** Opt-in transport inbox. JSON byte accounting runs at the consumer, never
+ * inside a physics callback. Overflow is a visible gap, not silent continuity. */
+export class PhysicalTelemetryQueue {
+  #records: { record: PhysicalTelemetryRecordV1; bytes: number }[] = [];
+  #bytes = 0; #order = 0; #delivered = 0; #gap: PhysicalTelemetryGapV1 | null = null;
+  #deliveredFrame: { sequence: number; digest: string } | null = null;
+  readonly limits: PhysicalTelemetryBatchV1['limits'];
+  constructor(limits: PhysicalTelemetryBatchV1['limits'] = { records: 512, serializedPayloadBytes: 8 * 1024 * 1024 }) {
+    assert(Number.isSafeInteger(limits.records) && limits.records > 0 && limits.records <= 4096
+      && Number.isSafeInteger(limits.serializedPayloadBytes) && limits.serializedPayloadBytes > 0
+      && limits.serializedPayloadBytes <= 64 * 1024 * 1024, 'invalid-physical-telemetry-capacity');
+    this.limits = Object.freeze({ ...limits });
+  }
+  #drop(record: PhysicalTelemetryRecordV1): void {
+    this.#gap = { firstOrder: this.#gap?.firstOrder ?? record.order, lastOrder: record.order,
+      records: (this.#gap?.records ?? 0) + 1,
+      frames: (this.#gap?.frames ?? 0) + Number(record.kind === 'frame'),
+      motorEdges: (this.#gap?.motorEdges ?? 0) + Number(record.kind === 'motor-edge'), reason: 'payload-or-record-capacity' };
+  }
+  push(value: { kind: 'frame'; observation: Observation; source?: 'worker-frame' | 'cached-anchor' } | { kind: 'motor-edge'; edge: MotorEdgeV1 },
+    receivedMonotonicMs = performance.now()): void {
+    assert(Number.isFinite(receivedMonotonicMs) && receivedMonotonicMs >= 0, 'invalid-physical-telemetry-delivery-clock');
+    const record = Object.freeze({ ...value, order: ++this.#order, receivedMonotonicMs });
+    const bytes = Buffer.byteLength(JSON.stringify(record));
+    while (this.#records.length && (this.#records.length >= this.limits.records || this.#bytes + bytes > this.limits.serializedPayloadBytes)) {
+      const lost = this.#records.shift()!; this.#bytes -= lost.bytes; this.#drop(lost.record);
+    }
+    if (bytes > this.limits.serializedPayloadBytes) { this.#drop(record); return; }
+    this.#records.push({ record, bytes }); this.#bytes += bytes;
+  }
+  #take(count: number, consumeGap = true, boundaryMissing = false, deliveredFrameDigest?: string): PhysicalTelemetryBatchV1 {
+    const removed = this.#records.splice(0, count), records = removed.map(value => value.record);
+    const serializedPayloadBytes = removed.reduce((sum, value) => sum + value.bytes, 0), gap = consumeGap ? this.#gap : null;
+    this.#delivered = Math.max(this.#delivered, records.at(-1)?.order ?? 0, gap?.lastOrder ?? 0);
+    this.#bytes -= serializedPayloadBytes; if (consumeGap) this.#gap = null;
+    const lastFrame = records.findLast(record => record.kind === 'frame');
+    if (lastFrame?.kind === 'frame') this.#deliveredFrame = {
+      sequence: lastFrame.observation.sequence, digest: deliveredFrameDigest ?? sha(lastFrame.observation) };
+    return { version: 'PhysicalTelemetryBatchV1', records, gap, serializedPayloadBytes,
+      receivedThroughOrder: this.#order, deliveredThroughOrder: this.#delivered, limits: this.limits,
+      ...(boundaryMissing ? { boundaryMissing: true as const } : {}) };
+  }
+  take(): PhysicalTelemetryBatchV1 { return this.#take(this.#records.length); }
+  takeThroughObservation(observation: Observation): PhysicalTelemetryBatchV1 {
+    const digest = sha(observation);
+    if (this.#deliveredFrame?.sequence === observation.sequence) {
+      assert(this.#deliveredFrame.digest === digest, 'physical-telemetry-boundary-conflict');
+      return this.#take(0, false);
+    }
+    const index = this.#records.findIndex(value => value.record.kind === 'frame' && value.record.observation.sequence === observation.sequence);
+    if (index < 0) return this.#take(0, true, true);
+    const record = this.#records[index]!.record; assert(record.kind === 'frame', 'physical-telemetry-frame-required');
+    assert(sha(record.observation) === digest, 'physical-telemetry-boundary-conflict');
+    // Stop exactly at the sample, preserving a same-frame post-sample release
+    // and all later frames for the next intake. No second RGBD queue is needed.
+    return this.#take(index + 1, true, false, digest);
+  }
+}
+const unknownMotorSignal = (): BodyMotorSignalV1 => Object.freeze({ version: 'BodyMotorSignalV1',
+  scope: 'instrumented-held-controls', state: 'unknown', cue: null });
 /** This is the sole live-body owner. It has no model, forecast, rules, or action fallback. */
 export class MinecraftBody extends EventEmitter {
+  /** Same-process execute captures its start before the first asynchronous
+   * yield. Remote/worker transports must not inherit this capability. */
+  readonly synchronousActionStart = true;
   #perception = new AttentivePerception();
   readonly bot: Bot;
   readonly session: BodySession;
   readonly frames: Observation[] = [];
   #sequence = 0;
+  #physicsTick = 0;
+  #motorEdgeSequence = 0;
+  #motorSignal: BodyMotorSignalV1 = unknownMotorSignal();
+  #activeMotorRelease: ((reason: MotorReceiptV1['releaseReason']) => void) | null = null;
   #lastFrameAt = performance.now();
   #fatal: Error | null = null;
   // Set when the connection itself died (kick/end); a clean close never sets it.
@@ -239,15 +308,18 @@ export class MinecraftBody extends EventEmitter {
     this.bot.on('death', () => {
       // The SDK stops physics ticks at death. Capture the actual health
       // update so the terminal outcome and restart control remain observable.
-      this.#sample(); this.record('body-death', { observationSequence: this.#sequence });
+      this.#sample('terminal'); this.record('body-death', { observationSequence: this.#sequence });
     });
-    this.bot.on('physicsTick', () => this.#sample());
+    this.bot.on('physicsTick', () => {
+      if (this.#closed || this.#fatal) return;
+      this.#physicsTick++; this.#sample('physics');
+    });
     // An unsupported UI is a real body outcome, not permission to operate inventory.
     this.bot.on('windowOpen', window => this.bot.closeWindow(window));
   }
-  #sample(): void {
+  #sample(sample: RealFrameClockV1['sample']): void {
       if (this.#closed || this.#fatal || !this.bot.entity) return;
-      try { const frame = this.#capture(); this.frames.push(frame); this.#lastFrameAt = performance.now();
+      try { const frame = this.#capture(sample); this.frames.push(frame); this.#lastFrameAt = performance.now();
         // A normal action window is at most 200 dig ticks + 80 settling ticks.
         // Full retinal frames must not accumulate for twenty minutes in RAM.
         if (this.frames.length > 512) this.frames.shift();
@@ -274,20 +346,32 @@ export class MinecraftBody extends EventEmitter {
     await this.#until(() => this.frames.length >= 3 && this.#clientLoadAfter === null
       || this.frames.length > 0 && this.bot.health <= 0, 120_000);
   }
-  async waitForObservationAfter(sequence: number): Promise<Observation> {
+  async waitForObservationAfter(sequence: number): Promise<Observation>;
+  async waitForObservationAfter(sequence: number, options: { timeoutMs: number; signal?: AbortSignal }): Promise<Observation | null>;
+  async waitForObservationAfter(sequence: number, options?: { timeoutMs: number; signal?: AbortSignal }): Promise<Observation | null> {
     this.check();
+    if (this.#closed) throw new Error('minecraft-body-closed');
+    if (options) assert(Number.isFinite(options.timeoutMs) && options.timeoutMs >= 0, 'invalid-observation-wait-timeout');
+    if (options?.signal?.aborted) throw options.signal.reason ?? new Error('observation-wait-aborted');
     const current = this.frames.at(-1);
     if (current && current.sequence > sequence) return structuredClone(current);
-    return new Promise<Observation>((resolve, reject) => {
-      const cleanup = () => { this.off('frame', frame); this.off('fault', fault); };
+    return new Promise<Observation | null>((resolve, reject) => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const cleanup = () => { clearTimeout(timer); this.off('frame', frame); this.off('fault', fault);
+        options?.signal?.removeEventListener('abort', abort); };
       const frame = (observation: Observation) => {
         if (observation.sequence <= sequence) return;
         cleanup(); resolve(structuredClone(observation));
       };
       const fault = (error: Error) => { cleanup(); reject(error); };
+      const abort = () => { cleanup(); reject(options?.signal?.reason ?? new Error('observation-wait-aborted')); };
       this.on('frame', frame); this.on('fault', fault);
+      options?.signal?.addEventListener('abort', abort, { once: true });
+      if (options) timer = setTimeout(() => { cleanup(); resolve(null); }, options.timeoutMs);
       try {
         this.check();
+        if (this.#closed) throw new Error('minecraft-body-closed');
+        if (options?.signal?.aborted) { abort(); return; }
         const latest = this.frames.at(-1);
         if (latest && latest.sequence > sequence) frame(latest);
       } catch (error) { fault(error as Error); }
@@ -320,28 +404,70 @@ export class MinecraftBody extends EventEmitter {
     await this.#until(() => this.#sequence >= start + count || this.bot.health <= 0,
       Math.max(10_000, count * 200), signal); this.check();
   }
-  async #holdMotor(action: Action, ticks: number, press: () => void, release: () => void): Promise<void> {
-    const start = this.#sequence; let released = false;
-    const releaseOnce = (reason: 'interval-complete' | 'interrupted') => {
+  #motorClock(): MotorClockV1 {
+    return { observationSequence: this.#sequence, physicsTick: this.#physicsTick,
+      activeSeconds: this.frames.at(-1)?.activeSeconds ?? 0, monotonicMs: performance.now() };
+  }
+  #motorEdge(kind: MotorEdgeV1['kind'], clock: MotorClockV1, signal: BodyMotorSignalV1,
+    succeeded: boolean | null, releaseReason: MotorEdgeV1['releaseReason'] = null): void {
+    this.#motorSignal = signal;
+    const edge: MotorEdgeV1 = Object.freeze({ version: 'MotorEdgeV1', edgeSequence: ++this.#motorEdgeSequence,
+      kind, clock: Object.freeze({ ...clock }), signal, succeeded, releaseReason });
+    this.record('body-motor-edge', edge);
+  }
+  async #holdMotor(action: Action, ticks: number, durationParameter: MotorReceiptV1['durationParameter'],
+    requestedAt: MotorClockV1, press: () => void, release: () => void,
+    acceptReceipt: (receipt: MotorReceiptV1) => void): Promise<void> {
+    const pressedAt = this.#motorClock(); let released = false, pressSucceeded = false, releaseSucceeded = false;
+    let releaseError: unknown;
+    const releaseOnce = (releaseReason: MotorReceiptV1['releaseReason']) => {
       if (released) return;
-      released = true; release();
+      released = true;
+      try { release(); releaseSucceeded = true; } catch (error) { releaseError = error; }
+      const releasedAt = this.#motorClock(), actualTicks = releasedAt.physicsTick - pressedAt.physicsTick;
+      const receipt: MotorReceiptV1 = { version: 'MotorReceiptV1', requestedTicks: ticks, durationParameter,
+        requestedAt, pressedAt, releasedAt, pressSucceeded, releaseSucceeded,
+        actualTicks, actualSeconds: actualTicks * .05,
+        elapsedMonotonicMs: releasedAt.monotonicMs - pressedAt.monotonicMs,
+        observedIntervals: releasedAt.observationSequence - pressedAt.observationSequence,
+        frameRange: { startSequence: pressedAt.observationSequence, endSequence: releasedAt.observationSequence }, releaseReason };
+      acceptReceipt(receipt);
+      this.#motorEdge('release', releasedAt, releaseSucceeded
+        ? Object.freeze({ version: 'BodyMotorSignalV1', scope: 'instrumented-held-controls', state: 'off', cue: null })
+        : unknownMotorSignal(), releaseSucceeded, releaseReason);
+      this.record('body-motor-receipt', receipt);
+      // Keep the original side-log shape readable by existing apparatus audits.
       this.record('body-motor-release', { version: 'MeasuredMotorRelease1', action,
-        requestedTicks: ticks, startSequence: start, releaseSequence: this.#sequence,
-        observedIntervals: this.#sequence - start, reason });
+        requestedTicks: ticks, startSequence: pressedAt.observationSequence, releaseSequence: releasedAt.observationSequence,
+        observedIntervals: receipt.observedIntervals, reason: releaseReason === 'interval-complete' ? 'interval-complete' : 'interrupted' });
     };
     const frame = () => {
-      if (this.bot.health <= 0) releaseOnce('interrupted');
-      else if (this.#sequence >= start + ticks) releaseOnce('interval-complete');
+      if (this.bot.health <= 0) releaseOnce('death');
+      else if (this.#physicsTick >= pressedAt.physicsTick + ticks) releaseOnce('interval-complete');
     };
-    const fault = () => releaseOnce('interrupted');
+    const fault = () => releaseOnce(this.#closed ? 'closed' : 'fault');
     // Mineflayer runs several physical steps synchronously during catch-up.
     // A promise resolved on the deadline resumes only AFTER that batch. Release
     // inside the frame callback, before the next simulation step reads controls.
-    this.on('frame', frame); this.on('fault', fault);
-    try { press(); await this.waitTicks(ticks); }
+    this.on('frame', frame); this.on('fault', fault); this.#activeMotorRelease = releaseOnce;
+    try {
+      press(); pressSucceeded = true;
+      this.#motorEdge('press', pressedAt, Object.freeze({ version: 'BodyMotorSignalV1', scope: 'instrumented-held-controls',
+        state: 'held', cue: Object.freeze({ kind: action.kind, parameters: Object.freeze({ ...action.parameters }), targetRole: null }) }), true);
+      await this.#until(() => released || this.#physicsTick >= pressedAt.physicsTick + ticks || this.bot.health <= 0,
+        Math.max(10_000, ticks * 200));
+      if (!released) releaseOnce(this.bot.health <= 0 ? 'death' : 'interval-complete');
+      this.check();
+      if (this.#closed) throw new Error('minecraft-body-closed');
+      if (!releaseSucceeded) throw releaseError;
+    } catch (error) {
+      if (!released) releaseOnce(!pressSucceeded ? 'press-failed' : this.#closed ? 'closed'
+        : this.bot.health <= 0 ? 'death' : this.#fatal ? 'fault' : 'timeout');
+      throw error;
+    }
     finally {
-      this.off('frame', frame); this.off('fault', fault);
-      if (!released) releaseOnce('interrupted');
+      this.off('frame', frame); this.off('fault', fault); this.#activeMotorRelease = null;
+      if (!released) releaseOnce(this.bot.health <= 0 ? 'death' : 'interval-complete');
     }
   }
   async #digWithinWindow(target: Parameters<Bot['dig']>[0]): Promise<'completed' | 'observation-limit'> {
@@ -432,8 +558,10 @@ export class MinecraftBody extends EventEmitter {
     return entity.id !== this.bot.entity.id && entity.type !== 'player'
       && definition?.metadataKeys?.includes('health') === true;
   }
-  #capture(): Observation {
+  #capture(sample: RealFrameClockV1['sample']): Observation {
     this.#sequence++;
+    const physicalClock: RealFrameClockV1 = Object.freeze({ version: 'RealFrameClockV1',
+      physicsTick: this.#physicsTick, secondsPerTick: .05, monotonicMs: performance.now(), sample });
     const entity = this.bot.entity, position = entity.position, eye = position.offset(0, 1.62, 0);
     const renderable = Object.values(this.bot.entities).flatMap(other => {
       if (other.id === entity.id || !Number.isFinite(other.width) || !Number.isFinite(other.height)
@@ -498,6 +626,7 @@ export class MinecraftBody extends EventEmitter {
     this.#objects = objects;
     const visible = [...objects.values()].map(value => value.object);
     const observation: Observation = { sequence: this.#sequence, activeSeconds: this.session.activeSeconds(this.#sequence),
+      physicalClock, motorSignal: this.#motorSignal,
       self: { position: tuple(position), yaw: entity.yaw, pitch: entity.pitch,
         properties: { onGround: entity.onGround, health: this.bot.health, food: this.bot.food,
           ...(this.#oxygen ? { oxygen: this.#oxygen.value } : {}),
@@ -571,6 +700,11 @@ export class MinecraftBody extends EventEmitter {
     // newest frame before touching Minecraft.
     return describeActionRequirement(actionCue, observation);
   }
+  startObservation(): { observation: Observation; precedingPassiveEvents: readonly RealEvent[] } {
+    // Start acquisition and capture its boundary before yielding to a tick.
+    const precedingPassiveEvents = this.takePassiveEvents();
+    return { observation: this.latest(), precedingPassiveEvents };
+  }
   takePassiveEvents(): readonly RealEvent[] {
     assert(!this.#executing, 'cannot-drain-passive-observation-during-a-motor');
     if (!this.#passive) {
@@ -586,7 +720,7 @@ export class MinecraftBody extends EventEmitter {
   }
   async execute(action: Action, observationScope?: ActionObservationScopeV1): Promise<{
     result: BodyResult; event: RealEvent | null; precedingPassiveEvents?: readonly RealEvent[] }> {
-    this.check(); validateAction(action); assert(!this.#executing, 'body-already-executing');
+    this.check(); assert(!this.#closed, 'minecraft-body-closed'); validateAction(action); assert(!this.#executing, 'body-already-executing');
     this.#passive?.suspend();
     const precedingPassiveEvents = this.#pendingPassive.splice(0);
     try { return { ...await this.#executeMotor(action, observationScope),
@@ -598,9 +732,11 @@ export class MinecraftBody extends EventEmitter {
   }
   async #executeMotor(action: Action, observationScope?: ActionObservationScopeV1): Promise<{ result: BodyResult; event: RealEvent | null }> {
     this.check(); validateAction(action); assert(!this.#executing, 'body-already-executing'); this.#executing = true;
-    const start = this.latest(), physicalCallsBefore = this.#physicalCalls;
+    const start = this.latest(), physicalCallsBefore = this.#physicalCalls, requestedAt = this.#motorClock();
+    let motorReceipt: MotorReceiptV1 | undefined;
+    const acceptMotorReceipt = (receipt: MotorReceiptV1) => { motorReceipt = receipt; };
     const result = (executed: boolean, status: BodyResult['status']): BodyResult => ({ action, executed, status,
-      startSequence: start.sequence, endSequence: this.latest().sequence });
+      startSequence: start.sequence, endSequence: this.latest().sequence, ...(motorReceipt ? { motorReceipt } : {}) });
     const integer = (key: string, min: number, max: number, fallback: number) => {
       const value = action.parameters[key] ?? fallback; assert(typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max, `invalid-${key}`); return value;
     };
@@ -619,6 +755,9 @@ export class MinecraftBody extends EventEmitter {
         .filter(id => continuityIds.includes(id));
       const interactOutcomeIds = explicitlyReferencedIds.length > 0 ? explicitlyReferencedIds
         : action.targetId && continuityIds.includes(action.targetId) ? [action.targetId] : [];
+      const measuredHold = action.kind === 'move' || heldMotor;
+      if (!measuredHold && !['passive', 'observe', 'wait'].includes(action.kind))
+        this.#motorEdge('unmeasured', requestedAt, unknownMotorSignal(), null);
       switch (action.kind) {
         case 'passive': await this.waitTicks(integer('ticks', 1, 100, 10)); break;
         case 'observe': case 'wait': await this.waitTicks(integer('ticks', 1, 100, 5)); break;
@@ -632,14 +771,14 @@ export class MinecraftBody extends EventEmitter {
         case 'move': {
           const key = String(action.parameters.direction); assert(['forward', 'back', 'left', 'right'].includes(key), 'invalid-move-direction');
           this.#physicalCalls++;
-          await this.#holdMotor(action, integer('ticks', 1, 20, 4),
-            () => this.bot.setControlState(key as 'forward', true), () => this.bot.clearControlStates()); break;
+          await this.#holdMotor(action, integer('ticks', 1, 20, 4), 'ticks', requestedAt,
+            () => this.bot.setControlState(key as 'forward', true), () => this.bot.clearControlStates(), acceptMotorReceipt); break;
         }
         case 'jump': this.#physicalCalls++;
-          if (heldMotor) await this.#holdMotor(action, integer('holdTicks', 1, 20, 4), () => {
+          if (heldMotor) await this.#holdMotor(action, integer('holdTicks', 1, 20, 4), 'holdTicks', requestedAt, () => {
             this.bot.setControlState('jump', true);
             if (action.parameters.forward === true) this.bot.setControlState('forward', true);
-          }, () => this.bot.clearControlStates());
+          }, () => this.bot.clearControlStates(), acceptMotorReceipt);
           else { // Legacy pulse decoding is retained only for old action contracts.
             this.bot.setControlState('jump', true);
             if (action.parameters.forward === true) this.bot.setControlState('forward', true);
@@ -650,8 +789,8 @@ export class MinecraftBody extends EventEmitter {
           await this.#until(() => this.#sequence > start.sequence && this.bot.health > 0 && this.#clientLoadAfter === null, 120_000);
           break;
         case 'use-item': this.#physicalCalls++;
-          await this.#holdMotor(action, integer('holdTicks', 1, 40, 40), () => this.bot.activateItem(),
-            () => { if (this.bot.usingHeldItem) this.bot.deactivateItem(); }); break;
+          await this.#holdMotor(action, integer('holdTicks', 1, 40, 40), 'holdTicks', requestedAt, () => this.bot.activateItem(),
+            () => { if (this.bot.usingHeldItem) this.bot.deactivateItem(); }, acceptMotorReceipt); break;
         case 'select-hotbar': this.#physicalCalls++; this.bot.setQuickBarSlot(integer('slot', 0, 8, 0)); await this.waitTicks(1); break;
         case 'interact': {
           this.#physicalCalls++;
@@ -682,7 +821,7 @@ export class MinecraftBody extends EventEmitter {
         }
         default: throw new Error(`unsupported-body-action:${action.kind}`);
       }
-      this.bot.clearControlStates();
+      if (!motorReceipt) this.bot.clearControlStates();
       if (action.kind === 'passive' && this.#sequence < start.sequence + Number(action.parameters.ticks)) {
         // Death stops the SDK's physical clock. Keep the actually observed
         // shorter interval as passive evidence, never pretend the requested
@@ -767,15 +906,20 @@ export class MinecraftBody extends EventEmitter {
         id: this.session.eventId(++this.#eventNumber), complete: false, action, cue: cueFor(action, start),
         physicalCalls: this.#physicalCalls - physicalCallsBefore, error: String(error),
         startSequence: start.sequence, endSequence: this.#sequence,
+        ...(motorReceipt ? { motorReceipt } : {}),
         frames: this.frames.filter(frame => frame.sequence >= start.sequence) });
       throw error;
-    } finally { this.bot.clearControlStates(); if (action.kind === 'use-item' && this.bot.usingHeldItem) this.bot.deactivateItem();
+    } finally { if (!motorReceipt?.releaseSucceeded) this.bot.clearControlStates();
+      if (action.kind === 'use-item' && this.bot.usingHeldItem) this.bot.deactivateItem();
       if (action.kind !== 'break' || this.bot.targetDigBlock) this.bot.stopDigging(); this.#executing = false; }
   }
   async close(): Promise<void> {
     if (this.#closed) return; // close is idempotent: stop(), the run finale and double-close tests all converge here
     this.#closed = true;
-    this.bot.clearControlStates(); this.bot.stopDigging(); this.bot.quit('V5 run ended');
+    const releasingMotor = this.#activeMotorRelease;
+    releasingMotor?.('closed');
+    if (!releasingMotor) this.bot.clearControlStates();
+    this.bot.stopDigging(); this.bot.quit('V5 run ended');
     // Release pending observation waiters so an operator/stall stop unwinds
     // the run loop instead of hanging.  This is not a fatal fault: latest()
     // must stay usable for the shutdown passive flush and final checkpoint.

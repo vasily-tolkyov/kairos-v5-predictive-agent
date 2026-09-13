@@ -1,0 +1,18 @@
+{
+  "files": {
+    "alignment-audit.json": "e644cbed6fc8dfa0618c73af84d1122337fe23083f81040aa07c7add1037cb1f",
+    "baseline-negative-audit.json": "96c45482c90b7b4d815cb8d53d282b52d181a42b70efe8303d92584fcc584b5d",
+    "fixture-failure-tool-output-copy.log": "36386e60b241178e72b5c3cbec9b582866782ca2611e0d19af8e3714ae8b1145",
+    "full-gate.log": "91e3639a3b694dd455c41750b86a21637aed9787ffc6f5fafb7f37b7b40171bc",
+    "interrupted-fixture-tool-output-copy.log": "6427cf644f234a992b5a93ee63340f164b5f9af612eb3e05b02df1cf7f72cb4e",
+    "learning-coverage.json": "c2404a685660b2e0b75ebb58e5c93e711d406b089e518943adb833f4b0b5a541",
+    "matched-start-costs.json": "3e3c7e2e572a1768cf16d257240c5d342f30c35ddbc9dd47cc4ff5eedcc2f419",
+    "native-run.log": "939c5fe9f5437342be7f45eb296d113fe0d11a2981405829be106d8fbc8b6451",
+    "old-source-red-tool-output-copy.log": "72f3b5db14ce38139e55e1164693162ccf1ec3e9fc3897ebc76f32c27e11f377",
+    "restore-audit.json": "a7ce5fc5a912985c61e57e0d5f04eb4a9116f347ab9c97b432ed820025573605",
+    "stopped-audit.json": "544bc65e76a2765f38a1d5171aec07d96287bd894ad4d67775fdae48d97c5ae8",
+    "targeted-final-tool-output-copy.log": "7b25f4492149b9877702fdb42226df74935e159a0ec788e14e3af35d62ce3499",
+    "typing-tool-output-copy.log": "cc011ed75ab2be4a0a749871557e905cb4e58872121f32229b0cfdb797b38437"
+  },
+  "scope": "Exact copies of local outputs; software failures and interrupted fixture records are retained. Native capability remains unproven."
+}

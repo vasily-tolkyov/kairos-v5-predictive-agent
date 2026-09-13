@@ -1,0 +1,11 @@
+{
+  "version": "NativeSkippedCondition1",
+  "recordedAt": "2026-09-13T13:28:24.161611+00:00",
+  "condition": "frozen",
+  "status": "not-launched",
+  "initialFork": "evidence/pr3-local-partition-score-frozen-start",
+  "output": "evidence/pr3-local-partition-score-frozen",
+  "reason": "Registered online integrity prerequisite failed: consumer backlog, telemetry loss and missing final observation. Latest user direction also pauses the old experiment series.",
+  "predecessorReportSha256": "947e4e9ff3ffa4c7d9a479732630fef1c4eba31b7b59b2cfe57cf69b7e92457a",
+  "integrityAuditSha256": "ad1b888223c47216eae7bdcbb2b00c8d5942e2c143070830108b8b1fe2dd5fef"
+}

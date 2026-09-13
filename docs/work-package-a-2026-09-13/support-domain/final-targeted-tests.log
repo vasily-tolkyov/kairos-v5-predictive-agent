@@ -1,0 +1,28 @@
+✔ unseen categories cannot inherit either local or regression support (36.367929ms)
+✔ category spelling, value type and presentation order do not determine support (44.420744ms)
+✔ new real categorical observations earn their own calibration instead of borrowing a sibling count (14.374579ms)
+✔ missing relevant context never silently becomes a known branch, including after new incomplete measurements (8.322324ms)
+✔ unrelated extra or absent fields do not invalidate measured response domains (10.957012ms)
+✔ numeric points, missing values and intervals share one observed-domain gate (8.088047ms)
+✔ numeric support allows floating-point roundoff but does not silently extend the measured domain (7.324948ms)
+✔ categorical and numeric support domains survive snapshot restoration without added evidence (20.870881ms)
+✔ an unseen category cannot certify a plan but remains available for an explicitly unsupported probe (251.898596ms)
+✔ observed stationary outcomes remain possible throughout a multistep forecast (77.498451ms)
+✔ small consistently measured motion can still compose a valid goal without an arbitrary dead zone (40.935208ms)
+✔ uncertain geometry obeys the measured coordinate transform and includes all possible yaw rotations (0.890317ms)
+✔ a future action cannot select the convenient side of an uncertain prerequisite (13.409691ms)
+✔ a globally accurate small mean cannot overrule a missing context with incompatible responses (92.594441ms)
+✔ grounded gaze goals use the predicted visible role and its numeric possibility range (0.397048ms)
+✔ imagined numeric envelopes cannot be learned as additional physical evidence (0.557534ms)
+✔ a sparse local response cannot borrow global regression calibration and can become supported through learning (890.839134ms)
+✔ regression cannot bypass the observed context range, including an uncertain future input (377.319634ms)
+✔ supported numeric ranges include measured pre-update residuals on a smooth held-out response (489.15474ms)
+✔ a locally calibrated continuous regression remains usable when a constant leaf cannot fit the response (415.680087ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2988.709441

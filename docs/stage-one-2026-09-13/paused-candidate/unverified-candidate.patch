@@ -1,0 +1,132 @@
+diff --git a/src/contextual-readout.ts b/src/contextual-readout.ts
+index 455ccab..21c8ef9 100644
+--- a/src/contextual-readout.ts
++++ b/src/contextual-readout.ts
+@@ -138,6 +138,23 @@ export class ContextualReadout {
+   #fit(rows: readonly Sample[], key: string, depth = 0): Tree {
+     const base = summary(rows, key);
+     if (rows.length < 16 || depth >= 6 || base.loss < 1e-8) return base.leaf;
++    // Different measured features often induce the exact same row partition.
++    // A local membership key can reuse its unchanged score without removing
++    // a candidate or changing the order/tie rule. All subsets retain the
++    // original row order. No cache survives this synchronous structural fit.
++    const positions = new Map(rows.map((row, index) => [row, index]));
++    const scores = new Map<string, { loss: number; calibrationLoss: number }>();
++    const score = (subset: readonly Sample[]) => {
++      const membership = Buffer.alloc(Math.ceil(rows.length / 8));
++      for (const row of subset) { const index = positions.get(row)!; membership[index >> 3]! |= 1 << (index & 7); }
++      const identity = membership.toString('base64'), cached = scores.get(identity);
++      if (cached) return cached;
++      const value = summary(subset, key, true);
++      // At maximum supported capacity each key has 344 ASCII characters;
++      // this bounds entry count as well as key payload, not a claim about RSS.
++      if (scores.size < 1024) scores.set(identity, value);
++      return value;
++    };
+     let best: { split: Omit<Branch, 'left' | 'right'>; left: Sample[]; right: Sample[]; gain: number } | null = null;
+     const keys = [...new Set(rows.flatMap(row => Object.keys(row.input)))].sort();
+     for (const feature of keys) {
+@@ -147,7 +164,7 @@ export class ContextualReadout {
+       const observed = rows.filter(row => Object.hasOwn(row.input, feature));
+       const values = [...new Set(observed.map(row => row.input[feature]!))];
+       if (values.length < 2) continue;
+-      const compared = observed.length === rows.length ? base : summary(observed, key, true);
++      const compared = observed.length === rows.length ? base : score(observed);
+       if (compared.loss < 1e-8) continue;
+       const numeric = values.every(value => typeof value === 'number');
+       if (numeric) values.sort((a, b) => Number(a) - Number(b));
+@@ -163,7 +180,7 @@ export class ContextualReadout {
+         const left: Sample[] = [], right: Sample[] = [];
+         for (const row of observed) (goesLeft(row.input[feature]!, split) ? left : right).push(row);
+         if (left.length < 6 || right.length < 6) continue;
+-        const a = summary(left, key, true), b = summary(right, key, true);
++        const a = score(left), b = score(right);
+         // Equal mean effects may have very different reliability. A region
+         // with unpredictable outcomes cannot borrow another region's score.
+         const gain = observed.length / rows.length * (1 - (a.loss + b.loss) / compared.loss + (compared.calibrationLoss > 1e-8
+diff --git a/src/experience-medium.ts b/src/experience-medium.ts
+index 07de98a..f12e6e8 100644
+--- a/src/experience-medium.ts
++++ b/src/experience-medium.ts
+@@ -14,6 +14,14 @@ export type { ExperienceWindowLiveTraceV1 } from './experience-timed-readout.js'
+ 
+ type State = Record<string, PublicValue>;
+ const INPUTS = 32, HIDDEN = 16, SIZE = 1 + INPUTS + HIDDEN;
++// Covariances are replaced, never edited in place. Heads that have actually
++// seen the same fields can share this initial matrix and its exact successors.
++// A missing channel keeps its old matrix; update counts alone never imply the
++// same input history. The private constant cannot escape through snapshots.
++const INITIAL_COVARIANCE = Array.from({ length: SIZE }, (_, i) => Array.from({ length: SIZE }, (_, j) => i !== j ? 0
++  : i === 0 ? 10000 : i <= INPUTS ? 100 : 1));
++for (const row of INITIAL_COVARIANCE) Object.freeze(row);
++Object.freeze(INITIAL_COVARIANCE);
+ export const motorIdentity = (cue: ActionCue) => sha({ kind: cue.kind, parameters: cue.parameters });
+ // Passive packets have no requested duration. Their retrospective packaging
+ // length cannot select a horizon-specific endpoint circuit.
+@@ -321,6 +329,9 @@ export class ExperienceMedium {
+     const priorField = prior ? this.#field(prior, state) : undefined;
+     const field = this.#field(network, state, true), results: boolean[] = []; network.observations++;
+     const externalErrors: Record<string, number> = {};
++    // Only this call's field is shared. Reference identity proves equal prior
++    // matrices; every floating-point operation retains its original order.
++    const covarianceSteps = new Map<number[][], { gain: number[]; next: number[][] }>();
+     for (const [name, before, after] of targets) {
+       const numeric = typeof before === 'number' && typeof after === 'number';
+       const target = numeric ? after - before : after;
+@@ -332,8 +343,7 @@ export class ExperienceMedium {
+       if (!head) {
+         head = { key: name, numeric, values: numeric ? [] : [after],
+           readout: Array.from({ length: numeric ? 2 : 1 }, () => Array(SIZE).fill(0)),
+-          covariance: Array.from({ length: SIZE }, (_, i) => Array.from({ length: SIZE }, (_, j) => i !== j ? 0
+-            : i === 0 ? 10000 : i <= INPUTS ? 100 : 1)),
++          covariance: INITIAL_COVARIANCE,
+           observations: 0, correct: 0, error: 0, integral: numeric,
+           numericQuality: numeric ? Array.from({ length: 4 }, () => ({ correct: 0, error: 0 })) : [],
+           numericMeans: numeric ? [0, 0] : [],
+@@ -387,16 +397,21 @@ export class ExperienceMedium {
+           if (wrong) head.categoryReadout[wrong.i]![i]! -= gain * field[i]! * factors[i]!;
+         }
+       }
+-      const px = head.covariance.map(row => row.reduce((sum, value, i) => sum + value * field[i]!, 0));
+-      const denominator = .995 + field.reduce((sum, value, i) => sum + value * px[i]!, 0);
+-      if (!Number.isFinite(denominator) || denominator <= 0) throw new Error('unstable-experience-conductance');
+-      const gain = px.map(value => value / denominator);
++      let step = covarianceSteps.get(head.covariance);
++      if (!step) {
++        const px = head.covariance.map(row => row.reduce((sum, value, i) => sum + value * field[i]!, 0));
++        const denominator = .995 + field.reduce((sum, value, i) => sum + value * px[i]!, 0);
++        if (!Number.isFinite(denominator) || denominator <= 0) throw new Error('unstable-experience-conductance');
++        step = { gain: px.map(value => value / denominator), next: updatedCovariance(head.covariance, px, denominator) };
++        covarianceSteps.set(head.covariance, step);
++      }
++      const { gain } = step;
+       head.readout.forEach((row, index) => {
+         const desired = numeric ? Number(index === 0 ? target : after) : Number(Object.is(head.values[index], after));
+         const residual = desired - row.reduce((sum, w, i) => sum + w * field[i]!, 0);
+         for (let i = 0; i < SIZE; i++) row[i]! += gain[i]! * residual;
+       });
+-      head.covariance = updatedCovariance(head.covariance, px, denominator);
++      head.covariance = step.next;
+     }
+     rows.push({ input: state, targets, externalErrors });
+     return results;
+@@ -1081,6 +1096,19 @@ export class ExperienceMedium {
+           [...head.readout.flat(), ...head.categoryReadout.flat(), ...head.covariance.flat()])]
+           .some(value => !Number.isFinite(value))) throw new Error('experience-medium-invalid-conductances');
+     }
++    // JSON checkpoints do not retain aliases. Reuse only fully validated,
++    // element-for-element identical matrices, including signed zero. Hashes
++    // narrow candidates; they are not accepted as proof of numeric equality.
++    for (const [, network] of copy.networks) {
++      const matrices = new Map<string, number[][][]>();
++      for (const head of network.heads) {
++        const identity = sha(head.covariance), candidates = matrices.get(identity) ?? [];
++        const same = candidates.find(matrix => matrix.every((row, i) => row.every((value, j) =>
++          Object.is(value, head.covariance[i]![j]))));
++        if (same) head.covariance = same;
++        else { candidates.push(head.covariance); matrices.set(identity, candidates); }
++      }
++    }
+     medium.#random = copy.random; medium.#networks = new Map(copy.networks); medium.#writes = copy.writes;
+     medium.#untrainedMotorWindows = untrainedMotorWindows;
+     medium.#untrainedLiveWindows = untrainedLiveWindows;

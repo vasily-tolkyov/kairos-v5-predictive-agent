@@ -1,0 +1,276 @@
+{
+  "version": "NativeR8StoppedPair1",
+  "status": "stopped-and-audited",
+  "summaries": [
+    {
+      "condition": "online",
+      "source": "evidence/pr3-local-window-statistics",
+      "counts": {
+        "decisions": 32,
+        "decisionStatuses": {
+          "refused": 32
+        },
+        "attempts": 32,
+        "executed": 0,
+        "refused": 32,
+        "refusalReasons": {
+          "action-start-expired": 32
+        },
+        "executedFractionOfAllDecisions": 0,
+        "freshRecordedForecasts": 0,
+        "supportedExecutedForecasts": 0,
+        "supportedTaskPlans": 0,
+        "uniqueNewRealWindows": 161,
+        "activeWindows": 0,
+        "passiveWindows": 161,
+        "activeObservationWindows": 0,
+        "receiptInstrumentedWindows": 0,
+        "zeroDurationMotorExposures": 0,
+        "learningWrites": 161,
+        "passiveWrites": 161,
+        "activeWrites": 0
+      },
+      "seconds": 75.138,
+      "stoppedAt": "2026-09-13T12:11:35.925Z",
+      "deaths": 0,
+      "goals": [
+        {
+          "id": "reach-other-side",
+          "status": "pending"
+        }
+      ],
+      "sessionSha256": "21b557cf4ccda79463078cd4eb1007d608f650b7a32aa864797c0b99a4039168",
+      "worldSha256": "ae7ec9565e2982da1a8e1bb368a02cece0a4075ace6e4cdee28fbb46ddad92d5",
+      "archivedIntervals": 973,
+      "tailIntervals": 55,
+      "initialUnreconciledAcceptedFrames": 1
+    },
+    {
+      "condition": "frozen",
+      "source": "evidence/pr3-local-window-statistics-frozen",
+      "counts": {
+        "decisions": 32,
+        "decisionStatuses": {
+          "executed": 12,
+          "refused": 20
+        },
+        "attempts": 32,
+        "executed": 12,
+        "refused": 20,
+        "refusalReasons": {
+          "action-start-expired": 20
+        },
+        "executedFractionOfAllDecisions": 0.375,
+        "freshRecordedForecasts": 12,
+        "supportedExecutedForecasts": 0,
+        "supportedTaskPlans": 0,
+        "uniqueNewRealWindows": 135,
+        "activeWindows": 12,
+        "passiveWindows": 123,
+        "activeObservationWindows": 1,
+        "receiptInstrumentedWindows": 4,
+        "zeroDurationMotorExposures": 0,
+        "learningWrites": 0,
+        "passiveWrites": 0,
+        "activeWrites": 0
+      },
+      "seconds": 49.138,
+      "stoppedAt": "2026-09-13T12:17:57.400Z",
+      "deaths": 0,
+      "goals": [
+        {
+          "id": "reach-other-side",
+          "status": "pending"
+        }
+      ],
+      "sessionSha256": "33f0a9d7e568d09977f392dd729ba2bac3310393aabe830a513655003e77e0d2",
+      "worldSha256": "8618f23822cc091a12909a53e80690f097bdbd758950184c1c134143c2d916c6",
+      "archivedIntervals": 472,
+      "tailIntervals": 25,
+      "initialUnreconciledAcceptedFrames": 4
+    }
+  ],
+  "verificationFiles": [
+    {
+      "source": "evidence/pr3-local-window-statistics/stopped-audit.json",
+      "path": "online-stopped-audit.json",
+      "bytes": 45802,
+      "sha256": "821a4b511c0f5fa08e5a415f03a5b72525196954fa7582e29dfb4930f1de5ef0"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/stopped-audit.log",
+      "path": "online-stopped-audit.log",
+      "bytes": 337,
+      "sha256": "b1c262f6b566f314aecb911ce9d1bd7c07c7d0450b0541ff2bb03e9b224ac2ee"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/capture-audit.json",
+      "path": "online-capture-audit.json",
+      "bytes": 41288,
+      "sha256": "acebafaf08ca5cb0d4267cf2e218790d8061b19b795662e80391c44dbf308ef9"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/capture-audit.log",
+      "path": "online-capture-audit.log",
+      "bytes": 608,
+      "sha256": "4d3a686fdf74fc0a54af0d85ab1ed8480bedb921e25fae1e75fa281ef07f9c39"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/frame-state-audit.json",
+      "path": "online-frame-state-audit.json",
+      "bytes": 126061,
+      "sha256": "1b82f93d5c33ec9a60622e494e02fd5671bcfb839850b486e5174bab8aecfc03"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/frame-state-audit.log",
+      "path": "online-frame-state-audit.log",
+      "bytes": 267,
+      "sha256": "1ab6d61613f34e5a540ba3322c1896cd808a4af3edca5f1587bfdbdda2586ea1"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/freshness-audit.json",
+      "path": "online-freshness-audit.json",
+      "bytes": 14649,
+      "sha256": "7b8d89ef61c0cce7860cb5c8f2ee7f0c3075349d4a9520d42979240a82196363"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/freshness-audit.log",
+      "path": "online-freshness-audit.log",
+      "bytes": 282,
+      "sha256": "c1f893448e8a7da3e8db092f90c5ffa1bdd546aa50da29a20bca6923a437898c"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/coverage-audit.json",
+      "path": "online-coverage-audit.json",
+      "bytes": 195576,
+      "sha256": "c942b519783d8874721270f8c4b18d2bc2ae7db6289bde15657ac1220367e07d"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/coverage-audit.log",
+      "path": "online-coverage-audit.log",
+      "bytes": 1730,
+      "sha256": "e87ccd1f736b058787efa56da14b433c915f4437f9eefe07ee7aff7fe1029005"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/live-restore-audit.json",
+      "path": "online-live-restore-audit.json",
+      "bytes": 1329,
+      "sha256": "4022f303fc9d504324d0763c9c8ffd9a9b8486241b6aa46ad99003206a217337"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/live-restore-audit.log",
+      "path": "online-live-restore-audit.log",
+      "bytes": 335,
+      "sha256": "eb9a9be91f3090c427986eeaf3b8a4f7c6da3d75af9f1442996a725ccf4583b2"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics/stopped-world.tar.gz.provenance.json",
+      "path": "online-stopped-world.tar.gz.provenance.json",
+      "bytes": 463,
+      "sha256": "c52eb2bc698a608a20f16ab07b2d93296b1eedb8d2f13da4b018b111651b6592"
+    },
+    {
+      "source": "evidence/pr3-window-statistics-recovery/online-run.log",
+      "path": "online-online-run.log",
+      "bytes": 934,
+      "sha256": "ab31eaf9d9137c44d18199c154461bd9a66294ceda7d1e6fd466cb41022a4843"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/stopped-audit.json",
+      "path": "frozen-stopped-audit.json",
+      "bytes": 41339,
+      "sha256": "2dfe47112104f4c46cea63f407a0ccf37aed702bb2ad07f553e6a3513b24fde4"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/stopped-audit.log",
+      "path": "frozen-stopped-audit.log",
+      "bytes": 349,
+      "sha256": "faa222b1be9c5a31b07b9e77dc3bc3077316f5f961e865a1a2a23f3a980979d6"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/capture-audit.json",
+      "path": "frozen-capture-audit.json",
+      "bytes": 34491,
+      "sha256": "104c836fc2f57414598a05115a92199f9c9dba338e8e2feecece46dc42a75baf"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/capture-audit.log",
+      "path": "frozen-capture-audit.log",
+      "bytes": 613,
+      "sha256": "2d083202a22f8d2b84a8e7917352a3252e8c4879a9016904bbfd420144a57074"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/frame-state-audit.json",
+      "path": "frozen-frame-state-audit.json",
+      "bytes": 111525,
+      "sha256": "0d61b2e58517eb3540129fae6c7266eb88ff25bdd82ee281096783da192ccd3a"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/frame-state-audit.log",
+      "path": "frozen-frame-state-audit.log",
+      "bytes": 274,
+      "sha256": "29fd06a836e1b041504a07398f679d6dfa3bc1dda651d817c3079eb30875cf0b"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/freshness-audit.json",
+      "path": "frozen-freshness-audit.json",
+      "bytes": 21026,
+      "sha256": "f22a19750877bc0eadbf86dcf0903621c82d8b820c7ab485c1cdc73f05a01af3"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/freshness-audit.log",
+      "path": "frozen-freshness-audit.log",
+      "bytes": 291,
+      "sha256": "550ba159b71421df1dbd0323790dc22b2287ab46815e198b0516f510992aa8c1"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/coverage-audit.json",
+      "path": "frozen-coverage-audit.json",
+      "bytes": 171842,
+      "sha256": "ff7e403ffd6ebbb17ea0d657169cfdaf75fd7f56cf8dde3b1d72ae37d697bdee"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/coverage-audit.log",
+      "path": "frozen-coverage-audit.log",
+      "bytes": 1748,
+      "sha256": "74cfda1ae7acb2592d2fa53c1f997ed69872d2148e8dc5ef89479145279d82f0"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/live-restore-audit.json",
+      "path": "frozen-live-restore-audit.json",
+      "bytes": 23338,
+      "sha256": "43e0088f9c5987e1ab7926825cc03a241900e6b55cf7fb7f110e0a72b219ca47"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/live-restore-audit.log",
+      "path": "frozen-live-restore-audit.log",
+      "bytes": 251,
+      "sha256": "8377ef20da7ba5d8cfd9210f89d4cb69480ae2bd4f194fe4d383e7e027dd1035"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/frozen-learning-audit.json",
+      "path": "frozen-frozen-learning-audit.json",
+      "bytes": 1551,
+      "sha256": "b98723d4ccaf4d5544a98786a543cf022cb274602895f4fd06d9a9c2c36aa995"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/frozen-learning-audit.log",
+      "path": "frozen-frozen-learning-audit.log",
+      "bytes": 1377,
+      "sha256": "81ecdc50d80027f1408ea3b521e7740496fb3a6300d19c935f513e5bb60135eb"
+    },
+    {
+      "source": "evidence/pr3-local-window-statistics-frozen/stopped-world.tar.gz.provenance.json",
+      "path": "frozen-stopped-world.tar.gz.provenance.json",
+      "bytes": 477,
+      "sha256": "bae70649f35774aa8bd71ce32e65a5bda51b335de9d15058be747f3f0d858fc5"
+    },
+    {
+      "source": "evidence/pr3-window-statistics-recovery/frozen-run.log",
+      "path": "frozen-frozen-run.log",
+      "bytes": 942,
+      "sha256": "bb452cb68c334b4a2a5fc1348b93d54d8a22eb11687cd716d702d1a3d460fefa"
+    }
+  ],
+  "capabilityEstablished": false
+}

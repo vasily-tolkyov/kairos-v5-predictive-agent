@@ -1,0 +1,36 @@
+✔ stage-one inputs exclude coordinates, goal labels, engine identities and source clocks (1.7856ms)
+✖ stage-one discovers different displacement from measured contexts with unchanged calibration rules (69.097ms)
+✔ stage-one refuses imagined frames and uninstrumented movement without granting writes (2.5493ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 179.6082
+
+✖ failing tests:
+
+test at dist\test\stage-one-movement.test.js:34:1
+✖ stage-one discovers different displacement from measured contexts with unchanged calibration rules (69.097ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + -0
+  - 0
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/stage-one-movement.test.js:43:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: -0,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

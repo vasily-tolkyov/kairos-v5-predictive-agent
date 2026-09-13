@@ -1,0 +1,93 @@
+▶ matching passive boundary sequences cannot hide conflicting full frames under different event IDs
+  ✖ within-drain (27.8558ms)
+  ✖ drain-boundary (5.9458ms)
+  ✖ callback-boundary (4.7282ms)
+  ✖ callback-window (5.5894ms)
+✖ matching passive boundary sequences cannot hide conflicting full frames under different event IDs (45.4138ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 0
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 155.1819
+
+✖ failing tests:
+
+test at dist\test\action-start.test.js:252:17
+✖ within-drain (27.8558ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /passive-shared-frame-conflict/. Input:
+  
+  'Error: invalid-measured-action-start'
+  
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:271:13)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:252:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: invalid-measured-action-start
+        at file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/experience-session.js:315:23
+        at MinecraftExperienceEnvironment.executeOffer (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/adapters/minecraft/experience.js:162:27)
+        at ExperienceSession.step (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/src/experience-session.js:304:42)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:271:13)
+        at async Test.run (node:internal/test_runner/test:1125:7)
+        at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:252:9)
+        at async Test.run (node:internal/test_runner/test:1125:7)
+        at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3),
+    expected: /passive-shared-frame-conflict/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at dist\test\action-start.test.js:252:17
+✖ drain-boundary (5.9458ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:271:13)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:252:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /passive-shared-frame-conflict/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at dist\test\action-start.test.js:252:17
+✖ callback-boundary (4.7282ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:271:13)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:252:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /passive-shared-frame-conflict/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at dist\test\action-start.test.js:252:17
+✖ callback-window (5.5894ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:271:13)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/action-start.test.js:252:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /passive-shared-frame-conflict/,
+    operator: 'rejects',
+    diff: 'simple'
+  }

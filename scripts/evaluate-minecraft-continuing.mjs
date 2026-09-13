@@ -8,10 +8,11 @@ import { execFileSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ExperienceSession, ExperienceMedium } from '../dist/src/prototype.js';
 import { MinecraftBodyConnection } from './minecraft-body-connection.mjs';
-import { MinecraftExperienceEnvironment } from '../dist/src/adapters/minecraft/experience.js';
+import { MinecraftExperienceEnvironment, anonymousObservation } from '../dist/src/adapters/minecraft/experience.js';
 import { Services } from '../dist/src/services.js';
 import { GroundedGoalEvaluatorV1 } from '../dist/src/control/goal.js';
 import { EvidenceJournal } from './evidence-journal.mjs';
+import { InitialTelemetryJournal } from './initial-telemetry-journal.mjs';
 
 const { values } = parseArgs({ options: { java: { type: 'string' }, server: { type: 'string' },
   output: { type: 'string' }, restore: { type: 'string' }, continue: { type: 'string' }, seed: { type: 'string', default: '317' },
@@ -133,7 +134,7 @@ report.executedBuildHashes = Object.fromEntries(await Promise.all((await readdir
   .filter(name => name.endsWith('.js')).sort().map(async name =>
     [name, createHash('sha256').update(await readFile(new URL(name, buildRoot))).digest('hex')])));
 report.executedHarnessHashes = Object.fromEntries(await Promise.all(['evaluate-minecraft-continuing.mjs',
-  'minecraft-body-connection.mjs', 'evidence-journal.mjs'].map(async name =>
+  'minecraft-body-connection.mjs', 'evidence-journal.mjs', 'initial-telemetry-journal.mjs'].map(async name =>
     [name, createHash('sha256').update(await readFile(new URL(name, import.meta.url))).digest('hex')])));
 await save('protocol.json', report);
 let body, environment, initial, submitted = requestedGoals
@@ -178,7 +179,8 @@ try {
   await save('static-setup.json', { commands, taskGeometryVisibleOnlyThroughBody: true }); await delay(1000);
   body = new MinecraftBodyConnection({ ...config.minecraft, worldId: 'continuous-evaluation',
     activeSecondsOffset: previousReport?.finalObservation?.activeSeconds ?? 0 }, (kind, value) => {
-    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release'].includes(kind)) {
+    if (['body-frame-timeout', 'body-incomplete-window', 'body-motor-release', 'body-motor-receipt', 'body-motor-edge',
+      'body-action-start', 'physical-telemetry-gap'].includes(kind)) {
       diagnostics = diagnostics.then(() => log('body-diagnostics', { kind, at: new Date().toISOString(), value }))
         .catch(error => { diagnosticError = error; });
     }
@@ -191,25 +193,36 @@ try {
   if (!predecessor && worldKind === 'enclosure') services.command(`tp KairosContinuing ${startX} 64 2.5 180 0`);
   await delay(1000);
   const base = new MinecraftExperienceEnvironment(body);
-  report.protocol.maintenanceGoals = base.maintenanceGoals; await save('protocol.json', report);
-  initial = await base.observe(); await save('initial-observation.json', initial);
+  report.protocol.maintenanceGoals = base.maintenanceGoals;
+  report.protocol.initialTelemetryArchive = 'InitialTelemetryArchive1'; await save('protocol.json', report);
+  initial = await base.initialize(); await save('initial-observation.json', initial);
   await checkpoint();
+  const initialTelemetry = new InitialTelemetryJournal();
   environment = { maintenanceGoals: base.maintenanceGoals,
+    takePhysicalTelemetryThrough: observation => {
+      const batch = base.takePhysicalTelemetryThrough(observation), prefix = initialTelemetry.capture(batch, initial.sequence);
+      if (prefix) diagnostics = diagnostics.then(() => log('initial-telemetry', prefix))
+        .catch(error => { diagnosticError = error; });
+      return batch;
+    },
     drainPassiveEvents: async () => recordPassive(await base.drainPassiveEvents()),
     observe: () => base.observe(), listActionOffers: observation => base.listActionOffers(observation),
-    waitForObservationAfter: sequence => base.waitForObservationAfter(sequence), executeOffer: async offer => {
+    waitForObservationAfter: sequence => base.waitForObservationAfter(sequence), executeOffer: async (offer, beforeExecute) => {
       const before = await base.observe(), choiceOffers = base.listActionOffers(before);
       await log('action-intents', { offer, observation: before, at: new Date().toISOString() });
       let receipt;
-      try { receipt = await base.executeOffer(offer); }
+      try { receipt = await base.executeOffer(offer, beforeExecute); }
       catch (error) {
         await log('action-errors', { offer, error: String(error.stack ?? error), at: new Date().toISOString() });
+        try { await recordPassive(await base.drainPassiveEvents()); }
+        catch (recoveryError) { await log('action-errors', { phase: 'passive-recovery', offer,
+          error: String(recoveryError.stack ?? recoveryError), at: new Date().toISOString() }); }
         throw error;
       }
       await recordPassive(receipt.precedingPassiveEvents);
       if (receipt.event) await writeFile(resolve(root, 'events', String(++events).padStart(7, '0') + '.json.gz'),
         await compress(JSON.stringify(receipt.event)));
-      await log('physical-actions', { offer, choiceOffers, availableOffers: receipt.availableOffers,
+      await log('physical-actions', { offer, choiceOffers, availableOffers: receipt.availableOffers, executionBinding: receipt.executionBinding,
         executed: receipt.executed, before: receipt.event?.frames[0]?.self ?? before.self, after: receipt.observation.self,
         eventId: receipt.event?.id, frames: receipt.event?.frames.length, eventFile: events,
         sensoryObjectsBefore: before.objects.length, sensoryObjectsAfter: receipt.observation.objects.length });
@@ -266,10 +279,36 @@ finally {
     if (values.frozen && report.finalLearningDigest !== report.initialLearningDigest) {
       report.status = 'frozen-state-mutated'; report.error = 'A frozen trial changed learned state'; process.exitCode = 1;
     }
-    report.finalObservation = body ? await environment?.observe() : null; await save('results.json', report);
+    try { report.finalObservation = body ? await environment?.observe() : null; }
+    catch (error) {
+      // A failed connection must not relabel its older cache as a fresh final
+      // measurement, or throw out of finally before writing the stop report.
+      report.finalObservation = null;
+      report.finalObservationUnavailable = String(error.stack ?? error);
+      const last = body?.lastReceivedObservationForEvidence();
+      if (last) report.lastReceivedBodyEvidence = { ...last,
+        observation: last.observation ? anonymousObservation(last.observation) : null };
+      report.status = 'fault-paused'; report.error ??= report.finalObservationUnavailable; process.exitCode = 1;
+    }
+    await save('results.json', report);
     console.log(JSON.stringify({ status: report.status, error: report.error, ...report.final, seconds: report.seconds }));
   } finally {
-    await body?.close(); await services.stop();
-    report.stoppedAt = new Date().toISOString(); await save('results.json', report);
+    const cleanupFailure = (phase, error) => {
+      (report.cleanupErrors ??= []).push({ phase, error: String(error.stack ?? error) });
+      report.error ??= String(error.stack ?? error);
+      if (!['fault-paused', 'evidence-incomplete'].includes(report.status)) report.status = 'fault-paused';
+      process.exitCode = 1;
+    };
+    try { await body?.close(); }
+    catch (error) { cleanupFailure('body-close', error); }
+    finally {
+      try { await services.stop(); report.stoppedAt = new Date().toISOString(); }
+      catch (error) { cleanupFailure('services-stop', error); report.stopAttemptFailedAt = new Date().toISOString(); }
+    }
+    // close can invalidate a still-prepared token. Flush those last worker
+    // diagnostics before exporting the final evidence index.
+    try { await diagnostics; if (diagnosticError) throw diagnosticError; report.journal = await journal.export(); }
+    catch (error) { cleanupFailure('final-diagnostics', error); report.status = 'evidence-incomplete'; }
+    await save('results.json', report);
   }
 }

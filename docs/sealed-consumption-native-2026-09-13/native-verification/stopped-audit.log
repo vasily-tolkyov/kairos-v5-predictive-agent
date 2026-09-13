@@ -1,0 +1,8 @@
+file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r9-sealed-consumption/scripts/audit-native-continuing.mjs:117
+  initialPosition: initial.self.position, finalPosition: report.finalObservation.self.position,
+                                                                                 ^
+
+TypeError: Cannot read properties of undefined (reading 'self')
+    at file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r9-sealed-consumption/scripts/audit-native-continuing.mjs:117:82
+
+Node.js v24.14.0

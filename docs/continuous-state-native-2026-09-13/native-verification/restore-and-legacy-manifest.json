@@ -1,0 +1,29 @@
+{
+  "version": "ExactVerificationCopies1",
+  "files": [
+    {
+      "source": "evidence/pr3-local-continuous/live-restore-audit.json",
+      "path": "online-live-restore-audit.json",
+      "bytes": 1322,
+      "sha256": "95ad6909b835604966df218ef81298999695b21e17b7d1e34cd80444971fed4c"
+    },
+    {
+      "source": "evidence/pr3-local-continuous-frozen/live-restore-audit.json",
+      "path": "frozen-live-restore-audit.json",
+      "bytes": 21884,
+      "sha256": "96c32cfabf460fbdc402cc95056bdc98d7de3103e5c53f237f8c3694d77631d7"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/r5-legacy-negative-frame-audit.json",
+      "path": "r5-legacy-negative-frame-audit.json",
+      "bytes": 71920,
+      "sha256": "263ea9fbdebf95583120640d8c984e19f754375a9ee97475b3d0c647862b4844"
+    },
+    {
+      "source": "evidence/pr3-continuous-state-recovery/r5-legacy-negative-frame-audit.log",
+      "path": "r5-legacy-negative-frame-audit.log",
+      "bytes": 283,
+      "sha256": "510da273ad49141b448a1ec43a4f4f2da9432d8d23b7cf3b5b67c7fdee60caaf"
+    }
+  ]
+}

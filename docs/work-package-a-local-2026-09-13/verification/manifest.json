@@ -1,0 +1,33 @@
+{
+  "files": {
+    "baseline-gate.log": "c1b9d35da5f4593c1cba1f0a5a26a23eec1a87883895754fcfd496c597dcbb80",
+    "candidate1-gate.log": "fe568fa98abb83c666878ef71d3d312ed3c57d9ac0c5f1c6768c1e7eb4394e48",
+    "candidate2-gate.log": "491e3a3ac15d81bfc4b40fac7a84943bc8b17afd8b1ea77c056af1afb4b6af6e",
+    "domain-focused.log": "38938ff281982c5c3b65a0661d2067626cc2f2c6dd913813105a673f3af25c04",
+    "learning-profile-baseline.json": "304edd8bc1bd5c166a318f8c30e9018054830c36e6605825a7fcb42c7027d859",
+    "learning-profile-readout-only.json": "ae81daf1bea5e1b8971af13bc592f09d9e517d110cb2def584ff73d2ed6e2bbe",
+    "matched-start-costs.json": "7304d6970b06136b6f6eca9a85835c76befbe3b557d7ed59720d201866418d91",
+    "native-capture-audit.json": "2373096e33db0748c6ef750e8f63a62d1ee093af8aa0bcacc55d1e06eb4bf3ad",
+    "native-freshness-audit.json": "2251c7e3a4a64229b6a8d1bcad91a5491e4c1c7e62831a0002c1af25021722ba",
+    "native-motor-audit.json": "69b81dc3be9e1eba1ac5f6202ccd1a77e2d69c156c580298a22d33d3a2e016a8",
+    "native-restore-audit.json": "9e0b2493c545d29c68768c2a241814e0046c342d4d5331204e1c1516179f21dc",
+    "native-stopped-audit.json": "0280901b0ac9f2ffca0b82b5dbe48c4eacd1369b93c2a4abdeca960fab132419",
+    "original-model-migration.json": "f65003054ef21cd9d590558c0e1289684a3b2de7fa26a4e6d84c7c80d9383b5d",
+    "original-package-verification.json": "cfe3cf3727fc5b710f247eb689ab95b87c1e67d5b410d21069454b80ecd64040",
+    "readout-copy-capture-audit.json": "b23a640039694796a52cc9f0d6cf5d919bddb19ade72b93b4e6bc00752f1bc79",
+    "readout-copy-freshness-audit.json": "fa08c1e7d6ae145589f3085dbcbdc6c13ab57c6011e9a25e250a9ae25f890af9",
+    "readout-copy-gate.log": "ef9a9b315c19273b39c90f86160e298d3727a8f5f5ab52447a81804ce8a85439",
+    "readout-copy-restore-audit.json": "8c3d6b04a446b5ba2b6efdd3d5fc444f451b825f9516fa05214751eaa40d6f5f",
+    "readout-copy-stopped-audit.json": "a50f0bfe2c9d272d4d794755b62bc57a2d3bae4bca475995014cd7cb79c4b744",
+    "timing-capture-audit.json": "ef69cf996bd0bd88bd05defcec5679f0914d335856e79f8dd5e99d9212c0a644",
+    "timing-focused.log": "e0c8dc4dbb1ea9219fbd1f7a08922b34f0c1170bff31d3dacf2f472f9315c1a8",
+    "timing-freshness-audit.json": "3aa7ac9f0dc2a423617c2a37628da6fc7b9c1fe13127ae0d28826a06666242dd",
+    "timing-stopped-audit.json": "cdfdea2533e5a007a770592de61631ac37c7170e5b48b744e08ab85c74be82f3",
+    "window-red.log": "d205fe7683e077b85c32ab20feb92b887fd78869aa675c2f8519e53e85aabb63"
+  },
+  "userInputs": {
+    "ENGINEERING_NEXT.zh-CN.md": "4d1c1dba9b90a7abf7c7e6e70aa9b47429eb9d3205edfcd8a30b377bc61b3bd7",
+    "REPORT.zh-CN.md": "27f52e41b29f8ae2ec2dc73ef93fe1052834b738211b5fe6f4ace8c8534480c6"
+  },
+  "scope": "Copies of actual local verification outputs. Original failed logs remain in the full evidence package."
+}

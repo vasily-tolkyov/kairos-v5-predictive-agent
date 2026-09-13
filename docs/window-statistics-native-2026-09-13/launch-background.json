@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-09-13T12:10:16.8502409Z",
+  "actor": "evidence/execution-builds/pr3-local-r8-window-statistics",
+  "artifactUpload": {
+    "ProcessId": 532,
+    "ReadTransferCount": 203334732,
+    "KernelModeTime": 20625000,
+    "UserModeTime": 6093750
+  },
+  "uploadSource": "evidence/kairos-native-through-r7-20260913.zip",
+  "qualification": "An existing draft-release evidence upload remains in progress. Its network load is recorded; no clean isolated wall-time speed claim is made. Native actors remain serial and immutable. No concurrent CPU tests, replay or packaging runs.",
+  "cpuExperimentsOrBuildsRunning": false,
+  "version": "NativeLaunchBackground1"
+}

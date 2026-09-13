@@ -1,0 +1,344 @@
+{
+  "version": "NativeStartCostComparison1",
+  "status": "passed",
+  "runs": [
+    {
+      "root": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-timing",
+      "sourceCommit": "99cadb7795c32c5eb031a5b5fc2af2b932b68512",
+      "initialModelDigest": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+      "initialSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+      "initialWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+      "protocol": {
+        "steps": 32,
+        "seconds": 180,
+        "goalAfter": 0,
+        "frozen": false,
+        "frozenScope": "transferable dynamics and affordances; current task feedback remains active",
+        "environment": "natural",
+        "worldSeed": "129604783",
+        "difficulty": "peaceful",
+        "difficultySource": "explicit-command-line",
+        "goalDistance": 12,
+        "geometry": {
+          "wallDepth": 2,
+          "halfWidth": 5,
+          "startX": 0.5,
+          "material": "oak_planks"
+        },
+        "taskOnly": false,
+        "resetAfterStart": false,
+        "externalActionSelection": false,
+        "requestedGoals": [
+          {
+            "version": "GroundedGoalV1",
+            "id": "reach-other-side",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "past-exit",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "position.2",
+                "comparator": "less-than",
+                "target": -5.5
+              }
+            }
+          }
+        ],
+        "goalSourceSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+        "boundary": "native normal terrain and peaceful difficulty; no setup, teleport or runtime rule callbacks",
+        "limitations": [
+          "finite natural-world sample; goal prerequisites depend on actual terrain",
+          "peaceful engine rules; no evidence of hostile survival or hunger management",
+          "engineered block/entity silhouette RGBD and visible hotbar sensing; some visual assets are unsupported; not full client vision",
+          "restart requires an explicit observed action; recovery does not establish survival",
+          "finite duration cannot establish lifelong learning"
+        ],
+        "difficultyVerifiedByServer": "peaceful",
+        "maintenanceGoals": [
+          {
+            "version": "GroundedGoalV1",
+            "id": "body-health",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "maintain-health",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "properties.health",
+                "comparator": "greater-than",
+                "target": 18,
+                "tolerance": 0.000001,
+                "residualScale": 20
+              }
+            }
+          },
+          {
+            "version": "GroundedGoalV1",
+            "id": "body-food",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "maintain-food",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "properties.food",
+                "comparator": "greater-than",
+                "target": 18,
+                "tolerance": 0.000001,
+                "residualScale": 20
+              }
+            }
+          },
+          {
+            "version": "GroundedGoalV1",
+            "id": "body-oxygen",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "maintain-oxygen",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "properties.oxygen",
+                "comparator": "greater-than",
+                "target": 18,
+                "tolerance": 0.000001,
+                "residualScale": 20
+              }
+            }
+          }
+        ]
+      },
+      "decisions": 32,
+      "executed": 3,
+      "refused": 29,
+      "supportedExecutedForecasts": 0,
+      "supportedTaskPlans": 0,
+      "newWrites": 97,
+      "newPassiveWindows": 94,
+      "deaths": 0,
+      "goalStatuses": [
+        {
+          "id": "reach-other-side",
+          "status": "pending"
+        }
+      ],
+      "callbackMs": {
+        "validation": {
+          "n": 32,
+          "mean": 6.161287500000185,
+          "median": 5.462750000000597,
+          "p95": 11.04070000000138,
+          "max": 12.59429999999702
+        },
+        "passiveLearning": {
+          "n": 32,
+          "mean": 37.36583125000004,
+          "median": 34.35110000000168,
+          "p95": 57.52649999999994,
+          "max": 64.9240000000027
+        },
+        "prediction": {
+          "n": 32,
+          "mean": 9.448846874999617,
+          "median": 8.861450000000332,
+          "p95": 19.341599999999744,
+          "max": 20.53389999999854
+        }
+      },
+      "wholeLoopMilliseconds": {
+        "n": 32,
+        "mean": 386.3489343750001,
+        "median": 299.6631500000003,
+        "p95": 1004.3060000000005,
+        "max": 1036.136699999999
+      },
+      "durationSeconds": 33.844,
+      "finalPosition": [
+        -2.9763830015350874,
+        71,
+        6.5
+      ]
+    },
+    {
+      "root": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-readout-copy",
+      "sourceCommit": "bf1854a9d0ed22d9c81cec87da658bf12913c1b5",
+      "initialModelDigest": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+      "initialSessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+      "initialWorldTreeSha256": "22cd8aa4e5766d0312ae64edc0a04f317d362db6715fa8212cd472936f4c3563",
+      "protocol": {
+        "steps": 32,
+        "seconds": 180,
+        "goalAfter": 0,
+        "frozen": false,
+        "frozenScope": "transferable dynamics and affordances; current task feedback remains active",
+        "environment": "natural",
+        "worldSeed": "129604783",
+        "difficulty": "peaceful",
+        "difficultySource": "explicit-command-line",
+        "goalDistance": 12,
+        "geometry": {
+          "wallDepth": 2,
+          "halfWidth": 5,
+          "startX": 0.5,
+          "material": "oak_planks"
+        },
+        "taskOnly": false,
+        "resetAfterStart": false,
+        "externalActionSelection": false,
+        "requestedGoals": [
+          {
+            "version": "GroundedGoalV1",
+            "id": "reach-other-side",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "past-exit",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "position.2",
+                "comparator": "less-than",
+                "target": -5.5
+              }
+            }
+          }
+        ],
+        "goalSourceSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+        "boundary": "native normal terrain and peaceful difficulty; no setup, teleport or runtime rule callbacks",
+        "limitations": [
+          "finite natural-world sample; goal prerequisites depend on actual terrain",
+          "peaceful engine rules; no evidence of hostile survival or hunger management",
+          "engineered block/entity silhouette RGBD and visible hotbar sensing; some visual assets are unsupported; not full client vision",
+          "restart requires an explicit observed action; recovery does not establish survival",
+          "finite duration cannot establish lifelong learning"
+        ],
+        "difficultyVerifiedByServer": "peaceful",
+        "maintenanceGoals": [
+          {
+            "version": "GroundedGoalV1",
+            "id": "body-health",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "maintain-health",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "properties.health",
+                "comparator": "greater-than",
+                "target": 18,
+                "tolerance": 0.000001,
+                "residualScale": 20
+              }
+            }
+          },
+          {
+            "version": "GroundedGoalV1",
+            "id": "body-food",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "maintain-food",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "properties.food",
+                "comparator": "greater-than",
+                "target": 18,
+                "tolerance": 0.000001,
+                "residualScale": 20
+              }
+            }
+          },
+          {
+            "version": "GroundedGoalV1",
+            "id": "body-oxygen",
+            "expression": {
+              "kind": "predicate",
+              "predicate": {
+                "version": "GoalPredicateV1",
+                "id": "maintain-oxygen",
+                "subject": {
+                  "kind": "self"
+                },
+                "observable": "properties.oxygen",
+                "comparator": "greater-than",
+                "target": 18,
+                "tolerance": 0.000001,
+                "residualScale": 20
+              }
+            }
+          }
+        ]
+      },
+      "decisions": 32,
+      "executed": 6,
+      "refused": 26,
+      "supportedExecutedForecasts": 0,
+      "supportedTaskPlans": 0,
+      "newWrites": 90,
+      "newPassiveWindows": 84,
+      "deaths": 0,
+      "goalStatuses": [
+        {
+          "id": "reach-other-side",
+          "status": "pending"
+        }
+      ],
+      "callbackMs": {
+        "validation": {
+          "n": 32,
+          "mean": 7.1464937499996495,
+          "median": 6.278200000000652,
+          "p95": 14.309300000000803,
+          "max": 15.804000000000087
+        },
+        "passiveLearning": {
+          "n": 32,
+          "mean": 17.32983437499979,
+          "median": 15.560999999996056,
+          "p95": 37.69770000000062,
+          "max": 39.359300000000076
+        },
+        "prediction": {
+          "n": 32,
+          "mean": 9.488721875000124,
+          "median": 9.243900000001304,
+          "p95": 21.194900000002235,
+          "max": 23.308399999998073
+        }
+      },
+      "wholeLoopMilliseconds": {
+        "n": 32,
+        "mean": 527.7246218749996,
+        "median": 302.93864999999823,
+        "p95": 2330.000799999998,
+        "max": 2357.258399999999
+      },
+      "durationSeconds": 38.726,
+      "finalPosition": [
+        -1.3964205574395874,
+        63.875,
+        6.5
+      ]
+    }
+  ],
+  "rawExecutionFraction": [
+    0.09375,
+    0.1875
+  ],
+  "passiveLearningMeanRatio": 0.4637882738123154,
+  "limitation": "One ordered paired development trial with the same initial world, model, choice state, goal and budget. Changed real-time trajectories prevent a pure causal estimate of all later learning costs. This does not establish sustained learning, goal success or multistage capability."
+}

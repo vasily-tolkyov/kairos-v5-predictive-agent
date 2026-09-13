@@ -1,0 +1,9 @@
+{
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-sealed-consumption",
+  "stoppedAt": "2026-09-13T12:42:00.215Z",
+  "levelName": "world-v5-physical-control",
+  "regions": 4,
+  "output": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-sealed-consumption\\stopped-world.tar.gz",
+  "bytes": 3911593,
+  "sha256": "7640ad4c0926c236aca6a1eb5214a803d646598dd771c732964781a1ef27e726"
+}

@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-09-13T02:18:34.859159+00:00",
+  "originalManifestFilesChecked": 66,
+  "originalManifestMismatches": [
+    {
+      "path": "actors/apparatus-candidate.tar.gz",
+      "expectedBytes": 560938,
+      "actualBytes": 276011,
+      "expectedSha256": "065d452863f9f3c46780c762459620043a138bc0d13291ca4d0c6920801173d2",
+      "actualSha256": "edd789a35dfe30258c7e8b4b1c017e875f9d1bf444be4c68ee0412ce280f5329"
+    }
+  ],
+  "recoveredArchiveSecondCallCheck": {
+    "bytes": 560938,
+    "sha256": "065d452863f9f3c46780c762459620043a138bc0d13291ca4d0c6920801173d2",
+    "readableMembers": 187,
+    "matchesOriginal": true
+  }
+}

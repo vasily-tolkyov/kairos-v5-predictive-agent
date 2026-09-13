@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "scope": "native sensory and actuator checks; no autonomous learning or planning claim",
+  "records": [
+    {
+      "kind": "entity-perception-and-contact",
+      "occludedAttackOffers": 0,
+      "anonymousTarget": "percept-3",
+      "healthBefore": 20,
+      "healthAfter": 19.06,
+      "frames": 7
+    },
+    {
+      "kind": "held-item-use",
+      "foodBefore": 5,
+      "foodAfter": 9,
+      "countBefore": 3,
+      "countAfter": 2,
+      "serverFood": 9,
+      "frames": 43,
+      "termination": "motor-released"
+    }
+  ]
+}

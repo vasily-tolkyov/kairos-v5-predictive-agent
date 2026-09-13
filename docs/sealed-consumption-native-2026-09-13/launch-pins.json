@@ -1,0 +1,1716 @@
+{
+  "version": "NativeSealedConsumptionLaunchPins1",
+  "pinnedAt": "2026-09-13T12:36:08.283Z",
+  "sourceCommit": "f21ed79728a6c17ad99a970b2e672d72ea15eb9c",
+  "registration": {
+    "path": "docs/sealed-consumption-native-2026-09-13/preregistered.json",
+    "sha256": "42cf83e918b342502140384ca323520da3d224b2af4166bb802cd7fa8f4b901c"
+  },
+  "freezeManifest": {
+    "path": "evidence/execution-builds/pr3-local-r9-sealed-consumption/freeze-manifest.json",
+    "sha256": "d68a082be11c792ea46d0b87fed65550dbc18a7dcd7e897a891666e520c04066",
+    "verifiedFiles": 651
+  },
+  "sourceWorkingTreeClean": true,
+  "sourceFiles": [
+    {
+      "path": "package-lock.json",
+      "sha256": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b"
+    },
+    {
+      "path": "package.json",
+      "sha256": "3d51bed3b0e5d4ccf6e75faa40d8fc2270564a255ac23abdfe016462ae80aa14"
+    },
+    {
+      "path": "scripts/archive-stopped-world.py",
+      "sha256": "1a4beb16c6e17a2bf4e6deb509dea1b2320c7a10929fc1b910d5c6db8382d142"
+    },
+    {
+      "path": "scripts/assess-guided-note-foundation-v1.mjs",
+      "sha256": "a88a762c6424559e150fd7b07c743b15f34cdca5a75918d73588c8a8dd55f853"
+    },
+    {
+      "path": "scripts/assess-merged-note-foundation-v1.mjs",
+      "sha256": "fc6ffec3b03cf489c0f830b0ea0c9d6e9c097bb8acfaa28496f311d24a838761"
+    },
+    {
+      "path": "scripts/audit-current-goal-readout-bridge-v1.mjs",
+      "sha256": "4e8c664543874ed82feabf98183761ca90cb22746e0e589d8082ea6a9c2d0f56"
+    },
+    {
+      "path": "scripts/audit-current-grounded-minecraft-note-v1.mjs",
+      "sha256": "922e6a31c38ca5dabe745bf468a91167ee1802a3853fafa4bf4c42f50c2dc173"
+    },
+    {
+      "path": "scripts/audit-guided-note-capture-v1.mjs",
+      "sha256": "46020acb8797a4efd4469d63cef711c4daf703e97a95eb01aeb1778311603e4d"
+    },
+    {
+      "path": "scripts/audit-multistage-note-decomposition-v1.mjs",
+      "sha256": "999a62d5cef5dad0196456db3fa4142ca1fbccbb768a6271007dc827af3358f5"
+    },
+    {
+      "path": "scripts/audit-multistage-note-decomposition-v2.mjs",
+      "sha256": "da731efc4af3df668d55c5d721e638e21623323fbc3bf9e307fd615d61fff426"
+    },
+    {
+      "path": "scripts/audit-native-capture-boundary.mjs",
+      "sha256": "cc93b288c1b5bfaf324df06130927bfc36b153bc4d3964fcbd18a363e6e5a7a6"
+    },
+    {
+      "path": "scripts/audit-native-continuing.mjs",
+      "sha256": "5b6bbeb8cbda99ee0ba724c96805647426d7b5b6e5f6df4e94888e512def7b0f"
+    },
+    {
+      "path": "scripts/audit-native-frame-state.mjs",
+      "sha256": "de4d8de8a3d387e561e80300c6b245938184acc8073946ac4905b9837fa43198"
+    },
+    {
+      "path": "scripts/audit-native-frozen-learning.mjs",
+      "sha256": "6cd8dd8bf6d43e1b2a636dd4c0f864abacdeac7433a83b592c5e49817a1951cc"
+    },
+    {
+      "path": "scripts/audit-native-goal-progress.mjs",
+      "sha256": "7241941909c4bb18b877c0b7b355134843d85ba2ef87ea17974ac8525fc973f5"
+    },
+    {
+      "path": "scripts/audit-native-learning-coverage.mjs",
+      "sha256": "1b05562f26dbd4da0c94227a1cbc0e9cc304369d756c6ae231d368f20bfe05ce"
+    },
+    {
+      "path": "scripts/audit-native-motor-catchup.mjs",
+      "sha256": "3d5563ceddd90f22b07347772aa1b27d300d66f68b4b642c3ab7265c425b8d31"
+    },
+    {
+      "path": "scripts/audit-native-motor-receipts.mjs",
+      "sha256": "666411a5dbf9bd19ea16dc3ef3a19f9360918f3d10512ee6ec1ce1916657bd8d"
+    },
+    {
+      "path": "scripts/audit-native-start-alignment.mjs",
+      "sha256": "682bc603cc91cedaea6c9ee598c9acda741ac73d71a75993da38026936e0f184"
+    },
+    {
+      "path": "scripts/audit-native-worker-freshness.mjs",
+      "sha256": "c97fddc7a4df3ed2a075492c671062fa4c3930c4cb3e46b2e17510565fff0089"
+    },
+    {
+      "path": "scripts/audit-original-native-models.mjs",
+      "sha256": "35fe972a60d5c8869f54eae552f91369e9afe5e7221e9df2e211951ef010b68e"
+    },
+    {
+      "path": "scripts/audit-real-rollout-duplication-v1.mjs",
+      "sha256": "7da6701a5c11004db345983bb79fe20422ebc1eca0f60af254db9faaa18e3148"
+    },
+    {
+      "path": "scripts/audit-recorded-runtime-continuity-v1.mjs",
+      "sha256": "edf233f9d6985bc1b1f2118238548f33f28ee10e2d003c3ffc77ab6e0e558c4a"
+    },
+    {
+      "path": "scripts/audit-stopped-minecraft-enclosure.mjs",
+      "sha256": "57e08a4744453c6a9dbe1f86afefc25ec0eb7337fb7e037d51556ee471610e5e"
+    },
+    {
+      "path": "scripts/benchmark-distributed-exact-sweep.mjs",
+      "sha256": "4314eeaa7118efc23fadb02298d43f9f476ae680f9b1f612ae0b4852978babba"
+    },
+    {
+      "path": "scripts/benchmark-native-attention.mjs",
+      "sha256": "f4543db5bad3747d3472498fa26219ab01a90f12195339353731e15111d0178c"
+    },
+    {
+      "path": "scripts/benchmark-native-learning.mjs",
+      "sha256": "bfa3f7df722c39d3ace81515c02aa707978478c774c2909d569ed401bf2f7a12"
+    },
+    {
+      "path": "scripts/build-multistage-evidence-demo-v1.mjs",
+      "sha256": "8ab47d1a8e579b46b9f9b5b914749cd15cf9f79cfe31fa3f21853ed1cd89b176"
+    },
+    {
+      "path": "scripts/build-recorded-prototype-demo-v1.mjs",
+      "sha256": "13f0dbddd43ec1b0face882dd67adf897b89fd964fa9689e52451b7e5457e8d9"
+    },
+    {
+      "path": "scripts/capture-clean-note-progression-live-v1.mjs",
+      "sha256": "bfad54bfc564c7faac5ef500306c55d1e11538720a65774fb291593046f3ff62"
+    },
+    {
+      "path": "scripts/capture-guided-note-events-v1.mjs",
+      "sha256": "775b154b1fa55fcf82e7cc81659257097d6a226846ca35adbe699c24e51f2ce1"
+    },
+    {
+      "path": "scripts/capture-two-stage-note-live-v1.mjs",
+      "sha256": "90e4150e77196bba1fa153dfaeca2bf776d9abe7541c0324c7539da308a58fb7"
+    },
+    {
+      "path": "scripts/check-minecraft-dig-port.mjs",
+      "sha256": "0a2c1ae980995a6825789e7c45c005193b2547f73afab2919886e75d6fb38496"
+    },
+    {
+      "path": "scripts/check-minecraft-entity-base-vision.mjs",
+      "sha256": "5c065fcf762a344871eb7e853410f6e49471147adbed74f9dfa1f5b415802152"
+    },
+    {
+      "path": "scripts/check-minecraft-fluid-vision.mjs",
+      "sha256": "ab04f9c756738af9950ba53d4e6eb062fde2b7a3cfc14f60497c88944e36b6d3"
+    },
+    {
+      "path": "scripts/check-minecraft-motor-catchup.mjs",
+      "sha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf"
+    },
+    {
+      "path": "scripts/check-minecraft-owned-physiology.mjs",
+      "sha256": "b43b4cbe4f01858cada1f762c86c313b5356d4d6f90f9424295071d1663a4311"
+    },
+    {
+      "path": "scripts/check-minecraft-passive-experience.mjs",
+      "sha256": "13d4a3accd476f83e8f796f4a9354a506871339c38f6a1498ec331568c8865ba"
+    },
+    {
+      "path": "scripts/check-minecraft-sensory-body.mjs",
+      "sha256": "b196cd95da297e9e6063b602b0bc9635f26ee073ab441660d5e3228c98980aa7"
+    },
+    {
+      "path": "scripts/check-minecraft-swim-port.mjs",
+      "sha256": "f8ec15444db2b9ccde432d68e25bb26f01244441567f111f0d8629e7a3fada0d"
+    },
+    {
+      "path": "scripts/check-minecraft-visible-pickup.mjs",
+      "sha256": "5576bb6570f2a5a7334b8bf904bf990e08a1be6acbec315bebdb8498de840b48"
+    },
+    {
+      "path": "scripts/check-native-live-restore.mjs",
+      "sha256": "d1d66d143544c6f0dd0d8b6c5ae2bd3daa0b321e3a7e0f101094b13655957b5b"
+    },
+    {
+      "path": "scripts/check-native-smoke-restore.mjs",
+      "sha256": "8e01f58c73546cab46ba1ce5e2cbac01f79d1d098039e1d0b4652e1e62549059"
+    },
+    {
+      "path": "scripts/compare-context-window-refresh.mjs",
+      "sha256": "254c21190a997be1d8e4e4e5b806eb3cc1d3c40d5f2e514eb676cb1fc07d0992"
+    },
+    {
+      "path": "scripts/compare-native-start-costs.mjs",
+      "sha256": "2f39b568154d0db0b60dfb14f18dd6303adfa5de4cade68a9d4cdb8169dc26b7"
+    },
+    {
+      "path": "scripts/compare-native-state-consumption.mjs",
+      "sha256": "1773699bc547b9240fb69344f102daa52c32e179471ea33dbc9ec580a1d6c37f"
+    },
+    {
+      "path": "scripts/compare-synthetic-calibration.mjs",
+      "sha256": "c5598487a8184701b525e0b9797ced2bacc4cb9c3863292e7d319f61cd1865a7"
+    },
+    {
+      "path": "scripts/compare-world-consumption.mjs",
+      "sha256": "d4d4f6980efdca532f1bf0d6ae4cb931ebdb3f3122ae4c2b43c6c59f10185425"
+    },
+    {
+      "path": "scripts/diagnose-conditioned-action-production-v1.mjs",
+      "sha256": "1471ebf1c577c86f1254f24daa926e83bac406ed23f455316b9b68e0c5185f13"
+    },
+    {
+      "path": "scripts/diagnose-counterbalanced-r1-commands-v1.mjs",
+      "sha256": "bf1eb1028de74abccfe7b62d286bc05e48192b2c57d9db5314c64994ea7b0aec"
+    },
+    {
+      "path": "scripts/diagnose-current-action-query-reuse-v1.mjs",
+      "sha256": "cd912585a5b35ab7f490dc149669ef403a60b62e537a32a35a9034563ca16d07"
+    },
+    {
+      "path": "scripts/diagnose-current-action-r2a-v1.mjs",
+      "sha256": "9a7285ebbf382a5eb29d63fdc5afc5f17fe349dec47add1460b20a7ce977c21b"
+    },
+    {
+      "path": "scripts/diagnose-current-action-r3-alignment-v1.mjs",
+      "sha256": "4a5dff90b0332c3b459d196a755cf9b4902956258a91731d5f346ab2f52410b7"
+    },
+    {
+      "path": "scripts/diagnose-distributed-r2a-formation-v1.mjs",
+      "sha256": "8157ae8223c0d65d305eba5bc616ef0e75e7babbbbc9b3c97926a9c8fe27e1c4"
+    },
+    {
+      "path": "scripts/diagnose-distributed-r2a-v2.mjs",
+      "sha256": "d8cd642b3dc3d849a1fbda70182384573a00d310fb4ea7ca793060c5c5c27099"
+    },
+    {
+      "path": "scripts/diagnose-merged-note-interventions-v1.mjs",
+      "sha256": "ebfcc3f4f263519e6580f736238e60ad0560009b176cf0c72dffb79cbb1c5515"
+    },
+    {
+      "path": "scripts/diagnose-note-condition-readout-v1.mjs",
+      "sha256": "a3bd31b14b01579dc57caf941109f1e82d679d69173cfc02a36bbcdc9d9206dc"
+    },
+    {
+      "path": "scripts/diagnose-perception.mjs",
+      "sha256": "6a9b5a8d5a7cad18941eaf110f17685710ef986e8268fa8def3027d88d09cd1f"
+    },
+    {
+      "path": "scripts/diagnose-physical-short-chain-v1.mjs",
+      "sha256": "4112cec5542d96a66198363971ba87a9d76c6928fc74530cf539161d6ea966e7"
+    },
+    {
+      "path": "scripts/diagnose-physical-terminal-sources-v1.mjs",
+      "sha256": "3c043e503aafd221476f34aed67cf573453df837e72778f7f2df4fc8e36b144b"
+    },
+    {
+      "path": "scripts/diagnose-r2a-action-boundary-v1.mjs",
+      "sha256": "07b802dbe95ce7b1422ab858f65721d341c3d25cc175b59593313dd746c9fbcd"
+    },
+    {
+      "path": "scripts/diagnose-r2a-terminal-only.mjs",
+      "sha256": "5f50109f93e4c606d463cdd70bc2bca3c6494719c3a31fa5416abfc01272d51d"
+    },
+    {
+      "path": "scripts/diagnose-recorded-retention.mjs",
+      "sha256": "1df421c0b2f530bf1a128c11098370677497a498177285930e2644d7b44826b9"
+    },
+    {
+      "path": "scripts/diagnose-single-action-boundary-v1.mjs",
+      "sha256": "cfc152da273d27dd8c1ddc674b6d02cf89bb3884a833b8c1b4d9e4900ecf08be"
+    },
+    {
+      "path": "scripts/erase-forked-native-experience.mjs",
+      "sha256": "a0cfebd6d9a40584538142d7cf7b733e1451645430a23627d2554812ed69dac6"
+    },
+    {
+      "path": "scripts/evaluate-capabilities.mjs",
+      "sha256": "16748ca5f365be60c2264500f5af3bc2a2006f9a181f3f3a6735545ea85d72a8"
+    },
+    {
+      "path": "scripts/evaluate-experience.mjs",
+      "sha256": "6f8b5af6e3a0204f859aeb416366db2051f5fa71f8232eb4b2432a35586a1d1f"
+    },
+    {
+      "path": "scripts/evaluate-minecraft-continuing.mjs",
+      "sha256": "c3fa1d3af968d4d9d405abf51038325f04f2828fd858712ae2a2fc345945452d"
+    },
+    {
+      "path": "scripts/evaluate-minecraft-experience.mjs",
+      "sha256": "e788712fafbf1edd83ecfb187eeac5a178e8816a44a57b6f44947bcc9d462e5c"
+    },
+    {
+      "path": "scripts/evaluate-minecraft-perception.mjs",
+      "sha256": "88d27605e283ad16a75916f2e0f8e47a59fb408d55dc3c1a69d694fa4858eb00"
+    },
+    {
+      "path": "scripts/evaluate-recorded-predictions.mjs",
+      "sha256": "97c20128fbf1e4ec7f7be34901bffaa1b23f6f962e679da4903d57a647ac5fc7"
+    },
+    {
+      "path": "scripts/evidence-journal.mjs",
+      "sha256": "b5d7acd7899f51b97db5b2504ad9e870beaa48b9f75c571a71082ce330bee7fb"
+    },
+    {
+      "path": "scripts/extend-measured-experience.mjs",
+      "sha256": "dea58291a2c3e9b2a421478862cbb43b52ecacaa0bf30ca4c034ff230b793897"
+    },
+    {
+      "path": "scripts/finalize-current-prototype-demo-v1.mjs",
+      "sha256": "c5e4f1eac8aea9dd20237754da43eef2bed28f1be58578fd6b8d3f5f201376a7"
+    },
+    {
+      "path": "scripts/finalize-two-stage-rebuild-v1.mjs",
+      "sha256": "3ca9213321185b307c32dac17d7c251e84a0ecd0d412a921f54e940db2308332"
+    },
+    {
+      "path": "scripts/fork-stopped-native-checkpoint.py",
+      "sha256": "32c5fe8f52160a1fdf3ec3aa0253472015b79ed945210b07e156ddde196b0fb6"
+    },
+    {
+      "path": "scripts/freeze-current-development-source-v1.mjs",
+      "sha256": "576c8f25c9d0fa19c89934497c3fa5b3489d613108886ab8a0612264a83c3f77"
+    },
+    {
+      "path": "scripts/freeze-native-actor.py",
+      "sha256": "e2a57fc1c886a878443e5d57921bd1fb39a99e1edec0295e5379625fd6540a76"
+    },
+    {
+      "path": "scripts/inspect-current-control-evidence-v1.mjs",
+      "sha256": "cd17ff1881bad4eef80b3f9bc00796cb311f12cc8cea7c5d13ec329656c9dc8c"
+    },
+    {
+      "path": "scripts/inspect-factor-reentry-v1.mjs",
+      "sha256": "cc31472c3bf7004412fbb92781ae1fbce48732126d83197b5ba945e1494de9c9"
+    },
+    {
+      "path": "scripts/inspect-neutral-physical-selection-v1.mjs",
+      "sha256": "11a6b1d89084d4ea6b9f54342aaef12805184b09f9d379190f2cccd2e4415c37"
+    },
+    {
+      "path": "scripts/inspect-neutral-r1-readout-v1.mjs",
+      "sha256": "a2a8aeb181e73de00381d54b82b389ca5831a5f3a8fc78af638a975f87492295"
+    },
+    {
+      "path": "scripts/inspect-observed-terminal-identity-v1.mjs",
+      "sha256": "a15e43ad4094e77934d872e118da462d08bc4b83c61d1f8499788a205048908a"
+    },
+    {
+      "path": "scripts/inspect-owned-control-progress-v1.mjs",
+      "sha256": "8e5c523fd915edca111256fac4f350053762b68a50a899d71fbe8f69ea404e1f"
+    },
+    {
+      "path": "scripts/inspect-real-condition-connectivity-v1.mjs",
+      "sha256": "da77746c0a6da2d6d3ce0bf7671ec14b40466084fc5da2a22eaf5e7241b1cadb"
+    },
+    {
+      "path": "scripts/inspect-real-look-rollout-v1.mjs",
+      "sha256": "63e3022d338ef6836805e0ca1889f4aa243446faa8ffe33d447ed584131fb05d"
+    },
+    {
+      "path": "scripts/inspect-real-note-r1-v1.mjs",
+      "sha256": "4317c2db798edc5d82417138acfa33f5a68924185fe2e2f39fe50c95ef3e9283"
+    },
+    {
+      "path": "scripts/measure-dashboard-state-p99.mjs",
+      "sha256": "0d45a9053af5c85de294b94176eefd1ad2943d3d76dd4d177a5645e277be2409"
+    },
+    {
+      "path": "scripts/measure-directed-transport-oracle-v1.mjs",
+      "sha256": "364c58d8139b443ac68add0fd9cf82a1a050acc3d5c8117ae4f4c5cc88eacd87"
+    },
+    {
+      "path": "scripts/measure-r1-qualification-reuse-v1.mjs",
+      "sha256": "5be01835828a92e80de9bcc7bf16236325f0e0bfcf3ddee1f76d84a43d87bd95"
+    },
+    {
+      "path": "scripts/migrate-stopped-native-session.mjs",
+      "sha256": "5d270461556d510cdf3374b5ff14754c0a7844ac660f3a62f4c3c396266994a4"
+    },
+    {
+      "path": "scripts/minecraft-body-connection.mjs",
+      "sha256": "eac71d12b91e3123f756c13c9918c3827d0aa224822ebb1dc50e0361e1c06ee9"
+    },
+    {
+      "path": "scripts/package-native-evidence.py",
+      "sha256": "64c98a7b4c4ff505d150b8b3267e12b02ebadec6ba9a4eff4e7bd18c17d7f836"
+    },
+    {
+      "path": "scripts/prepare-assessed-runtime-bundle-v1.mjs",
+      "sha256": "8321deafd0a40e889cbf3ef4d6bc49177fffca764d2455f198d975572a32be9b"
+    },
+    {
+      "path": "scripts/prepare-rescued-native-checkpoint.py",
+      "sha256": "b0dd58c8e8ba08e799bf79956cff03f0e8f16fa2e89c473b8386c629d4288db1"
+    },
+    {
+      "path": "scripts/profile-current-physical-query-v1.mjs",
+      "sha256": "7e09966956cd4f2581c7ac82a9545ecaf5581f0f921cc73c27a14a8bded9ed3a"
+    },
+    {
+      "path": "scripts/profile-native-continuous-replay.mjs",
+      "sha256": "7e8894b850559467df70fc143e07b7898624b2da124c15867c9f16b953ac5084"
+    },
+    {
+      "path": "scripts/profile-native-learning-replay.mjs",
+      "sha256": "d8455f0f367b1de73ce7b1e126c9d80df1c142491ad0aeacfbe2655616fe84d9"
+    },
+    {
+      "path": "scripts/profile-native-state-consumption.mjs",
+      "sha256": "5eca0c758353b0e563ea8bc652ee5577eb4ebfd17b113905f6a143be40075852"
+    },
+    {
+      "path": "scripts/profile-owned-node-v1.mjs",
+      "sha256": "2ad57c8eccf5e59ca1256c0db9d09593eb6af68cfafa53ece4cc1d8205759c0b"
+    },
+    {
+      "path": "scripts/profile-physical-metadata-reads-v1.mjs",
+      "sha256": "799f9a06faee12d58eb5f67ef1fea49ef4e1dab47f752dc4ddf8ec9f09fc9f70"
+    },
+    {
+      "path": "scripts/profile-recorded-planning.mjs",
+      "sha256": "8dc36f4eba995cfb352d51b2c6d624191162754228e349c24c59751fc9a58a88"
+    },
+    {
+      "path": "scripts/rebuild-minecraft-distributed-g6-r1-baseline-v1.mjs",
+      "sha256": "093313ca3ae1daa81618f9f354e10e25d953e9ee9049396e5a1880e82b7f7851"
+    },
+    {
+      "path": "scripts/rebuild-two-stage-note-experience-v1.mjs",
+      "sha256": "70ebfcab4985a583e127e2262f5db5f4e388ed61e48e9bb58037359e1f262702"
+    },
+    {
+      "path": "scripts/record-heldout-computation-stop-v1.mjs",
+      "sha256": "5f56596c903db8a221a14d0cf850c39911fc61fe90754d4c5afe6b0a66f33126"
+    },
+    {
+      "path": "scripts/recover-experience-journal.mjs",
+      "sha256": "4b5b67dcb3242972fe9305921b845e3c3525350596405aaa1fa6c9df77d3e63b"
+    },
+    {
+      "path": "scripts/register-stopped-native-evidence.py",
+      "sha256": "f50a425d76c91f4faf5e1b8d96ca85884913be52c7aab2f2b6327fe3be31e364"
+    },
+    {
+      "path": "scripts/replay-guided-note-events-v1.mjs",
+      "sha256": "57266ed429162a22720e9ab3fceb010fd40706a1c09f70e901c408bf6ce0445a"
+    },
+    {
+      "path": "scripts/replay-merged-note-foundation-v1.mjs",
+      "sha256": "f56d70a8768325450d05f5317b494915e62ad6f4a3bb3b62018a09c5252809a1"
+    },
+    {
+      "path": "scripts/reprocess-visual-experience.mjs",
+      "sha256": "b9bd84400b8a48e83e0c5f1f86abff05903e3e0ea833af80f16d43815beec66d"
+    },
+    {
+      "path": "scripts/run-capacity-probe-v1.mjs",
+      "sha256": "80630dbdc26236c2cf5f33ebbf7a91d55712646f80492a3d128d76f367b9704d"
+    },
+    {
+      "path": "scripts/run-current-grounded-minecraft-note-v1.mjs",
+      "sha256": "44551850105865e29cfb10c79a9a0e906e3e3d329c587270852252834d07dd93"
+    },
+    {
+      "path": "scripts/run-distributed-g5-neutral-control-v1.mjs",
+      "sha256": "81ba637c223cf51ec4d005a122beb0c2e57440aaf8ad73dc24715e528733d41a"
+    },
+    {
+      "path": "scripts/run-experience-body.mjs",
+      "sha256": "cac8352e72332e5f11a90b6206f1e3a83af6d4ff8e8f2dae48cc9394b1ce6e98"
+    },
+    {
+      "path": "scripts/run-minecraft-basic-action-loop-v1.mjs",
+      "sha256": "0b4d35f97371d4e689620261a5938b8921e7c71673b5f62b97b1dbb6a5bd352a"
+    },
+    {
+      "path": "scripts/run-minecraft-distributed-g6-continuous-capture-v1.mjs",
+      "sha256": "da2ec36fe535bb5d8535ee9ab667df9ec915e0cf18c974ead036ba5e1044d5b8"
+    },
+    {
+      "path": "scripts/run-minecraft-distributed-g6-live-v1.mjs",
+      "sha256": "7164cad5b3a72c7247d02ee9fc86d7bbd0c6f2f2e1b921b3f85f2423e5163dad"
+    },
+    {
+      "path": "scripts/run-minecraft-tests.mjs",
+      "sha256": "89969d3348ed9719fa39abe8d36dd1c7256e6a2f27c614b46b040ddc3139e64a"
+    },
+    {
+      "path": "scripts/run-next-stage-tests.mjs",
+      "sha256": "a2330f26aec3bf7d75c7f316c8b07acaa63e0bb00e84513c996f64a80a23967d"
+    },
+    {
+      "path": "scripts/run-prototype-tests.mjs",
+      "sha256": "653e0732e61e189d5375a1460fb3da10b3ab653d1b827d77184d265f45134803"
+    },
+    {
+      "path": "scripts/run-temporal-fidelity-probe-v1.mjs",
+      "sha256": "3a4c3e2d7d988da44fc3320a1bdc8a1e84e1050b874d40ccc89a7a7e9c08f7c6"
+    },
+    {
+      "path": "scripts/serve-recorded-prototype-demo-v1.mjs",
+      "sha256": "24011be1f626b25207d23dd9b130278fb13450658927146230cba8b4ced0e048"
+    },
+    {
+      "path": "scripts/summarize-heldout-control-log.mjs",
+      "sha256": "c782f92b511994913c8159fff1ff2975f5d11678768a065b17397236518c4c14"
+    },
+    {
+      "path": "scripts/test-audit-native-frame-state.mjs",
+      "sha256": "63ddc7df579fd5db324433ef44cb6de1ddd6a05ad29cc97ea85891fd1acf9a6a"
+    },
+    {
+      "path": "scripts/transplant-forked-native-learning.mjs",
+      "sha256": "031639acedca33cb5e42ee809c1d9b4949abf36cb3af6473b2392ab801a9aa07"
+    },
+    {
+      "path": "scripts/verify-recorded-prototype-demo-v1.mjs",
+      "sha256": "24ffc16a4e92130dc135baf9644fd086502ea53c370963106da455973624b350"
+    },
+    {
+      "path": "scripts/verify-rescued-session.mjs",
+      "sha256": "4226abf677d0002e250e64cd59b938a9ef1589d60fcd42ae5e304e28a9c6e4be"
+    },
+    {
+      "path": "src/action-contract.ts",
+      "sha256": "97152fd8ea4c521f28c1b3d33b66b0ec0762d3de728bc91cd53c0c09cee00cba"
+    },
+    {
+      "path": "src/adapters/minecraft/action-start.ts",
+      "sha256": "6d7bc0df3467cb4712885c44768a249b8765b6f6d000bcf9f026473cd57a0bcc"
+    },
+    {
+      "path": "src/adapters/minecraft/experience.ts",
+      "sha256": "cfd0abb7638da6750a920b81ed8274f3d1367b78606923c77d04a556ffd92f02"
+    },
+    {
+      "path": "src/adapters/minecraft/index.ts",
+      "sha256": "fa03c4456abd02225ca50ddcd9264558ba78eaaf52ff15a25fe0b0a9f1b39b64"
+    },
+    {
+      "path": "src/adapters/minecraft/optics.ts",
+      "sha256": "ff4323503cd3023dfc1dae2a9264dc208faddd15c0a7aca5c742204adee95458"
+    },
+    {
+      "path": "src/adapters/minecraft/retina.ts",
+      "sha256": "f41b9fd271589e3f0a796ca6ac224860a135dbeaf951c18b5960562d03e24e75"
+    },
+    {
+      "path": "src/adapters/minecraft/viewer.ts",
+      "sha256": "6e8669a9ebc803ce7840b515c717462e008be9074d15c66348bdfd22813383d9"
+    },
+    {
+      "path": "src/attention/attention-controller.ts",
+      "sha256": "52f1203f30c74269160b57764c22a5c6efa813a24c67474ddc4761f6671754b0"
+    },
+    {
+      "path": "src/attention/monitor.ts",
+      "sha256": "d08342ab3b6923c0054f7e7a1c7a33c38aa55186b895fd8bfc5e59b82cedc6f5"
+    },
+    {
+      "path": "src/attention/prediction-deviation.ts",
+      "sha256": "d01873a3a8aff449d28ec5b5421ad1ddba6125ff61024421fcf62812973556e1"
+    },
+    {
+      "path": "src/attention/types.ts",
+      "sha256": "1c6e83c9513de8869b780e063b71eb733ff400edcc0a92fc5412bf2d04d95699"
+    },
+    {
+      "path": "src/body.ts",
+      "sha256": "9e47fd6c9ec58e7e30575c55dbb189f91ef23c963d332d56a2966a5ef3726de2"
+    },
+    {
+      "path": "src/compute.ts",
+      "sha256": "d9ae0bc9e8916b600c21fde4cc81ae8ba07c02b357bac80a91bedb205f35178f"
+    },
+    {
+      "path": "src/contextual-readout.ts",
+      "sha256": "482de27013ec8730dd24c56eb2c8a9da54913fb33776a37b867a1f16413e206a"
+    },
+    {
+      "path": "src/contracts.ts",
+      "sha256": "66fc370405c888c24f81d7cf4877db7ef3949883b682480f869376cae344ef47"
+    },
+    {
+      "path": "src/control/active-trajectory.ts",
+      "sha256": "06ea3a5641847b63c380a14065601f4b48de8041eb5624de39aec79087434639"
+    },
+    {
+      "path": "src/control/contracts.ts",
+      "sha256": "41c83261449ea558a37a9f4c57e51abaa620b5bd12e262f4d6f811c0b11f1934"
+    },
+    {
+      "path": "src/control/controller.ts",
+      "sha256": "40a4813112308b661f723ff9e247012a34e49b371a654a1fca468a1e0a45c805"
+    },
+    {
+      "path": "src/control/field.ts",
+      "sha256": "b077d9fc10d922e90b2a69d2a369e2fd3566b254d2dd04e3f35d7023ff2d1398"
+    },
+    {
+      "path": "src/control/goal.ts",
+      "sha256": "8c9c1a1238b9d05fa32a31fe908285ec38731e64d6d3a8755fbf12a861e29e7a"
+    },
+    {
+      "path": "src/control/habit.ts",
+      "sha256": "d9a6e82d7da9145585a3bb67d0ac6e126be56975e12dd99910f651ea1bf92b4a"
+    },
+    {
+      "path": "src/control/interoception.ts",
+      "sha256": "990b01da7185fafb42c8bdbe10d69b87e061f4e0a4eccc5bc9aa84d296192138"
+    },
+    {
+      "path": "src/control/meta-evidence.ts",
+      "sha256": "4abcb0b440e61ae20022555a217e23d0f4b8700605eb6100d0b8441d1c608a93"
+    },
+    {
+      "path": "src/control/short-chain-paths.ts",
+      "sha256": "8190e709d1934893b9c59a6c660337d5844714a4ccf3a90f73fd9d07cf360585"
+    },
+    {
+      "path": "src/control/workspace.ts",
+      "sha256": "d5d66ef6790e39c1c6b82a217e801092a861102a7e9f3b298ff9812422b1b76f"
+    },
+    {
+      "path": "src/core/compatibility.ts",
+      "sha256": "80875767ca7059868240e0f2be876f7fa999fd97a88755469e295f4aae6198e6"
+    },
+    {
+      "path": "src/core/contracts.ts",
+      "sha256": "2c2573504616a8bc1d442e344b5ce3efee32b26e2611c1d96298550a33b9848a"
+    },
+    {
+      "path": "src/core/events/contracts.ts",
+      "sha256": "834a72a43f54aae5f498a2c880799ab428e6f59b8a36f7153f5f09149da5fb15"
+    },
+    {
+      "path": "src/core/learning/attractor-public-dictionary.ts",
+      "sha256": "bce32439cc819d008095809abfb36f251989c387be5cf60ec9034bcf43089214"
+    },
+    {
+      "path": "src/core/learning/consolidation-replay.ts",
+      "sha256": "aeac5c0db51ee93a5417c6b2797f27e6d0f2bd423f57d6f6e2bde3d4256106be"
+    },
+    {
+      "path": "src/core/learning/distributed-r1-contracts.ts",
+      "sha256": "00b148ef4cfdc305de56fba49bd5eeeb443b4693e9d60709a438653d4c2fddee"
+    },
+    {
+      "path": "src/core/learning/distributed-r1.ts",
+      "sha256": "5c00ad3503c92a7ce5adfbbf28b4b6006e66cb4889e0e5afba109a61b38600a7"
+    },
+    {
+      "path": "src/core/learning/distributed-r2-contracts.ts",
+      "sha256": "eac9ec32d276867e4b1fd4a61ec7c63f289b152e54a6160cb1f6e7dc376863c8"
+    },
+    {
+      "path": "src/core/learning/distributed-r2.ts",
+      "sha256": "0cf0cc3a7d988f61f9e3bfe2e376491d4454d9ec7f66f17d2f4e7ccd076e3f87"
+    },
+    {
+      "path": "src/core/learning/distributed-r2a-physical-contracts.ts",
+      "sha256": "5602aa065ddc0d11bcc0df89a33f1dd2a29a22cb6be1ed8d05e281a28c9004ae"
+    },
+    {
+      "path": "src/core/learning/distributed-r2a-physical.ts",
+      "sha256": "d61cd60d109ec33e751c04e6e23105e9ca19fc2e1435121974763a56226614bc"
+    },
+    {
+      "path": "src/core/learning/distributed-r2a.ts",
+      "sha256": "a4dc14c9d93883b3671fad319ef0709bb16e171eb2eadd04ae815232bfa1ada2"
+    },
+    {
+      "path": "src/core/learning/intervention-agenda.ts",
+      "sha256": "5475a109c3989d829599ccededdcd6144409d44c63132a1b9a315595c3ad28f7"
+    },
+    {
+      "path": "src/core/learning/intervention-pair-collector.ts",
+      "sha256": "c7e83e9e17d534acd0b50af314e4d6448e47f86a4aa26a7ef9467257681b053c"
+    },
+    {
+      "path": "src/core/learning/memory-timescales.ts",
+      "sha256": "9da3d7d800af07987b7eca5f6f82a929a236ffb94610c576d6ad320310beb012"
+    },
+    {
+      "path": "src/core/learning/r2a-action-input-boundary.ts",
+      "sha256": "edd8b8175282257d9df23412e1d1a8cec825995f1133e50bc1f619ffeb271939"
+    },
+    {
+      "path": "src/core/learning/self-organizing-afferent.ts",
+      "sha256": "a52754e9b670b7a57b775fe41410ae4e75b1148f544926b06d1eed25caca4655"
+    },
+    {
+      "path": "src/core/learning/sparse-interlayer-projection.ts",
+      "sha256": "92db52ca51fe33d74c468ea0e1f1e0eacd89e5cae883f50b492962dd7b582cf2"
+    },
+    {
+      "path": "src/core/physics/distributed-hierarchical-timescale-owner-v1.ts",
+      "sha256": "de6ddad3649d80174567556493f2504fe2da63b8d598ef4df2920c168e367e88"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-probe-parallel.ts",
+      "sha256": "9710e9d9969c25019b941af3779059a1eb3ff4aaebfb1a308024fbd9144a462d"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-recovery-v2.ts",
+      "sha256": "df5594bd20b7bae8e79b5352d6d02b15eb83ab4eda555835d2a22b51f177c562"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-timescale-adapter-v2.ts",
+      "sha256": "b11fb18fed96940ab42da285b2207a00559476e9121a19c1b240c5941944d5ae"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-timescale-protocol-v2.ts",
+      "sha256": "1be90a1ddb29076182ab633e92d6463473d29b522e9de4461c28ab69caa44000"
+    },
+    {
+      "path": "src/core/physics/distributed-medium-timescale-state-v2.ts",
+      "sha256": "60a79d183de5ee26ecd445aaf4db5b0a21a6d97cba2295d118da0932b05daa88"
+    },
+    {
+      "path": "src/core/physics/distributed-physical-contracts.ts",
+      "sha256": "8c0337661bfae6baa2d4aac5d490ac519c719f06a692ba3a5f26d66f210f3763"
+    },
+    {
+      "path": "src/core/physics/distributed-physical-medium.ts",
+      "sha256": "b531a8d142053411627f1b3f6bafb96aa0574fa1e8050b005a6f4aabbfa78ee0"
+    },
+    {
+      "path": "src/core/physics/distributed-physical-structure-scanner.ts",
+      "sha256": "42953b4434130a147903f754b379517c8fc75996cb3bf78343ec33f28e8c2c13"
+    },
+    {
+      "path": "src/core/physics/distributed-snapshot-transfer.ts",
+      "sha256": "72d471e295e459f47bbb8af5d5e4935db090867489cce6ca3cb0177d787f30cb"
+    },
+    {
+      "path": "src/core/physics/runtime-measured-salience-bridge-v1.ts",
+      "sha256": "dab3a5088cf4f1c885f4df8f8e6a15b429d12a9f8d8f630c2e4dc3c0f42b0138"
+    },
+    {
+      "path": "src/core/prediction/distributed-prediction-clone-parallel.ts",
+      "sha256": "4cbddedf00ce718eddd181ee7342540764e757b0cbd39883e6d1bd5c5a560a45"
+    },
+    {
+      "path": "src/core/prediction/distributed-prediction-clone.ts",
+      "sha256": "81d147b19411be3d870af7331f3e10033001008532342853c2a4a213e1620174"
+    },
+    {
+      "path": "src/core/prediction/distributed-reasoning-adapter.ts",
+      "sha256": "212c01eb13ed015d4a500033a2aac9292a4c9b1ecbc9d5c9e9f0391bbf664124"
+    },
+    {
+      "path": "src/core/prediction/distributed-reasoning-contracts.ts",
+      "sha256": "21c58695e9071cc86528b69c400179d6815993d7f077a8e5cd83a99fb9bc763c"
+    },
+    {
+      "path": "src/core/prediction/physical-short-chain.ts",
+      "sha256": "7f6181e693a557bb48bed4dd303814af898b7cdee5c64dd3bb282837d753977f"
+    },
+    {
+      "path": "src/core/random.ts",
+      "sha256": "07fa4ef22409f86058cb9168d21e50612fd16d7df0af55c4596a36d9e81fd3e9"
+    },
+    {
+      "path": "src/core/vector.ts",
+      "sha256": "a3a4cbf259bb84e43a038ad9419f70797566a17e47438ea674e642136d9844b3"
+    },
+    {
+      "path": "src/dashboard.ts",
+      "sha256": "4361ce6e65bca45ea3c03b95f9e6a82074b7fbad39fe2dcdb0f35288a44659d2"
+    },
+    {
+      "path": "src/distributed-hierarchical-memory.ts",
+      "sha256": "c2024d14b50eef0b6f0a1962c24f5b10fc80662be1022e55a7f13a13fc7cdb7e"
+    },
+    {
+      "path": "src/evaluation/capacity-probe-v1.ts",
+      "sha256": "42b161dae89788d998ec4360bc5b06211c678082968ba3a7a4409b4c88c8f865"
+    },
+    {
+      "path": "src/evaluation/distributed-g5-neutral-control-v1.ts",
+      "sha256": "6fd0265c906d5c81157e64e7bf2504f4702ac16ebd4d2505485b2a3947f0c0f5"
+    },
+    {
+      "path": "src/evaluation/minecraft-basic-action-loop-v1.ts",
+      "sha256": "3337040c05b9c7bea585af6adf136dabcb36db54565a65509d7bb6c54f2e4837"
+    },
+    {
+      "path": "src/evaluation/minecraft-distributed-g6-continuous-capture-v1.ts",
+      "sha256": "61b719f7a58a6d705734aaef6799d3f9cd09f2f2caa848a177aa2ee720c7189c"
+    },
+    {
+      "path": "src/evaluation/minecraft-distributed-g6-live-v1.ts",
+      "sha256": "70f06a61938b2199a0bafa022a6a8f541be5d86d9f755372f5d312f1f6ef5fe5"
+    },
+    {
+      "path": "src/evaluation/minecraft-note-fixture-v1.ts",
+      "sha256": "1972d573203788a867223f3f386f5d99ccdbc20099463c935302852a2666af4b"
+    },
+    {
+      "path": "src/evaluation/note-progression-test-contract.ts",
+      "sha256": "43c23002d0262ca147e7b9d2c71ae3a9ba1a61461093317eac99e5bffdc7e60a"
+    },
+    {
+      "path": "src/evaluation/rebuild-minecraft-distributed-g6-r1-baseline-v1.ts",
+      "sha256": "5048ae50b4c45b55221b8caf94bbe4bac4391a996131f46cae5ef470b08cea70"
+    },
+    {
+      "path": "src/evaluation/temporal-fidelity-probe-v1.ts",
+      "sha256": "ae66d48d9d12438b6a7d5f36cd032b18ea0488f16fcea03592e8978c543ffc48"
+    },
+    {
+      "path": "src/events.ts",
+      "sha256": "ccfda4bff2eabb1716f833d2975d181e8e95b12d8f023474f996df6dfe4844a5"
+    },
+    {
+      "path": "src/evidence-writer.ts",
+      "sha256": "b6e3f00902c278ea890d227fdb30b3f76dd79e18c6d24fa1f79cc534f4fc304d"
+    },
+    {
+      "path": "src/experience-agent.ts",
+      "sha256": "ce77a23d561348e677e14979590d2ece7d5532286afcce425a0fa3c714d98b53"
+    },
+    {
+      "path": "src/experience-frame-flow.ts",
+      "sha256": "e2b8a2a79898894a2152733579e7fc2477d09e079196c80762a8c8e1d658a18b"
+    },
+    {
+      "path": "src/experience-intervals.ts",
+      "sha256": "5a64209a2b2847cb3daa581ef90324d8e5859d636fe0576d458aa8cf1cdee0c6"
+    },
+    {
+      "path": "src/experience-ledger.ts",
+      "sha256": "503d8e3f8913093abaa3f00ee6fef0c70cac82bcae26d3619d6f671590a706f0"
+    },
+    {
+      "path": "src/experience-live-state.ts",
+      "sha256": "6ccfe29989f81ad89f326b65b9d26f87e50c19434078524dd3428183501a49ab"
+    },
+    {
+      "path": "src/experience-medium.ts",
+      "sha256": "90872fbbb480b075c40cdf23e6c289c05d8edded6865d0c2fefad245aff58892"
+    },
+    {
+      "path": "src/experience-sealed-evidence.ts",
+      "sha256": "23999ada75048c42b04726f8f3ef4bb6cd06ac2567ce141b5926fb0a06bb62f9"
+    },
+    {
+      "path": "src/experience-session.ts",
+      "sha256": "946a0c81b80db8d0adb71ab8c87fbfc437483bf8dcdcbd830ccb36c511192199"
+    },
+    {
+      "path": "src/experience-snapshot-contract.ts",
+      "sha256": "c0c3a46b426ca110b76cd1be27a870df8d15b16ff8745fa160a53c9fa34ba114"
+    },
+    {
+      "path": "src/experience-timed-readout.ts",
+      "sha256": "40c2475a876101f58b1e3d5d42da91a1017b7cca7bea9ca54a6fa221f411dd93"
+    },
+    {
+      "path": "src/experience-world.ts",
+      "sha256": "865554682343497f864bfd8460b4acbd198bc4f5c5576fd0179bfde9d9499f83"
+    },
+    {
+      "path": "src/immutable-evidence.ts",
+      "sha256": "6eae9a615321d24c63de9fd6f64f4c0d213d1f29c94e4d16516d2d40630e5adf"
+    },
+    {
+      "path": "src/learned-affordances.ts",
+      "sha256": "ee74970719ce405c83452f737becf2888988741710718c1e3b0e037694ef029b"
+    },
+    {
+      "path": "src/main.ts",
+      "sha256": "9f5ed2737f56c9369c2808fdf6b93f8a13f9e84f7fa7e091802faf4340940cbf"
+    },
+    {
+      "path": "src/numeric-ranges.ts",
+      "sha256": "e693bcbccad0f5554d7bc4ad0c472388e5895697955517299459cc903b563925"
+    },
+    {
+      "path": "src/passive-experience.ts",
+      "sha256": "8491a8063daecd3bc3660fd6e196a51e11c5f3e9e3973b4f9293955ca8bef565"
+    },
+    {
+      "path": "src/perception.ts",
+      "sha256": "43ac450cb7b8ff99471dcd30c1296447f18b4d5d7fd18034d9e09bdd047481fc"
+    },
+    {
+      "path": "src/prototype.ts",
+      "sha256": "d7e3fd5e93503179cf285178826d43a648474ef6b0418eed82360bdeb29f554c"
+    },
+    {
+      "path": "src/public-context.ts",
+      "sha256": "7d1389640b2dd36f17696add932e24a86f996fd93c9c0c36d730b4bfeff18c17"
+    },
+    {
+      "path": "src/runtime.ts",
+      "sha256": "23b73139a4397053758f6816cfe30c7f8cfab55978591dae5d999280ec5d1ec6"
+    },
+    {
+      "path": "src/services.ts",
+      "sha256": "0e511b91189089db2e1e9304b96354c295943016da081f6fd76789acb7737cf1"
+    },
+    {
+      "path": "src/stall-watchdog.ts",
+      "sha256": "8e570df3a8e5deab94dbcf435721e82f3fa1184cb49ceba741b988b3b3eaf1c5"
+    },
+    {
+      "path": "src/util-stream.ts",
+      "sha256": "3a6c3035ac73d2a203ba3129c2c3bfea674048a40f4bd97c196e7fa98f4b91dc"
+    },
+    {
+      "path": "src/util.ts",
+      "sha256": "9d4611835cb534699d2eeecd47217a709795c65050ec186faffb55b5baa33da5"
+    },
+    {
+      "path": "src/viewer.mjs",
+      "sha256": "cf960a9bf47483eb93c08ef035003cc061ec9fab5c7e2f78bf0629a0989025d7"
+    },
+    {
+      "path": "src/worker.ts",
+      "sha256": "2b6817fdfa21f5bd4f456ecb755ceef8c53d029c0ddc0517e950a7c546b37b00"
+    },
+    {
+      "path": "test/action-contract.test.ts",
+      "sha256": "b99228b07230b65fcefcedc0da48d1a594d665e3738fb5c82e8845c4c2659234"
+    },
+    {
+      "path": "test/action-offer-observation-envelope.test.ts",
+      "sha256": "aec91613e5cc87281333b96f934fcd777d725407f287c9f829011ba1d5bfa3c5"
+    },
+    {
+      "path": "test/action-start.test.ts",
+      "sha256": "62e4c29b51b8c280eb3245fb6020eb6826a49fe9846ffe150402c0f8aadfce37"
+    },
+    {
+      "path": "test/active-control-trajectory.test.ts",
+      "sha256": "8c30fbcada29b8ebb26aa0a298dd6673ef21a472d77099643dc22e466e8670ee"
+    },
+    {
+      "path": "test/afferent-event-outcome-scope.test.ts",
+      "sha256": "e3a72abeb31fe88871d331df7b5becff03867131316a858800fe3ddd22372694"
+    },
+    {
+      "path": "test/afferent-physical-order-not-hash.test.ts",
+      "sha256": "a12c8fe9dc3855a23873273b48706543740ab3afb9aadb5a178ddcdd2bf37e33"
+    },
+    {
+      "path": "test/affordance-event-expression.test.ts",
+      "sha256": "a9bed8b0f3f22cc26bb77e0e5ce9366217c8907c4bd3a967f44b94190eb052d4"
+    },
+    {
+      "path": "test/attention.test.ts",
+      "sha256": "ca93c946443a0c89229f429b4edc450746dd10e65e8699266d873391ad7d040a"
+    },
+    {
+      "path": "test/block-optics.test.ts",
+      "sha256": "d946890bf0f23ca2655ce10d0f05e8e36521467d4a58fb471ac950a92beadfc9"
+    },
+    {
+      "path": "test/body-action-requirements.test.ts",
+      "sha256": "3a22bba64543b665671057dcee259e4815b8d245c098601b46545d21e9a5064c"
+    },
+    {
+      "path": "test/body-motor-window.test.ts",
+      "sha256": "723912e387719e240c37c7de504912354290269e5fd558ba3f5448aba688c40a"
+    },
+    {
+      "path": "test/canonical-stream.test.ts",
+      "sha256": "a05a66cbdfaa07a818e269d27dc09417baf95f37db10a875d937bcded70c99cc"
+    },
+    {
+      "path": "test/compatibility-documentation.test.ts",
+      "sha256": "84e6e9207f4c9e72cb67559da4c69596e9e52c8bcb1510c88606166952164e9f"
+    },
+    {
+      "path": "test/compute-timescale-v4-bridge.test.ts",
+      "sha256": "3eb44ebfbb15b84e1c7511654929168d479f60933a37a7a8854e3e300fe7fdbb"
+    },
+    {
+      "path": "test/contextual-support-domain.test.ts",
+      "sha256": "f668afbf99ac6d1f3e8de482128d8f5458d8e2068fb315a07620043d7a3e73e8"
+    },
+    {
+      "path": "test/control-field.test.ts",
+      "sha256": "1e69218a60b8e879985cedb7609d50c5090cf080723764cf70957616f9a5165d"
+    },
+    {
+      "path": "test/control-habit-persistence.test.ts",
+      "sha256": "52484eca8562568f1277eadd7e9807f242a59ffbb353648c7ed8a24b4fd1dcfe"
+    },
+    {
+      "path": "test/control-habit.test.ts",
+      "sha256": "dd9477c8308a82bced6dc334dd6ec417e2a47d380b779e50054212bcf27d6438"
+    },
+    {
+      "path": "test/control-prediction-audit-retention.test.ts",
+      "sha256": "5748d196f857832c4091e3e9a7b9302922c1526de7930a0cc61c217d2ba1f6b2"
+    },
+    {
+      "path": "test/control-transition-evidence-refresh.test.ts",
+      "sha256": "c1a9f9d893aeb7d2c862f3e37d590d3f59991a1762fa08dcad972f9689b32b46"
+    },
+    {
+      "path": "test/control-workspace.test.ts",
+      "sha256": "c5bae88d871a3267a56ae5401f1b4484fd6a650340514209820c4e6665cfc8a8"
+    },
+    {
+      "path": "test/current-action-r3-alignment.test.ts",
+      "sha256": "7b88b8fa9175bb4d28ce9f150c8cc1932eed180436c01fd16021f1940e05ca15"
+    },
+    {
+      "path": "test/dashboard-bounded-payload.test.ts",
+      "sha256": "573303efd5d4d698426d1b940dfa78778eea98347b0f6eb4b931142f2c972668"
+    },
+    {
+      "path": "test/dashboard-restored-snapshot-p99.test.ts",
+      "sha256": "35bd16526e87baef2f4911d0a632006e3468674bb7425044f9497fc36cc6ed7a"
+    },
+    {
+      "path": "test/design-001-interoception.test.ts",
+      "sha256": "738187ea9ff145b3cbef5823c63d3f11dac99cc8b90550a1c7f5c66d032fb99f"
+    },
+    {
+      "path": "test/design-001-meta-evidence.test.ts",
+      "sha256": "5b08881df179c2477fd6c6af76dace452e03f6229e9a084590fed5425897b9ff"
+    },
+    {
+      "path": "test/design-002-consolidation-replay.test.ts",
+      "sha256": "02fb6e695f80770e64d016303d101fd545875d083e35fd975494cf42a0df3ccd"
+    },
+    {
+      "path": "test/design-002-medium-recovery.test.ts",
+      "sha256": "b896da673404583d165abc5682794c77ac08c29723e4ac41ca14a807e838dc5d"
+    },
+    {
+      "path": "test/design-002-production-replay.test.ts",
+      "sha256": "883d57ac81209ea8e38c13cf6f60fada68faaee13c4972e85838e50c25d74d8b"
+    },
+    {
+      "path": "test/design-002-runtime-encoding-gain.test.ts",
+      "sha256": "79c342aff955bc3078229991208f3158cbbf4c460ca059a1c62e2326975cea59"
+    },
+    {
+      "path": "test/design-002-timescale-adapter.test.ts",
+      "sha256": "dfc2b9b2788d47f76baccf7d44b72d39a20757d1836325d22119665de234087c"
+    },
+    {
+      "path": "test/design-002-timescale-law.test.ts",
+      "sha256": "6de92abaaaf8cdaf0d6aef5b28202153c6aa82c5a0d3c1f75a4289d626d3acfd"
+    },
+    {
+      "path": "test/design-002-timescale-protocol.test.ts",
+      "sha256": "621716011d7a70476b96739ee2e8d54937779480c31eb4be75f78f32f62703ca"
+    },
+    {
+      "path": "test/design-002-timescale-state.test.ts",
+      "sha256": "b39def8483b6fc580cdd1642c0923e398619e2644470b5b11084cef13d496683"
+    },
+    {
+      "path": "test/design-003a-capacity-probe.test.ts",
+      "sha256": "45b74da75f408f4c953de456125af8ce04ed7fbb3c4ee50dad17ed69d68c6146"
+    },
+    {
+      "path": "test/design-006-temporal-fidelity.test.ts",
+      "sha256": "7bcf863dd7e10d8e2098be2d07b8bf73a5fc08d90344c00f9e35821c7384b26e"
+    },
+    {
+      "path": "test/dig-action-window.test.ts",
+      "sha256": "bec4607dfc4e53e74ce10a735d4b962f82bccd60814a0f0beac6f400ff44e9e8"
+    },
+    {
+      "path": "test/directed-population-optimization.test.ts",
+      "sha256": "11189cec273eabfc31d843221896f4179a6097b4abc7744444200622934df042"
+    },
+    {
+      "path": "test/distributed-afferent-readout.test.ts",
+      "sha256": "8b8a345747a354396d31a04a5a1cfefc7d3b900cd5e78108a8fe826c165c2e6b"
+    },
+    {
+      "path": "test/distributed-anonymous-physical-structure-scanner.test.ts",
+      "sha256": "017019bb0e3dae1adca673708831cc9e70613d07749e3128cf6ad566eb83a499"
+    },
+    {
+      "path": "test/distributed-assembly-residence.test.ts",
+      "sha256": "804d356801a071aed483a25aecd2f1cbdbd879e8b6ab889eb68defb99f340712"
+    },
+    {
+      "path": "test/distributed-attractor-local-domain.test.ts",
+      "sha256": "65968b2be87c8ced38fd68bc69e9d249d161cd499dc7311faf36eeb3c6c5c651"
+    },
+    {
+      "path": "test/distributed-coactivation-assembly-readout.test.ts",
+      "sha256": "080ebadfd5c3eb6b8d495328a87d45a559b1bc6f8cad1ff98099657c2f7d9e1f"
+    },
+    {
+      "path": "test/distributed-conditioned-probe.test.ts",
+      "sha256": "f0273379f155564fa7ab4e857e2eb32124d7c1191319a84b68bc92a6d684ad23"
+    },
+    {
+      "path": "test/distributed-control-fixtures.ts",
+      "sha256": "94dc43bf619fa544e422b7a27890b1509d5d714c11fc8c71857d73ed114112c6"
+    },
+    {
+      "path": "test/distributed-directed-net-flux.test.ts",
+      "sha256": "5c43ddf89cc4b691181a7f1fa14cdc79b8184f102f56a81652ba18db16a231d5"
+    },
+    {
+      "path": "test/distributed-directed-plasticity-branching.test.ts",
+      "sha256": "c8cc5cf81308ce907df9a54203a9223724e262e196cea58b1ed9d6586323fcb9"
+    },
+    {
+      "path": "test/distributed-field-sweep-timescale.test.ts",
+      "sha256": "7cc71c964a5ad8bbc7482da8c6dafea0c0eda977a438b9d954d0c5c33b590c9e"
+    },
+    {
+      "path": "test/distributed-footprint-liveness.test.ts",
+      "sha256": "d8e4d5a1438f7b9fee56c4bb080709f585c94a2138f06b5f8790ded23d9da7b7"
+    },
+    {
+      "path": "test/distributed-g5-neutral-control.test.ts",
+      "sha256": "a56a4529028af74a6d83c341d931b66b5d33a7a263c35e850beba143cac6beaa"
+    },
+    {
+      "path": "test/distributed-g6-baseline-provenance.test.ts",
+      "sha256": "5ecd36d36f470e7ed1b21e5a4a76ff0aef3ee5403b6ede8080256553d9c2ff29"
+    },
+    {
+      "path": "test/distributed-g6-gate-identity.test.ts",
+      "sha256": "9a5c9eabeb4e1b6f47447951c0cd8d468c6eb93b8629b1618f73b3caf3415ed9"
+    },
+    {
+      "path": "test/distributed-g6-r1-rebuild.test.ts",
+      "sha256": "aad74c8d418509b345a3f7298c11a0bbff2f75e4969b1be56be3d885db7c71ee"
+    },
+    {
+      "path": "test/distributed-goal-readout-diagnostics.test.ts",
+      "sha256": "b3710870d3821a43bdbcb3a126e827c29192853083d232e0a8e1af239c86c6c6"
+    },
+    {
+      "path": "test/distributed-hierarchical-memory-production-integration.test.ts",
+      "sha256": "053c8bfb60a24c90f1937efe1abf4a3e4ec10d5b6a5af7cc5a68ae4a3748b2e8"
+    },
+    {
+      "path": "test/distributed-hierarchical-memory-v4-timescale.test.ts",
+      "sha256": "a2435b544b57c44977d2686c45864ef6eaa86b634086fb3cba2f21e3ccc39ebe"
+    },
+    {
+      "path": "test/distributed-hierarchical-timescale-owner.test.ts",
+      "sha256": "34ea3579f06c99b491037a7328b00fa30efad4cd38f13bfbfa9a799d4d32e4d2"
+    },
+    {
+      "path": "test/distributed-local-excitation-isolation.test.ts",
+      "sha256": "fe54c7a89ceb3b0f3ba2bef70c6c9260dd92a140d00e7e1f212c3708ff8a7460"
+    },
+    {
+      "path": "test/distributed-medium-architecture-gate.test.ts",
+      "sha256": "bd9e5600fb5589c56d20cba02425e3d087d87d57bd3f9a36d21b3e828929681c"
+    },
+    {
+      "path": "test/distributed-medium-dynamics-gate.test.ts",
+      "sha256": "90845af278765b66c2a22f9124f5d6f4ecd8226cf943e539f449d8925859bb9a"
+    },
+    {
+      "path": "test/distributed-medium-probe-parallel.test.ts",
+      "sha256": "e47b84086d12284b340d3cd0525e685b51bca710ec639f566147b45eb9c3d516"
+    },
+    {
+      "path": "test/distributed-native-predict-candidate-readout.test.ts",
+      "sha256": "8b7df46613563d12ded49b46285c7c159e475956504dc81f1fd0267d2c72206d"
+    },
+    {
+      "path": "test/distributed-novelty-capacity.test.ts",
+      "sha256": "a5ccee786a4b37d2f32ce5b1e7d574e104807291e90c933e92c2a03accdd2b55"
+    },
+    {
+      "path": "test/distributed-passive-assembly-continuation.test.ts",
+      "sha256": "f9288e0983fe7df0227da93c6cd6f4e55ad1300e36e21ed42aeeb12536b33173"
+    },
+    {
+      "path": "test/distributed-physical-medium.test.ts",
+      "sha256": "693410f959f478a03cdaf7fd4307697e6ad13db3201e8f213f24f0f4b42a547f"
+    },
+    {
+      "path": "test/distributed-physical-semantics-no-approximation.test.ts",
+      "sha256": "2994ec499ee7822db3459e5249a2f23f4bd6b983c70fc70fd58c27d132dd8503"
+    },
+    {
+      "path": "test/distributed-physical-two-step-control.red.test.ts",
+      "sha256": "cce43f96375f46f4adda61e872a725d0d2b616bb228d95731e26b086ec4b88b9"
+    },
+    {
+      "path": "test/distributed-prediction-clone-gate.test.ts",
+      "sha256": "c3a39e451c2295fc447f10963b231d540fc4dc7af7ebc493126901ff88dd522a"
+    },
+    {
+      "path": "test/distributed-prediction-clone-parallel.test.ts",
+      "sha256": "f30d759e9ccc1afe62f84f135ef068d08b0da3c6aade6e7cce4f1ed9fd1b7b55"
+    },
+    {
+      "path": "test/distributed-prediction-clone.test.ts",
+      "sha256": "c340dfb26093d94920e52f68b9d90d6a454b315c1baa7964648423e6daac4cc2"
+    },
+    {
+      "path": "test/distributed-prediction-current-binding.test.ts",
+      "sha256": "655f0cdd5d8e520e38036909ad40a3f02286297391b21853abd9e227840feb9c"
+    },
+    {
+      "path": "test/distributed-r1-contrast-gate.test.ts",
+      "sha256": "a52a9da140be7e71af5ad2b62e39a0c3f9ba9f1ec91ca246fd4212416be508bb"
+    },
+    {
+      "path": "test/distributed-r2a-checkpoint-index-cache.test.ts",
+      "sha256": "4b6ab186134e52f1228fd71f4bd40a726a1908d58776345c7c87da9e8264d80b"
+    },
+    {
+      "path": "test/distributed-r2a-consolidation-batch.test.ts",
+      "sha256": "c0098c5db9185e90a43f9ba6dc91a89748d4508744f74d5d1e4938c9146923b5"
+    },
+    {
+      "path": "test/distributed-r2a-intervention-performance.test.ts",
+      "sha256": "9f4690512a652816ba6b350570cc33d539a746adb74821a74e785aa0b44ea7c2"
+    },
+    {
+      "path": "test/distributed-r2a-matched-contrast-cohort.test.ts",
+      "sha256": "36a1c37461afa5285362cd9dc870aae24eb8648428656cada2c8ed83d6416d93"
+    },
+    {
+      "path": "test/distributed-r2a-physical-v2.red.test.ts",
+      "sha256": "e1b6d8e6e961d6fb82f0ef296502e46bc4a5c88bde1c6284c509460759db6d96"
+    },
+    {
+      "path": "test/distributed-r2a-query-cache.test.ts",
+      "sha256": "818e87058a4bdc861d6dea6e48ca3d8d3703c2cccd8f86e3ad042f9c3e1dcff3"
+    },
+    {
+      "path": "test/distributed-r2a-weighted-downstream.test.ts",
+      "sha256": "e62f46fcd4d1105aeac27930f4a89ec67d1396592716cb9e17beac3e05699ff4"
+    },
+    {
+      "path": "test/distributed-runtime-v1-retirement.test.ts",
+      "sha256": "211ea2aa9353ce4a90fae54c907c2fe2aa4c9d6271e3532bed469bf14518cc70"
+    },
+    {
+      "path": "test/distributed-snapshot-transfer.test.ts",
+      "sha256": "f3a00eb715276ea8cddaeb7bb9ca7d1a9a9d990cc4395d6da6aaebffd933f709"
+    },
+    {
+      "path": "test/distributed-temporal-eligibility.test.ts",
+      "sha256": "89250507432e5023ad2474ba7aa84956dbe0c6c50e604a68c261bc61918322fb"
+    },
+    {
+      "path": "test/distributed-terminal-factor-reprojection.test.ts",
+      "sha256": "44c0919881ba57fe488914c57f0cf80dd6361e206553a5a2ff4ff59408b31df8"
+    },
+    {
+      "path": "test/distributed-weighted-probe.test.ts",
+      "sha256": "87e134bbd759537c967c008f45b622f5d58a674209ecd473dfa8596fbb4f1f64"
+    },
+    {
+      "path": "test/entity-retina.test.ts",
+      "sha256": "6aa8c3b2179ca630ffc74d91c82c51956c071712b70b0036f1f04b9db40ab7f0"
+    },
+    {
+      "path": "test/event-type-transition.test.ts",
+      "sha256": "bbb867260b6d85884bb1ce2151a91cf854fd5afa77a40e509b6eaa5f7b62dd06"
+    },
+    {
+      "path": "test/evidence-writer.test.ts",
+      "sha256": "bdbe1b55c311b47ee67513b9200c4d7c338ca4d864d7ef7c1137723c7e5c9118"
+    },
+    {
+      "path": "test/exact-continuation-query-reuse.test.ts",
+      "sha256": "029456940cd02d20a94fbbe275c630653e06e6c30cd1a63ee46673ee19655ec5"
+    },
+    {
+      "path": "test/exact-prediction-batch-reuse.test.ts",
+      "sha256": "e74910c1e8ee9c6f70427dd9d5e1bfc465f52c1007139dcbfcffd67d079676c1"
+    },
+    {
+      "path": "test/exact-public-block-hit.test.ts",
+      "sha256": "a6c7568013a6aa436d6e23aa28c8a7c98e80eb08ad92cf4fd484b4b0910c7e53"
+    },
+    {
+      "path": "test/exact-r1-qualification-reuse.test.ts",
+      "sha256": "3ae50e506d797aff3a0edbf9ace375d0649e86565123ab842c55626c5dce0202"
+    },
+    {
+      "path": "test/experience-continuous-readout.test.ts",
+      "sha256": "cc5977c110f6f4488aba6357f11c0fe0c76847de5c0ecbca8ccc835a3eb0394c"
+    },
+    {
+      "path": "test/experience-frame-flow.test.ts",
+      "sha256": "c47ec7762695ed8f37c20ec61a233893003ac250997fb113d1eb0044cc3c177f"
+    },
+    {
+      "path": "test/experience-intervals.test.ts",
+      "sha256": "eec33cfe80b31b6eb3f83d9d167845608c598c021ff45249f52bfdb4e3471829"
+    },
+    {
+      "path": "test/experience-live-state.test.ts",
+      "sha256": "1c87f84e566ee53d1941e209e25a7a465372d0753cad992045ce03326c165b54"
+    },
+    {
+      "path": "test/experience-prototype.test.ts",
+      "sha256": "536981da21638e16f1b3fee3a77c7fb6f0e221a566a781dff1a3a4d3d994c73f"
+    },
+    {
+      "path": "test/experience-sealed-evidence.test.ts",
+      "sha256": "a99cc11bea7a448522f5931e8d988e37efde13bc80407a2937415fb1117ec9a3"
+    },
+    {
+      "path": "test/experience-session-live.test.ts",
+      "sha256": "e29e6a4d09ca2581c2ba55f957f53fcc4e0d0cfd8d604437b68b2dc2f9ed9dfe"
+    },
+    {
+      "path": "test/expired-physical-relation-query.test.ts",
+      "sha256": "8cf4aafe0d57aeff63862b3cce5bee90003b59929a45f91bc823cf773d6e6244"
+    },
+    {
+      "path": "test/file-hash.test.ts",
+      "sha256": "6ff662647ff43f1bef688ab85c5f0b28b5d285086588d7f497ec0d34d924ff41"
+    },
+    {
+      "path": "test/grounded-goal.test.ts",
+      "sha256": "0c1604cc7cc25d119ad21c9e924eb3f881f250e25e0ab137a1f1699382a0070f"
+    },
+    {
+      "path": "test/historical-transition-precondition.test.ts",
+      "sha256": "2717c2c45f908c63521eddcb6f2558a3c71c192f3b3fcb52a548b21dea2f8640"
+    },
+    {
+      "path": "test/interact-observation-window.test.ts",
+      "sha256": "d3f1f7505e5fc639534894dbc943a0bbf438ac121d73756d1120285372ef6e21"
+    },
+    {
+      "path": "test/interlayer-local-neighbourhood.test.ts",
+      "sha256": "ace9772846f49371c54c39357ec412d183dbc3de2ab6e00239abb2c2e8f625e1"
+    },
+    {
+      "path": "test/interlayer-physical-readback.test.ts",
+      "sha256": "d4b1f80fdebf587cca59e3474e217531231bef541cada407aa09c1459c894f12"
+    },
+    {
+      "path": "test/interlayer-site-cardinality.test.ts",
+      "sha256": "2a139e867698eb8c28a9877f84d53fceeb6a7e9e51a73f8847d624f43c601de9"
+    },
+    {
+      "path": "test/joint-control-architecture.test.ts",
+      "sha256": "7ee3b8950610d0de0c5cb76be05e8f8e33f65e80c2498bcb867f1b5c641614c5"
+    },
+    {
+      "path": "test/joint-control-neutral-experiments.test.ts",
+      "sha256": "1d78e42a548a236546b7534a928c4e26cdc5774efdf3e475fdf09b5d01800f87"
+    },
+    {
+      "path": "test/lingbot-physical-short-chain.test.ts",
+      "sha256": "8de5f340231c704466e455d2a7b9cf4c4c4dd60eb96ea8b0438322ec7752cce2"
+    },
+    {
+      "path": "test/live-status-and-bounds.test.ts",
+      "sha256": "6b406f77b9cc8efecd47340e6a6a2f9992b9500ed8a646271168ee67e3a86dc8"
+    },
+    {
+      "path": "test/lossless-physical-candidate-grouping.test.ts",
+      "sha256": "b8380e4993aa33f7ebd5c8a6526513e0b079812cca90bb8ec3e5d40b8a174afb"
+    },
+    {
+      "path": "test/measured-motor-learning.test.ts",
+      "sha256": "bcfe2e52ab219c610b5c9bbc1ddb046e03b3627efe6fabb5bc1eb48333f9d0df"
+    },
+    {
+      "path": "test/minecraft-basic-action-loop-v1.test.ts",
+      "sha256": "f60df4a51ce6941f55e82b239cded7a7f4b4beb3917275a79df8663ae8afda9e"
+    },
+    {
+      "path": "test/minecraft-distributed-g6-continuous-capture-v1.test.ts",
+      "sha256": "86002405515d3250ea6731d83cdd794b78266d418f52a6d333170ad87fb01f0a"
+    },
+    {
+      "path": "test/minecraft-distributed-g6-live-v1.test.ts",
+      "sha256": "d4cb1f6906fa2543c60cfcfcd2b3d7951c824e4190b96e05682fcc53e34e5dc0"
+    },
+    {
+      "path": "test/minecraft-experience.test.ts",
+      "sha256": "04f2f53ce2bc12d025c384137d98bbca07ff4e1cca247eb80adf4204b4bd972d"
+    },
+    {
+      "path": "test/multi-layer-public-observation-scope.test.ts",
+      "sha256": "5ed0dbe5c34862bc21a4cb4f4419794b4f1308502c199a9504dd5f6371f7fc13"
+    },
+    {
+      "path": "test/native-goal-selection.test.mjs",
+      "sha256": "3cad24ec1a8cee4127cb9bccfb71daafd5f7b979b1f87d19f43e1ebb2a690d4d"
+    },
+    {
+      "path": "test/new-visible-surface.test.ts",
+      "sha256": "2c0bd691ffb5f6138e4b124fad8ccbb919e6559c5d4a127ba375ef42031dbb44"
+    },
+    {
+      "path": "test/note-progression-test-contract.test.ts",
+      "sha256": "e7cca50ed08959d8129fc7eeca25c6370035adf6c0f8b863d004a2cbe117eb96"
+    },
+    {
+      "path": "test/offline-profile.test.ts",
+      "sha256": "99123e941cfd77bd830166e7f5de1e7bbae9f0ab6bddd4e6fc149ca6c6bd2405"
+    },
+    {
+      "path": "test/open-world.test.ts",
+      "sha256": "30039041c927029c8198c36e1ecaafda84a9e6edd65cb8a07590c20e4981e2cf"
+    },
+    {
+      "path": "test/passive-experience.test.ts",
+      "sha256": "a1e6d0d2e2cc2709a58b925ec01f2d00edcc306de3bb910f45dc7b140dc39051"
+    },
+    {
+      "path": "test/perception.test.ts",
+      "sha256": "867cae0d082e72d8c2b502e4a6909fc70e346cb8c7d88fb59f170033a35d7804"
+    },
+    {
+      "path": "test/physical-control-manager.test.ts",
+      "sha256": "f1ae3f9c3d7fe6fe0fff105d7b0d532eab02eb8e83939894e62e15637578bc89"
+    },
+    {
+      "path": "test/physical-metadata-read-access.test.ts",
+      "sha256": "93dd12a9550955f93f6fac1cc97e05df8441075dcb72f6cf3f978a3cd93ac7f6"
+    },
+    {
+      "path": "test/physical-observer-invariance.test.ts",
+      "sha256": "493ea7d2f3fe8d3ab41322d76ed17eba8ed04a9eddf1939557b37f052f216188"
+    },
+    {
+      "path": "test/physical-reasoning-v2-control-wiring.test.ts",
+      "sha256": "beac8deffe45747ea76ff6426b8e1e0a326b97da97cdac01f01a7728c1b695b8"
+    },
+    {
+      "path": "test/plan-002-performance.test.ts",
+      "sha256": "8ecf2961cdd2646a0001d773c7c417d7871d5ff498c9d7a6c1ac7d3876f4e911"
+    },
+    {
+      "path": "test/prediction-deviation.test.ts",
+      "sha256": "5505fce1518ef8ab73d2b2efbf700c7db49fe20ae6e942581ee2912515761089"
+    },
+    {
+      "path": "test/prediction-physical-membership.test.ts",
+      "sha256": "83fd24c0b2484c1ad9e3be2413e185de1268c471b23a38a6810f236c515d99d2"
+    },
+    {
+      "path": "test/prediction-ranges.test.ts",
+      "sha256": "cdf2ffabeee0abce75a68e666b2265cc67ff5a140dfd5d489b3a796d40c6b6b9"
+    },
+    {
+      "path": "test/prescribed-action-boundary.test.ts",
+      "sha256": "65c4ca55b69bb4fb51287c0dad61f2e2f289928a85db9e1d9344f2a3314eca98"
+    },
+    {
+      "path": "test/prototype-boundary.test.ts",
+      "sha256": "1290cb3af89b1225963e5098007a2267801decc6279e2ef0ae49590784421cc9"
+    },
+    {
+      "path": "test/public-action-requirement-bridge.test.ts",
+      "sha256": "36d1a8ba0d82793898f5b5930eda6cb62c5bfae81ad06c58bee3da80d586c555"
+    },
+    {
+      "path": "test/public-role-condition-separation.test.ts",
+      "sha256": "918f27b0b837da60b6ba50271d9b779569301b4a156b43e32840e84c935a97ea"
+    },
+    {
+      "path": "test/r-series-dictionary-agenda.test.ts",
+      "sha256": "4f7d370f70c8413de7b8654c27639b6299230c15a7e37780ada8dbf1dad3e0e2"
+    },
+    {
+      "path": "test/r2-observed-terminal-boundary.test.ts",
+      "sha256": "5a38162f6c6bdd2945c4af2bace68aee2f497a817351d305027e54e5e27f6bd4"
+    },
+    {
+      "path": "test/r2a-action-input-boundary.test.ts",
+      "sha256": "a817be4802fc6b7933dda3f8bc7f2426c7b0969070b834788ee42f88bc26143f"
+    },
+    {
+      "path": "test/r2a-continuation-route-consistency.test.ts",
+      "sha256": "c40d7ee13a6d84add3cfbd27d3b08ea6001942b28a9ddd9041c022ae572cb508"
+    },
+    {
+      "path": "test/r2a-current-action-cache.test.ts",
+      "sha256": "4ca36087a987e854d03a12fe2b0a4a173b7cdcb853fa8c9a582e309b7c295434"
+    },
+    {
+      "path": "test/r2a-differential-deposit-scope.test.ts",
+      "sha256": "2d751c8ab1b71b95cdee78dd14927483f86611b24dedab04370185c0427316d0"
+    },
+    {
+      "path": "test/r2a-local-condition-difference.test.ts",
+      "sha256": "f4492edd0dde6398098705f8b15bc372e2da412774cb8ef089cca5a379ba77b9"
+    },
+    {
+      "path": "test/r2a-matched-condition-pulse.test.ts",
+      "sha256": "2cb855dcf64303988b3625600fb1d1d50a78530e4ef0fead840fb319871b898a"
+    },
+    {
+      "path": "test/r2a-ordered-road-patterns.test.ts",
+      "sha256": "44f2367eb8bc9f256f5d632fddb02ca83e87967a9b3add9093e84b02d1ecf70c"
+    },
+    {
+      "path": "test/run-fault-injection.test.ts",
+      "sha256": "4064c73ea0c30b57e99d029d00360a2cf0bb546bfc78767917cfb09057735f02"
+    },
+    {
+      "path": "test/run-soak-synthetic.test.ts",
+      "sha256": "eb2942ebcb932cf751403aa7b96c2ac1dc9cbc88d39fa9f90e9147e3a9770787"
+    },
+    {
+      "path": "test/runtime-final-checkpoint.test.ts",
+      "sha256": "f69755c056ba8bf9a701f33c2cba63abf735a5bc2d49bd61f5ca82f1ad3b7f9f"
+    },
+    {
+      "path": "test/runtime-measured-salience-bridge.test.ts",
+      "sha256": "874d79442f53de7df6ba14770bf088a09cc681e2a60ff8377328a61123ff25f3"
+    },
+    {
+      "path": "test/runtime-readonly-and-neutral-entry.test.ts",
+      "sha256": "e44aa30a1c96c209769d9771c6740fbe5e9908e86057bcc4777b5587c04f332b"
+    },
+    {
+      "path": "test/runtime-snapshot-bundle.test.ts",
+      "sha256": "ece88bed8c307b29e3d61bc45721e142c011eb46b187ca6075fa0b9691676801"
+    },
+    {
+      "path": "test/runtime-v4-measurement-ingress.test.ts",
+      "sha256": "a49dede2f63c99af3a3165d8a5687282f51314b8dbab70a18fa57046ee31e944"
+    },
+    {
+      "path": "test/runtime-v4-timescale-persistence.test.ts",
+      "sha256": "3f75e30cf986f6cd34050bab3e87f79471c98dc1842b830542eb772415185eb4"
+    },
+    {
+      "path": "test/segmented-snapshot-linear-paging.test.ts",
+      "sha256": "7b645c9aaecac6509f56deae78ecc7db9ecb77f9233a17e6d38684f78a872dc4"
+    },
+    {
+      "path": "test/segmented-snapshot-paging.test.ts",
+      "sha256": "b578c3f04069359e8a9c52bd2b78f12e3462cc52d245a5f58c9c24090184f184"
+    },
+    {
+      "path": "test/segmented-snapshot.test.ts",
+      "sha256": "387be2c43b5f362ca63a472a56c0925390904c3a3b13ba1875301aecb61e2ab0"
+    },
+    {
+      "path": "test/self-organizing-distributed-r1.test.ts",
+      "sha256": "08a4d5683a4d7668a6fa7b0f97b378ae99f3446cb8457b16c97eeb39e2d5de1d"
+    },
+    {
+      "path": "test/sparse-interlayer-projection-topology.test.ts",
+      "sha256": "9b75296a02b56344f72f46d924f654701f4518da11ebaadff7f95da17bedb9f2"
+    },
+    {
+      "path": "test/stall-watchdog.test.ts",
+      "sha256": "aaa1a55bbde02c90dd97e13b432160dc1b3376082bfe68c0a2f36a72e3f58cd1"
+    },
+    {
+      "path": "test/support/attempt018-replay.ts",
+      "sha256": "29288629163b338273aa7ce21d630b70a6f5ae9f3ffb5cf5e690a5f45665aa8e"
+    },
+    {
+      "path": "test/synthetic-body.ts",
+      "sha256": "4a107670545b3e9b1dd116e9b5079ddedd554426b5e89ceaf34da1b5799ef644"
+    },
+    {
+      "path": "test/terminal-readout-identity.test.ts",
+      "sha256": "19211436b2be1d4e9d8e7438ec4f9b48feb440b0046a33144df10c5123db8b81"
+    },
+    {
+      "path": "test/test_archive_stopped_world.py",
+      "sha256": "f0a67478b3d6ac67f148b88b5ece5620378d0f6f8a34ff7f083af87fb3285dbf"
+    },
+    {
+      "path": "test/test_native_evidence_package.py",
+      "sha256": "70bbcbfca0d1bd0d13c1646454659544f201f82477eb2a226efbeaf31bc7f856"
+    },
+    {
+      "path": "test/window-calibration.test.ts",
+      "sha256": "fe2e309026b1c1830f13f0be7c4000bf42b2a867424efcb2f17c02c7f41e3079"
+    },
+    {
+      "path": "test/worker-action-start.test.ts",
+      "sha256": "322546634e61a60c8d6561dd5cf591ac172754b549bfd1cc979baed8368253ef"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "3dbc898f349438a7d09867ebc9b1f08dda56449075e5059664a342e2d7c12a34"
+    }
+  ],
+  "toolchain": [
+    {
+      "path": "D:\\nodejs\\node.exe",
+      "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+    },
+    {
+      "path": "D:/Kairos-Minecraft/runtime/jdk-21/bin/java.exe",
+      "sha256": "1f41cc782de7ddd8824376568f9011413d710cf225047906106d2a01a0e3f7a9"
+    },
+    {
+      "path": "D:/Kairos-Minecraft/server/1.21.4/server.jar",
+      "sha256": "1066970b09e9c671844572291c4a871cc1ac2b85838bf7004fa0e778e10f1358"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "2ebdacd698cefa0528cced4abf6bf66cb7838ef059c8c4ce64e42b725997f91b"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "3dbc898f349438a7d09867ebc9b1f08dda56449075e5059664a342e2d7c12a34"
+    }
+  ],
+  "gate": {
+    "command": "node scripts/run-next-stage-tests.mjs",
+    "path": "evidence/pr3-sealed-consumption-recovery/full-gate-01.log",
+    "sha256": "7ab8e9cba712b7dcec9fbb0f9b40a22755843fa18995a222e82bea24cd66b0ac",
+    "exitCode": 0,
+    "passed": 321,
+    "failed": 0
+  },
+  "differentialAndReplay": [
+    {
+      "path": "evidence/pr3-sealed-consumption-recovery/world-differential-02.json",
+      "sha256": "35e0ae9cd1603d73c2dbf2e5fe016b57cbfda948183d4d1e839c68a009aa41ce"
+    },
+    {
+      "path": "evidence/pr3-sealed-consumption-recovery/native-state-differential-01.json",
+      "sha256": "4dd85bf4e36f604256f1f5d90157ff6dd08e5114868f7a967818fdced676f9ca"
+    },
+    {
+      "path": "evidence/pr3-sealed-consumption-recovery/model-replay-01.json",
+      "sha256": "54150bd938df2fc7f527fbe26e31b5328fb0b88a3c473901306035b1b05b10c9"
+    }
+  ],
+  "checked": [
+    {
+      "path": "evidence/pr3-local-native-smoke/results.json",
+      "sha256": "e5b27d491e502f36e9454862dff932c4bd4efd72eda457047572e90de769ee99",
+      "bytes": 127242
+    },
+    {
+      "path": "evidence/pr3-local-native-smoke/session.json.gz",
+      "sha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+      "bytes": 287078
+    },
+    {
+      "path": "evidence/pr3-local-native-smoke/stopped-world.tar.gz",
+      "sha256": "8d7fb3423ef8778f7f49374e5d07ecfa52646f626a68ad2bcb938e9ca228ccb1",
+      "bytes": 2878975
+    },
+    {
+      "path": "evidence/pr3-local-timing-goal.json",
+      "sha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+      "bytes": 390
+    }
+  ],
+  "starts": [
+    {
+      "path": "evidence/pr3-local-sealed-consumption-start",
+      "sessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+      "forkProvenanceSha256": "7d4c9cf097717499030ba055cf395bddf87e63af296fc77dd3d11db9961e2392",
+      "learningDigest": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+      "newLiveStateAbsent": true,
+      "stats": {
+        "decisions": 8,
+        "executed": 1,
+        "writes": 24,
+        "passiveWindows": 23,
+        "passiveWrites": 23,
+        "pendingGoals": 1,
+        "verifiedGoals": [],
+        "investigating": null,
+        "retainedPlaces": 1,
+        "retainedSurfaces": 41,
+        "observations": 9,
+        "visibleSurfaces": 0
+      }
+    },
+    {
+      "path": "evidence/pr3-local-sealed-consumption-frozen-start",
+      "sessionSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+      "forkProvenanceSha256": "7d4c9cf097717499030ba055cf395bddf87e63af296fc77dd3d11db9961e2392",
+      "learningDigest": "3566f66c62c83bdfcf6a54e7c8c9e4a4bb5a2e178e621a91e2d0ef6560edd8f5",
+      "newLiveStateAbsent": true,
+      "stats": {
+        "decisions": 8,
+        "executed": 1,
+        "writes": 24,
+        "passiveWindows": 23,
+        "passiveWrites": 23,
+        "pendingGoals": 1,
+        "verifiedGoals": [],
+        "investigating": null,
+        "retainedPlaces": 1,
+        "retainedSurfaces": 41,
+        "observations": 9,
+        "visibleSurfaces": 0
+      }
+    }
+  ],
+  "completedUpload": {
+    "path": "evidence/pr3-window-statistics-recovery/github-upload-through-r7-verification.json",
+    "sha256": "ea5b747e7e6f0910dd3cad9223a12ff4f59151b941cff01311f8383c32539931",
+    "zip": {
+      "digest": "sha256:7eac244d67bee390f0dd65ccf89279895d4e53054723d11ec3b11f429f2a0b05",
+      "id": 561143431,
+      "name": "kairos-native-through-r7-20260913.zip",
+      "size": 487567709,
+      "state": "uploaded"
+    }
+  },
+  "newPhysicalTrials": 0,
+  "scope": "Immutable launch identities and software evidence only. Native trial remains separately measured."
+}

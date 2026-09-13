@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/5d0f85e4c822/kairos/scripts/check-minecraft-entity-base-vision.mjs",
+    "--java",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+    "--server",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/minecraft-server-1.21.4.jar",
+    "--output",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-entity-vision",
+    "--build",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/apparatus-candidate",
+    "--port",
+    "25632"
+  ],
+  "cwd": "/workspace/scratch/5d0f85e4c822/kairos",
+  "startedAt": "2026-09-13T02:03:14.528496+00:00",
+  "scriptSha256": "5c065fcf762a344871eb7e853410f6e49471147adbed74f9dfa1f5b415802152",
+  "bodySha256": "32ffec2d41ad4928087439a3feae05e9a61f2542c3cc84c3d5d17ad0be2eb3b0",
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "scope": "Evaluator-selected isolated native entity visibility, occlusion and motor binding calibration. Apparatus uses normal difficulty to retain its test entity; no autonomous task or survival claim.",
+  "exitCode": 0,
+  "stoppedAt": "2026-09-13T02:03:25.843908+00:00",
+  "scriptUnchanged": true,
+  "bodyUnchanged": true
+}

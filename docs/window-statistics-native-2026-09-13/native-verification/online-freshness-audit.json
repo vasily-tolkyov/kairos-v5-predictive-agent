@@ -1,0 +1,526 @@
+{
+  "version": "NativeWorkerFreshnessAudit1",
+  "status": "passed",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-window-statistics",
+  "reportSha256": "1775122b861510cb055e1ff60827430144c954db13e25edd184d41e9fb2cb95a",
+  "stoppedAt": "2026-09-13T12:11:35.925Z",
+  "runStatus": "budget-paused",
+  "protocol": {
+    "steps": 32,
+    "seconds": 180,
+    "goalAfter": 0,
+    "frozen": false,
+    "frozenScope": "transferable dynamics and affordances; current task feedback remains active",
+    "environment": "natural",
+    "worldSeed": "129604783",
+    "difficulty": "peaceful",
+    "difficultySource": "explicit-command-line",
+    "goalDistance": 12,
+    "geometry": {
+      "wallDepth": 2,
+      "halfWidth": 5,
+      "startX": 0.5,
+      "material": "oak_planks"
+    },
+    "taskOnly": false,
+    "resetAfterStart": false,
+    "externalActionSelection": false,
+    "requestedGoals": [
+      {
+        "version": "GroundedGoalV1",
+        "id": "reach-other-side",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "past-exit",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "position.2",
+            "comparator": "less-than",
+            "target": -5.5
+          }
+        }
+      }
+    ],
+    "goalSourceSha256": "c60111bb15631ce4dd24c3cc7c792db9838b784d44762d546d9603320ec727bc",
+    "boundary": "native normal terrain and peaceful difficulty; no setup, teleport or runtime rule callbacks",
+    "limitations": [
+      "finite natural-world sample; goal prerequisites depend on actual terrain",
+      "peaceful engine rules; no evidence of hostile survival or hunger management",
+      "engineered block/entity silhouette RGBD and visible hotbar sensing; some visual assets are unsupported; not full client vision",
+      "restart requires an explicit observed action; recovery does not establish survival",
+      "finite duration cannot establish lifelong learning"
+    ],
+    "difficultyVerifiedByServer": "peaceful",
+    "maintenanceGoals": [
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-health",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-health",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.health",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-food",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-food",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.food",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      },
+      {
+        "version": "GroundedGoalV1",
+        "id": "body-oxygen",
+        "expression": {
+          "kind": "predicate",
+          "predicate": {
+            "version": "GoalPredicateV1",
+            "id": "maintain-oxygen",
+            "subject": {
+              "kind": "self"
+            },
+            "observable": "properties.oxygen",
+            "comparator": "greater-than",
+            "target": 18,
+            "tolerance": 0.000001,
+            "residualScale": 20
+          }
+        }
+      }
+    ]
+  },
+  "learningWrites": 161,
+  "passiveWindows": 161,
+  "decisions": 32,
+  "attemptedDecisions": 32,
+  "preparations": 32,
+  "acceptedAttempts": 0,
+  "preparationlessRefusals": 0,
+  "refusedDecisions": 32,
+  "refusalReasons": {
+    "action-start-expired": 32
+  },
+  "executedActions": 0,
+  "freshExecutedForecasts": 0,
+  "executedFractionOfAllDecisions": 0,
+  "freshFractionOfExecutedActions": null,
+  "supportedExecutedForecasts": 0,
+  "supportedTaskPlans": 0,
+  "attempts": [
+    {
+      "index": 9,
+      "token": "c7c89fea-a059-4db1-bda9-d6d25e8b5657",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 94,
+      "checkedSequence": 100,
+      "elapsedMs": 324.21889999999985
+    },
+    {
+      "index": 10,
+      "token": "c26232a9-dca5-4243-a630-71e2585e5f72",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 178,
+      "checkedSequence": 183,
+      "elapsedMs": 240.15190000000075
+    },
+    {
+      "index": 11,
+      "token": "fea12d2a-36d0-4190-99fc-356067324694",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 213,
+      "checkedSequence": 214,
+      "elapsedMs": 71.94969999999739
+    },
+    {
+      "index": 12,
+      "token": "e55ae0bc-d7d3-470c-9375-a99924db2099",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 228,
+      "checkedSequence": 229,
+      "elapsedMs": 54.11669999999867
+    },
+    {
+      "index": 13,
+      "token": "18fb723d-ed17-4a8f-9572-fd0791e96071",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 241,
+      "checkedSequence": 242,
+      "elapsedMs": 51.944799999997485
+    },
+    {
+      "index": 14,
+      "token": "1be4e888-8315-42af-95b0-62204a53b808",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 257,
+      "checkedSequence": 258,
+      "elapsedMs": 62.675200000005134
+    },
+    {
+      "index": 15,
+      "token": "73d70199-a243-4e10-a727-263c592005c5",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 274,
+      "checkedSequence": 275,
+      "elapsedMs": 63.12349999999424
+    },
+    {
+      "index": 16,
+      "token": "6571c91c-9358-4a7e-8162-744c811b70db",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 291,
+      "checkedSequence": 292,
+      "elapsedMs": 66.43349999999919
+    },
+    {
+      "index": 17,
+      "token": "180b0c55-d469-4a44-9e6d-3fccb7a40541",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 308,
+      "checkedSequence": 309,
+      "elapsedMs": 56.10609999999724
+    },
+    {
+      "index": 18,
+      "token": "f9437703-7c4e-490a-b04e-1547a068fb8e",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 326,
+      "checkedSequence": 327,
+      "elapsedMs": 59.98719999999594
+    },
+    {
+      "index": 19,
+      "token": "d4e9624a-3ac4-4866-85e4-1a3ec5a4b6b0",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 344,
+      "checkedSequence": 345,
+      "elapsedMs": 58.87630000000354
+    },
+    {
+      "index": 20,
+      "token": "a431d921-65ff-451b-81f6-e09120de5433",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 382,
+      "checkedSequence": 392,
+      "elapsedMs": 443.1596999999965
+    },
+    {
+      "index": 21,
+      "token": "3b7404d0-6275-4dd5-b9d3-f64ea18667e3",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 433,
+      "checkedSequence": 435,
+      "elapsedMs": 149.75080000000162
+    },
+    {
+      "index": 22,
+      "token": "561fe34e-6c92-47ee-869e-13829f618f1b",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 463,
+      "checkedSequence": 465,
+      "elapsedMs": 111.94500000000698
+    },
+    {
+      "index": 23,
+      "token": "e91104bd-abc7-442e-a064-a4f2918aaf53",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 486,
+      "checkedSequence": 487,
+      "elapsedMs": 74.96390000000247
+    },
+    {
+      "index": 24,
+      "token": "8224ac14-400e-46f5-bcfb-3c49d93a910a",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 506,
+      "checkedSequence": 507,
+      "elapsedMs": 89.41470000000118
+    },
+    {
+      "index": 25,
+      "token": "cf978dc5-dd63-44d4-95c9-ca4eba34eced",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 574,
+      "checkedSequence": 578,
+      "elapsedMs": 207.89040000000386
+    },
+    {
+      "index": 26,
+      "token": "0bf12ba6-52f2-49af-8d08-c6113465c0b8",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 610,
+      "checkedSequence": 612,
+      "elapsedMs": 119.28779999999824
+    },
+    {
+      "index": 27,
+      "token": "e32566d9-e8e5-41b8-89c1-4cd097ab6538",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 636,
+      "checkedSequence": 637,
+      "elapsedMs": 90.87370000000374
+    },
+    {
+      "index": 28,
+      "token": "04cfd8c8-a35b-4518-a2b3-a963ecce5c53",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 659,
+      "checkedSequence": 660,
+      "elapsedMs": 98.62159999999858
+    },
+    {
+      "index": 29,
+      "token": "9f72a2b1-8365-41f5-91d8-06cdb6f61643",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 681,
+      "checkedSequence": 683,
+      "elapsedMs": 99.54949999999371
+    },
+    {
+      "index": 30,
+      "token": "7c63b641-a279-4655-b709-71c0521f1e0d",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 704,
+      "checkedSequence": 705,
+      "elapsedMs": 103.13990000000194
+    },
+    {
+      "index": 31,
+      "token": "77456d12-2c6b-4224-b04a-546e7f702e82",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 729,
+      "checkedSequence": 730,
+      "elapsedMs": 80.19119999999384
+    },
+    {
+      "index": 32,
+      "token": "98b17694-828b-407e-8139-db078691c0d4",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 750,
+      "checkedSequence": 751,
+      "elapsedMs": 72.97879999999714
+    },
+    {
+      "index": 33,
+      "token": "9afdeee6-5010-4cc5-b51a-9e967c930ed6",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 772,
+      "checkedSequence": 773,
+      "elapsedMs": 83.87290000000212
+    },
+    {
+      "index": 34,
+      "token": "f119fb1b-86e0-4237-ac64-f5edb9f28033",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 794,
+      "checkedSequence": 795,
+      "elapsedMs": 98.23999999999796
+    },
+    {
+      "index": 35,
+      "token": "9239bb76-c1c8-4ab0-8c38-419e1fd21283",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 823,
+      "checkedSequence": 824,
+      "elapsedMs": 101.18250000000262
+    },
+    {
+      "index": 36,
+      "token": "dc92b70a-335f-4af4-8df4-bc57b1302789",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 886,
+      "checkedSequence": 890,
+      "elapsedMs": 265.3671000000031
+    },
+    {
+      "index": 37,
+      "token": "5162c228-e829-41f8-812a-6eaeaf6d344a",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 928,
+      "checkedSequence": 931,
+      "elapsedMs": 145.7152999999962
+    },
+    {
+      "index": 38,
+      "token": "664a2691-47b3-44eb-9268-c73403b6450c",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 961,
+      "checkedSequence": 963,
+      "elapsedMs": 115.67329999999492
+    },
+    {
+      "index": 39,
+      "token": "dd1188ac-e16f-41c7-a722-f961f5cff8dd",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 987,
+      "checkedSequence": 989,
+      "elapsedMs": 100.31530000000203
+    },
+    {
+      "index": 40,
+      "token": "d806b9d9-43de-4dce-90d5-ee65fbbc6ee2",
+      "status": "refused",
+      "phase": "refused",
+      "reason": "action-start-expired",
+      "preparedSequence": 1011,
+      "checkedSequence": 1012,
+      "elapsedMs": 86.86250000000291
+    }
+  ],
+  "windows": [],
+  "wholeLoopDurationMs": [
+    3565.7443999999996,
+    3423.380100000002,
+    1163.343200000003,
+    681.6875,
+    713.2424000000028,
+    807.939099999996,
+    802.1647000000012,
+    865.2458000000042,
+    915.4438999999984,
+    845.6278999999995,
+    921.395199999999,
+    2849.9043999999994,
+    1832.8158999999941,
+    1383.8752999999997,
+    1016.190800000004,
+    1073.0786999999982,
+    2696.8704,
+    1530.5023999999976,
+    1139.6532000000007,
+    1180.4930000000022,
+    1114.898199999996,
+    1242.538099999998,
+    1097.336000000003,
+    1080.028099999996,
+    1069.0065000000031,
+    1252.5190000000002,
+    1519.062300000005,
+    3441.658899999995,
+    1828.1304999999993,
+    1480.0154000000039,
+    1283.6187999999966,
+    1234.043399999995
+  ],
+  "rssMB": [
+    506.25,
+    552.17578125,
+    564.97265625,
+    575.5,
+    583.5,
+    594.2578125,
+    607.6328125,
+    610.1640625,
+    610.9453125,
+    611.34765625,
+    611.51953125,
+    611.2265625,
+    613.86328125,
+    613.69140625,
+    613.8515625,
+    614.03125,
+    629.65234375,
+    629.9140625,
+    630.08984375,
+    630.16015625,
+    630.375,
+    629.125,
+    627.96875,
+    641.67578125,
+    657.07421875,
+    676.65625,
+    678.171875,
+    679.05078125,
+    678.77734375,
+    679.71875,
+    679.93359375,
+    683.94140625
+  ],
+  "limitation": "Checks token/frame evidence, not a production coverage threshold. Zero executions cannot demonstrate availability. A short peaceful run does not establish task success, retention, transfer, multistage planning or worst-case query latency."
+}

@@ -1,0 +1,20 @@
+{
+  "version": "NativeLocalRecoveryProtocol1",
+  "purpose": "Verify the new atomic initial capture, single-use action-start binding and independent-window accounting on this actual machine before longer capability comparisons.",
+  "primaryRun": "evidence/pr3-local-native-smoke",
+  "environment": "natural",
+  "worldSeed": "129604783",
+  "difficulty": "peaceful",
+  "modelSeed": 317,
+  "steps": 8,
+  "seconds": 120,
+  "port": 25638,
+  "goalAfter": 0,
+  "learning": true,
+  "initialExperience": "empty",
+  "attempts": 1,
+  "additionalMotorCalibration": { "port": 25639, "actions": 6, "learningWrites": 0, "autonomousActions": 0 },
+  "audits": ["capture-boundary", "worker-freshness", "native-stopped-world", "snapshot-restore", "motor-receipts"],
+  "failureAccounting": "Every refusal, missing interval, crash and unsupported prediction remains in the results. No automatic retry, changed goal, widened tolerance or extra action budget.",
+  "limitation": "A newly generated peaceful apparatus check; not a substitute for the exact original-world retention comparison and not sustained-learning or multistage success."
+}

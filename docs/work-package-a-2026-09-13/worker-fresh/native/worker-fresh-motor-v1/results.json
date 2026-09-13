@@ -1,0 +1,819 @@
+{
+  "version": "NativeMotorCatchupCalibration1",
+  "status": "passed",
+  "build": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1/dist",
+  "runtimeRoot": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-motor-v1/runtime",
+  "startedAt": "2026-09-13T02:56:25.745Z",
+  "expectation": "exact",
+  "scope": "Evaluator-selected isolated native actuator calibration. No learner, autonomous trials or learned writes.",
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "scriptSha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf",
+  "bodySha256": "20b0470c669ab13798c14086fa0f567846ba572b40c883eca8a7bf3b89f622d4",
+  "trials": [
+    {
+      "round": 0,
+      "load": false,
+      "requestedTicks": 4,
+      "injectedBlockMilliseconds": 0,
+      "before": {
+        "position": [
+          0.5,
+          64,
+          0.5
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "pressedTicks": 4,
+      "observedPhysicsTicks": 15,
+      "controls": [
+        {
+          "ordinal": 1,
+          "pressed": true
+        },
+        {
+          "ordinal": 2,
+          "pressed": true
+        },
+        {
+          "ordinal": 3,
+          "pressed": true
+        },
+        {
+          "ordinal": 4,
+          "pressed": true
+        },
+        {
+          "ordinal": 5,
+          "pressed": false
+        },
+        {
+          "ordinal": 6,
+          "pressed": false
+        },
+        {
+          "ordinal": 7,
+          "pressed": false
+        },
+        {
+          "ordinal": 8,
+          "pressed": false
+        },
+        {
+          "ordinal": 9,
+          "pressed": false
+        },
+        {
+          "ordinal": 10,
+          "pressed": false
+        },
+        {
+          "ordinal": 11,
+          "pressed": false
+        },
+        {
+          "ordinal": 12,
+          "pressed": false
+        },
+        {
+          "ordinal": 13,
+          "pressed": false
+        },
+        {
+          "ordinal": 14,
+          "pressed": false
+        },
+        {
+          "ordinal": 15,
+          "pressed": false
+        }
+      ],
+      "releases": [
+        {
+          "version": "MeasuredMotorRelease1",
+          "action": {
+            "kind": "move",
+            "parameters": {
+              "direction": "forward",
+              "ticks": 4
+            }
+          },
+          "requestedTicks": 4,
+          "startSequence": 23,
+          "releaseSequence": 27,
+          "observedIntervals": 4,
+          "reason": "interval-complete"
+        }
+      ],
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-1",
+      "after": {
+        "position": [
+          0.5,
+          64,
+          -0.3571697198364468
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "displacement": 0.8571697198364467,
+      "terminationReason": "stable"
+    },
+    {
+      "round": 0,
+      "load": true,
+      "requestedTicks": 4,
+      "injectedBlockMilliseconds": 230,
+      "before": {
+        "position": [
+          0.5,
+          64,
+          0.5
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "pressedTicks": 4,
+      "observedPhysicsTicks": 15,
+      "controls": [
+        {
+          "ordinal": 1,
+          "pressed": true
+        },
+        {
+          "ordinal": 2,
+          "pressed": true
+        },
+        {
+          "ordinal": 3,
+          "pressed": true
+        },
+        {
+          "ordinal": 4,
+          "pressed": true
+        },
+        {
+          "ordinal": 5,
+          "pressed": false
+        },
+        {
+          "ordinal": 6,
+          "pressed": false
+        },
+        {
+          "ordinal": 7,
+          "pressed": false
+        },
+        {
+          "ordinal": 8,
+          "pressed": false
+        },
+        {
+          "ordinal": 9,
+          "pressed": false
+        },
+        {
+          "ordinal": 10,
+          "pressed": false
+        },
+        {
+          "ordinal": 11,
+          "pressed": false
+        },
+        {
+          "ordinal": 12,
+          "pressed": false
+        },
+        {
+          "ordinal": 13,
+          "pressed": false
+        },
+        {
+          "ordinal": 14,
+          "pressed": false
+        },
+        {
+          "ordinal": 15,
+          "pressed": false
+        }
+      ],
+      "releases": [
+        {
+          "version": "MeasuredMotorRelease1",
+          "action": {
+            "kind": "move",
+            "parameters": {
+              "direction": "forward",
+              "ticks": 4
+            }
+          },
+          "requestedTicks": 4,
+          "startSequence": 57,
+          "releaseSequence": 61,
+          "observedIntervals": 4,
+          "reason": "interval-complete"
+        }
+      ],
+      "actualBlockMilliseconds": 230.07862699999896,
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-2",
+      "after": {
+        "position": [
+          0.5,
+          64,
+          -0.3571697198364468
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "displacement": 0.8571697198364467,
+      "terminationReason": "stable"
+    },
+    {
+      "round": 1,
+      "load": false,
+      "requestedTicks": 4,
+      "injectedBlockMilliseconds": 0,
+      "before": {
+        "position": [
+          0.5,
+          64,
+          0.5
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "pressedTicks": 4,
+      "observedPhysicsTicks": 15,
+      "controls": [
+        {
+          "ordinal": 1,
+          "pressed": true
+        },
+        {
+          "ordinal": 2,
+          "pressed": true
+        },
+        {
+          "ordinal": 3,
+          "pressed": true
+        },
+        {
+          "ordinal": 4,
+          "pressed": true
+        },
+        {
+          "ordinal": 5,
+          "pressed": false
+        },
+        {
+          "ordinal": 6,
+          "pressed": false
+        },
+        {
+          "ordinal": 7,
+          "pressed": false
+        },
+        {
+          "ordinal": 8,
+          "pressed": false
+        },
+        {
+          "ordinal": 9,
+          "pressed": false
+        },
+        {
+          "ordinal": 10,
+          "pressed": false
+        },
+        {
+          "ordinal": 11,
+          "pressed": false
+        },
+        {
+          "ordinal": 12,
+          "pressed": false
+        },
+        {
+          "ordinal": 13,
+          "pressed": false
+        },
+        {
+          "ordinal": 14,
+          "pressed": false
+        },
+        {
+          "ordinal": 15,
+          "pressed": false
+        }
+      ],
+      "releases": [
+        {
+          "version": "MeasuredMotorRelease1",
+          "action": {
+            "kind": "move",
+            "parameters": {
+              "direction": "forward",
+              "ticks": 4
+            }
+          },
+          "requestedTicks": 4,
+          "startSequence": 91,
+          "releaseSequence": 95,
+          "observedIntervals": 4,
+          "reason": "interval-complete"
+        }
+      ],
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-3",
+      "after": {
+        "position": [
+          0.5,
+          64,
+          -0.3571697198364468
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "displacement": 0.8571697198364467,
+      "terminationReason": "stable"
+    },
+    {
+      "round": 1,
+      "load": true,
+      "requestedTicks": 4,
+      "injectedBlockMilliseconds": 230,
+      "before": {
+        "position": [
+          0.5,
+          64,
+          0.5
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "pressedTicks": 4,
+      "observedPhysicsTicks": 15,
+      "controls": [
+        {
+          "ordinal": 1,
+          "pressed": true
+        },
+        {
+          "ordinal": 2,
+          "pressed": true
+        },
+        {
+          "ordinal": 3,
+          "pressed": true
+        },
+        {
+          "ordinal": 4,
+          "pressed": true
+        },
+        {
+          "ordinal": 5,
+          "pressed": false
+        },
+        {
+          "ordinal": 6,
+          "pressed": false
+        },
+        {
+          "ordinal": 7,
+          "pressed": false
+        },
+        {
+          "ordinal": 8,
+          "pressed": false
+        },
+        {
+          "ordinal": 9,
+          "pressed": false
+        },
+        {
+          "ordinal": 10,
+          "pressed": false
+        },
+        {
+          "ordinal": 11,
+          "pressed": false
+        },
+        {
+          "ordinal": 12,
+          "pressed": false
+        },
+        {
+          "ordinal": 13,
+          "pressed": false
+        },
+        {
+          "ordinal": 14,
+          "pressed": false
+        },
+        {
+          "ordinal": 15,
+          "pressed": false
+        }
+      ],
+      "releases": [
+        {
+          "version": "MeasuredMotorRelease1",
+          "action": {
+            "kind": "move",
+            "parameters": {
+              "direction": "forward",
+              "ticks": 4
+            }
+          },
+          "requestedTicks": 4,
+          "startSequence": 124,
+          "releaseSequence": 128,
+          "observedIntervals": 4,
+          "reason": "interval-complete"
+        }
+      ],
+      "actualBlockMilliseconds": 230.05684700000165,
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-4",
+      "after": {
+        "position": [
+          0.5,
+          64,
+          -0.3571697198364468
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "displacement": 0.8571697198364467,
+      "terminationReason": "stable"
+    },
+    {
+      "round": 2,
+      "load": false,
+      "requestedTicks": 4,
+      "injectedBlockMilliseconds": 0,
+      "before": {
+        "position": [
+          0.5,
+          64,
+          0.5
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "pressedTicks": 4,
+      "observedPhysicsTicks": 15,
+      "controls": [
+        {
+          "ordinal": 1,
+          "pressed": true
+        },
+        {
+          "ordinal": 2,
+          "pressed": true
+        },
+        {
+          "ordinal": 3,
+          "pressed": true
+        },
+        {
+          "ordinal": 4,
+          "pressed": true
+        },
+        {
+          "ordinal": 5,
+          "pressed": false
+        },
+        {
+          "ordinal": 6,
+          "pressed": false
+        },
+        {
+          "ordinal": 7,
+          "pressed": false
+        },
+        {
+          "ordinal": 8,
+          "pressed": false
+        },
+        {
+          "ordinal": 9,
+          "pressed": false
+        },
+        {
+          "ordinal": 10,
+          "pressed": false
+        },
+        {
+          "ordinal": 11,
+          "pressed": false
+        },
+        {
+          "ordinal": 12,
+          "pressed": false
+        },
+        {
+          "ordinal": 13,
+          "pressed": false
+        },
+        {
+          "ordinal": 14,
+          "pressed": false
+        },
+        {
+          "ordinal": 15,
+          "pressed": false
+        }
+      ],
+      "releases": [
+        {
+          "version": "MeasuredMotorRelease1",
+          "action": {
+            "kind": "move",
+            "parameters": {
+              "direction": "forward",
+              "ticks": 4
+            }
+          },
+          "requestedTicks": 4,
+          "startSequence": 158,
+          "releaseSequence": 162,
+          "observedIntervals": 4,
+          "reason": "interval-complete"
+        }
+      ],
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-5",
+      "after": {
+        "position": [
+          0.5,
+          64,
+          -0.3571697198364468
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "displacement": 0.8571697198364467,
+      "terminationReason": "stable"
+    },
+    {
+      "round": 2,
+      "load": true,
+      "requestedTicks": 4,
+      "injectedBlockMilliseconds": 230,
+      "before": {
+        "position": [
+          0.5,
+          64,
+          0.5
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "pressedTicks": 4,
+      "observedPhysicsTicks": 15,
+      "controls": [
+        {
+          "ordinal": 1,
+          "pressed": true
+        },
+        {
+          "ordinal": 2,
+          "pressed": true
+        },
+        {
+          "ordinal": 3,
+          "pressed": true
+        },
+        {
+          "ordinal": 4,
+          "pressed": true
+        },
+        {
+          "ordinal": 5,
+          "pressed": false
+        },
+        {
+          "ordinal": 6,
+          "pressed": false
+        },
+        {
+          "ordinal": 7,
+          "pressed": false
+        },
+        {
+          "ordinal": 8,
+          "pressed": false
+        },
+        {
+          "ordinal": 9,
+          "pressed": false
+        },
+        {
+          "ordinal": 10,
+          "pressed": false
+        },
+        {
+          "ordinal": 11,
+          "pressed": false
+        },
+        {
+          "ordinal": 12,
+          "pressed": false
+        },
+        {
+          "ordinal": 13,
+          "pressed": false
+        },
+        {
+          "ordinal": 14,
+          "pressed": false
+        },
+        {
+          "ordinal": 15,
+          "pressed": false
+        }
+      ],
+      "releases": [
+        {
+          "version": "MeasuredMotorRelease1",
+          "action": {
+            "kind": "move",
+            "parameters": {
+              "direction": "forward",
+              "ticks": 4
+            }
+          },
+          "requestedTicks": 4,
+          "startSequence": 192,
+          "releaseSequence": 196,
+          "observedIntervals": 4,
+          "reason": "interval-complete"
+        }
+      ],
+      "actualBlockMilliseconds": 230.0639169999995,
+      "eventId": "6bebb142-310c-4fb5-a720-d1bb402d27a0:event-6",
+      "after": {
+        "position": [
+          0.5,
+          64,
+          -0.3571697198364468
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "properties": {
+          "onGround": true,
+          "health": 20,
+          "food": 20,
+          "selectedSlot": 0,
+          "heldItem": null,
+          "gameMode": "survival",
+          "velocityX": 0,
+          "velocityY": -0.0784000015258789,
+          "velocityZ": 0
+        }
+      },
+      "displacement": 0.8571697198364467,
+      "terminationReason": "stable"
+    }
+  ],
+  "enginePositionReplies": [
+    "[0.5d, 64.0d, -0.3571697198364468d]",
+    "[0.5d, 64.0d, -0.3571697198364468d]",
+    "[0.5d, 64.0d, -0.3571697198364468d]",
+    "[0.5d, 64.0d, -0.3571697198364468d]",
+    "[0.5d, 64.0d, -0.3571697198364468d]",
+    "[0.5d, 64.0d, -0.3571697198364468d]"
+  ],
+  "engineDifficulty": "peaceful",
+  "loadedPressedTicks": [
+    4,
+    4,
+    4
+  ],
+  "unloadedPressedTicks": [
+    4,
+    4,
+    4
+  ],
+  "stoppedAt": "2026-09-13T02:56:44.425Z",
+  "windowsSha256": "5a28213c8e20bf615328b38f96bdc856df8a3f1371465a08821d2095b90707b1"
+}

@@ -1,0 +1,8 @@
+{
+  "stage": "initial-download-size-check",
+  "status": "failed",
+  "officialBytes": 52435200,
+  "actualBytes": 52435156,
+  "error": "metadata size differs by 44 bytes; exact official SHA256 subsequently matches",
+  "retainedAt": "2026-09-13T01:58:18.223266+00:00"
+}

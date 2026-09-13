@@ -1,0 +1,155 @@
+{
+  "version": "NativeR9FaultStop1",
+  "source": "evidence/pr3-local-sealed-consumption",
+  "sourceCommit": "f21ed79728a6c17ad99a970b2e672d72ea15eb9c",
+  "status": "fault-paused",
+  "stoppedAt": "2026-09-13T12:42:00.215Z",
+  "seconds": 320.136,
+  "counts": {
+    "decisions": 9,
+    "decisionStatuses": {
+      "executed": 4,
+      "refused": 5
+    },
+    "attempts": 9,
+    "executed": 4,
+    "refused": 5,
+    "refusalReasons": {
+      "action-start-expired": 5
+    },
+    "executedFractionOfAllDecisions": 0.4444444444444444,
+    "freshRecordedForecasts": 4,
+    "supportedExecutedForecasts": 0,
+    "supportedTaskPlans": 0,
+    "uniqueNewRealWindows": 200,
+    "activeWindows": 4,
+    "passiveWindows": 196,
+    "activeObservationWindows": 0,
+    "receiptInstrumentedWindows": 2,
+    "zeroDurationMotorExposures": 0,
+    "learningWrites": 200,
+    "passiveWrites": 196,
+    "activeWrites": 4
+  },
+  "sessionSha256": "48273ef1e54c2f16de37e93b4d5481e23c04e381a19ca70bb4ec852a1e9945ae",
+  "worldSha256": "7640ad4c0926c236aca6a1eb5214a803d646598dd771c732964781a1ef27e726",
+  "finalObservationAvailable": false,
+  "finalPlayerAgreement": null,
+  "capabilityEstablished": false,
+  "files": [
+    {
+      "source": "evidence/pr3-local-sealed-consumption/capture-audit-v2.json",
+      "path": "capture-audit-v2.json",
+      "bytes": 51304,
+      "sha256": "c00fd6c586a8529f9a5adb7392740f2d90575183433fbeda55c16d3af5d3241b"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/capture-audit-v2.log",
+      "path": "capture-audit-v2.log",
+      "bytes": 651,
+      "sha256": "bd263b438832acb745f25159b519efb071b5785b807fd34f4aa0f6f6adf4b698"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/capture-audit.json",
+      "path": "capture-audit.json",
+      "bytes": 51226,
+      "sha256": "40befaa87e6f0136ca1a5fad4011be8af1047893f29fe3fb8b574b458c6b1ba5"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/capture-audit.log",
+      "path": "capture-audit.log",
+      "bytes": 581,
+      "sha256": "6849d017d380584371e0795414f3676dbd35aa4ece88f3d590d42b4dcbb59917"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/coverage-audit.json",
+      "path": "coverage-audit.json",
+      "bytes": 245397,
+      "sha256": "2fd1d474e0f201ce66b370efc5452dd8e41b1b705a3d97457923f42913a26b28"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/coverage-audit.log",
+      "path": "coverage-audit.log",
+      "bytes": 1750,
+      "sha256": "631a579970139c0c32f7357b7ab9ebecca4c221cf10d01bfae9577e0ee1b039c"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/frame-state-audit-v2.json",
+      "path": "frame-state-audit-v2.json",
+      "bytes": 124416,
+      "sha256": "d293848b1d5e5c0704b41e3930e7c5129b84f10538d688afda496a489ec617b4"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/frame-state-audit-v2.log",
+      "path": "frame-state-audit-v2.log",
+      "bytes": 550,
+      "sha256": "a0db36a183c18c76af0744eaff676d59b788a94702f8e68a118b15c8a0b996e9"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/frame-state-audit.json",
+      "path": "frame-state-audit.json",
+      "bytes": 123925,
+      "sha256": "72a2ade5cab45cc9b123b1a37a45fbee348075c4ff6681d6793cab3059533c9f"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/frame-state-audit.log",
+      "path": "frame-state-audit.log",
+      "bytes": 448,
+      "sha256": "389cc8ecad1d548daf54001e074bf8efe7d5dd38083e9b50ea1d2fa5028a5b71"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/freshness-audit.json",
+      "path": "freshness-audit.json",
+      "bytes": 9451,
+      "sha256": "e6f53b18fb1c040b4585fee25b9d654add9e026a550b0ac6a8f9f3a92f3ea872"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/freshness-audit.log",
+      "path": "freshness-audit.log",
+      "bytes": 280,
+      "sha256": "3dcecd61e8112283ca7ee8d138db42fbf0854b0714b1287bba0d8c9d71a18a15"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/live-restore-audit.json",
+      "path": "live-restore-audit.json",
+      "bytes": 1314,
+      "sha256": "7722e0d582c259516139b0d892661df01efc5b2f634bc339a849ba81de61f5f5"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/live-restore-audit.log",
+      "path": "live-restore-audit.log",
+      "bytes": 328,
+      "sha256": "51e337d3f93d4bbf93980f47168018b17762677c965041d57d0c4bb1acd9e679"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/stopped-audit-v3.json",
+      "path": "stopped-audit-v3.json",
+      "bytes": 54853,
+      "sha256": "ba9129225923c2254c56061d044a9cf7696c78ae7f00f12081ee0a34964b1d49"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/stopped-audit-v3.log",
+      "path": "stopped-audit-v3.log",
+      "bytes": 343,
+      "sha256": "e8b98e2ecac15152edc71559459831c7587a26c35c15708184e3b6a18430da51"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/stopped-audit.log",
+      "path": "stopped-audit.log",
+      "bytes": 608,
+      "sha256": "486f09c644b7b225c39a9b21e6e569c8474ad4b541b805f0fcabe4cae466bcae"
+    },
+    {
+      "source": "evidence/pr3-local-sealed-consumption/stopped-world.tar.gz.provenance.json",
+      "path": "stopped-world.tar.gz.provenance.json",
+      "bytes": 465,
+      "sha256": "65cab9b5af03a8f2f204ad82fab48e28ac5174a03081cf6ba3da5836c25eb1a4"
+    },
+    {
+      "source": "evidence/pr3-sealed-consumption-recovery/online-run.log",
+      "path": "online-run.log",
+      "bytes": 600,
+      "sha256": "a9b1780257efb942f404be737e878a3200726764b2aeb8bf7b2fdd1308da76b7"
+    }
+  ]
+}

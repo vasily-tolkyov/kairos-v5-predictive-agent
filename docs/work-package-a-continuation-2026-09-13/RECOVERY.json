@@ -1,0 +1,23 @@
+{
+  "version": "ContinuationOfflineCheckpoint1",
+  "verifiedRemoteHeadBeforeNote": "7918e5f8e9f8ce24577fd2c2375d6172a00cde34",
+  "candidateSourcePublished": false,
+  "newNativeLaunches": 0,
+  "initialCaptureGate": {
+    "pass": 187,
+    "fail": 0
+  },
+  "candidateIntegratedGate": {
+    "tests": 197,
+    "pass": 196,
+    "fail": 1,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "remainingRegression": "ten causal stages: session decision 4 exhausts existing 128-expansion budget after correcting leaked calibration from 8/10 to 7/10",
+  "searchFixWritten": false,
+  "blocker": "409 environment_offline: Environment is not connected",
+  "workspace": "/workspace/scratch/5d0f85e4c822/kairos",
+  "plan": "Repair and verify search-state equivalence without changing support thresholds, old assertions or budgets; then run registered native check.",
+  "originalZipAccess": "unresolved"
+}

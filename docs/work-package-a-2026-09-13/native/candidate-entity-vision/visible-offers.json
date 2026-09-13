@@ -1,0 +1,455 @@
+[
+  {
+    "version": "ActionOfferV1",
+    "offerId": "3d70e813124ae891e64fb3307fc75e384a3e46350de1c010ad287d8731ccbd54",
+    "observationSequence": 25,
+    "action": {
+      "kind": "passive",
+      "parameters": {
+        "ticks": 10
+      }
+    },
+    "cue": {
+      "kind": "passive",
+      "parameters": {
+        "ticks": 10
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "d0625962b24397ea4439288c8b3f179f2dd3d317bebc325e609b68b24c2b0a3d",
+    "observationSequence": 25,
+    "action": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": -15,
+        "pitchDegrees": 0
+      }
+    },
+    "cue": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": -15,
+        "pitchDegrees": 0
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "5b8c7d2258738761225b382ae2220b3d39bd970385d82ab7ed74dcc0bdaf426a",
+    "observationSequence": 25,
+    "action": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": 15,
+        "pitchDegrees": 0
+      }
+    },
+    "cue": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": 15,
+        "pitchDegrees": 0
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "8ccbbc171d5e0a541fbbee4f029d283474153ce1ac6644fecce2f179a19d4688",
+    "observationSequence": 25,
+    "action": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": 0,
+        "pitchDegrees": -15
+      }
+    },
+    "cue": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": 0,
+        "pitchDegrees": -15
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "c0507cae24067fd20841d4d67e16b9f274d47a0ec5f75c3b1d0a1dd250636515",
+    "observationSequence": 25,
+    "action": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": 0,
+        "pitchDegrees": 15
+      }
+    },
+    "cue": {
+      "kind": "look",
+      "parameters": {
+        "yawDegrees": 0,
+        "pitchDegrees": 15
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "025cc057bb87daa68abf0676baa2348e4db8debc329d74dade0570fc5247e253",
+    "observationSequence": 25,
+    "action": {
+      "kind": "move",
+      "parameters": {
+        "direction": "forward",
+        "ticks": 4
+      }
+    },
+    "cue": {
+      "kind": "move",
+      "parameters": {
+        "direction": "forward",
+        "ticks": 4
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "9fde04f9b8d3f14f96be08dbd29ec380e7f68c4064f415e16cf8f1631afcdaef",
+    "observationSequence": 25,
+    "action": {
+      "kind": "move",
+      "parameters": {
+        "direction": "back",
+        "ticks": 4
+      }
+    },
+    "cue": {
+      "kind": "move",
+      "parameters": {
+        "direction": "back",
+        "ticks": 4
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "d1ce476ad75a5b27918bc0c1d3303c473800ce4769a68b4cd23d06bdc04df8e5",
+    "observationSequence": 25,
+    "action": {
+      "kind": "move",
+      "parameters": {
+        "direction": "left",
+        "ticks": 4
+      }
+    },
+    "cue": {
+      "kind": "move",
+      "parameters": {
+        "direction": "left",
+        "ticks": 4
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "242a2650ca9fff609bd21157da3288219140c85f8f7a8c6780cbb4b04c0a913a",
+    "observationSequence": 25,
+    "action": {
+      "kind": "move",
+      "parameters": {
+        "direction": "right",
+        "ticks": 4
+      }
+    },
+    "cue": {
+      "kind": "move",
+      "parameters": {
+        "direction": "right",
+        "ticks": 4
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "cc1e799f3177285c30e100f53a31dfe36043e7929d14c16a566ebf6d8f659778",
+    "observationSequence": 25,
+    "action": {
+      "kind": "jump",
+      "parameters": {
+        "forward": false,
+        "holdTicks": 4
+      }
+    },
+    "cue": {
+      "kind": "jump",
+      "parameters": {
+        "forward": false,
+        "holdTicks": 4
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "bb33a48bb72673a637c9823a53ab9327e9c9e97dc96807a2c8ac474fd5ba4ead",
+    "observationSequence": 25,
+    "action": {
+      "kind": "jump",
+      "parameters": {
+        "forward": true,
+        "holdTicks": 4
+      }
+    },
+    "cue": {
+      "kind": "jump",
+      "parameters": {
+        "forward": true,
+        "holdTicks": 4
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "294256efab7ba7767514d15d74a45fb7110b91ca240149537ffa8f156776a317",
+    "observationSequence": 25,
+    "action": {
+      "kind": "jump",
+      "parameters": {
+        "forward": false,
+        "holdTicks": 20
+      }
+    },
+    "cue": {
+      "kind": "jump",
+      "parameters": {
+        "forward": false,
+        "holdTicks": 20
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "e6eb0ea8d591f028a1795a5bd26c660d84a6b216704c0d10522e6cf3d571ecc2",
+    "observationSequence": 25,
+    "action": {
+      "kind": "jump",
+      "parameters": {
+        "forward": true,
+        "holdTicks": 20
+      }
+    },
+    "cue": {
+      "kind": "jump",
+      "parameters": {
+        "forward": true,
+        "holdTicks": 20
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "f688be78d193de60a0e849154b297c2e30dbb83aedaf6a40b796729ae98a8fdf",
+    "observationSequence": 25,
+    "action": {
+      "kind": "use-item",
+      "parameters": {
+        "holdTicks": 40
+      }
+    },
+    "cue": {
+      "kind": "use-item",
+      "parameters": {
+        "holdTicks": 40
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "4dbc38daa6a9b1b4febe41770e381662e8318ca1dbdd89309d79ffbff2ce38bd",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 0
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 0
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "34e2dee297dd14e5417d8cc3176a29f424b74dae5c10d95002da01d47e65b54c",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 1
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 1
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "fb71386dcf86ba3ff00f872aef521e264dafa5ac8090d8d470b8e6b46d6a9fc7",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 2
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 2
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "431a9f4f4242293b7dd7e9d6b4ab96ef12c407d6547b084147fa68bc895a2438",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 3
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 3
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "2aa62f904d678c58bc4cd2fee012d4ebd27e4925cdedb6cd3b3dbd8b557caae9",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 4
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 4
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "d7962a327aeceb930ccb8b7d27c1b72d23d91ee47bd16768679b73fb160234c1",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 5
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 5
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "2e635676a710651c9e4b141c390d530c712feab57f0bc16f9852eb1ceae873b1",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 6
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 6
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "ec0aefe40e88e1ecc6f0a839b753ea687c7ff78f74ce11e84e41afedcea40fc5",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 7
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 7
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "2bf4752d65592cd621aa7225f690b56d74a3ac9f5d947e7d023b0a8676c42156",
+    "observationSequence": 25,
+    "action": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 8
+      }
+    },
+    "cue": {
+      "kind": "select-hotbar",
+      "parameters": {
+        "slot": 8
+      },
+      "targetRole": null
+    }
+  },
+  {
+    "version": "ActionOfferV1",
+    "offerId": "2f7b50e201483066983d8763c091cfa73f5baa50949bca94eaef76065dcb80ac",
+    "observationSequence": 25,
+    "action": {
+      "kind": "attack",
+      "parameters": {},
+      "targetId": "percept-2"
+    },
+    "cue": {
+      "kind": "attack",
+      "parameters": {},
+      "targetRole": "percept"
+    }
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "version": "IndependentEntityVisibilityAudit1",
+  "status": "passed",
+  "source": "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/candidate-entity-vision",
+  "auditedAt": "2026-09-13T02:05:38.406933+00:00",
+  "bodySha256": "32ffec2d41ad4928087439a3feae05e9a61f2542c3cc84c3d5d17ad0be2eb3b0",
+  "visiblePixels": 65,
+  "occludedPixels": 0,
+  "engineHealthBefore": 20.0,
+  "engineHealthAfter": 19.06,
+  "anonymousIdentityBoundaryPassed": true,
+  "evaluatorSelectedPhysicalActions": 1,
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "evidenceSha256": {
+    "results.json": "9b581920a6608d48f1388144b6c47b90617cd748bd23358e86c486799989e373",
+    "visible.json": "e3a3f81f7108b4bc38f0a01d496e52b0b8fbe7fa1abe9d1ccfc4213e39ef8720",
+    "visible-offers.json": "a5b7ae35f78920be14f3678be1b88076b9f01bd8a93b7d9ac9f8c9246e0244e0",
+    "occluded.json": "94a8b9240802cb31471bc0d32c1586d6308de493e9b62c329cc973a01a111821",
+    "attack-window.json.gz": "db90e5098158474e60428c5e3c3bc9dfa1cbc517440d9fd58b7a8464c46869e2",
+    "frames.json.gz": "3dab8535212a36189dc8968ca0a889fbc443e897f105a38dbf7aa07809c02acd",
+    "server-evidence/minecraft-server.log": "853f4403a23a77db811d6d0d6d1595f3d666adef9c84199a2a0ca10465215f6f"
+  }
+}

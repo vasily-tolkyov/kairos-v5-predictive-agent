@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/5d0f85e4c822/kairos/scripts/check-minecraft-motor-catchup.mjs",
+    "--java",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+    "--server",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/minecraft-server-1.21.4.jar",
+    "--output",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/baseline-motor",
+    "--build",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/baseline",
+    "--expectation",
+    "exact",
+    "--port",
+    "25632"
+  ],
+  "cwd": "/workspace/scratch/5d0f85e4c822/kairos",
+  "startedAt": "2026-09-13T01:59:01.441944+00:00",
+  "scriptSha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf",
+  "bodySha256": "5e195b8810c793678474b911d0a20213ab7941d272756d48b4fc179f0fc94154",
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "scope": "Six evaluator-selected peaceful native motor calibration actions on frozen baseline build.",
+  "exitCode": 0,
+  "stoppedAt": "2026-09-13T01:59:22.042976+00:00",
+  "scriptUnchanged": true,
+  "bodyUnchanged": true
+}

@@ -1,0 +1,23 @@
+{
+  "version": "PausedOptimization1",
+  "recordedAt": "2026-09-13T13:25:24.726994+00:00",
+  "sourceHead": "0f95a5f7134dc5d8bdf2d7c77a98f3023dc01204",
+  "status": "paused-not-native-tested",
+  "reason": "Latest user instruction narrows to stage one; R9/R10 repeated backlog failures stop the old optimization direction. Preserve candidate before restoring tracked source to verified HEAD.",
+  "files": [
+    {
+      "path": "src/contextual-readout.ts",
+      "savedAs": "contextual-readout.ts",
+      "bytes": 32706,
+      "sha256": "912483efe6eff85f25dfcbc611227dafa1454acf6be21222311097fa3a8c64e4"
+    },
+    {
+      "path": "src/experience-medium.ts",
+      "savedAs": "experience-medium.ts",
+      "bytes": 82427,
+      "sha256": "21cf5c2aa734a6979a2c8181b355ba62e6a273630bad79844733270b1b487183"
+    }
+  ],
+  "patchSha256": "cc8479151b55dd4e731b1be38b8651f70859c9d354cf5894162ddde57bf8df9a",
+  "partialChecks": "Context cache alone compiled and passed two private differentials. Covariance sharing edit not compiled or tested. Neither entered an actual-machine trial. dist may still contain context-cache candidate; compile verified/new source before any execution."
+}

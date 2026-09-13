@@ -1,0 +1,38 @@
+{
+  "name": "kairos-v5-physical-control-agent",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test:next-stage": "npm run build --silent && node scripts/run-next-stage-tests.mjs",
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
+    "test": "node --test dist/test/*.test.js",
+    "test:prototype": "npm run build --silent && node scripts/run-prototype-tests.mjs",
+    "test:minecraft": "npm run build --silent && node scripts/run-minecraft-tests.mjs",
+    "test:capabilities": "npm run build --silent && node scripts/evaluate-experience.mjs",
+    "test:capabilities:legacy": "npm run build --silent && node scripts/evaluate-capabilities.mjs",
+    "test:experience": "npm run build --silent && node --test dist/test/experience-prototype.test.js dist/test/perception.test.js dist/test/minecraft-experience.test.js dist/test/prototype-boundary.test.js",
+    "minecraft:basic-action-loop-v1": "npm run build --silent && node scripts/run-minecraft-basic-action-loop-v1.mjs",
+    "minecraft:experience:live": "npm run build --silent && node scripts/evaluate-minecraft-perception.mjs",
+    "start": "node scripts/run-experience-body.mjs",
+    "start:legacy": "node dist/src/main.js",
+    "g5:neutral:canary": "npm run build --silent && node scripts/run-distributed-g5-neutral-control-v1.mjs --mode canary",
+    "g5:neutral:matrix": "npm run build --silent && node scripts/run-distributed-g5-neutral-control-v1.mjs --mode matrix",
+    "minecraft:distributed-g6-continuous-capture-v1": "npm run build --silent && node scripts/run-minecraft-distributed-g6-continuous-capture-v1.mjs",
+    "verify": "npm run build && npm test"
+  },
+  "dependencies": {
+    "mineflayer": "4.37.1",
+    "prismarine-block": "1.23.0",
+    "prismarine-viewer": "1.33.0",
+    "prismarine-world": "3.7.0",
+    "vec3": "0.1.10"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "@types/node": "24.12.0"
+  }
+}

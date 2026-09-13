@@ -1,0 +1,16 @@
+test/contextual-support-domain.test.ts(80,50): error TS2345: Argument of type '{ condition: string; neverSeen?: undefined; nuisance?: undefined; novelNumber?: undefined; } | { condition: string; neverSeen: string; nuisance?: undefined; novelNumber?: undefined; } | { condition: string; nuisance: number; novelNumber: number; neverSeen?: undefined; }' is not assignable to parameter of type 'Readonly<Record<string, PublicValue>>'.
+  Type '{ condition: string; neverSeen?: undefined; nuisance?: undefined; novelNumber?: undefined; }' is not assignable to type 'Readonly<Record<string, PublicValue>>'.
+    Property 'neverSeen' is incompatible with index signature.
+      Type 'undefined' is not assignable to type 'PublicValue'.
+test/contextual-support-domain.test.ts(95,50): error TS2345: Argument of type '{ condition?: undefined; } | { condition: number; } | { condition: string; } | { condition: null; }' is not assignable to parameter of type 'Readonly<Record<string, PublicValue>>'.
+  Type '{ condition?: undefined; }' is not assignable to type 'Readonly<Record<string, PublicValue>>'.
+    Property 'condition' is incompatible with index signature.
+      Type 'undefined' is not assignable to type 'PublicValue'.
+test/contextual-support-domain.test.ts(111,57): error TS2345: Argument of type '{ condition: 0 | "A"; nuisance?: undefined; } | { condition: 1 | "B"; nuisance?: undefined; } | { condition: string; nuisance?: undefined; } | { condition?: undefined; nuisance?: undefined; } | { ...; }' is not assignable to parameter of type 'Readonly<Record<string, PublicValue>>'.
+  Type '{ condition: 0 | "A"; nuisance?: undefined; }' is not assignable to type 'Readonly<Record<string, PublicValue>>'.
+    Property 'nuisance' is incompatible with index signature.
+      Type 'undefined' is not assignable to type 'PublicValue'.
+test/contextual-support-domain.test.ts(111,95): error TS2345: Argument of type '{ condition: 0 | "A"; nuisance?: undefined; } | { condition: 1 | "B"; nuisance?: undefined; } | { condition: string; nuisance?: undefined; } | { condition?: undefined; nuisance?: undefined; } | { ...; }' is not assignable to parameter of type 'Readonly<Record<string, PublicValue>>'.
+  Type '{ condition: 0 | "A"; nuisance?: undefined; }' is not assignable to type 'Readonly<Record<string, PublicValue>>'.
+    Property 'nuisance' is incompatible with index signature.
+      Type 'undefined' is not assignable to type 'PublicValue'.

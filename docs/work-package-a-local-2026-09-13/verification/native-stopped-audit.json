@@ -1,0 +1,323 @@
+{
+  "version": "StoppedNativeContinuingAudit2",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-native-smoke",
+  "reportSha256": "e5b27d491e502f36e9454862dff932c4bd4efd72eda457047572e90de769ee99",
+  "status": "budget-paused",
+  "stoppedAt": "2026-09-13T07:07:47.424Z",
+  "seconds": 32.591,
+  "savedWorld": {
+    "file": "world-v5-physical-control/level.dat",
+    "sha256": "beab1ec69ca75358e67ecda97fc0a572df1af320075c78a5ec81f626d02d3600",
+    "difficulty": "peaceful",
+    "gameType": 0
+  },
+  "initialPosition": [
+    -3.5,
+    71,
+    6.5
+  ],
+  "finalPosition": [
+    -3.7,
+    71,
+    6.5
+  ],
+  "decisions": 8,
+  "actualWindows": 1,
+  "windows": [
+    {
+      "file": "events/0000001.json.gz",
+      "sha256": "740605997342b5f680e8ed2b1aee0bced4d32616051ee322a49318bbc9f44545",
+      "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:event-1",
+      "first": 59,
+      "last": 75,
+      "action": "move",
+      "decision": 1
+    }
+  ],
+  "countersMatch": true,
+  "journalMismatches": [],
+  "initialWrites": 0,
+  "finalWrites": 24,
+  "frozen": false,
+  "learningDigestUnchanged": false,
+  "sources": {
+    "task": 8
+  },
+  "statuses": {
+    "refused": 7,
+    "executed": 1
+  },
+  "searchTaskPlans": [],
+  "supportedTaskPlans": [],
+  "invalidatedTaskForecasts": [
+    {
+      "index": 1,
+      "reason": "action-start-expired"
+    },
+    {
+      "index": 2,
+      "reason": "action-start-expired"
+    },
+    {
+      "index": 3,
+      "reason": "action-start-expired"
+    },
+    {
+      "index": 5,
+      "reason": "action-start-expired"
+    },
+    {
+      "index": 6,
+      "reason": "action-start-expired"
+    },
+    {
+      "index": 7,
+      "reason": "action-start-expired"
+    },
+    {
+      "index": 8,
+      "reason": "action-start-expired"
+    }
+  ],
+  "hypotheses": [],
+  "taskConfirmations": [
+    {
+      "id": "reach-other-side",
+      "expression": {
+        "kind": "predicate",
+        "predicate": {
+          "version": "GoalPredicateV1",
+          "id": "past-exit",
+          "subject": {
+            "kind": "self"
+          },
+          "observable": "position.2",
+          "comparator": "less-than",
+          "target": -5.5
+        }
+      },
+      "status": "pending",
+      "firstSatisfied": null,
+      "confirmations": 0
+    }
+  ],
+  "players": [
+    {
+      "file": "world-v5-physical-control/playerdata/136824b8-89a5-3717-81f9-1b11bd3b889d.dat",
+      "sha256": "338f5038ae94dcb8c3b315df48494063091eff8932f87089fc7160e48103bd3c",
+      "position": [
+        -3.7,
+        71,
+        6.5
+      ],
+      "health": 20,
+      "inventory": []
+    }
+  ],
+  "finalSavedPlayerMatches": true,
+  "archiveProofs": [
+    {
+      "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-native-smoke",
+      "stoppedAt": "2026-09-13T07:07:47.424Z",
+      "levelName": "world-v5-physical-control",
+      "regions": 4,
+      "output": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-native-smoke\\stopped-world.tar.gz",
+      "bytes": 2878975,
+      "sha256": "8d7fb3423ef8778f7f49374e5d07ecfa52646f626a68ad2bcb938e9ca228ccb1"
+    }
+  ],
+  "deaths": {
+    "reported": 0,
+    "serverMessages": []
+  },
+  "verifiedDecisionPositions": [],
+  "serverPositions": [],
+  "withinAction": {
+    "healthDrops": [],
+    "oxygenDrops": [],
+    "intervals": 16
+  },
+  "passive": {
+    "windows": [
+      {
+        "file": "0000001.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-1",
+        "sha256": "68b4011ee348f769a7656a0312eec8ebeffc10bce66595f568d5b73f11dd781a",
+        "first": 39,
+        "last": 40
+      },
+      {
+        "file": "0000002.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-2",
+        "sha256": "a091392533208a5d68d386099e1a9ea3e8c962c50656e5e6e84f00e6f7f9c17c",
+        "first": 40,
+        "last": 42
+      },
+      {
+        "file": "0000003.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-3",
+        "sha256": "d866907186259ceee34281002f22487d09f315e0efcadd06fbdf2f145b65114c",
+        "first": 42,
+        "last": 44
+      },
+      {
+        "file": "0000004.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-4",
+        "sha256": "22079a16ac98a67ec31abaefa522e152cd2712894f77b73e8af3e71f51b97d13",
+        "first": 44,
+        "last": 47
+      },
+      {
+        "file": "0000005.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-5",
+        "sha256": "9ee6872a9445cb82770cabc17109712d26155ac103cd233f8a329ac438cf824d",
+        "first": 47,
+        "last": 50
+      },
+      {
+        "file": "0000006.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-6",
+        "sha256": "d2452065d0412775fbb007d52132dde98bf4f544d46189e96fe1701c09e8e434",
+        "first": 50,
+        "last": 53
+      },
+      {
+        "file": "0000007.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-7",
+        "sha256": "52905363b4caa119e1d41525aefe07e2eca9a4a7ea208f97e9916ad3bfe06353",
+        "first": 53,
+        "last": 54
+      },
+      {
+        "file": "0000008.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-8",
+        "sha256": "bca051c0565198ffe5df6fecb33447d4af47dc5b95172d602c77cc9843c83e9b",
+        "first": 54,
+        "last": 55
+      },
+      {
+        "file": "0000009.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-9",
+        "sha256": "24fd74711c8918fe7aa9eb31a1828db5a9b17aa1b9be29f5306f26bc057ce09a",
+        "first": 55,
+        "last": 56
+      },
+      {
+        "file": "0000010.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-10",
+        "sha256": "c088696ab5315d07f8b4146f0522458d54ab1c4dc865b9b97aa761abf2371037",
+        "first": 56,
+        "last": 57
+      },
+      {
+        "file": "0000011.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-11",
+        "sha256": "0f80eb84e0332771889119c1e49880e9cb3e686c0f1fd86c2080429b432a7ceb",
+        "first": 57,
+        "last": 59
+      },
+      {
+        "file": "0000012.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-12",
+        "sha256": "83f0c43d45408661a71d691eac8c4fa2ec07c90d15303bb912a99ae141acc119",
+        "first": 75,
+        "last": 76
+      },
+      {
+        "file": "0000013.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-13",
+        "sha256": "448a92bddc42521fcb848c2a6897a060c4b5ab31f4c26913643cf35c22da3bbe",
+        "first": 76,
+        "last": 78
+      },
+      {
+        "file": "0000014.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-14",
+        "sha256": "b2207300d52386b2f92650ef96103c056d84df3b03c65777c6a0f821b18a41d8",
+        "first": 78,
+        "last": 80
+      },
+      {
+        "file": "0000015.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-15",
+        "sha256": "58f5bc339d350a7d3c9e11831bb7296ca03605927eb4a2ab63c1affe0a140688",
+        "first": 80,
+        "last": 81
+      },
+      {
+        "file": "0000016.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-16",
+        "sha256": "b4fc22ca320047916f5b1414e1d577a8066dcf8241777ce211fbd6c6be67c04b",
+        "first": 81,
+        "last": 83
+      },
+      {
+        "file": "0000017.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-17",
+        "sha256": "153c608c9085f782e59c2de77d68c883b2d9b11435db54e49cbc91d9cc3f214b",
+        "first": 83,
+        "last": 84
+      },
+      {
+        "file": "0000018.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-18",
+        "sha256": "6c4f7372d2aff866c2ea65fd96d90b545c479ad7232d0fc3aa37c6bad0a52ac2",
+        "first": 84,
+        "last": 85
+      },
+      {
+        "file": "0000019.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-19",
+        "sha256": "07f38a0396124aa305525ac599bfe2d4a50477622248fe17e9cbe4b1dda34b47",
+        "first": 85,
+        "last": 89
+      },
+      {
+        "file": "0000020.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-20",
+        "sha256": "4a5d7de41376545a0204529ec1139d439351d73bb9279a73cc024a2e35149935",
+        "first": 89,
+        "last": 92
+      },
+      {
+        "file": "0000021.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-21",
+        "sha256": "e0c0e427f95a86e747ba80842ddb6441f9af0cdd91e30a4b04b4fa414405a4fb",
+        "first": 92,
+        "last": 93
+      },
+      {
+        "file": "0000022.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-22",
+        "sha256": "443ed46df7de73964a80f2227fd2a4c3fb0558757a236d0a48866d530f5662a4",
+        "first": 93,
+        "last": 96
+      },
+      {
+        "file": "0000023.json.gz",
+        "id": "24920f42-2c61-4684-be94-0b80d7d6bac3:passive:event-23",
+        "sha256": "2dd22c323226e54a699f4c3a29cbe2f6d58ce31e6687d4af71b6b7010428ea27",
+        "first": 96,
+        "last": 97
+      }
+    ],
+    "intervals": 42,
+    "healthDrops": []
+  },
+  "betweenActions": {
+    "intervals": 20,
+    "coveredByPassive": 20,
+    "unrecordedIntervals": 0,
+    "netHealthLoss": 0,
+    "gaps": [
+      {
+        "before": 39,
+        "after": 59,
+        "unrecordedIntervals": 20,
+        "endpointHealthChange": 0,
+        "boundary": "Only net change between recorded endpoints is known."
+      }
+    ]
+  },
+  "limitation": "Finite evidence audit. A goal confirmation does not establish causal prerequisites, transfer benefit or lifelong competence."
+}

@@ -1,0 +1,12 @@
+{
+  "version": "StageOneByteDigestDifferential1",
+  "status": "passed",
+  "checkedWindows": 124,
+  "oldModuleSha256": "7d67950a6aab26dae59f425f02576fe83b6987c28508798dd7f57616b03a220d",
+  "newModuleSha256": "843af0fed596f74466b52cd83656ed2d4006dee064cb6710aca855ce6756b5e3",
+  "sourceReportSha256": "b251b052ea741aab16042bb0cb320b4d2b981d722973a00cb098bc0290f3178a",
+  "oldLearningMs": 1984.1834999999999,
+  "newLearningMs": 806.6743000000016,
+  "scope": "Private discarded replay only. Same measured rows, fits, pre-update predictions and support; V2 event ledger hashes exact original JSON bytes instead of canonical reordered bytes. No native actions or new independent windows.",
+  "contextDigest": "6ddf71460c471c0b78896d65f6aa9fbcd7088f2813077ab09f295f44e8e5c433"
+}

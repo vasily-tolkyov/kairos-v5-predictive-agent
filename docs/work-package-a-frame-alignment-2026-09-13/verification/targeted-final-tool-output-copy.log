@@ -1,0 +1,79 @@
+Tool-output transcription; per-test durations omitted. Test names, statuses and final summary retained. Source: exec_command chunk 8c775d, exit 0.
+Command: node --test --test-concurrency=1 dist/test/worker-action-start.test.js dist/test/body-motor-window.test.js dist/test/action-start.test.js
+The immediately preceding TypeScript build completed successfully: chunk 3cf36d exit 0, no compiler output.
+
+✔ the adapter binds a fresh synchronous forecast before the physical motor and honors a veto 
+✔ session comparisons and recorded first predictions use the action-start frame, before outcome learning 
+✔ preceding passive evidence is consumed once before the fresh forecast, then the action is learned 
+✔ a previously supported plan is refused when its actual start context loses support 
+✔ legacy delayed receipts cannot earn stale prediction, progress or local refutation credit 
+✔ a fresh failed action is refuted in its actual starting context, independent of planning drift 
+✔ a callback cannot certify a different actual action-start frame 
+✔ an asynchronous callback cannot authorize a motor across a scheduling gap 
+✔ rebinding preserves a hypothesis as an untrusted probe after waiting-time drift 
+✔ a worker-shaped body keeps advancing across async passive drain without a false synchronous forecast 
+✔ a changed retina invalidates a claimed action-start frame even when its sequence and body channels agree 
+✔ a future passive window cannot train an allegedly pre-execution forecast 
+✔ retransmitting consumed passive evidence under its old ID cannot hide changed content 
+✔ a bounded next-frame wait returns a copied real successor and removes its listeners 
+✔ a bounded silent-clock wait expires without fabricating a frame and removes its listeners 
+▶ aborted, faulted and closed observation waits settle once and release listeners
+  ✔ abort 
+  ✔ fault 
+  ✔ close 
+✔ aborted, faulted and closed observation waits settle once and release listeners 
+✔ pending preparation cancellation preserves measured passive evidence with no token or motor 
+✔ superseding a pending frame wait cancels it without stealing the succeeding preparation interval 
+✔ a dead body with no further clock ticks can prepare and execute its explicitly chosen restart after one timeout 
+✔ a stalled real sensor archives only the incomplete measured motor window and releases its controls 
+✔ a held motor keeps its requested duration and returns ongoing motion without waiting for rest 
+▶ requested motor duration survives a synchronous physics catch-up batch
+  ✔ move 
+  ✔ jump 
+  ✔ use-item 
+✔ requested motor duration survives a synchronous physics catch-up batch 
+✔ the passive port returns exactly its measured interval without motor output or waiting for stability 
+✔ death during a passive choice retains the short actual interval without completing its requested duration 
+✔ breathing comes only from owned metadata and becomes unknown at a body replacement 
+✔ death exposes an explicit restart action and no SDK restart runs before it is chosen 
+✔ a death packet ends a physical window even when the SDK stops all subsequent physics ticks 
+✔ using the held item is a measured button window, with no supplied item effect or consumption helper 
+✔ motor receipts retain real clocks and release frames before a catch-up continuation 
+✔ death records actual physical duration without rewriting the requested action or terminal sample 
+✔ zero-tick death cannot be learned as a completed positive motor interval 
+✔ invalid or inconsistent motor receipts are rejected at the real-event boundary 
+▶ fault, close and timeout archive one actual release receipt without completing an event
+  ✔ fault 
+  ✔ closed 
+  ✔ timeout 
+✔ fault, close and timeout archive one actual release receipt without completing an event 
+✔ preparation waits once for a new real frame before atomically draining passive evidence 
+✔ a single preparation captures the latest frame of a synchronous clock catch-up without retrying 
+✔ initial acquisition returns its atomic boundary even if a later worker frame arrives first 
+✔ repeated initialization keeps the original boundary and preserves preceding passive evidence once 
+✔ initial acquisition refuses to cut into an active motor window 
+✔ the asynchronous adapter predicts from its prepared frame and atomically executes that exact frame once 
+✔ a frame advancing during prediction refuses one attempt and returns every passive interval 
+✔ a controller veto cancels its token without issuing a motor or losing preparation-time passive evidence 
+✔ full-frame comparison rejects changed sensations with the same sequence 
+✔ superseded and unprepared execution tokens cannot later execute, while their passive evidence remains available 
+✔ a failed motor consumes its token and preserves preparation evidence for a later drain 
+✔ a preparation reply cannot be replaced with a newer controller cache frame 
+✔ a throwing forecast cancels its token and preserves all passive intervals for the evidence drain 
+▶ session grants execution credit only to the prepared frame, while expiry learns only intervening passive evidence
+  ✔ accepted 
+  ✔ expired 
+✔ session grants execution credit only to the prepared frame, while expiry learns only intervening passive evidence 
+✔ passive evidence from after the accepted start is rejected before outcome learning 
+✔ an unknown token cannot steal newer passive evidence ahead of a legitimate prepared window 
+✔ local preparation evidence remains retrievable after the worker and its cancellation RPC fail 
+✔ a diagnostic failure after token consumption preserves preparation evidence and prevents the motor 
+✔ frozen callbacks reject conflicting IDs before trusting or counting a passive batch 
+ℹ tests 63
+ℹ suites 0
+ℹ pass 63
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1292.0325

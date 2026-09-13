@@ -1,0 +1,1 @@
+{"status":"passed","originalSessionSha256":"48273ef1e54c2f16de37e93b4d5481e23c04e381a19ca70bb4ec852a1e9945ae","retainedOnlyUnanchoredCueMemories":8,"duplicateCheck":{"id":"ea8b8b16-90d4-4ca5-90d6-b2cd7f09ff46:event-1","rejectedWithoutStateChange":true},"output":"evidence/pr3-local-sealed-consumption/live-restore-audit.json"}

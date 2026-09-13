@@ -1,0 +1,189 @@
+{
+  "version": "FinalNativeEvidenceManifest1",
+  "files": {
+    "final-actor.tar.gz": {
+      "bytes": 1129527,
+      "sha256": "06dfecebd90f17dd5b5dd7f0f5de6b347f74d25ba869010415674a15acbb3733"
+    },
+    "final-motor/body-records.json": {
+      "bytes": 16718,
+      "sha256": "46000721d9ffb82525e726492959793f11cdeca76378f0b9cf30cb6f33a08c24"
+    },
+    "final-motor/progress.json": {
+      "bytes": 17323,
+      "sha256": "365c5e02e43bc6b1d678ea1d8844efdb278e16af9879a0e2b1e0121223c0b0c5"
+    },
+    "final-motor/results.json": {
+      "bytes": 17881,
+      "sha256": "fa5a6680d9b7599b23ba30c7190bcf69c413df439b86a6a8fee38eb04d01c897"
+    },
+    "final-motor/server-evidence/FIXTURE_SETUP.json": {
+      "bytes": 339,
+      "sha256": "f180ec52a317f4e973f760accca217d478052382053664101172584e90924df3"
+    },
+    "final-motor/server-evidence/INSTALLATION_IDENTITIES.json": {
+      "bytes": 513,
+      "sha256": "f272e748f9a4da8bd2cfbb6f12d085449abb60f22d7f0898b7695c115bfe7b83"
+    },
+    "final-motor/server-evidence/minecraft-server.log": {
+      "bytes": 16454,
+      "sha256": "fa7fe795973a71fe2b8444d36a070352dcb1b7fef483c509fc87fe9abc267bcc"
+    },
+    "final-motor/setup.json": {
+      "bytes": 657,
+      "sha256": "a0b281f9b2ac15f864ba4ac82190d9c1c14638650280a53833801f48ceadfb62"
+    },
+    "final-motor/windows.json.gz": {
+      "bytes": 818624,
+      "sha256": "7efdd3e07ea7af9d895830bea8b913e699406bfe2a7219106c5e8b5132998e35"
+    },
+    "final-worker-smoke/action-intents.jsonl": {
+      "bytes": 409892,
+      "sha256": "39f544b4dc4f2d27e16f9aa4b0ed690837ebf9e5f8b6532dd4d7a7b6f23efb89"
+    },
+    "final-worker-smoke/body-diagnostics.jsonl": {
+      "bytes": 2003,
+      "sha256": "9a9d2a4e5bce2a2dd9c20748cdd2daa47c4e361d38945a088c8bb67148b68f42"
+    },
+    "final-worker-smoke/decisions.jsonl": {
+      "bytes": 13157,
+      "sha256": "1c40e0d7517f7d03781b750447b58303cabf0c1f75f6a1b9a9cb23ae2eca6ce6"
+    },
+    "final-worker-smoke/events/0000001.json.gz": {
+      "bytes": 277236,
+      "sha256": "e3fbbb57b09e3289845bf7530b4d5bb2dedd24a4ae7dd06e6722c5141726f866"
+    },
+    "final-worker-smoke/events/0000002.json.gz": {
+      "bytes": 496907,
+      "sha256": "56e997e658abc08df9eedcbd783f03a602d023912cee69dda715af1366d01682"
+    },
+    "final-worker-smoke/events/0000003.json.gz": {
+      "bytes": 480080,
+      "sha256": "fde493f157aef830f7369ac5f59b0b2bdb32a6247adba69112c32d925441999c"
+    },
+    "final-worker-smoke/events/0000004.json.gz": {
+      "bytes": 243921,
+      "sha256": "868179fcd1befd3937c7a52c35e75fb2fb0906ade6c7e07ee16d1f348410e45e"
+    },
+    "final-worker-smoke/events/0000005.json.gz": {
+      "bytes": 63483,
+      "sha256": "cdc66559d8b5be7fa9943751491359e78b963b3803141263dee9b49954355e79"
+    },
+    "final-worker-smoke/events/0000006.json.gz": {
+      "bytes": 63474,
+      "sha256": "d411a45095a0ad104efd4e801a722aad6dc5dc87922075ef6040ce329d4dc75a"
+    },
+    "final-worker-smoke/events/0000007.json.gz": {
+      "bytes": 40931,
+      "sha256": "00de8fe7bf1f71d2ba54982fe8d4fe4fb2bb6ea645575603611b083c1e2ac77e"
+    },
+    "final-worker-smoke/events/0000008.json.gz": {
+      "bytes": 40945,
+      "sha256": "f44de7a47bd40cb8ad49b3edfcd88d269ceb56858de010578b1985fc518ed93e"
+    },
+    "final-worker-smoke/initial-observation.json": {
+      "bytes": 87057,
+      "sha256": "d8d87269a62f8ee004a75644ae326f8a0bcd489abf984a5331304f5ac766cd39"
+    },
+    "final-worker-smoke/journal-counts.json": {
+      "bytes": 118,
+      "sha256": "da9aecdc0f73acbbb8f54915fc3af2c2f18cb323250b2b7cc1598727457bbf80"
+    },
+    "final-worker-smoke/passive-events/0000001.json.gz": {
+      "bytes": 14284,
+      "sha256": "890e46b5a8b32c0fd84060e747e4b3af16f426540a4603b9d4012157d3a31fbc"
+    },
+    "final-worker-smoke/passive-events/0000002.json.gz": {
+      "bytes": 33532,
+      "sha256": "8548c2a5689c2ac2a42045f21a3d1f87a4056178d93a63a339dc00f3b4e78501"
+    },
+    "final-worker-smoke/passive-events/0000003.json.gz": {
+      "bytes": 20680,
+      "sha256": "2f2b00b3fd6c7ab991d62de6a104aab411ed1c0c67bfc9d327f518cf6333e035"
+    },
+    "final-worker-smoke/passive-events/0000004.json.gz": {
+      "bytes": 35284,
+      "sha256": "7e340f2908c2ea87d2db4ab1824201795d7dc1056b789e78cbf509ce961fce50"
+    },
+    "final-worker-smoke/passive-events/0000005.json.gz": {
+      "bytes": 12754,
+      "sha256": "5b9988a7d9479e5b175d891ae8ac7d9110795181ea513848f4dea0cc1db61336"
+    },
+    "final-worker-smoke/passive-events/0000006.json.gz": {
+      "bytes": 29668,
+      "sha256": "952314e10ed222ee5cb9b35f3a5b3d8f769e94b5d42d67596250b8de013f456b"
+    },
+    "final-worker-smoke/passive-events/0000007.json.gz": {
+      "bytes": 23996,
+      "sha256": "020f855f2bf1530f11131ed60be0a821bd946392b636d3c48c917be3994e436c"
+    },
+    "final-worker-smoke/passive-events/0000008.json.gz": {
+      "bytes": 18379,
+      "sha256": "9039747971fb2dd680209c9ca015485f96dbf8d9c62c9849f46960e6b40f501e"
+    },
+    "final-worker-smoke/passive-events/0000009.json.gz": {
+      "bytes": 23987,
+      "sha256": "b7a330b3a4fab72787f36e1d5c1552be2bd3ca38b7ab39a194e0143295a26e30"
+    },
+    "final-worker-smoke/passive-events/0000010.json.gz": {
+      "bytes": 12757,
+      "sha256": "bc1a085fda68554e80b2f19f9c22fe344e7bc8234d51fb9f3caffcfa8097b637"
+    },
+    "final-worker-smoke/passive-events/0000011.json.gz": {
+      "bytes": 18374,
+      "sha256": "d0b9ae7bb3a20599d29c8b25332432b75d353ed3506b49520dbaa997b65a9b20"
+    },
+    "final-worker-smoke/passive-events/0000012.json.gz": {
+      "bytes": 18383,
+      "sha256": "68c1445c42f72d28f377c2e6365830e0fc4738e0d433dde1ec515f1104c7b4d5"
+    },
+    "final-worker-smoke/passive-events/0000013.json.gz": {
+      "bytes": 23998,
+      "sha256": "c5cba0276badd8a56ee15ea3b164d1bf3733884aeace44c5bd25aacb34898dc4"
+    },
+    "final-worker-smoke/passive-windows.jsonl": {
+      "bytes": 1831,
+      "sha256": "2479c64acb3dc3ac61fa1661e9a4953f6d6ab1f81543c1e5a12baec936a9585b"
+    },
+    "final-worker-smoke/physical-actions.jsonl": {
+      "bytes": 119096,
+      "sha256": "6c4383d3db3eaab03a609bc03a8679b7b5d9f3f2c27d34719a02d18180ac75ed"
+    },
+    "final-worker-smoke/protocol.json": {
+      "bytes": 36734,
+      "sha256": "135721510c5f0b9f5d860d497b09d2867f27cbfeef09b3171a676e5c0a39174f"
+    },
+    "final-worker-smoke/results.json": {
+      "bytes": 142461,
+      "sha256": "8379502bf9707c04eaac2138dab1c19d6188b668d251c6759cd6e14e418e8849"
+    },
+    "final-worker-smoke/server-evidence/FIXTURE_SETUP.json": {
+      "bytes": 339,
+      "sha256": "f180ec52a317f4e973f760accca217d478052382053664101172584e90924df3"
+    },
+    "final-worker-smoke/server-evidence/INSTALLATION_IDENTITIES.json": {
+      "bytes": 525,
+      "sha256": "e7e38ba9a01dd1252c18334b3a9fd60f02ecc5406d349a159612cb7fe634d4e0"
+    },
+    "final-worker-smoke/server-evidence/minecraft-server.log": {
+      "bytes": 14399,
+      "sha256": "d5710ffb84071beebabf9dda4231fd400a8722d015f00f2d92baa06f0ab65bb8"
+    },
+    "final-worker-smoke/session.json.gz": {
+      "bytes": 724631,
+      "sha256": "92a63d934950a067922188f8d90083ba44734e9b123f6218f957a2254c33b326"
+    },
+    "final-worker-smoke/static-setup.json": {
+      "bytes": 241,
+      "sha256": "52aeee9bfa90235f29f30b201fcf9c9b605edee3d4c7d4687fd09045c45dac0f"
+    },
+    "final-worker-smoke/stopped-world.tar.gz": {
+      "bytes": 190093,
+      "sha256": "96f87c061ae77119cab1b2a30f72bceb1634503ee6f003a32c7cd4c6f3bca415"
+    },
+    "final-worker-smoke/stopped-world.tar.gz.provenance.json": {
+      "bytes": 407,
+      "sha256": "fde93dd84d93a61b328fdb9b07e72b1d1f3e7c2cfdb41febda407e28215cfdd2"
+    }
+  }
+}

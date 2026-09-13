@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "npm",
+    "ci",
+    "--offline",
+    "--ignore-scripts",
+    "--no-audit",
+    "--no-fund"
+  ],
+  "cwd": "/workspace/scratch/5d0f85e4c822/evidence/runtime/kairos-node-dependencies-v1",
+  "startedAt": "2026-09-13T02:52:07.724390+00:00",
+  "exitCode": 1,
+  "stoppedAt": "2026-09-13T02:52:08.189828+00:00"
+}

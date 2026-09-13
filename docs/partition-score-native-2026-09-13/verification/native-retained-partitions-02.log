@@ -1,0 +1,9 @@
+file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r9-sealed-consumption/dist/src/contextual-readout.js:361
+            throw new Error('duplicate-context-window');
+                  ^
+
+Error: duplicate-context-window
+    at ContextualReadout.observeWindow (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r9-sealed-consumption/dist/src/contextual-readout.js:361:19)
+    at file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/compare-native-retained-partitions.mjs:30:49
+
+Node.js v24.14.0

@@ -1,0 +1,24 @@
+{
+  "kind": "direct-local-command-capture",
+  "baselineCommit": "949cd496c0adb5a36cbb878f72e63029a3bbb874",
+  "workingDirectory": "D:/Kairos project/.kairos/worktrees/pr3-native-20260913",
+  "capture": "PowerShell redirects combined stdout and stderr directly to each log; empty build logs mean no compiler diagnostics.",
+  "runs": [
+    {"command": "node node_modules/typescript/bin/tsc -p tsconfig.json", "log": "red-build.log", "exitCode": 0},
+    {"command": "node --test --test-name-pattern='postplanning passive learning' dist/test/worker-action-start.test.js", "exactNamePattern": "postplanning passive learning", "log": "old-source-red.log", "exitCode": 1, "passed": 0, "failed": 1},
+    {"command": "node node_modules/typescript/bin/tsc -p tsconfig.json", "log": "first-candidate-build.log", "exitCode": 0},
+    {"command": "node node_modules/typescript/bin/tsc -p tsconfig.json", "log": "expanded-tests-build.log", "exitCode": 1, "note": "Two new test mocks saw an optional interface method; fixture type narrowed to its actual concrete adapter."},
+    {"command": "node node_modules/typescript/bin/tsc -p tsconfig.json", "log": "expanded-tests-build-fixed.log", "exitCode": 0},
+    {"command": "node --test --test-concurrency=1 dist/test/action-start.test.js dist/test/worker-action-start.test.js dist/test/passive-experience.test.js", "log": "targeted-first.log", "exitCode": 0, "passed": 55, "failed": 0},
+    {"command": "node node_modules/typescript/bin/tsc -p tsconfig.json", "log": "shared-frame-red-build.log", "exitCode": 0},
+    {"command": "node --test --test-name-pattern='matching passive boundary sequences' dist/test/action-start.test.js", "exactNamePattern": "matching passive boundary sequences", "log": "shared-frame-first-candidate-red.log", "exitCode": 1, "passed": 0, "failed": 5, "note": "Four child cases plus their parent. One fixture also moved its current sequence backward; corrected and rerun separately."},
+    {"command": "node node_modules/typescript/bin/tsc -p tsconfig.json", "log": "shared-frame-red-fixture-build.log", "exitCode": 0},
+    {"command": "node --test --test-name-pattern='matching passive boundary sequences' dist/test/action-start.test.js", "exactNamePattern": "matching passive boundary sequences", "log": "shared-frame-corrected-fixture-red.log", "exitCode": 1, "passed": 0, "failed": 5},
+    {"command": "node node_modules/typescript/bin/tsc -p tsconfig.json", "log": "final-build.log", "exitCode": 0},
+    {"command": "node --test --test-concurrency=1 dist/test/action-start.test.js dist/test/worker-action-start.test.js dist/test/passive-experience.test.js", "log": "targeted-final.log", "exitCode": 0, "passed": 60, "failed": 0, "durationMs": 1868.9435}
+  ],
+  "nativeActions": 0,
+  "fullGateRuns": 0,
+  "remainingProcesses": 0,
+  "limitations": ["The new drain flushes partial passive windows and changes observed window segmentation and model trajectories.", "This is software validation only; native benefit remains to be measured."]
+}

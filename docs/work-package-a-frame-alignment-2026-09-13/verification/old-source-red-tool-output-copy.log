@@ -1,0 +1,50 @@
+Tool-output copy. Source: exec_command chunk e9904b, exit 1.
+Command: node --test --test-name-pattern='preparation waits once|synchronous clock catch-up' dist/test/worker-action-start.test.js
+Actor source: unchanged c7f5d85818c89275a122c918cdfaa350879622d8; two newly added tests.
+
+✖ preparation waits once for a new real frame before atomically draining passive evidence (19.1284ms)
+✖ a single preparation captures the latest frame of a synchronous clock catch-up without retrying (0.6514ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 135.2202
+
+✖ failing tests:
+
+test at dist\test\worker-action-start.test.js:44:1
+✖ preparation waits once for a new real frame before atomically draining passive evidence (19.1284ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/worker-action-start.test.js:55:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at dist\test\worker-action-start.test.js:68:1
+✖ a single preparation captures the latest frame of a synchronous clock catch-up without retrying (0.6514ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/dist/test/worker-action-start.test.js:80:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

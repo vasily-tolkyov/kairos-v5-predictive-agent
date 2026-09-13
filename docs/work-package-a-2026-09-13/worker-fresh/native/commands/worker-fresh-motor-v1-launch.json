@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1/scripts/check-minecraft-motor-catchup.mjs",
+    "--java",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/zulu21.52.203-ca-jre21.0.12.1-linux_x64/bin/java",
+    "--server",
+    "/workspace/scratch/5d0f85e4c822/evidence/runtime/minecraft-server-1.21.4.jar",
+    "--output",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/native-a/worker-fresh-motor-v1",
+    "--build",
+    "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1/dist",
+    "--expectation",
+    "exact",
+    "--port",
+    "25637"
+  ],
+  "cwd": "/workspace/scratch/5d0f85e4c822/kairos",
+  "startedAt": "2026-09-13T02:56:25.452401+00:00",
+  "actor": "/workspace/scratch/5d0f85e4c822/kairos/evidence/builds/worker-fresh-actor-v1",
+  "sourceCommit": "85175eeb00227ff5dd6e46676bbc8e1c543c0ab8",
+  "actorManifestSha256": "ddc87fd0bdb0df4c83ab8585363a365f6a5716113a7602772a4be7e8db505c0f",
+  "bodySha256": "20b0470c669ab13798c14086fa0f567846ba572b40c883eca8a7bf3b89f622d4",
+  "scriptSha256": "01c2d9e78cecdd274b71d9db89f87863020f2cb23fab18110bf525dff72de3cf",
+  "scope": "Six isolated peaceful evaluator-selected motor calibration actions, sequentially after the stopped worker run. No learner.",
+  "evaluatorSelectedActions": 6,
+  "autonomousTrials": 0,
+  "learningWrites": 0,
+  "exitCode": 0,
+  "stoppedAt": "2026-09-13T02:56:44.550119+00:00",
+  "actorFilesUnchanged": true
+}

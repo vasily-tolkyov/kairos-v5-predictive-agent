@@ -1,0 +1,1423 @@
+{
+  "version": "NativeStateConsumptionProfile1",
+  "source": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\pr3-local-window-statistics",
+  "build": "D:\\Kairos project\\.kairos\\worktrees\\pr3-native-20260913\\evidence\\execution-builds\\pr3-local-r8-window-statistics\\dist",
+  "initialCheckpointSha256": "4459dfca985506fd01a17e9c1d5513244879758bb6082dec390157514ebbb907",
+  "realActions": 0,
+  "newIndependentWindows": 0,
+  "thetaWrites": 0,
+  "originalWindows": 161,
+  "worldDigest": "7abbbb0b0b19d7e4d5818d5ca5a232665471f8eda76bcd48a5781acf69305403",
+  "liveDigestWithEpochNormalized": "7ca10a1cf34b5debb80adf1c57968187a352b67d32955682fc66bb1eeed1cbc4",
+  "flow": {
+    "version": "ExperienceFrameFlow1",
+    "acceptedFrames": 974,
+    "lastSequence": 1012,
+    "telemetryGaps": 0,
+    "missingTraceWindows": 0,
+    "unavailableTelemetryBoundaries": 0,
+    "liveStatePayloadBytes": 2142661,
+    "liveStatePayloadLimitBytes": 16777216,
+    "retainedFrameStates": 512,
+    "deliveredThroughOrder": 0,
+    "continuity": "continuous"
+  },
+  "totals": {
+    "validationMs": 834.2363000000003,
+    "stateAndWorldMs": 5896.004000000002,
+    "worldMs": 3441.2748999999967
+  },
+  "topSelfMilliseconds": [
+    {
+      "name": "sha @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/util.js:14",
+      "milliseconds": 1208.96
+    },
+    {
+      "name": "observe @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-world.js:21",
+      "milliseconds": 1083.903
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/scripts/profile-native-state-consumption.mjs:36",
+      "milliseconds": 900.605
+    },
+    {
+      "name": "distance @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-world.js:1",
+      "milliseconds": 865.611
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/util.js:6",
+      "milliseconds": 744.083
+    },
+    {
+      "name": "extractExperienceIntervals @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-intervals.js:20",
+      "milliseconds": 306.173
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-world.js:1",
+      "milliseconds": 242.793
+    },
+    {
+      "name": "canonical @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/util.js:5",
+      "milliseconds": 218.382
+    },
+    {
+      "name": "update @ :0",
+      "milliseconds": 181.282
+    },
+    {
+      "name": "immutable @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:16",
+      "milliseconds": 169.315
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-world.js:51",
+      "milliseconds": 122.092
+    },
+    {
+      "name": "(garbage collector) @ :0",
+      "milliseconds": 121.218
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-world.js:53",
+      "milliseconds": 108.299
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/util.js:10",
+      "milliseconds": 87.134
+    },
+    {
+      "name": "post @ node:inspector:115",
+      "milliseconds": 67.867
+    },
+    {
+      "name": "copy @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:24",
+      "milliseconds": 40.59
+    },
+    {
+      "name": "projectLiveChannels @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:75",
+      "milliseconds": 30.924
+    },
+    {
+      "name": "validateChannels @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:57",
+      "milliseconds": 28.061
+    },
+    {
+      "name": "hash32 @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:67",
+      "milliseconds": 27.631
+    },
+    {
+      "name": "(program) @ :0",
+      "milliseconds": 19.85
+    },
+    {
+      "name": "validateObservation @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:130",
+      "milliseconds": 18.446
+    },
+    {
+      "name": "sensoryChannels @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:169",
+      "milliseconds": 18.28
+    },
+    {
+      "name": "#ingest @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-frame-flow.js:49",
+      "milliseconds": 13.363
+    },
+    {
+      "name": "structuredClone @ node:internal/worker/js_transferable:112",
+      "milliseconds": 13.204
+    },
+    {
+      "name": " @ file:///D:/Kairos%20project/.kairos/worktrees/pr3-native-20260913/evidence/execution-builds/pr3-local-r8-window-statistics/dist/src/experience-live-state.js:356",
+      "milliseconds": 12.037
+    }
+  ],
+  "timings": [
+    {
+      "file": "0000001.json.gz",
+      "sha256": "eb432d9bb35b216dc2601dcd7348342f50d88423ca6510a0465ed8731db20c25",
+      "frames": 11,
+      "validationMs": 12.269100000000037,
+      "stateAndWorldMs": 47.87240000000003,
+      "worldMs": 8.266200000000026
+    },
+    {
+      "file": "0000002.json.gz",
+      "sha256": "01dc16bd3047b0dca612c3726c51174b64a32898fdcb179d60cb81e17a21b9cc",
+      "frames": 6,
+      "validationMs": 4.599000000000046,
+      "stateAndWorldMs": 23.866999999999962,
+      "worldMs": 9.260700000000043
+    },
+    {
+      "file": "0000003.json.gz",
+      "sha256": "9f3adeb6f021afd99df54a68989af4663352ac77b0850ee6a02945ef1f323299",
+      "frames": 11,
+      "validationMs": 8.736999999999966,
+      "stateAndWorldMs": 34.11310000000003,
+      "worldMs": 7.892799999999966
+    },
+    {
+      "file": "0000004.json.gz",
+      "sha256": "77b3366b6fba287dbf66de5e285e2101b65265d9e8bec829863338e047607866",
+      "frames": 10,
+      "validationMs": 7.432000000000016,
+      "stateAndWorldMs": 33.559799999999996,
+      "worldMs": 9.630400000000009
+    },
+    {
+      "file": "0000005.json.gz",
+      "sha256": "05b900ac676e3d1b4862e59dd0ada70590e8f95dd092dfb5b9e86bdc21199f4a",
+      "frames": 11,
+      "validationMs": 7.741100000000074,
+      "stateAndWorldMs": 34.22479999999996,
+      "worldMs": 11.27749999999969
+    },
+    {
+      "file": "0000006.json.gz",
+      "sha256": "1a981ac3c9a8c87a9c571432f14c8efe46f77b18d22e0c9d8b2599f516fc71e1",
+      "frames": 11,
+      "validationMs": 8.460000000000036,
+      "stateAndWorldMs": 39.76189999999997,
+      "worldMs": 12.902400000000057
+    },
+    {
+      "file": "0000007.json.gz",
+      "sha256": "db91121750c9709e96bac4916f5047a56ca42f10e9ecdbe03d804d2d6f3cb156",
+      "frames": 2,
+      "validationMs": 1.7165999999999713,
+      "stateAndWorldMs": 6.960100000000011,
+      "worldMs": 1.5625
+    },
+    {
+      "file": "0000008.json.gz",
+      "sha256": "73165af8713c0371e97074cf5b107d6968b32b0a4bf33553e054cd7800297e06",
+      "frames": 7,
+      "validationMs": 5.513299999999958,
+      "stateAndWorldMs": 25.9923,
+      "worldMs": 9.245999999999981
+    },
+    {
+      "file": "0000009.json.gz",
+      "sha256": "4d9fa0951cfd793a6a1e1f8b0f303585f24eb387ff305ea4bfe573d1585cd8bc",
+      "frames": 11,
+      "validationMs": 8.942099999999982,
+      "stateAndWorldMs": 38.79320000000007,
+      "worldMs": 11.047799999999825
+    },
+    {
+      "file": "0000010.json.gz",
+      "sha256": "77efb63a71ae800ec2cb9e773c5830809356ab2d81dd1b12bad6ea2003427065",
+      "frames": 11,
+      "validationMs": 9.43649999999991,
+      "stateAndWorldMs": 35.95440000000008,
+      "worldMs": 10.624900000000139
+    },
+    {
+      "file": "0000011.json.gz",
+      "sha256": "3ef4da634dcc5710e66dac5c4c9d5ba999d2c8bdb79e9e60eac7a77d792ef0dd",
+      "frames": 8,
+      "validationMs": 5.5709000000000515,
+      "stateAndWorldMs": 25.037399999999934,
+      "worldMs": 7.227000000000089
+    },
+    {
+      "file": "0000012.json.gz",
+      "sha256": "e7d05109423f442c2d15af39b22f23b0f51ffc9f59b9e390190325056dcee693",
+      "frames": 11,
+      "validationMs": 7.522299999999973,
+      "stateAndWorldMs": 31.55880000000002,
+      "worldMs": 10.589300000000094
+    },
+    {
+      "file": "0000013.json.gz",
+      "sha256": "72f80f34e720dddbb1dd0531a7e57a0d8820ad64da86e6daa3c65c75172d576d",
+      "frames": 11,
+      "validationMs": 8.008799999999951,
+      "stateAndWorldMs": 39.0779,
+      "worldMs": 14.726600000000076
+    },
+    {
+      "file": "0000014.json.gz",
+      "sha256": "5e7d70cf12af3b0b69c224203bb5a503ff02580900e84d435b4e9f7e75ab2bea",
+      "frames": 11,
+      "validationMs": 8.75500000000011,
+      "stateAndWorldMs": 39.45779999999991,
+      "worldMs": 14.463999999999942
+    },
+    {
+      "file": "0000015.json.gz",
+      "sha256": "6d7b8471eb7cfb6d3cf35d519fc17fa41a32d37aea0e84a95ded001e4259319b",
+      "frames": 11,
+      "validationMs": 8.424999999999955,
+      "stateAndWorldMs": 40.97630000000004,
+      "worldMs": 16.164300000000367
+    },
+    {
+      "file": "0000016.json.gz",
+      "sha256": "2bf06b772fc8c03b0ea1d6de3faf67eda035c48830af76048ddfcd487a8ea750",
+      "frames": 11,
+      "validationMs": 7.83380000000011,
+      "stateAndWorldMs": 34.40779999999995,
+      "worldMs": 13.47279999999978
+    },
+    {
+      "file": "0000017.json.gz",
+      "sha256": "1765f0286263d73af2670c7d3e188cea23b09ef96334d01ffba8f7de24a54dbf",
+      "frames": 2,
+      "validationMs": 1.518199999999979,
+      "stateAndWorldMs": 6.8185000000000855,
+      "worldMs": 1.4592000000000098
+    },
+    {
+      "file": "0000018.json.gz",
+      "sha256": "e6fbd22cc29adeecb6665119475faba8764d995f608b86f75807e387a626401b",
+      "frames": 6,
+      "validationMs": 4.171700000000101,
+      "stateAndWorldMs": 20.06790000000001,
+      "worldMs": 7.853499999999713
+    },
+    {
+      "file": "0000019.json.gz",
+      "sha256": "69a149e47739a438e01e98023325298a73f7d8b5425c072dec20feedf5158ca2",
+      "frames": 11,
+      "validationMs": 8.295299999999997,
+      "stateAndWorldMs": 40.58719999999994,
+      "worldMs": 17.00019999999995
+    },
+    {
+      "file": "0000020.json.gz",
+      "sha256": "5806d6a5827d26f634743bf2b862f8a5b54a571098440cfda4ad39c064aed8cb",
+      "frames": 3,
+      "validationMs": 2.197400000000016,
+      "stateAndWorldMs": 10.567799999999806,
+      "worldMs": 3.5601000000001477
+    },
+    {
+      "file": "0000021.json.gz",
+      "sha256": "5bbf7c34c8e879f7db37c644765f22f2939cdd8bb058d718c960adc8907f8d18",
+      "frames": 11,
+      "validationMs": 8.10349999999994,
+      "stateAndWorldMs": 39.05910000000017,
+      "worldMs": 16.513299999999845
+    },
+    {
+      "file": "0000022.json.gz",
+      "sha256": "dfb71d0f5182e69076fcf4f1c27c45d10130cbeb415542f885cbd26a38a5daf0",
+      "frames": 2,
+      "validationMs": 1.4989000000000487,
+      "stateAndWorldMs": 6.886400000000094,
+      "worldMs": 2.8183000000001357
+    },
+    {
+      "file": "0000023.json.gz",
+      "sha256": "64a941a77ee14ba9cfef6ea9e09377105b4ac9f8250a8b4e7d25c4bf8c35d4ca",
+      "frames": 8,
+      "validationMs": 5.75,
+      "stateAndWorldMs": 31.480199999999968,
+      "worldMs": 13.53899999999976
+    },
+    {
+      "file": "0000024.json.gz",
+      "sha256": "e62c1940a8b5f3b37c6ecaf5c09200971964fed80b29bf46818d81b141d8148c",
+      "frames": 2,
+      "validationMs": 1.6639000000000124,
+      "stateAndWorldMs": 7.093499999999949,
+      "worldMs": 2.134900000000016
+    },
+    {
+      "file": "0000025.json.gz",
+      "sha256": "be3917e39a7f24877edf213a74b5c2af80407e5af0146500ccedeb497c8565fb",
+      "frames": 4,
+      "validationMs": 3.3349000000000615,
+      "stateAndWorldMs": 15.082099999999855,
+      "worldMs": 5.6662000000003445
+    },
+    {
+      "file": "0000026.json.gz",
+      "sha256": "8aa21d8630ce9a8631947e16542dcb2a63f086952e821409b973261ebc16eaa3",
+      "frames": 7,
+      "validationMs": 5.411799999999857,
+      "stateAndWorldMs": 29.37390000000005,
+      "worldMs": 13.140499999999747
+    },
+    {
+      "file": "0000027.json.gz",
+      "sha256": "5a22e16b551d17b28165c89c3fc3ac08492b6982bcfd8276c6d3746e68fb773e",
+      "frames": 6,
+      "validationMs": 4.251299999999901,
+      "stateAndWorldMs": 24.339100000000144,
+      "worldMs": 10.468600000000151
+    },
+    {
+      "file": "0000028.json.gz",
+      "sha256": "44a6bfa3c92eda4718dc24fbb4c18f163b335581d1b26b288975de5e4763d1cb",
+      "frames": 2,
+      "validationMs": 1.4596999999998843,
+      "stateAndWorldMs": 5.823599999999942,
+      "worldMs": 1.6970000000001164
+    },
+    {
+      "file": "0000029.json.gz",
+      "sha256": "08c15b81d3a4ba98935901c33cdb20830a42cf18209b60a612b8c9606247e140",
+      "frames": 3,
+      "validationMs": 1.9601000000000113,
+      "stateAndWorldMs": 9.757900000000063,
+      "worldMs": 4.076499999999896
+    },
+    {
+      "file": "0000030.json.gz",
+      "sha256": "5bfc7ed1e3a76ed45895ff62ccd0576350259b0b4bb6daed459fab018a2cfaa9",
+      "frames": 7,
+      "validationMs": 4.2685999999998785,
+      "stateAndWorldMs": 26.95900000000006,
+      "worldMs": 12.290900000000192
+    },
+    {
+      "file": "0000031.json.gz",
+      "sha256": "5efbb44109dd0554ef58292934ca1c54e43f685b07c4658d2ff3771d54b3c681",
+      "frames": 5,
+      "validationMs": 3.3775000000000546,
+      "stateAndWorldMs": 16.88649999999984,
+      "worldMs": 7.068099999999731
+    },
+    {
+      "file": "0000032.json.gz",
+      "sha256": "5b037723b051ea7c1f298fa9f7b0f434882951d7deeaa01b00154569f8fcf9b0",
+      "frames": 2,
+      "validationMs": 1.3011000000001332,
+      "stateAndWorldMs": 6.183899999999994,
+      "worldMs": 2.5960000000000036
+    },
+    {
+      "file": "0000033.json.gz",
+      "sha256": "74e64b5492b59eb78e082753ef1517b64361230d9d3d22e79743eddc32098e6f",
+      "frames": 5,
+      "validationMs": 3.223799999999983,
+      "stateAndWorldMs": 18.030300000000125,
+      "worldMs": 7.70699999999988
+    },
+    {
+      "file": "0000034.json.gz",
+      "sha256": "c1e39454b5813d3e31f71a4eb777bc8a7e98d4895dc7990605519c1260725222",
+      "frames": 7,
+      "validationMs": 4.84030000000007,
+      "stateAndWorldMs": 28.326299999999947,
+      "worldMs": 13.535700000000134
+    },
+    {
+      "file": "0000035.json.gz",
+      "sha256": "65aa4b40482b01a664339a5ff079e1bad01151a5f8e553b2a3f5585862414a0c",
+      "frames": 6,
+      "validationMs": 4.7917999999999665,
+      "stateAndWorldMs": 26.196500000000015,
+      "worldMs": 12.456500000000005
+    },
+    {
+      "file": "0000036.json.gz",
+      "sha256": "6ce45c8e3a1408d25126da1c04a90a158ad3f625a6d418b2d2721082d50c0e74",
+      "frames": 2,
+      "validationMs": 1.3787999999999556,
+      "stateAndWorldMs": 6.069600000000037,
+      "worldMs": 2.093399999999974
+    },
+    {
+      "file": "0000037.json.gz",
+      "sha256": "9ff2135bb6ae62957eafda415ab0822df1afcd17b65010c47d8796f36d406463",
+      "frames": 4,
+      "validationMs": 2.8006000000000313,
+      "stateAndWorldMs": 14.06529999999998,
+      "worldMs": 6.0569000000000415
+    },
+    {
+      "file": "0000038.json.gz",
+      "sha256": "d85562712dba4adaa892b2004442356ecd838ce18dedcc2836f57875ef8750de",
+      "frames": 8,
+      "validationMs": 5.152499999999918,
+      "stateAndWorldMs": 31.766700000000128,
+      "worldMs": 16.173299999999927
+    },
+    {
+      "file": "0000039.json.gz",
+      "sha256": "12a7105c9e5858dc4d6a6148b7bb598fc0f36e35cac76d72f98cae4af6d0970a",
+      "frames": 7,
+      "validationMs": 5.017599999999902,
+      "stateAndWorldMs": 30.74260000000004,
+      "worldMs": 14.986199999999826
+    },
+    {
+      "file": "0000040.json.gz",
+      "sha256": "96682a09f478d5df0312d46d2205a1b5ce2662650c812c2da0fc406e32a490d9",
+      "frames": 2,
+      "validationMs": 1.6097999999999502,
+      "stateAndWorldMs": 8.517700000000104,
+      "worldMs": 3.6192000000000917
+    },
+    {
+      "file": "0000041.json.gz",
+      "sha256": "c9167f4c6a204687de0000214a8377c1bb9dc6c2d923a4906fe0f5f4d11f6574",
+      "frames": 5,
+      "validationMs": 3.590599999999995,
+      "stateAndWorldMs": 21.626199999999926,
+      "worldMs": 10.420000000000073
+    },
+    {
+      "file": "0000042.json.gz",
+      "sha256": "8d497612aabaa0bde4a67cabbd48b0c7d9bedfb322b34b28bafac3108f65658b",
+      "frames": 7,
+      "validationMs": 4.84089999999992,
+      "stateAndWorldMs": 28.88630000000012,
+      "worldMs": 14.438499999999749
+    },
+    {
+      "file": "0000043.json.gz",
+      "sha256": "2011b9ee4f1e4d6e73e71e69af878ecff1497c3d524f2b112abd3ae96e0ccc11",
+      "frames": 7,
+      "validationMs": 4.969500000000153,
+      "stateAndWorldMs": 29.079499999999825,
+      "worldMs": 14.608199999999897
+    },
+    {
+      "file": "0000044.json.gz",
+      "sha256": "996dcabe1050c1088ae6d45fce3e63feb64860a249057acd463e149350f28a61",
+      "frames": 2,
+      "validationMs": 1.6113000000000284,
+      "stateAndWorldMs": 7.264499999999998,
+      "worldMs": 2.4523999999998978
+    },
+    {
+      "file": "0000045.json.gz",
+      "sha256": "9a51f7b84fd26c0a2ad68a8f40812c259a9010f60bd02a1973ee8a2afa336bee",
+      "frames": 5,
+      "validationMs": 3.2908000000002176,
+      "stateAndWorldMs": 18.46889999999985,
+      "worldMs": 9.190099999999802
+    },
+    {
+      "file": "0000046.json.gz",
+      "sha256": "63664d7d29e2d883ee367144db1e0dc1a373466c19cac82189c72eb3c1c890c5",
+      "frames": 8,
+      "validationMs": 5.486499999999978,
+      "stateAndWorldMs": 36.51990000000001,
+      "worldMs": 18.836699999999837
+    },
+    {
+      "file": "0000047.json.gz",
+      "sha256": "245427802f9d5816b63fc93be7a3e37a59e6e68d354696a32849a6b7a6d0d7a8",
+      "frames": 6,
+      "validationMs": 4.779800000000023,
+      "stateAndWorldMs": 29.7971,
+      "worldMs": 15.398400000000265
+    },
+    {
+      "file": "0000048.json.gz",
+      "sha256": "06bbbd349b48640d4df385790c63a3ccf9af36c691d4cc2319e00ae7e4d5b52f",
+      "frames": 2,
+      "validationMs": 1.6365000000000691,
+      "stateAndWorldMs": 7.363399999999956,
+      "worldMs": 2.592399999999998
+    },
+    {
+      "file": "0000049.json.gz",
+      "sha256": "04c35f4b3d75b5afa105bcf6d310d185618034003346435a1ba156993122e9e3",
+      "frames": 6,
+      "validationMs": 4.078099999999949,
+      "stateAndWorldMs": 26.34719999999993,
+      "worldMs": 13.360299999999825
+    },
+    {
+      "file": "0000050.json.gz",
+      "sha256": "e10884384ad9ade8b116bb57adabc3ed2fb4ef582f29438789054daee7dcd7f0",
+      "frames": 8,
+      "validationMs": 5.6159000000000106,
+      "stateAndWorldMs": 34.311500000000024,
+      "worldMs": 18.685999999999922
+    },
+    {
+      "file": "0000051.json.gz",
+      "sha256": "1e56c6b4f243fc557fa59f1ca7a2c187bfc5e5a9f0032232688b5c53d0731c74",
+      "frames": 6,
+      "validationMs": 4.628299999999854,
+      "stateAndWorldMs": 28.715400000000045,
+      "worldMs": 15.331999999999653
+    },
+    {
+      "file": "0000052.json.gz",
+      "sha256": "32a543779e08d2de9f5b3d1adfeae555030f2e920911d5728e6ab777519fdb1e",
+      "frames": 2,
+      "validationMs": 1.411200000000008,
+      "stateAndWorldMs": 6.64670000000001,
+      "worldMs": 2.625099999999975
+    },
+    {
+      "file": "0000053.json.gz",
+      "sha256": "f555f5c634256c1fadcd435aa234733eef6af93c8327ae105fe24b424fecd85d",
+      "frames": 5,
+      "validationMs": 3.6046000000001186,
+      "stateAndWorldMs": 20.746900000000096,
+      "worldMs": 10.451300000000174
+    },
+    {
+      "file": "0000054.json.gz",
+      "sha256": "a0476c111b545113134d9b2d65ab3ba1eb2e2d0373892e1e80ebdb61cf3d5cbe",
+      "frames": 9,
+      "validationMs": 6.720900000000029,
+      "stateAndWorldMs": 43.479500000000144,
+      "worldMs": 24.015200000000505
+    },
+    {
+      "file": "0000055.json.gz",
+      "sha256": "d738e89164218c032f86826ae7f5913c2eaf42ede153c40f594cf4008178a265",
+      "frames": 6,
+      "validationMs": 4.399699999999939,
+      "stateAndWorldMs": 29.13799999999992,
+      "worldMs": 15.726900000000114
+    },
+    {
+      "file": "0000056.json.gz",
+      "sha256": "9229f51883c8bbcf8e1bf6b5bde945b56f84e63357199b33d6ac2d070f580381",
+      "frames": 2,
+      "validationMs": 1.3198999999999614,
+      "stateAndWorldMs": 6.857300000000123,
+      "worldMs": 2.5734999999999673
+    },
+    {
+      "file": "0000057.json.gz",
+      "sha256": "1d8f58d434fd3ed1bef8de52936c8a4d67a9d5e29619bec94704d5347b042038",
+      "frames": 5,
+      "validationMs": 3.2167999999996937,
+      "stateAndWorldMs": 20.414200000000164,
+      "worldMs": 10.472400000000562
+    },
+    {
+      "file": "0000058.json.gz",
+      "sha256": "121e32ac8852c881385a51ed34c18d58e36ba0b0792bd4e7f4da2ab2398a239d",
+      "frames": 10,
+      "validationMs": 7.817300000000159,
+      "stateAndWorldMs": 51.23139999999967,
+      "worldMs": 29.31310000000076
+    },
+    {
+      "file": "0000059.json.gz",
+      "sha256": "93cd2d0cbafe2c0c747adab331f4984b0d46c627658b33046ca498c52e709ae7",
+      "frames": 11,
+      "validationMs": 8.183599999999842,
+      "stateAndWorldMs": 54.33420000000024,
+      "worldMs": 31.591699999999037
+    },
+    {
+      "file": "0000060.json.gz",
+      "sha256": "f04f54d0425c73fbaeb35a1ff9d15dee53d67fc9e3adc345d8a2763f69501acb",
+      "frames": 11,
+      "validationMs": 8.088799999999992,
+      "stateAndWorldMs": 56.4670000000001,
+      "worldMs": 32.72069999999985
+    },
+    {
+      "file": "0000061.json.gz",
+      "sha256": "39c263ebbe14834680f2ae86c037a3ef136955aa0e204482c9990c5506116e5b",
+      "frames": 5,
+      "validationMs": 3.948599999999715,
+      "stateAndWorldMs": 24.765000000000327,
+      "worldMs": 13.762700000000223
+    },
+    {
+      "file": "0000062.json.gz",
+      "sha256": "c621f9093e56db462dc61044ebdfe58470293538a1877fb1e326809d406fad55",
+      "frames": 11,
+      "validationMs": 8.734100000000126,
+      "stateAndWorldMs": 57.080999999999676,
+      "worldMs": 33.949199999999564
+    },
+    {
+      "file": "0000063.json.gz",
+      "sha256": "babf3ce72d3b35bc095b6869aafae276cb7ff747fb362ebd5da0e94aa4b7763b",
+      "frames": 11,
+      "validationMs": 8.564400000000205,
+      "stateAndWorldMs": 61.16809999999987,
+      "worldMs": 36.17130000000043
+    },
+    {
+      "file": "0000064.json.gz",
+      "sha256": "cb0ed6362d9e086856a97a7c1cffc0bb0e242d4e7838ca67c76370af107a3440",
+      "frames": 5,
+      "validationMs": 3.4517000000000735,
+      "stateAndWorldMs": 26.648599999999988,
+      "worldMs": 15.213199999999688
+    },
+    {
+      "file": "0000065.json.gz",
+      "sha256": "c9206088295cada6d6fec6e3b24de9aae6c2cba429a7702d3b57d2a5feaf834e",
+      "frames": 11,
+      "validationMs": 7.945900000000165,
+      "stateAndWorldMs": 59.202800000000025,
+      "worldMs": 36.03170000000091
+    },
+    {
+      "file": "0000066.json.gz",
+      "sha256": "808648ba5a7ac50183b9c64ac0c5a1058b265c8365796157c30cf0a44171d3fd",
+      "frames": 5,
+      "validationMs": 3.4371000000001004,
+      "stateAndWorldMs": 23.18820000000005,
+      "worldMs": 13.579800000000887
+    },
+    {
+      "file": "0000067.json.gz",
+      "sha256": "b3afa22b3d02ee4a4b33fa57bf8eb1374914458c8a2128bb7ccf550d7a2d3fed",
+      "frames": 11,
+      "validationMs": 8.049199999999928,
+      "stateAndWorldMs": 60.251300000000356,
+      "worldMs": 37.36590000000069
+    },
+    {
+      "file": "0000068.json.gz",
+      "sha256": "a8a1a463c95817a7a04e367393f7121cf7588cb24e5763e2612bf038236609c6",
+      "frames": 4,
+      "validationMs": 3.079699999999775,
+      "stateAndWorldMs": 17.94360000000006,
+      "worldMs": 9.616399999999885
+    },
+    {
+      "file": "0000069.json.gz",
+      "sha256": "ed02e25245733a6c7d97089558e0e8ed4728f94c011dbee54b093722592a06c3",
+      "frames": 3,
+      "validationMs": 2.085900000000038,
+      "stateAndWorldMs": 14.878700000000208,
+      "worldMs": 8.476199999999608
+    },
+    {
+      "file": "0000070.json.gz",
+      "sha256": "022f7f11564c82a00558128d188a7f063fc068c03607b414c9e4f0b13ff8078f",
+      "frames": 9,
+      "validationMs": 6.994500000000244,
+      "stateAndWorldMs": 48.10239999999976,
+      "worldMs": 29.40229999999883
+    },
+    {
+      "file": "0000071.json.gz",
+      "sha256": "6ac1bf6efffe4c23196d4674e2e6ac307f14768ae55be8f744de05d610b4a4b5",
+      "frames": 11,
+      "validationMs": 7.052200000000084,
+      "stateAndWorldMs": 64.29410000000007,
+      "worldMs": 40.440000000000964
+    },
+    {
+      "file": "0000072.json.gz",
+      "sha256": "2225bbe4c22ba1e46bfc2c7ae7aa41b59d7adae356e7bb09b097524f6e60eea6",
+      "frames": 2,
+      "validationMs": 1.5634000000000015,
+      "stateAndWorldMs": 8.432500000000346,
+      "worldMs": 4.00669999999991
+    },
+    {
+      "file": "0000073.json.gz",
+      "sha256": "79afd530a70a333e9f177456dbe38db392152e19c787c99ef42a21ee8f4e6c53",
+      "frames": 10,
+      "validationMs": 7.951100000000224,
+      "stateAndWorldMs": 59.30139999999983,
+      "worldMs": 37.555099999999584
+    },
+    {
+      "file": "0000074.json.gz",
+      "sha256": "a9a0c54eaf78cc4e09e35ed588ad398b1b74d13286a70470d52a828414185966",
+      "frames": 3,
+      "validationMs": 2.3682999999996355,
+      "stateAndWorldMs": 15.450300000000425,
+      "worldMs": 8.582499999999982
+    },
+    {
+      "file": "0000075.json.gz",
+      "sha256": "a49317623bb4eda4d64e063cd473110e8c23045419d50de2ac8c5e1662b824c9",
+      "frames": 7,
+      "validationMs": 5.530700000000252,
+      "stateAndWorldMs": 41.18849999999975,
+      "worldMs": 25.967200000000048
+    },
+    {
+      "file": "0000076.json.gz",
+      "sha256": "f00edd88b6a36ce1b1741957eb724da4ac56a9833f6fb107c1c58dc3aea52328",
+      "frames": 10,
+      "validationMs": 7.668100000000322,
+      "stateAndWorldMs": 55.83869999999979,
+      "worldMs": 35.17309999999952
+    },
+    {
+      "file": "0000077.json.gz",
+      "sha256": "88b3998636bb2f70318deed6ebb827a7a1d7782f9fcde08639c582347579aa6c",
+      "frames": 7,
+      "validationMs": 5.520300000000134,
+      "stateAndWorldMs": 41.62109999999984,
+      "worldMs": 25.427999999999884
+    },
+    {
+      "file": "0000078.json.gz",
+      "sha256": "f2498a04acf3582f5b28c2ad011a6cbd57702fa32281115e92e8d79e2ad21d48",
+      "frames": 2,
+      "validationMs": 1.434400000000096,
+      "stateAndWorldMs": 8.86999999999989,
+      "worldMs": 4.399499999999989
+    },
+    {
+      "file": "0000079.json.gz",
+      "sha256": "0e665e832c359cb2f29678726ff41801f4b7483b023bcc1928edc172c6dd0749",
+      "frames": 5,
+      "validationMs": 4.020500000000084,
+      "stateAndWorldMs": 27.663300000000163,
+      "worldMs": 16.211099999999988
+    },
+    {
+      "file": "0000080.json.gz",
+      "sha256": "f105935de5d7822cdcf59a15533bea353ab54cb401a232e987c45e9edde39037",
+      "frames": 9,
+      "validationMs": 6.3604999999997744,
+      "stateAndWorldMs": 52.64249999999993,
+      "worldMs": 33.91469999999981
+    },
+    {
+      "file": "0000081.json.gz",
+      "sha256": "f2a44c8237ec9a0b2b526c8cbfdb6b5dbabbd32cf305f4d5a8ef1ae8d9cc0b9f",
+      "frames": 8,
+      "validationMs": 5.73700000000008,
+      "stateAndWorldMs": 47.76819999999998,
+      "worldMs": 30.83029999999917
+    },
+    {
+      "file": "0000082.json.gz",
+      "sha256": "ca05a3c19f0b8dccd14866fe6cb16becb02f36f1eae7674a18c7a43a7f65ab1a",
+      "frames": 2,
+      "validationMs": 1.2035000000000764,
+      "stateAndWorldMs": 7.302300000000287,
+      "worldMs": 3.625500000000102
+    },
+    {
+      "file": "0000083.json.gz",
+      "sha256": "5337f130851646653cf1863de3e55cd5d7c55a8a9f7fdfa846d657a46dddefc9",
+      "frames": 11,
+      "validationMs": 7.527000000000044,
+      "stateAndWorldMs": 83.16949999999997,
+      "worldMs": 58.62250000000222
+    },
+    {
+      "file": "0000084.json.gz",
+      "sha256": "f5fef5042b43533296d535f4ce9503364727dab0c3deab31cc6f2d00790047ba",
+      "frames": 11,
+      "validationMs": 7.914099999999962,
+      "stateAndWorldMs": 66.8161,
+      "worldMs": 43.47800000000052
+    },
+    {
+      "file": "0000085.json.gz",
+      "sha256": "921739417039eea8f594218b936e7027fdbc601e2af7bdafbde7d1d249b6c9a8",
+      "frames": 8,
+      "validationMs": 6.207300000000032,
+      "stateAndWorldMs": 51.41580000000022,
+      "worldMs": 33.43399999999974
+    },
+    {
+      "file": "0000086.json.gz",
+      "sha256": "9677e3e0b427f74784d2d633031a6b257c86e3c6411ce42745fad4da3c6b3d4b",
+      "frames": 11,
+      "validationMs": 7.315599999999904,
+      "stateAndWorldMs": 75.3737000000001,
+      "worldMs": 52.041299999999865
+    },
+    {
+      "file": "0000087.json.gz",
+      "sha256": "abb199cc54a2bfd926956b7105cdc2157814b0117c5afd646f4a59b2f179586d",
+      "frames": 11,
+      "validationMs": 8.324499999999716,
+      "stateAndWorldMs": 79.42320000000018,
+      "worldMs": 54.91549999999961
+    },
+    {
+      "file": "0000088.json.gz",
+      "sha256": "420846517d7fdcb273a3874d1ddded86c86c89c09bd943ac6edbaf672a773644",
+      "frames": 5,
+      "validationMs": 3.5908999999996922,
+      "stateAndWorldMs": 30.251999999999953,
+      "worldMs": 19.02240000000029
+    },
+    {
+      "file": "0000089.json.gz",
+      "sha256": "20a6853041033c15fb1afa4eceeec970f887fbc246efb8034f9596adff826b78",
+      "frames": 11,
+      "validationMs": 7.652300000000196,
+      "stateAndWorldMs": 68.33140000000003,
+      "worldMs": 45.69579999999905
+    },
+    {
+      "file": "0000090.json.gz",
+      "sha256": "272a94e064225b7f137c85abb889f3cd63712a8dd2c7d7646f7c7d1525c0f9e5",
+      "frames": 7,
+      "validationMs": 5.376499999999851,
+      "stateAndWorldMs": 44.0916000000002,
+      "worldMs": 27.967599999999948
+    },
+    {
+      "file": "0000091.json.gz",
+      "sha256": "a736fa27d6b7bfe3b1479bd0a9b7539a9976fddc97c158ae8ebc68bfbebfd631",
+      "frames": 5,
+      "validationMs": 3.425299999999879,
+      "stateAndWorldMs": 24.512700000000223,
+      "worldMs": 15.210799999999836
+    },
+    {
+      "file": "0000092.json.gz",
+      "sha256": "c79a483a83bf910c1ae09fb189dc91eb8aa49df2355e086066dcba16e93c14b6",
+      "frames": 11,
+      "validationMs": 7.097899999999754,
+      "stateAndWorldMs": 67.78070000000025,
+      "worldMs": 45.185599999999795
+    },
+    {
+      "file": "0000093.json.gz",
+      "sha256": "364ba2fb0a1368397442db5c0cbf53c5c3f1c4752cbf749fc3eb8054914c961a",
+      "frames": 11,
+      "validationMs": 8.426000000000386,
+      "stateAndWorldMs": 64.8128999999999,
+      "worldMs": 42.08419999999933
+    },
+    {
+      "file": "0000094.json.gz",
+      "sha256": "87387fd7848b31e2b55f871ff324c626247aacfcd1429b5167c2a48c092ad1e5",
+      "frames": 4,
+      "validationMs": 2.4832000000001244,
+      "stateAndWorldMs": 20.491100000000188,
+      "worldMs": 12.508499999999913
+    },
+    {
+      "file": "0000095.json.gz",
+      "sha256": "94a3a5385cbc91066f2855966ca1e888218cbd1f211c02c03346b57e8a619b34",
+      "frames": 10,
+      "validationMs": 7.102499999999964,
+      "stateAndWorldMs": 61.865200000000186,
+      "worldMs": 40.71990000000051
+    },
+    {
+      "file": "0000096.json.gz",
+      "sha256": "7faa6d5c25043abdbbf3580d95a3740b44f8f384a8dfd82f320e8f8611a9bedc",
+      "frames": 3,
+      "validationMs": 2.2424000000000888,
+      "stateAndWorldMs": 13.947200000000066,
+      "worldMs": 7.910099999999602
+    },
+    {
+      "file": "0000097.json.gz",
+      "sha256": "fc4dc0917266d254090e4add8d655a4621f79cd09a92e8e57c9e87b4812e97bf",
+      "frames": 8,
+      "validationMs": 5.890699999999924,
+      "stateAndWorldMs": 46.520800000000236,
+      "worldMs": 30.18800000000101
+    },
+    {
+      "file": "0000098.json.gz",
+      "sha256": "02f51fe6792d6a668fec45b38a48f85faefe337cf5a7dab3287636891ccd2d3a",
+      "frames": 11,
+      "validationMs": 8.254899999999907,
+      "stateAndWorldMs": 66.44390000000021,
+      "worldMs": 43.02640000000156
+    },
+    {
+      "file": "0000099.json.gz",
+      "sha256": "7d85c5ea65cba5f01e66325b2597dd15a7cd279630a34a3eed1c584e4f1b1772",
+      "frames": 8,
+      "validationMs": 5.212700000000041,
+      "stateAndWorldMs": 52.04650000000038,
+      "worldMs": 33.985099999999875
+    },
+    {
+      "file": "0000100.json.gz",
+      "sha256": "96d910fc6b6e63975addbb68ff3c0cd8104919555355560b105676c6a7ffa454",
+      "frames": 2,
+      "validationMs": 1.5419000000001688,
+      "stateAndWorldMs": 9.41110000000026,
+      "worldMs": 4.659099999999853
+    },
+    {
+      "file": "0000101.json.gz",
+      "sha256": "8db3eda27addc823624e4b269ae5eb783c15e34fa9554ff89a5948637bec9e26",
+      "frames": 6,
+      "validationMs": 4.717999999999847,
+      "stateAndWorldMs": 33.67950000000019,
+      "worldMs": 21.289700000000266
+    },
+    {
+      "file": "0000102.json.gz",
+      "sha256": "81a6fa52a480f9706487463d9966f0051f6c3dc33f6f09e64397075d5510e950",
+      "frames": 10,
+      "validationMs": 6.543099999999868,
+      "stateAndWorldMs": 58.07290000000012,
+      "worldMs": 38.40769999999975
+    },
+    {
+      "file": "0000103.json.gz",
+      "sha256": "24f2a4b981af311645ccae0a13661ac5b56b14297df43985a5fc0a8ebdbb577f",
+      "frames": 9,
+      "validationMs": 6.459399999999732,
+      "stateAndWorldMs": 54.55699999999979,
+      "worldMs": 35.46220000000085
+    },
+    {
+      "file": "0000104.json.gz",
+      "sha256": "a999400a228bb650b1dc711582121d6cfdd6548d889ae45cb9e153233e511f83",
+      "frames": 2,
+      "validationMs": 1.4818999999997686,
+      "stateAndWorldMs": 8.494499999999789,
+      "worldMs": 4.119099999999889
+    },
+    {
+      "file": "0000105.json.gz",
+      "sha256": "2041ce2d9b21f6a2b2f316b13b23954caca28f78208112a99307aec8c5978774",
+      "frames": 6,
+      "validationMs": 4.245600000000195,
+      "stateAndWorldMs": 34.67950000000019,
+      "worldMs": 21.95810000000165
+    },
+    {
+      "file": "0000106.json.gz",
+      "sha256": "9f7f13e737a87716c87e2a73f4a275f2d5793d954b592afc99e8fef6c4c52099",
+      "frames": 10,
+      "validationMs": 7.3115999999999985,
+      "stateAndWorldMs": 59.06880000000001,
+      "worldMs": 38.27340000000004
+    },
+    {
+      "file": "0000107.json.gz",
+      "sha256": "73929738981d18054749cdd442bc9ec3e40cfbab4413f28167e66bb664bd4087",
+      "frames": 8,
+      "validationMs": 5.360400000000482,
+      "stateAndWorldMs": 49.444800000000214,
+      "worldMs": 31.659300000000258
+    },
+    {
+      "file": "0000108.json.gz",
+      "sha256": "c0e60c73652425973d087781a8a5938c23730cdfbeb11cb193c60e122307c75f",
+      "frames": 3,
+      "validationMs": 2.1570999999994456,
+      "stateAndWorldMs": 16.25630000000001,
+      "worldMs": 9.234399999999368
+    },
+    {
+      "file": "0000109.json.gz",
+      "sha256": "36963a7174e4ed59d13554070352bd6d2dc440a57ab6fafd2c81ef8bb74d6758",
+      "frames": 6,
+      "validationMs": 4.976400000000467,
+      "stateAndWorldMs": 36.1878999999999,
+      "worldMs": 22.786199999999553
+    },
+    {
+      "file": "0000110.json.gz",
+      "sha256": "299a19f8c0ecf8b1e93b4bcd11a7741c991e0d710327f9875545ba9c78d1b042",
+      "frames": 10,
+      "validationMs": 7.0634000000000015,
+      "stateAndWorldMs": 60.76350000000002,
+      "worldMs": 39.701100000001134
+    },
+    {
+      "file": "0000111.json.gz",
+      "sha256": "7263cc2f81d0dc405405d62a16fb7b457f41b73e68d57455873dff972a7c22f8",
+      "frames": 8,
+      "validationMs": 6.355999999999767,
+      "stateAndWorldMs": 50.5622000000003,
+      "worldMs": 32.31750000000011
+    },
+    {
+      "file": "0000112.json.gz",
+      "sha256": "2bd063786e79dac226ecba807a032e25dcb59003f29c9a2af5a63024c9260ffc",
+      "frames": 2,
+      "validationMs": 1.5021999999999025,
+      "stateAndWorldMs": 8.309499999999389,
+      "worldMs": 4.1085000000002765
+    },
+    {
+      "file": "0000113.json.gz",
+      "sha256": "9de1e903c1a251ae1bee90a62c260ef868118443936c636b609dee09b236428a",
+      "frames": 8,
+      "validationMs": 5.9067000000004555,
+      "stateAndWorldMs": 49.67239999999947,
+      "worldMs": 32.183099999998376
+    },
+    {
+      "file": "0000114.json.gz",
+      "sha256": "8e839679161ff65f6f2482839a5c9d47afdc75e40a37533e744ada80aa30ab60",
+      "frames": 11,
+      "validationMs": 7.630699999999706,
+      "stateAndWorldMs": 65.13929999999982,
+      "worldMs": 42.05569999999989
+    },
+    {
+      "file": "0000115.json.gz",
+      "sha256": "073cd37c2b2e48341737fab56115ba0cf0bc6c0de10c205ebd4f5cd0fa585f29",
+      "frames": 8,
+      "validationMs": 5.934599999999591,
+      "stateAndWorldMs": 49.23730000000069,
+      "worldMs": 31.846800000000258
+    },
+    {
+      "file": "0000116.json.gz",
+      "sha256": "ef8260f2f682b7605594352b32c2791c0400763f7522921d763f9d82487845cd",
+      "frames": 2,
+      "validationMs": 1.5433000000002721,
+      "stateAndWorldMs": 9.14429999999993,
+      "worldMs": 5.004799999999705
+    },
+    {
+      "file": "0000117.json.gz",
+      "sha256": "e95d500738bb2824decbe0b901e0f9e0195430fcaa61e25561aae31cb92d4a0b",
+      "frames": 6,
+      "validationMs": 4.403000000000247,
+      "stateAndWorldMs": 32.95329999999922,
+      "worldMs": 20.402000000000044
+    },
+    {
+      "file": "0000118.json.gz",
+      "sha256": "a4735461ebc468a1e74a9e08edc7cbb30da49642f67e7ac921d0c9a594f65f29",
+      "frames": 10,
+      "validationMs": 7.079599999999118,
+      "stateAndWorldMs": 65.49330000000009,
+      "worldMs": 43.14099999999962
+    },
+    {
+      "file": "0000119.json.gz",
+      "sha256": "1a49e4bbf9cd6456f9f936d824ac74ba581d2245dec7f481244a941d75c120ba",
+      "frames": 7,
+      "validationMs": 5.122699999999895,
+      "stateAndWorldMs": 42.716699999999946,
+      "worldMs": 26.465299999999843
+    },
+    {
+      "file": "0000120.json.gz",
+      "sha256": "6acc036b57950d5763a0338ebdc9b61ea7925795b48a05ab6742de9ad3cd2e40",
+      "frames": 2,
+      "validationMs": 1.4917999999997846,
+      "stateAndWorldMs": 9.798699999999371,
+      "worldMs": 5.002300000000105
+    },
+    {
+      "file": "0000121.json.gz",
+      "sha256": "db72b8dc973057b1176dc6c604a9b28f22420f01b155375b41c0ccb5b1ebeb48",
+      "frames": 6,
+      "validationMs": 5.048999999999978,
+      "stateAndWorldMs": 36.842899999999645,
+      "worldMs": 23.61110000000008
+    },
+    {
+      "file": "0000122.json.gz",
+      "sha256": "54c7e3e9e751f8848cf37f62bce108e1f50f75415b2b2f9c814d4bc8d5524856",
+      "frames": 10,
+      "validationMs": 6.803799999999683,
+      "stateAndWorldMs": 61.43000000000029,
+      "worldMs": 40.16719999999896
+    },
+    {
+      "file": "0000123.json.gz",
+      "sha256": "949a611a20cfe8e31422e700873afad83855231aac93cb6e89a4b2d9bc667429",
+      "frames": 8,
+      "validationMs": 6.481100000000879,
+      "stateAndWorldMs": 48.94759999999951,
+      "worldMs": 31.72649999999976
+    },
+    {
+      "file": "0000124.json.gz",
+      "sha256": "707ab6df56f759b3eec970644738b6ad0354367cd914246aa4406e4e95e423e4",
+      "frames": 2,
+      "validationMs": 1.4975000000004002,
+      "stateAndWorldMs": 8.868399999999383,
+      "worldMs": 4.660899999999856
+    },
+    {
+      "file": "0000125.json.gz",
+      "sha256": "64b5b67c5929e355caba6e6bfbe2de544fe9ab79090fe08ad11e9cf87581e038",
+      "frames": 6,
+      "validationMs": 4.281500000000051,
+      "stateAndWorldMs": 34.45980000000054,
+      "worldMs": 22.305099999998674
+    },
+    {
+      "file": "0000126.json.gz",
+      "sha256": "0b75515247ae366f4d0f60ef97b89fbc5482766b2ba651f93a48a9d5eabc2535",
+      "frames": 10,
+      "validationMs": 7.178899999999885,
+      "stateAndWorldMs": 60.24579999999969,
+      "worldMs": 39.26470000000063
+    },
+    {
+      "file": "0000127.json.gz",
+      "sha256": "7f7f01475924c0d1d6244b329ffc63d78e17718ba79451cb1b0b21a315a37717",
+      "frames": 8,
+      "validationMs": 6.221300000000156,
+      "stateAndWorldMs": 47.21349999999984,
+      "worldMs": 29.654700000000958
+    },
+    {
+      "file": "0000128.json.gz",
+      "sha256": "52c44829904ce5319335d623247cfa620b416301b5f5d48130cf4609ec19aef2",
+      "frames": 2,
+      "validationMs": 1.3783000000003085,
+      "stateAndWorldMs": 8.99290000000019,
+      "worldMs": 4.464699999999539
+    },
+    {
+      "file": "0000129.json.gz",
+      "sha256": "6fee99dba37112c963ae1261055c5bd1fb76ab592d3509f6bd17373e2aaf5aa7",
+      "frames": 9,
+      "validationMs": 7.188299999999799,
+      "stateAndWorldMs": 57.50619999999981,
+      "worldMs": 37.282099999999446
+    },
+    {
+      "file": "0000130.json.gz",
+      "sha256": "0cd8b421d17a869b82ecb2c8ca2fce86af2ae0e4825a63490662243a3ed55ea3",
+      "frames": 11,
+      "validationMs": 8.019800000000032,
+      "stateAndWorldMs": 63.17880000000059,
+      "worldMs": 41.63890000000174
+    },
+    {
+      "file": "0000131.json.gz",
+      "sha256": "2d538e54ec2d3f3a1f35eda6bb72bc2e3100246ebb431d464636189eff3f8aae",
+      "frames": 2,
+      "validationMs": 1.3064999999996871,
+      "stateAndWorldMs": 8.402399999999943,
+      "worldMs": 4.037600000000566
+    },
+    {
+      "file": "0000132.json.gz",
+      "sha256": "294b40d485d8aa0b8cf7050ba591d3056c76c7bf1c5758f2b204b77e22bbc5c9",
+      "frames": 10,
+      "validationMs": 6.938100000000304,
+      "stateAndWorldMs": 65.59270000000015,
+      "worldMs": 44.263199999998506
+    },
+    {
+      "file": "0000133.json.gz",
+      "sha256": "ba40829376df733f7691dcf8733c18ef999dbaea57a20f76f50849dda2538d2f",
+      "frames": 2,
+      "validationMs": 1.575699999999415,
+      "stateAndWorldMs": 8.920900000000074,
+      "worldMs": 4.349499999999352
+    },
+    {
+      "file": "0000134.json.gz",
+      "sha256": "2646e863b810ff63942038492bd2d0775f39dd00d9cc25cd0ab2641c67dbf649",
+      "frames": 11,
+      "validationMs": 7.193599999999606,
+      "stateAndWorldMs": 67.10600000000068,
+      "worldMs": 43.92559999999867
+    },
+    {
+      "file": "0000135.json.gz",
+      "sha256": "f316ddee3216975d3b88a77d2ed4736fbc3b0fa23fd1aec74e646e51a0111c80",
+      "frames": 11,
+      "validationMs": 7.626299999999901,
+      "stateAndWorldMs": 72.02179999999953,
+      "worldMs": 48.23949999999968
+    },
+    {
+      "file": "0000136.json.gz",
+      "sha256": "20f35d34daf073f8abd36ccf42226213eb0185d48c075a4874dd7b05c7d8f663",
+      "frames": 11,
+      "validationMs": 8.083299999999326,
+      "stateAndWorldMs": 64.96460000000025,
+      "worldMs": 42.98710000000028
+    },
+    {
+      "file": "0000137.json.gz",
+      "sha256": "148a5e838c606179ccf4ef777ab356d137788af8bcd1fe8d1e4e67dae277a839",
+      "frames": 11,
+      "validationMs": 8.069099999999708,
+      "stateAndWorldMs": 66.58750000000055,
+      "worldMs": 44.35559999999896
+    },
+    {
+      "file": "0000138.json.gz",
+      "sha256": "93edaba509bc726af1f15870d68652439ed65cbbb5fb2387473345f0d7123440",
+      "frames": 11,
+      "validationMs": 8.556499999999687,
+      "stateAndWorldMs": 67.28880000000026,
+      "worldMs": 43.45080000000053
+    },
+    {
+      "file": "0000139.json.gz",
+      "sha256": "aae3b86a9c0d21ea6a670ff8ab2dee1c4bc90444427e7db6c90f6c270412d384",
+      "frames": 11,
+      "validationMs": 8.158000000000357,
+      "stateAndWorldMs": 67.79079999999976,
+      "worldMs": 45.19200000000092
+    },
+    {
+      "file": "0000140.json.gz",
+      "sha256": "ef6a2549f7baf71b46792414e52b4919ff4f8f9fec9b59c945a635fdf5c3310d",
+      "frames": 3,
+      "validationMs": 2.0625,
+      "stateAndWorldMs": 14.914800000000469,
+      "worldMs": 8.792500000000473
+    },
+    {
+      "file": "0000141.json.gz",
+      "sha256": "1668f9ecae4d1aaf1d32935c26fb7acc68e8b936e76dc07464e0213dd47564a6",
+      "frames": 5,
+      "validationMs": 3.5425999999997657,
+      "stateAndWorldMs": 29.09230000000025,
+      "worldMs": 18.44539999999961
+    },
+    {
+      "file": "0000142.json.gz",
+      "sha256": "2ded984bdad26606cf16573ba372e55f77757b667b9530576c584a50d6dd26d5",
+      "frames": 11,
+      "validationMs": 7.724299999999857,
+      "stateAndWorldMs": 65.67420000000038,
+      "worldMs": 43.47359999999844
+    },
+    {
+      "file": "0000143.json.gz",
+      "sha256": "f99010637603c5960c94efacc195078367d2c83acb6e39e93cff53a793bec767",
+      "frames": 3,
+      "validationMs": 2.315799999999399,
+      "stateAndWorldMs": 16.59650000000056,
+      "worldMs": 9.698099999999613
+    },
+    {
+      "file": "0000144.json.gz",
+      "sha256": "1e6e82c77890fa84fcf6c6d8853629d1de96461cc456906417e940d12084c9d3",
+      "frames": 11,
+      "validationMs": 8.862600000000384,
+      "stateAndWorldMs": 70.73949999999968,
+      "worldMs": 45.96569999999974
+    },
+    {
+      "file": "0000145.json.gz",
+      "sha256": "a4200517f9c93fb38b696c1ace3b6c2826d38aeb07a7c4c02703ad3a97583e93",
+      "frames": 4,
+      "validationMs": 2.520300000000134,
+      "stateAndWorldMs": 20.195300000000316,
+      "worldMs": 12.487100000000282
+    },
+    {
+      "file": "0000146.json.gz",
+      "sha256": "6bdcfe28533e9efbbec00276b2f5f017583fd4f8e5772dc7eb0f2d1488a9069d",
+      "frames": 11,
+      "validationMs": 7.900200000000041,
+      "stateAndWorldMs": 62.9992000000002,
+      "worldMs": 40.797599999999875
+    },
+    {
+      "file": "0000147.json.gz",
+      "sha256": "ce43ff728d56597b1eb154c0fefa3adeec31959536e504375471c737f853f656",
+      "frames": 4,
+      "validationMs": 2.8977999999997337,
+      "stateAndWorldMs": 24.1246000000001,
+      "worldMs": 14.741299999999683
+    },
+    {
+      "file": "0000148.json.gz",
+      "sha256": "98e031b6a7a4506e4b02aa7f9c79f72915cb1cabffa37c9f17d4479e08c44ec2",
+      "frames": 4,
+      "validationMs": 3.12920000000031,
+      "stateAndWorldMs": 23.376800000000003,
+      "worldMs": 13.96349999999893
+    },
+    {
+      "file": "0000149.json.gz",
+      "sha256": "68382f8a2eff9098f4a2b656703cf7e3f1ab7611d22a209b54069ea0e6f78252",
+      "frames": 9,
+      "validationMs": 6.298999999999978,
+      "stateAndWorldMs": 53.14649999999983,
+      "worldMs": 34.83679999999822
+    },
+    {
+      "file": "0000150.json.gz",
+      "sha256": "af8092e3fa88002c4e546fdf95d5344c20c822a1d3b2043fa28f391ee97a50ce",
+      "frames": 11,
+      "validationMs": 8.597400000000562,
+      "stateAndWorldMs": 67.01479999999992,
+      "worldMs": 43.973399999998946
+    },
+    {
+      "file": "0000151.json.gz",
+      "sha256": "2c5bf78163e8fa1e20fe08285cbf838650c0f79b77d4428d5ec315c1e26483e1",
+      "frames": 4,
+      "validationMs": 2.5921000000007552,
+      "stateAndWorldMs": 19.118899999999485,
+      "worldMs": 11.930499999999483
+    },
+    {
+      "file": "0000152.json.gz",
+      "sha256": "74f80413ff7913d136162faec1fcdf3bfd818759eafa951337dfea4d958e025e",
+      "frames": 10,
+      "validationMs": 7.296600000000581,
+      "stateAndWorldMs": 65.86269999999968,
+      "worldMs": 43.733399999999165
+    },
+    {
+      "file": "0000153.json.gz",
+      "sha256": "3a79bad959f7f8f3f0677d3722d4df16af34667bc6a9e0c4c8ab2ab0be95b2dc",
+      "frames": 3,
+      "validationMs": 2.3969000000006417,
+      "stateAndWorldMs": 16.45849999999973,
+      "worldMs": 9.219199999999546
+    },
+    {
+      "file": "0000154.json.gz",
+      "sha256": "7909f94c55a08938aa09b57eaced08046a5867780b7fc7e958a587aa610adee5",
+      "frames": 7,
+      "validationMs": 4.941299999999501,
+      "stateAndWorldMs": 41.303499999999985,
+      "worldMs": 26.36959999999999
+    },
+    {
+      "file": "0000155.json.gz",
+      "sha256": "b4aebe1767daafaf002b026462a5860091b5b1d8958cb491609873bbe082372b",
+      "frames": 11,
+      "validationMs": 7.543099999999868,
+      "stateAndWorldMs": 64.27999999999975,
+      "worldMs": 42.470900000003894
+    },
+    {
+      "file": "0000156.json.gz",
+      "sha256": "ecd798e441ba504e766fd83a8b92764bc3cd03c5d088deb48660f688cb063489",
+      "frames": 9,
+      "validationMs": 6.492699999999786,
+      "stateAndWorldMs": 55.12049999999999,
+      "worldMs": 36.0639000000001
+    },
+    {
+      "file": "0000157.json.gz",
+      "sha256": "733ca4b1a8ad032449cddf2e4c9e4b4935859b674ec168cecdeb8ea5851f0b12",
+      "frames": 3,
+      "validationMs": 2.264299999999821,
+      "stateAndWorldMs": 14.322500000000218,
+      "worldMs": 8.274500000001353
+    },
+    {
+      "file": "0000158.json.gz",
+      "sha256": "3842734d0f57e0ddf76fd9b6273afc85b8ea6167333564529e01d8028a9f7c6e",
+      "frames": 6,
+      "validationMs": 4.371100000000297,
+      "stateAndWorldMs": 35.57679999999982,
+      "worldMs": 22.899599999999737
+    },
+    {
+      "file": "0000159.json.gz",
+      "sha256": "aa7248765c491710a2092039186247d24f5c8448b936bc36b82a19cdda30cfc9",
+      "frames": 11,
+      "validationMs": 7.972800000000461,
+      "stateAndWorldMs": 70.05189999999948,
+      "worldMs": 45.879799999999705
+    },
+    {
+      "file": "0000160.json.gz",
+      "sha256": "004da59fda0297c98bd14e83f44c08d72f4edc2ec3b593ade1d86558c52560dc",
+      "frames": 8,
+      "validationMs": 6.340500000000247,
+      "stateAndWorldMs": 46.57299999999941,
+      "worldMs": 30.10030000000006
+    },
+    {
+      "file": "0000161.json.gz",
+      "sha256": "85132d353cb528d0e2ac4643f208e23b775f698fe4b5b95090aad69c0dc8ec6d",
+      "frames": 2,
+      "validationMs": 1.3596999999999753,
+      "stateAndWorldMs": 8.56840000000011,
+      "worldMs": 4.135400000000118
+    }
+  ],
+  "scope": "Private state/world CPU diagnostic on an unchanged archived passive stream. No native callback, new experience, action or capability evidence."
+}
