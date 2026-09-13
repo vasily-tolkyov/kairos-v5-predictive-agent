@@ -29,6 +29,7 @@ function fixture() {
   } };
   const protocol = new MinecraftActionStartProtocol(body, receipt => diagnostics.push(receipt));
   const connection = { latest: body.latest, synchronousActionStart: false,
+    startObservation: async () => protocol.startObservation(),
     listActionOffers: (observation: Observation) => [offer(observation)],
     describeActionRequirement: () => ({ satisfied: true }) as never,
     takePassiveEvents: async () => protocol.drainPassiveEvents(),
@@ -41,6 +42,33 @@ function fixture() {
     get current() { return current; }, set current(value: Observation) { current = value; },
     get calls() { return calls; }, advance() { const before = current; current = frame(before.sequence + 1); pending.push(passive(before, current)); } };
 }
+
+test('initial acquisition returns its atomic boundary even if a later worker frame arrives first', async () => {
+  const f = fixture();
+  f.connection.startObservation = async () => {
+    const captured = f.protocol.startObservation(); f.advance(); return captured;
+  };
+  const initial = await f.environment.initialize();
+  assert.equal(initial.sequence, 1); assert.equal(f.current.sequence, 2);
+  assert.deepEqual(f.environment.listActionOffers(initial).map(o => o.observationSequence), [1]);
+  const pending = await f.environment.drainPassiveEvents();
+  assert.deepEqual(pending.map(e => e.frames.map(o => o.sequence)), [[1, 2]]);
+});
+test('repeated initialization keeps the original boundary and preserves preceding passive evidence once', async () => {
+  const f = fixture(); f.advance();
+  const initial = await f.environment.initialize(); f.advance();
+  assert.strictEqual(await f.environment.initialize(), initial);
+  assert.deepEqual((await f.environment.drainPassiveEvents()).map(e => e.frames.map(o => o.sequence)), [[1, 2], [2, 3]]);
+  assert.equal((await f.environment.drainPassiveEvents()).length, 0);
+  assert.equal(f.calls, 0);
+});
+test('initial acquisition refuses to cut into an active motor window', async t => {
+  const f = fixture(); let release!: () => void;
+  t.mock.method(f.body, 'execute', async () => { await new Promise<void>(resolve => release = resolve); throw new Error('test-stop'); });
+  const execution = f.protocol.execute(action);
+  assert.throws(() => f.protocol.startObservation(), /during-a-motor/);
+  release(); await assert.rejects(execution, /test-stop/);
+});
 
 test('the asynchronous adapter predicts from its prepared frame and atomically executes that exact frame once', async () => {
   const f = fixture(); f.advance(); const before = await f.environment.observe();

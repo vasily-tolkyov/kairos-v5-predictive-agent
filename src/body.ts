@@ -608,6 +608,11 @@ export class MinecraftBody extends EventEmitter {
     // newest frame before touching Minecraft.
     return describeActionRequirement(actionCue, observation);
   }
+  startObservation(): { observation: Observation; precedingPassiveEvents: readonly RealEvent[] } {
+    // Start acquisition and capture its boundary before yielding to a tick.
+    const precedingPassiveEvents = this.takePassiveEvents();
+    return { observation: this.latest(), precedingPassiveEvents };
+  }
   takePassiveEvents(): readonly RealEvent[] {
     assert(!this.#executing, 'cannot-drain-passive-observation-during-a-motor');
     if (!this.#passive) {

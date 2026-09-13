@@ -12,12 +12,12 @@ if (!isMainThread) {
   body.on('fault', error => parentPort.postMessage({ kind: 'fault', error: String(error.message) }));
   parentPort.on('message', async ({ id, method, args }) => {
     try {
-      if (!['ready', 'execute', 'takePassiveEvents', 'prepareActionStart', 'executePrepared', 'cancelActionStart',
+      if (!['ready', 'startObservation', 'execute', 'takePassiveEvents', 'prepareActionStart', 'executePrepared', 'cancelActionStart',
         'waitForObservationAfter', 'close'].includes(method))
         throw new Error('unsupported-body-operation');
       if (method === 'close') starts.invalidate('body-closed');
       const value = await (method === 'takePassiveEvents' ? starts.drainPassiveEvents()
-        : ['execute', 'prepareActionStart', 'executePrepared', 'cancelActionStart'].includes(method)
+        : ['startObservation', 'execute', 'prepareActionStart', 'executePrepared', 'cancelActionStart'].includes(method)
           ? starts[method](...args) : body[method](...args));
       parentPort.postMessage({ id, value, observation: method === 'close' ? null : body.latest() });
     } catch (error) { parentPort.postMessage({ id, error: String(error.stack ?? error) }); }
@@ -71,6 +71,7 @@ export class MinecraftBodyConnection {
     return this.#observation;
   }
   ready() { return this.#call('ready'); }
+  startObservation() { return this.#call('startObservation'); }
   listActionOffers(observation = this.latest()) { return MinecraftBody.actionOffers(observation); }
   describeActionRequirement(cue, observation = this.latest()) { return describeActionRequirement(cue, observation); }
   execute(action, scope) { return this.#call('execute', action, scope); }

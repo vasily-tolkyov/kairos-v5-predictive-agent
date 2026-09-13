@@ -29,6 +29,7 @@ export function anonymousObservation(observation: Observation): Observation {
 export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
   #rawFrames = new WeakMap<Observation, Observation>();
   #undeliveredPassive: readonly RealEvent[] = [];
+  #initialization: Promise<Observation> | null = null;
   #anonymous(raw: Observation): Observation {
     const observation = anonymousObservation(raw); this.#rawFrames.set(observation, raw); return observation;
   }
@@ -44,7 +45,19 @@ export class MinecraftExperienceEnvironment implements ExperienceEnvironment {
     'latest' | 'listActionOffers' | 'describeActionRequirement' | 'execute' | 'waitForObservationAfter'>
     & { takePassiveEvents?(): readonly RealEvent[] | Promise<readonly RealEvent[]>;
       /** Only an in-process body can guarantee capture before its first await. */
-      readonly synchronousActionStart?: boolean } & Partial<ConditionalMinecraftBody>) {}
+      readonly synchronousActionStart?: boolean } & Partial<Omit<ConditionalMinecraftBody, 'startObservation'>>
+      & { startObservation?(): { observation: Observation; precedingPassiveEvents: readonly RealEvent[] }
+        | Promise<{ observation: Observation; precedingPassiveEvents: readonly RealEvent[] }> }) {}
+  initialize(): Promise<Observation> {
+    return this.#initialization ??= (async () => {
+      if (!this.body.startObservation) throw new Error('atomic-initial-observation-unavailable');
+      const captured = await this.body.startObservation();
+      this.#undeliveredPassive = [...this.#undeliveredPassive, ...captured.precedingPassiveEvents.map(event => this.#passive(event))];
+      // The transport may already have cached a later frame. Preserve the
+      // exact acquisition boundary returned by the worker operation.
+      return this.#anonymous(captured.observation);
+    })();
+  }
   #passive(event: RealEvent): RealEvent {
     const frames = event.frames.map(frame => this.#anonymous(frame));
     return { ...event, frames, attentionId: frames[0]!.perception?.attendedId,

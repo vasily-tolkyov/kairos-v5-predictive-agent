@@ -6,7 +6,7 @@ import { resolve } from 'node:path';
 const names = ['open-world', 'experience-prototype', 'perception', 'minecraft-experience', 'prototype-boundary',
   'grounded-goal', 'body-action-requirements', 'exact-public-block-hit', 'public-action-requirement-bridge',
   'dig-action-window', 'interact-observation-window', 'body-motor-window', 'entity-retina', 'block-optics', 'passive-experience', 'new-visible-surface', 'prediction-ranges',
-  'contextual-support-domain', 'measured-motor-learning', 'action-start', 'worker-action-start'];
+  'contextual-support-domain', 'measured-motor-learning', 'action-start', 'worker-action-start', 'window-calibration'];
 // Match the already documented serial integration protocol. Native planning
 // deadlines and every existing test assertion remain unchanged.
 const child = spawn(process.execPath, ['--test', '--test-concurrency=1', ...names.map(name => resolve('dist/test', name + '.test.js'))], { stdio: 'inherit' });

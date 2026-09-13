@@ -2,7 +2,7 @@ import type { ActionCue, Observation, PublicObject, PublicValue, RealEvent, XYZ 
 import { measuredMotorCueV1, validateEvent } from './events.js';
 import { bodyToWorld, worldToBody } from './perception.js';
 import { sha } from './util.js';
-import { ContextualReadout, type ContextualReadoutSnapshot } from './contextual-readout.js';
+import { ContextualReadout, type ContextualReadoutSnapshot, type ContextualWindowRow } from './contextual-readout.js';
 import { ExperienceLedger } from './experience-ledger.js';
 import { addRanges, hull, pointRange, rotateRanges, scaleRange, type NumericRange, type NumericRanges } from './numeric-ranges.js';
 
@@ -17,7 +17,8 @@ interface Head {
   numericMeans: number[];
 }
 interface MotionEstimate { mean: number[]; covariance: number[][]; information: number[][]; variance: number;
-  observations: number; correct: number; error: number }
+  observations: number; correct: number; error: number;
+  calibration?: { windowId: string; error: number; residual: number }[] }
 interface Network { inputs: string[]; ranges: [number, number][]; weights: number[][]; bias: number[]; heads: Head[];
   observations: number; motion?: MotionEstimate }
 export interface ExperienceMediumSnapshot {
@@ -238,13 +239,28 @@ export class ExperienceMedium {
       supported: head.observations >= 8 && quality >= .8
         && (head.numeric ? uncertainty <= .05 : margin > 1e-8) };
   }
-  #learnMotion(network: Network, normal: readonly number[], displacement: number, sensorResidual: number): boolean {
+  #learnMotion(network: Network, normal: readonly number[], displacement: number, sensorResidual: number,
+    windowId: string, rows: ContextualWindowRow[], state: State, prior?: MotionEstimate): boolean {
     const estimate = network.motion ??= { mean: [0, 0, 0], covariance: [[1000, 0, 0], [0, 1000, 0], [0, 0, 1000]],
       information: [[0, 0, 0], [0, 0, 0], [0, 0, 0]], variance: 0, observations: 0, correct: 0, error: 0 };
     // n·motion = measured plane displacement. Different views add independent
     // constraints; one plane never supplies its unobservable tangent motion.
     const error = displacement - normal.reduce((sum, v, i) => sum + v * estimate.mean[i]!, 0);
-    const correct = estimate.observations > 0 && Math.abs(error) <= tolerance(displacement);
+    const residual = prior ? Math.max(sensorResidual,
+      Math.abs(displacement - normal.reduce((sum, v, i) => sum + v * prior.mean[i]!, 0))) : null;
+    // A plane's two normal signs encode the same measured constraint.
+    const sign = normal.find(v => Math.abs(v) > 1e-10)! < 0 ? -1 : 1;
+    rows.push({ input: { ...state, ...Object.fromEntries(normal.map((v, i) => ['plane/normal/' + i, v * sign])) },
+      targets: [['plane/motion', 0, displacement * sign]],
+      ...(residual === null ? {} : { externalErrors: { 'plane/motion': Math.min(20, residual / tolerance(displacement)) } }) });
+    if (residual !== null) {
+      const calibration = estimate.calibration ??= [], existing = calibration.find(row => row.windowId === windowId);
+      if (existing) { existing.error = Math.max(existing.error, residual / tolerance(displacement));
+        existing.residual = Math.max(existing.residual, residual); }
+      else calibration.push({ windowId, error: residual / tolerance(displacement), residual });
+      if (calibration.length > 32) calibration.shift();
+    }
+    const correct = residual !== null && residual <= tolerance(displacement);
     estimate.correct += .15 * (Number(correct) - estimate.correct);
     estimate.error += .15 * (Math.abs(error) - estimate.error); estimate.observations++;
     estimate.variance += .15 * (Math.max(error * error, sensorResidual * sensorResidual) - estimate.variance);
@@ -255,12 +271,18 @@ export class ExperienceMedium {
     estimate.covariance = updatedCovariance(estimate.covariance, product, denominator);
     return correct;
   }
-  #learn(network: Network, state: State, targets: [string, PublicValue, PublicValue][], id: string): boolean[] {
+  #learn(network: Network, state: State, targets: [string, PublicValue, PublicValue][],
+    rows: ContextualWindowRow[], prior?: Network): boolean[] {
+    const priorField = prior ? this.#field(prior, state) : undefined;
     const field = this.#field(network, state, true), results: boolean[] = []; network.observations++;
     const externalErrors: Record<string, number> = {};
     for (const [name, before, after] of targets) {
       const numeric = typeof before === 'number' && typeof after === 'number';
       const target = numeric ? after - before : after;
+      // Decode with the window-start receptors and category vocabulary. A new
+      // after-label cannot become a candidate before its forecast is scored.
+      const priorHead = prior?.heads.find(value => value.key === name);
+      const priorPrediction = priorHead && priorHead.numeric === numeric ? this.#read(priorHead, priorField!) : null;
       let head = network.heads.find(value => value.key === name);
       if (!head) {
         head = { key: name, numeric, values: numeric ? [] : [after],
@@ -278,13 +300,12 @@ export class ExperienceMedium {
         head.values.push(after); head.readout.push(Array(SIZE).fill(0));
         head.categoryReadout.push(Array(SIZE).fill(0));
       }
-      const predicted = this.#read(head, field);
-      const numericResult = Number(predicted.value) + (predicted.absolute ? 0 : Number(before));
-      const error = numeric ? Math.abs(numericResult - Number(after)) : Number(predicted.value !== after);
-      const decodedError = numeric && head.integral && Number.isInteger(before) && Number.isInteger(after)
+      const numericResult = priorPrediction ? Number(priorPrediction.value) + (priorPrediction.absolute ? 0 : Number(before)) : Number(before);
+      const error = numeric ? Math.abs(numericResult - Number(after)) : Number(!priorPrediction || priorPrediction.value !== after);
+      const decodedError = numeric && priorHead?.integral && Number.isInteger(before) && Number.isInteger(after)
         ? Math.abs(Math.round(numericResult) - Number(after)) : error;
-      const correct = head.observations > 0 && decodedError <= (numeric ? tolerance(Number(target)) : 0);
-      if (head.observations > 0) externalErrors[name] = numeric ? Math.min(20, decodedError / tolerance(Number(target)))
+      const correct = priorPrediction !== null && decodedError <= (numeric ? tolerance(Number(target)) : 0);
+      if (priorPrediction) externalErrors[name] = numeric ? Math.min(20, decodedError / tolerance(Number(target)))
         : correct ? 0 : 2;
       results.push(correct); head.observations++;
       head.correct += .15 * (Number(correct) - head.correct); head.error += .15 * (error - head.error);
@@ -332,7 +353,7 @@ export class ExperienceMedium {
       });
       head.covariance = updatedCovariance(head.covariance, px, denominator);
     }
-    this.#contexts.observe(id, state, targets, externalErrors);
+    rows.push({ input: state, targets, externalErrors });
     return results;
   }
   observe(event: RealEvent): { learned: boolean; correctBeforeUpdate: boolean | null; writes: number; measuredChannels: number; maskedObjects: number;
@@ -407,7 +428,12 @@ export class ExperienceMedium {
           targets.push([`appearance/property/${key}`, typeof value === 'number' ? 0 : null, value]);
       }
     }
-    const correct = this.#learn(this.#network(`${motor}/self`), inputState(first), targets, `${motor}/self`);
+    // Only the two affected motor circuits are copied. All rows still fit the
+    // live networks, but none can calibrate against another row in this window.
+    const priorSelf = structuredClone(this.#networks.get(`${motor}/self`));
+    const priorObject = structuredClone(this.#networks.get(`${motor}/object`));
+    const selfRows: ContextualWindowRow[] = [], objectRows: ContextualWindowRow[] = [], planeRows: ContextualWindowRow[] = [];
+    const correct = this.#learn(this.#network(`${motor}/self`), inputState(first), targets, selfRows, priorSelf);
     let maskedObjects = 0;
     for (const object of first.objects.filter(object => focus.has(object.id))) {
       const after = last.objects.find(value => value.id === object.id);
@@ -415,7 +441,7 @@ export class ExperienceMedium {
         // Missing after an action is an observed failure to acquire a later
         // measurement. It is not evidence of destruction or zero motion.
         correct.push(...this.#learn(this.#network(`${motor}/object`), inputState(first, object),
-          [['measurement', true, false]], `${motor}/object`));
+          [['measurement', true, false]], objectRows, priorObject));
         maskedObjects++; continue;
       }
       const movement = worldToBody(after.relativePosition.map((v, i) => v - object.relativePosition[i]!
@@ -432,15 +458,19 @@ export class ExperienceMedium {
         if (['confidence', 'ambiguity'].includes(name)) continue;
         if (after.properties[name] !== undefined) measured.push([`property/${name}`, before, after.properties[name]!]);
       }
-      correct.push(...this.#learn(this.#network(`${motor}/object`), inputState(first, object), measured, `${motor}/object`));
+      correct.push(...this.#learn(this.#network(`${motor}/object`), inputState(first, object), measured, objectRows, priorObject));
       const objectNetwork = this.#network(`${motor}/object`), plane = beforeTrack?.surface, nextPlane = afterTrack?.surface;
       if (plane && nextPlane && beforeTrack!.anchorEpoch === afterTrack!.anchorEpoch
         && Math.abs(plane.normal.reduce((sum, v, i) => sum + v * nextPlane.normal[i]!, 0)) > .999) {
         const delta = nextPlane.point.map((v, i) => v - plane.point[i]! + last.self.position[i]! - first.self.position[i]!);
         correct.push(this.#learnMotion(objectNetwork, worldToBody(plane.normal, first.self.yaw),
-          plane.normal.reduce((sum, v, i) => sum + v * delta[i]!, 0), (plane.residual ?? 0) + (nextPlane.residual ?? 0)));
+          plane.normal.reduce((sum, v, i) => sum + v * delta[i]!, 0), (plane.residual ?? 0) + (nextPlane.residual ?? 0),
+          event.id, planeRows, inputState(first, object), priorObject?.motion));
       }
     }
+    this.#contexts.observeWindow(`${motor}/self`, event.id, selfRows);
+    if (objectRows.length) this.#contexts.observeWindow(`${motor}/object`, event.id, objectRows);
+    if (planeRows.length) this.#contexts.observeWindow(`${motor}/plane`, event.id, planeRows);
     this.#ledger.commit(event.id, digest); this.#writes++;
     return { learned: true, correctBeforeUpdate: correct.length ? correct.every(Boolean) : null,
       writes: this.#writes, measuredChannels: correct.length, maskedObjects };
@@ -624,21 +654,31 @@ export class ExperienceMedium {
       const measurement = values.get('measurement');
       if (usable(measurement) && measurement!.value === false) continue;
       const estimate = objectNetwork.motion;
+      const fallbackRadii: (number | null)[] = [null, null, null];
       const motion = [0, 1, 2].map(i => {
         const value = values.get(`motion/${i}`);
         if (usable(value)) return Number(value!.value);
+        if (value?.refuted) return null;
         // Coefficient covariance has units of inverse information, not blocks.
         // Convert it with measured pre-update/sensor variance. Include residual
         // outcome variation, and require measured rank (no regularizing prior).
-        return estimate && motionInformation && estimate.correct >= .8 && estimate.observations >= 8
-          && 4 * Math.sqrt(estimate.variance * (1 + motionInformation[i]![i]!)) <= .05
-          ? estimate.mean[i]! : null;
+        const calibration = estimate?.calibration ?? [];
+        const domain = this.#contexts.read(`${motor}/plane`, 'plane/motion', { ...inputState(observation, object),
+          ...Object.fromEntries([0, 1, 2].map(axis => ['plane/normal/' + axis, Number(axis === i)])) },
+          experienceInputBounds(observation, object));
+        const radius = estimate && motionInformation ? Math.max(domain?.externalErrorRadius ?? Infinity,
+          4 * Math.sqrt(estimate.variance * (1 + motionInformation[i]![i]!))) : Infinity;
+        if (estimate && motionInformation && calibration.length >= 8
+          && calibration.filter(row => row.error <= 1).length / calibration.length >= .8
+          && domain?.externalSupported === true
+          && radius <= .05) { fallbackRadii[i] = radius; return estimate.mean[i]!; }
+        return null;
       });
       const motionRanges = rotateRanges(motion.map((value, i) => {
         if (value === null) return null;
         const learned = values.get(`motion/${i}`);
         if (usable(learned) && learned!.range) return learned!.range;
-        const radius = 4 * Math.sqrt(estimate!.variance * (1 + motionInformation![i]![i]!));
+        const radius = fallbackRadii[i]!;
         return [value - radius, value + radius] as NumericRange;
       }), yawRange);
       const predicted = { ...object, properties: { ...object.properties } };
@@ -798,6 +838,10 @@ export class ExperienceMedium {
       || new Set(copy.networks.map(([id]) => id)).size !== copy.networks.length) throw new Error('experience-medium-invalid-populations');
     for (const [, network] of copy.networks) {
       const motion = network.motion;
+      if (motion?.calibration && (motion.calibration.length > 32
+        || new Set(motion.calibration.map(row => row.windowId)).size !== motion.calibration.length
+        || motion.calibration.some(row => !row.windowId || !Number.isFinite(row.error) || row.error < 0
+          || !Number.isFinite(row.residual) || row.residual < 0))) throw new Error('invalid-motion-window-calibration');
       if (motion && (motion.mean.length !== 3 || motion.covariance.length !== 3 || motion.information.length !== 3
         || [...motion.covariance, ...motion.information].some(row => row.length !== 3)
         || [...motion.mean, ...motion.covariance.flat(), ...motion.information.flat(), motion.variance, motion.correct, motion.error].some(v => !Number.isFinite(v))

@@ -192,7 +192,7 @@ try {
   await delay(1000);
   const base = new MinecraftExperienceEnvironment(body);
   report.protocol.maintenanceGoals = base.maintenanceGoals; await save('protocol.json', report);
-  initial = await base.observe(); await save('initial-observation.json', initial);
+  initial = await base.initialize(); await save('initial-observation.json', initial);
   await checkpoint();
   environment = { maintenanceGoals: base.maintenanceGoals,
     drainPassiveEvents: async () => recordPassive(await base.drainPassiveEvents()),

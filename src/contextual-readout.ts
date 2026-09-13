@@ -4,7 +4,8 @@ import { hull, type NumericRange, type NumericRanges } from './numeric-ranges.js
 export type SensoryState = Readonly<Record<string, PublicValue>>;
 export type MeasuredTarget = readonly [string, PublicValue, PublicValue];
 interface Sample { input: SensoryState; targets: Record<string, readonly [PublicValue, PublicValue]>;
-  errors: Record<string, number>; externalErrors?: Record<string, number>; serial: number }
+  errors: Record<string, number>; externalErrors?: Record<string, number>; serial: number; windowId?: string }
+export interface ContextualWindowRow { input: SensoryState; targets: readonly MeasuredTarget[]; externalErrors?: Record<string, number> }
 interface Leaf { kind: 'leaf'; numeric: boolean; absolute: boolean; value: PublicValue; loss: number;
   rows: readonly Sample[];
   samples: number; calibrated: number; accuracy: number; error: number; progress: number;
@@ -17,7 +18,7 @@ type Tree = Leaf | Branch;
 type TreeShape = null | { kind: 'branch'; key: string; threshold: PublicValue; numeric: boolean;
   left: TreeShape; right: TreeShape };
 interface Circuit { samples: Sample[]; writes: number }
-export interface ContextualReadoutSnapshot { version: 'ContextualReadout1' | 'ContextualReadout2'; capacity: number;
+export interface ContextualReadoutSnapshot { version: 'ContextualReadout1' | 'ContextualReadout2' | 'ContextualReadout3'; capacity: number;
   circuits: [string, Circuit][]; structures?: [string, [string, TreeShape][]][] }
 export interface ConditionalValue { value: PublicValue; absolute: boolean; supported: boolean;
   samples: number; accuracy: number; error: number; progress: number; dependencies: readonly string[];
@@ -48,30 +49,39 @@ function summary(rows: readonly Sample[], key: string): { leaf: Leaf; loss: numb
   // an obsolete partition remain in the evidence, but cannot permanently
   // disqualify a subsequently stable response. Outcome bounds still use ALL
   // retained observations, including the latest contradictory measurement.
-  const calibratedRows = rows.filter(row => Object.hasOwn(row.errors, key)).slice(-32);
-  const errors = calibratedRows.map(row => row.errors[key]!);
-  const externalRows = rows.filter(row => row.externalErrors?.[key] !== undefined);
-  const allExternal = externalRows.map(row => row.externalErrors![key]!);
-  const external = allExternal.slice(-32);
+  // Multiple objects in one physical window share one pre-update model.
+  // Count independent windows, with the worst error AND raw residual in each.
+  // Legacy rows retain their fits/errors but lack verified source-window IDs.
+  const grouped = (external: boolean) => {
+    const windows = new Map<string, { error: number; residual: number }>();
+    for (const row of rows) {
+      const error = (external ? row.externalErrors : row.errors)?.[key];
+      if (row.windowId === undefined || error === undefined) continue;
+      const [a, b] = row.targets[key]!, prior = windows.get(row.windowId);
+      const residual = numeric ? error < 0 || error >= 20 ? Infinity : error * tolerance(a, b) : 0;
+      windows.set(row.windowId, { error: Math.max(prior?.error ?? 0, error),
+        residual: Math.max(prior?.residual ?? 0, residual) });
+    }
+    return [...windows.values()];
+  };
+  const calibrated = grouped(false).slice(-32), externalWindows = grouped(true);
+  const errors = calibrated.map(row => row.error);
+  const allExternal = externalWindows.map(row => row.error), external = allExternal.slice(-32);
   // Scores are stored in tolerance units, while prediction ranges use the
   // observable's units. Use the recent 90th-percentile measured residual,
   // not the tolerance itself. An isolated obsolete forecast must not inflate
   // a now stable response indefinitely; ALL retained outcomes remain in the
   // envelope below. This empirical radius is not a coverage guarantee.
   // A clipped score is only a lower bound and cannot supply a finite radius.
-  const residualRadius = (samples: readonly Sample[], external: boolean): number | null => {
+  const residualRadius = (samples: readonly { residual: number }[]): number | null => {
     if (!numeric) return 0;
     if (!samples.length) return null;
-    const residuals = samples.map(row => {
-      const error = (external ? row.externalErrors! : row.errors)[key]!;
-      const [before, after] = row.targets[key]!;
-      return error < 0 || error >= 20 ? Infinity : error * tolerance(before, after);
-    }).sort((a, b) => a - b);
+    const residuals = samples.map(row => row.residual).sort((a, b) => a - b);
     const radius = residuals[Math.ceil(.9 * residuals.length) - 1]!;
     return Number.isFinite(radius) ? radius : null;
   };
-  const errorRadius = residualRadius(calibratedRows, false);
-  const externalErrorRadius = residualRadius(externalRows.slice(-32), true);
+  const errorRadius = residualRadius(calibrated);
+  const externalErrorRadius = residualRadius(externalWindows.slice(-32));
   const envelope = (ranges: NumericRange[]): NumericRange => {
     const range = hull(ranges), margin = errorRadius ?? 0;
     return [range[0] - margin, range[1] + margin];
@@ -305,23 +315,38 @@ export class ContextualReadout {
     return best ? { input: best.row.input, targets: best.row.targets, distance: best.distance } : null;
   }
   observe(id: string, input: SensoryState, targets: readonly MeasuredTarget[], externalErrors?: Record<string, number>): void {
+    this.observeWindow(id, 'context-call:' + ((this.#circuits.get(id)?.writes ?? 0) + 1), [{ input, targets, externalErrors }]);
+  }
+  observeWindow(id: string, windowId: string, rows: readonly ContextualWindowRow[]): void {
+    if (!windowId.length) throw new Error('invalid-context-window-id');
+    // The real-event ledger protects retired/duplicate events in the medium.
+    // Also reject a still-retained ID here, before any posterior can be read.
+    if (this.#circuits.get(id)?.samples.some(row => row.windowId === windowId)) throw new Error('duplicate-context-window');
+    const prepared = rows.filter(row => row.targets.length).map(({ input, targets, externalErrors }) => {
+      if ([...Object.values(input), ...targets.flatMap(([, a, b]) => [a, b]), ...Object.values(externalErrors ?? {})]
+        .some(v => typeof v === 'number' && !Number.isFinite(v))) throw new Error('non-finite-context-measurement');
+      const errors: Record<string, number> = {};
+      for (const [key, before, after] of targets) {
+        const prior = this.read(id, key, input); if (!prior) continue;
+        const numeric = typeof before === 'number' && typeof after === 'number' && typeof prior.value === 'number';
+        const predicted = numeric ? Number(prior.value) + (prior.absolute ? 0 : before) : prior.value;
+        errors[key] = numeric ? Math.min(20, Math.abs(Number(predicted) - after) / tolerance(before, after))
+          : Object.is(predicted, after) ? 0 : 2;
+      }
+      return { input, targets, externalErrors, errors };
+    });
+    for (const row of prepared) this.#append(id, windowId, row);
+  }
+  #append(id: string, windowId: string, { input, targets, externalErrors, errors }:
+    ContextualWindowRow & { errors: Record<string, number> }): void {
     if (!targets.length) return;
     if ([...Object.values(input), ...targets.flatMap(([, a, b]) => [a, b]), ...Object.values(externalErrors ?? {})]
       .some(v => typeof v === 'number' && !Number.isFinite(v))) throw new Error('non-finite-context-measurement');
     this.#matching = new WeakMap();
     this.#recallBounds.delete(id);
     const circuit = this.#circuits.get(id) ?? { samples: [], writes: 0 };
-    const errors: Record<string, number> = {};
-    for (const [key, before, after] of targets) {
-      const prior = this.read(id, key, input);
-      if (!prior) continue;
-      const numeric = typeof before === 'number' && typeof after === 'number' && typeof prior.value === 'number';
-      const predicted = numeric ? Number(prior.value) + (prior.absolute ? 0 : before) : prior.value;
-      errors[key] = numeric ? Math.min(20, Math.abs(Number(predicted) - after) / tolerance(before, after))
-        : Object.is(predicted, after) ? 0 : 2;
-    }
     circuit.samples.push({ input: structuredClone(input), targets: Object.fromEntries(targets.map(([k, a, b]) => [k, [a, b]])),
-      errors, ...(externalErrors ? { externalErrors: { ...externalErrors } } : {}), serial: ++circuit.writes });
+      errors, ...(externalErrors ? { externalErrors: { ...externalErrors } } : {}), serial: ++circuit.writes, windowId });
     this.#circuits.set(id, circuit);
     if (circuit.samples.length > this.capacity) {
       // Protect sparsely encountered response contexts. The oldest row in the
@@ -347,11 +372,11 @@ export class ContextualReadout {
   snapshot(): ContextualReadoutSnapshot {
     const shape = (tree: Tree): TreeShape => tree.kind === 'leaf' ? null : { kind: 'branch', key: tree.key,
       threshold: tree.threshold, numeric: tree.numeric, left: shape(tree.left), right: shape(tree.right) };
-    return structuredClone({ version: 'ContextualReadout2', capacity: this.capacity, circuits: [...this.#circuits],
+    return structuredClone({ version: 'ContextualReadout3', capacity: this.capacity, circuits: [...this.#circuits],
       structures: [...this.#trees].map(([id, trees]) => [id, [...trees].map(([key, tree]) => [key, shape(tree)])]) });
   }
   static restore(state: ContextualReadoutSnapshot): ContextualReadout {
-    if (!['ContextualReadout1', 'ContextualReadout2'].includes(state.version)) throw new Error('contextual-readout-version-mismatch');
+    if (!['ContextualReadout1', 'ContextualReadout2', 'ContextualReadout3'].includes(state.version)) throw new Error('contextual-readout-version-mismatch');
     const model = new ContextualReadout(state.capacity);
     const structures = new Map(state.structures ?? []);
     const validShape = (shape: TreeShape, depth = 0): boolean => shape === null || Boolean(shape && depth < 6
@@ -360,7 +385,7 @@ export class ContextualReadout {
         : shape.threshold === null || ['string', 'boolean'].includes(typeof shape.threshold)
           || typeof shape.threshold === 'number' && Number.isFinite(shape.threshold))
       && validShape(shape.left, depth + 1) && validShape(shape.right, depth + 1));
-    if (state.version === 'ContextualReadout2' && (!state.structures || structures.size !== state.circuits.length
+    if (state.version !== 'ContextualReadout1' && (!state.structures || structures.size !== state.circuits.length
       || structures.size !== state.structures.length || state.structures.some(([, rows]) =>
         new Set(rows.map(([key]) => key)).size !== rows.length || rows.some(([, shape]) => !validShape(shape)))))
       throw new Error('invalid-contextual-structure-checkpoint');
@@ -368,6 +393,7 @@ export class ContextualReadout {
       if (model.#circuits.has(id) || !Number.isSafeInteger(circuit.writes) || circuit.writes < 1
         || circuit.samples.length > state.capacity || !circuit.samples.length
         || circuit.samples.some(row => !Number.isSafeInteger(row.serial) || row.serial < 1 || row.serial > circuit.writes
+          || row.windowId !== undefined && (state.version !== 'ContextualReadout3' || typeof row.windowId !== 'string' || !row.windowId.length)
           || [...Object.values(row.input), ...Object.values(row.targets).flat(), ...Object.values(row.errors), ...Object.values(row.externalErrors ?? {})]
             .some(v => typeof v === 'number' && !Number.isFinite(v)))) throw new Error('invalid-contextual-snapshot');
       model.#circuits.set(id, circuit);

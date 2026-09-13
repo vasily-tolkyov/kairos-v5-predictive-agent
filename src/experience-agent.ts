@@ -6,6 +6,24 @@ import { cueIdentity } from './events.js';
 import { sha } from './util.js';
 import { LearnedAffordances } from './learned-affordances.js';
 
+/** Search identity, not a change to observations or their support. Property
+ * presence matters to later output binding; an unsupported property's copied
+ * value is neither a predictor input nor a grounded goal measurement. Keep
+ * geometry and target identity intact because their transforms are separate. */
+export function experienceSearchKey(value: Observation): string {
+  const support = value.predictionSupport ? new Set(value.predictionSupport) : null;
+  const state = Object.fromEntries(Object.entries(experienceState(value)).map(([key, v]) => {
+    const path = JSON.parse(key) as string[];
+    const field = path[0] === 'self' && path[1] === 'properties' ? 'self/properties.' + path[2]
+      : path[0] === 'object' && path[2] === 'properties' ? 'object:' + path[1] + '/properties.' + path[3] : null;
+    return [key, field && support && !support.has(field) ? { unknown: true }
+      : typeof v === 'number' ? Math.round(v / .025) : v];
+  }));
+  return sha({ support: support ? [...support].sort() : undefined, bounds: value.predictionBounds,
+    sensoryContext: Object.fromEntries(Object.entries(experienceInputs(value)).filter(([key]) => key.startsWith('view/'))
+      .map(([key, v]) => [key, typeof v === 'number' ? Math.round(v / .025) : v])), state });
+}
+
 /** Score explicitly predicted channels against later measurements. A probe's
  * assumptions remain labelled hypotheses even when comparing real feedback. */
 export function compareExperiencePrediction(prediction: ExperiencePrediction, actual: Observation) {
@@ -166,14 +184,7 @@ export class ExperienceAgent {
       : predicate.subject.kind === 'crosshair' ? 'gaze' : 'object:' + predicate.subject.id}/${predicate.observable}`);
     if (evaluator.evaluate(observation).status === 'satisfied')
       return { steps: [], expanded: 0, reason: 'already-satisfied' };
-    const keyOf = (value: Observation) => sha({ support: value.predictionSupport,
-      bounds: value.predictionBounds,
-      // A changed scene can enable a later action while the body stays still.
-      // Discarding this learned sensory context collapses causal stages.
-      sensoryContext: Object.fromEntries(Object.entries(experienceInputs(value)).filter(([key]) => key.startsWith('view/'))
-        .map(([key, v]) => [key, typeof v === 'number' ? Math.round(v / .025) : v])),
-      state: Object.fromEntries(Object.entries(experienceState(value)).map(([k, v]) =>
-        [k, typeof v === 'number' ? Math.round(v / .025) : v])) });
+    const keyOf = experienceSearchKey;
     const queue: { observation: Observation; steps: ExperiencePlanStep[]; priority: number }[] = [{ observation, steps: [], priority: 0 }];
     const visited = new Set([keyOf(observation)]);
     let expanded = 0;

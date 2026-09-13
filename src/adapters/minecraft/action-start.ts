@@ -22,6 +22,7 @@ export interface CancelledMinecraftActionStart {
 export type PreparedMinecraftExecution = Awaited<ReturnType<MinecraftBody['execute']>>
   & { observation: Observation; actionStartReceipt: WorkerActionStartReceiptV1 };
 export interface ConditionalMinecraftBody {
+  startObservation(): Promise<{ observation: Observation; precedingPassiveEvents: readonly RealEvent[] }>;
   prepareActionStart(): Promise<PreparedMinecraftActionStart>;
   executePrepared(token: string, action: Action, scope?: ActionObservationScopeV1): Promise<PreparedMinecraftExecution>;
   cancelActionStart(token: string, reason: string): Promise<CancelledMinecraftActionStart>;
@@ -49,6 +50,10 @@ export class MinecraftActionStartProtocol {
   drainPassiveEvents(): readonly RealEvent[] {
     if (this.#executing) throw new Error('cannot-drain-passive-observation-during-a-motor');
     const events = [...this.#retained, ...this.body.takePassiveEvents()]; this.#retained = []; return events;
+  }
+  startObservation(): { observation: Observation; precedingPassiveEvents: readonly RealEvent[] } {
+    const precedingPassiveEvents = this.drainPassiveEvents();
+    return { observation: this.body.latest(), precedingPassiveEvents };
   }
   invalidate(reason: string): void {
     if (!this.#prepared) return;
